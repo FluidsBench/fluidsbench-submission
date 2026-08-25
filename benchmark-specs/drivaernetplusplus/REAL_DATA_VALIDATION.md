@@ -18,9 +18,11 @@ be reproduced independently.
 | Point arrays | `p` only |
 | Points / cells | 481,363 / 442,114 |
 
-The file is **not committed** to this repository: it is CC BY-NC 4.0 upstream data (this
-repository is Apache 2.0) and is publicly available from the pinned DOI above. Only its
-checksum and derived measurements are recorded here.
+The file is **not stored in git**. It is CC BY-NC 4.0 upstream data (this repository is
+Apache 2.0) and is obtained on demand from the pinned release into `samples/`, where it is
+verified against the SHA-256 above — see [`samples/README.md`](samples/README.md) for the
+procedure, attribution and reuse conditions. Only its checksum and the measurements derived
+from it are recorded here.
 
 ## Publisher run
 
