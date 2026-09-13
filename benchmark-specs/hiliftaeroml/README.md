@@ -5,11 +5,11 @@ not open for submissions. The machine-readable
 [`submission-spec.json`](submission-spec.json) currently has
 `submissions_open: false`. A candidate package may be used for local or
 benchmark-owner-coordinated dry runs only; it is not accepted, citable as an
-official result, or evidence of benchmark approval. Twenty-one exact
+official result, or evidence of benchmark approval. Twenty-three exact
 real-inference packages are additionally registered by path and hashes as
-public `pre_release_reference` rows: ten Transolver results and eleven
-GeoTransolver results covering every official split, including the
-GeoTransolver out-of-distribution deflection result. They allow the evaluator,
+public `pre_release_reference` rows: eleven Transolver results and twelve
+GeoTransolver results covering every represented Table 5 split, including the
+Transolver out-of-distribution deflection and GeoTransolver Scarce results. They allow the evaluator,
 plots, and leaderboard integration to be exercised before intake opens. Their
 citation and promotion eligibility are all false.
 
@@ -211,11 +211,12 @@ and
 [`compact-profile-geometry-super-scarce-validation-v1.json`](compact-profile-geometry-super-scarce-validation-v1.json),
 [`compact-profile-geometry-validation-v1.json`](compact-profile-geometry-validation-v1.json),
 [`compact-profile-ood-aoa-validation-v1.json`](compact-profile-ood-aoa-validation-v1.json),
+[`compact-profile-ood-deflection-validation-v1.json`](compact-profile-ood-deflection-validation-v1.json),
 and
 [`compact-profile-ood-stall-validation-v1.json`](compact-profile-ood-stall-validation-v1.json).
 The corresponding GeoTransolver receipts use the
 `compact-profile-geotransolver-*-validation-v1.json` names and cover Full,
-AoA 4/12/22, Geometry, Geometry scarce, Geometry super scarce, Super scarce,
+Scarce, AoA 4/12/22, Geometry, Geometry scarce, Geometry super scarce, Super scarce,
 OOD AoA, OOD Deflection, and OOD Stall.
 The retained evaluator implementation manifest predates this additive compact
 preview and the v2 regional dashboard contract, and does not attest either.
@@ -264,7 +265,7 @@ bindings, or an existing output directory.
 Validate a resulting directory with `scripts/validate_submission.py` in
 `--candidate-dry-run` mode. A pass means only that the directory implements the
 closed candidate contract. It does not open submissions, grant owner approval,
-or create a leaderboard entry. Only the 21 separately registered, hash-bound
+or create a leaderboard entry. Only the 23 separately registered, hash-bound
 Transolver and GeoTransolver previews are visible as non-citable pre-release
 references.
 

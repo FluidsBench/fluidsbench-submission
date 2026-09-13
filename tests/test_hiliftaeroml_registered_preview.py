@@ -79,6 +79,13 @@ EXPECTED_PREVIEWS = (
         13_500,
     ),
     (
+        "deflection",
+        "hiliftaeroml-transolver-ood-deflection-candidate-v1",
+        "caseset-c0ecb14de138",
+        360,
+        5_400,
+    ),
+    (
         "stall",
         "hiliftaeroml-transolver-ood-stall-candidate-v1",
         "caseset-804491c8956e",
@@ -88,6 +95,13 @@ EXPECTED_PREVIEWS = (
     (
         "full",
         "hiliftaeroml-geotransolver-full360-candidate-v1",
+        "caseset-ac791749e527",
+        360,
+        5_400,
+    ),
+    (
+        "scarce",
+        "hiliftaeroml-geotransolver-scarce-candidate-v1",
         "caseset-ac791749e527",
         360,
         5_400,
