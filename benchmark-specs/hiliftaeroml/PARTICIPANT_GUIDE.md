@@ -375,9 +375,9 @@ this closed workflow.
 
 ### Optional local compact-v2 exercise
 
-Twenty-one retained real-surrogate compact packages comprise ten Transolver
-results and eleven GeoTransolver results. Together they cover Full, the three
-fixed-AoA splits, Super scarce, Geometry scarce, Geometry super scarce,
+Twenty-three retained real-surrogate compact packages comprise eleven Transolver
+results and twelve GeoTransolver results. Together they cover Full, Scarce, the
+three fixed-AoA splits, Super scarce, Geometry scarce, Geometry super scarce,
 Geometry, and all three out-of-distribution splits (AoA, deflection, and stall).
 The public plot-only truth separately covers every official case set. A maintainer with the
 authorized native-profile truth and complete native outputs for the target case

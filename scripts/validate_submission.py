@@ -294,6 +294,21 @@ HILIFT_REGISTERED_PREVIEW_CONFIGS = (
         regular_file_bytes=32_105_249,
     ),
     _hilift_preview_configuration(
+        slug="ood-deflection",
+        split_id="deflection",
+        case_set_id="caseset-c0ecb14de138",
+        case_count=360,
+        submission_json_sha256=(
+            "c20c3ab1ede7d3a8f6d95c53402e92f840d71298c3ee3ead47e783f6bcd7bbbb"
+        ),
+        archive_sha256=(
+            "518f1472c77d5bd11054e86f90420d2919a5f5e26ab85d38c9e9bd0c3752788e"
+        ),
+        archive_size_bytes=8_844_091,
+        archive_member_count=403,
+        regular_file_bytes=11_886_343,
+    ),
+    _hilift_preview_configuration(
         slug="ood-stall",
         split_id="stall",
         case_set_id="caseset-804491c8956e",
@@ -324,6 +339,23 @@ HILIFT_REGISTERED_PREVIEW_CONFIGS = (
         archive_size_bytes=8_964_582,
         archive_member_count=403,
         regular_file_bytes=12_002_142,
+    ),
+    _hilift_preview_configuration(
+        slug="scarce",
+        model_slug="geotransolver",
+        validation_slug="geotransolver-scarce",
+        split_id="scarce",
+        case_set_id="caseset-ac791749e527",
+        case_count=360,
+        submission_json_sha256=(
+            "693ad9063ad643abd93be3d306142f0a3d9cfbeec59a34f3389c681232183cf0"
+        ),
+        archive_sha256=(
+            "72864acfe1787eab4c3f70da6b5b4d5b111c4427d5f9b78b156a749d5603af86"
+        ),
+        archive_size_bytes=10_458_737,
+        archive_member_count=403,
+        regular_file_bytes=13_495_213,
     ),
     _hilift_preview_configuration(
         slug="aoa4",
