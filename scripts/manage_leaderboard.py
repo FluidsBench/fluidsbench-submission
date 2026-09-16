@@ -21,6 +21,7 @@ if __package__:
         load_json,
         manifest_with_benchmark_contract,
         normalized_result_revision,
+        registered_ahmedml_development_fixture,
         registered_hiliftaeroml_preview,
         schema_errors,
         sha256_file,
@@ -33,6 +34,7 @@ else:
         load_json,
         manifest_with_benchmark_contract,
         normalized_result_revision,
+        registered_ahmedml_development_fixture,
         registered_hiliftaeroml_preview,
         schema_errors,
         sha256_file,
@@ -300,8 +302,15 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
             manifest,
             root=ROOT,
         )
+        development_fixture = registered_ahmedml_development_fixture(
+            path,
+            submission,
+            manifest,
+            root=ROOT,
+        )
         if (
             registered_preview is None
+            and development_fixture is None
             and submission.get("approval", {}).get("status")
             != allowed_approval_status
         ):
@@ -310,6 +319,8 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
         row.pop("$schema", None)
         if registered_preview is not None:
             row["record_type"] = registered_preview["record_type"]
+        elif development_fixture is not None:
+            row["record_type"] = development_fixture["record_type"]
         row["parameter_count"] = row.get("parameter_count_millions")
         row["profile_data"]["index_file"] = str(
             (path.parent / row["profile_data"]["index_file"]).relative_to(ROOT)
@@ -498,6 +509,17 @@ def published_metric_value(value: int | float, decimal_places: int) -> tuple[Dec
 
 def claim_eligibility(release_status: str, row: dict[str, Any]) -> dict[str, Any]:
     if release_status == "prototype_dummy_data":
+        if row.get("record_type") == "development_fixture":
+            return {
+                "academic_citation": False,
+                "promotion": False,
+                "reason_code": "non_ranked_development_fixture",
+                "reason": (
+                    "Synthetic truth-derived development fixture retained only "
+                    "to exercise the AhmedML evaluator and dev dashboard; it is "
+                    "not model inference or a benchmark submission."
+                ),
+            }
         if row.get("record_type") == "pre_release_reference":
             if row.get("dataset_id") == "hiliftaeroml":
                 reason = (
@@ -560,6 +582,12 @@ def add_release_rankings(
         definition = definitions[metric_id]
         groups: dict[str, list[tuple[dict[str, Any], Decimal, float, str]]] = {}
         for row in rows_by_dataset.get(dataset["name"], []):
+            if row.get("record_type") == "development_fixture":
+                row.pop("ranking", None)
+                row["claim_eligibility"] = claim_eligibility(
+                    release_status, row
+                )
+                continue
             raw_value = row["metric_values"][metric_id]
             rounded, ranked_value, display_value = published_metric_value(raw_value, decimal_places)
             groups.setdefault(row["split_id"], []).append((row, rounded, ranked_value, display_value))

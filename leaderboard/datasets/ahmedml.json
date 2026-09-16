@@ -1,2161 +1,586 @@
 [
   {
-    "schema_version": "1.0",
-    "submission_id": "ab-upt",
-    "model": "AB-UPT",
-    "model_type": "Transformer",
+    "schema_version": "3.0",
+    "submission_id": "ahmedml-geotransolver-calibrated-dev-fixture-v1",
+    "result_revision": {
+      "series_id": "ahmedml-geotransolver-calibrated-dev-fixture",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": "Initial non-ranked complete-native-cell AhmedML evaluator and dashboard development fixture.",
+      "is_latest": true,
+      "latest_submission_id": "ahmedml-geotransolver-calibrated-dev-fixture-v1",
+      "version_count": 1
+    },
+    "model": "GeoTransolver-calibrated synthetic development fixture",
+    "model_type": "Deterministic fixture",
     "model_types": [
-      "Transformer"
+      "Deterministic fixture",
+      "GeoTransolver calibration reference"
     ],
-    "training_regime": "from_scratch",
-    "target_data_used": "official_train",
+    "training_regime": "other",
+    "training_regime_explanation": "Development fixture only: no AhmedML model training is claimed. A retained GeoTransolver checkpoint supplies error-scale calibration but is not executed.",
+    "target_data_used": "other",
     "external_pretraining": false,
     "pretraining_data": [],
-    "dataset": "AhmedML",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Non-ranked evaluator and dashboard development fixture. Complete public CFD truth is transformed deterministically to produce native-cell predictions. The retained GeoTransolver checkpoint is used only to calibrate four target error magnitudes; it was not executed, and this record is not model inference.",
+      "architecture": {
+        "description": "A deterministic signed multiplicative transform produces complete native CellData fields. A 20,166,852-parameter legacy GeoTransolver checkpoint is recorded only as a calibration reference and contributes no executed inference graph.",
+        "total_parameter_count": 20166852,
+        "parameter_count_basis": "exact",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "legacy-geotransolver-calibration-reference",
+            "family": "GeoTransolver",
+            "role": "Non-executed calibration reference",
+            "description": "Retained checkpoint metadata supplied approximate field-error scales only; the checkpoint does not correspond to an official AhmedML split and was not run for this fixture.",
+            "parameter_count": 20166852
+          },
+          {
+            "id": "deterministic-native-field-fixture",
+            "family": "Deterministic evaluator fixture",
+            "role": "Synthetic native-field generator",
+            "description": "Applies a case- and entity-index-dependent signed multiplicative perturbation directly to complete public CFD truth.",
+            "parameter_count": 0
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "fixture-transform",
+            "component_ids": [
+              "deterministic-native-field-fixture"
+            ],
+            "name": "fixture transform",
+            "value": "truth*(1+target_ratio*sign(sin(pattern)))",
+            "description": "Deterministic transform used solely for integration testing."
+          },
+          {
+            "id": "profile-sample-count",
+            "component_ids": [
+              "deterministic-native-field-fixture"
+            ],
+            "name": "evaluator-owned samples per profile",
+            "value": 128,
+            "description": "Every Cp cut and velocity profile is sampled by the dataset evaluator at exactly 128 frozen support locations."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "public-native-cfd-truth",
+            "component_ids": [
+              "deterministic-native-field-fixture"
+            ],
+            "name": "complete public CFD truth fields",
+            "domain": "domain",
+            "component_count": 8,
+            "description": "Surface pMean and wallShearStressMean plus volume pMean and UMean on all native cells; use of truth makes this explicitly ineligible for ranking."
+          },
+          {
+            "id": "case-and-cell-index",
+            "component_ids": [
+              "deterministic-native-field-fixture"
+            ],
+            "name": "case and native cell identity",
+            "domain": "case",
+            "component_count": 2,
+            "description": "Run ID and native raw-cell index seed the deterministic sign pattern."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.pMean",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "deterministic-native-field-fixture"
+            ],
+            "production": "direct_model_output",
+            "description": "Synthetic complete-native-cell pressure fixture, not model inference."
+          },
+          {
+            "field_id": "surface-native.wallShearStressMean",
+            "domain": "surface",
+            "component_count": 3,
+            "component_ids": [
+              "deterministic-native-field-fixture"
+            ],
+            "production": "direct_model_output",
+            "description": "Synthetic complete-native-cell wall-shear fixture, not model inference."
+          },
+          {
+            "field_id": "flow-domain-native.pMean",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "deterministic-native-field-fixture"
+            ],
+            "production": "direct_model_output",
+            "description": "Synthetic complete-native-cell volume pressure fixture, not model inference."
+          },
+          {
+            "field_id": "flow-domain-native.UMean",
+            "domain": "volume",
+            "component_count": 3,
+            "component_ids": [
+              "deterministic-native-field-fixture"
+            ],
+            "production": "direct_model_output",
+            "description": "Synthetic complete-native-cell velocity fixture, not model inference."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "No training normalization is claimed. The fixture transform acts on native SI-valued CellData; Cp=2*pMean and Ux/Uinf=Ux because Uinf=1 m/s.",
+        "preprocessing": "The evaluator validates immutable public source hashes, complete native entity order, surface areas, cell volumes, frozen profile mappings, and three-region assignments.",
+        "sampling": "No field subsampling. All surface and volume native cells are transformed and scored; evaluator-owned Cp and velocity diagnostics each contain exactly 128 points per station."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "development-fixture-no-training",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "legacy-geotransolver-calibration-reference",
+              "deterministic-native-field-fixture"
+            ],
+            "description": "No training is attributed to this fixture. The legacy checkpoint's exact official-split provenance is unavailable, and the synthetic transform has no trainable parameters."
+          }
+        ]
+      },
+      "checkpoints": [
+        {
+          "id": "legacy-geotransolver-calibration-reference",
+          "component_ids": [
+            "legacy-geotransolver-calibration-reference"
+          ],
+          "sha256": "37ee4418ef1ee069b5c086322c4c5ef9c35f1a59ea4755b470b7d6358c642ac5",
+          "digest_scope": "raw_loaded_file",
+          "bytes_description": "Raw 80893878-byte model_best.pt retained checkpoint; hashed for provenance but not loaded or executed by fixture generation.",
+          "role": "Calibration reference only; not the source of submitted prediction values.",
+          "selection_rule": "Previously retained best checkpoint from a legacy configured test split; used only to select representative error scales before fixture generation."
+        }
+      ],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "No model inference occurred. CPU fixture generation and exact evaluator runtime are implementation-test costs and must not be reported as surrogate inference performance."
+      }
+    },
+    "submitter_name": "Neil Ashton",
+    "institution": "NVIDIA",
+    "paper_url": "",
+    "submitted_at": "2026-09-16",
+    "reproducibility": {
+      "contract_version": "open-reproducibility-3.0",
+      "access": "public",
+      "public_test_data_use": "evaluation_only",
+      "result_data_license_spdx": "CC-BY-SA-4.0"
+    },
+    "note": "DEVELOPMENT FIXTURE ONLY: predictions are deterministic transforms of public CFD truth, not checkpoint inference. This row is permanently ineligible for ranking, citation, promotion, or treatment as an AhmedML submission.",
     "dataset_id": "ahmedml",
-    "dataset_version": "prototype-1",
+    "prediction_scope": "surface_and_volume",
+    "parameter_count_millions": 20.166852,
+    "dataset": "AhmedML",
+    "dataset_version": "ahmedml-native-v1-candidate",
     "split": "Full",
     "split_id": "full",
-    "case_set_id": "standard",
-    "split_sha256": "a19dfa9f246a16c7e02c3f1cce8c34ea137e24a32c8f06a2afac3bb91102782c",
-    "parameter_count_millions": 8.75,
-    "submitter_name": "Neil Ashton",
-    "institution": "FluidsBench dummy data",
-    "paper_url": "",
-    "code_url": "",
-    "submitted_at": "2025-06-13",
+    "case_set_id": "full-test",
+    "split_sha256": "a565e78b41f8b793220985e6b1bcf535ced54d454e3325fb5de51c8b553eb920",
     "evaluation": {
-      "reference_version": "prototype-1",
-      "code_revision": "prototype-dummy-data",
-      "command": "not-applicable (illustrative dummy data)",
+      "reference_version": "ahmedml-evaluator-v0.1-candidate",
+      "command": "python scripts/assemble_ahmedml_schema_v3_dev_fixture.py --dataset-evidence <full-evidence.json> --case-evidence-directory <case-evidence> --prediction-directory <synthetic-native-fields> --support-release <candidate-support> --profile-ground-truth-manifest <dashboard-manifest> --checkpoint <model_best.pt> --output submissions/ahmedml/ahmedml-geotransolver-calibrated-dev-fixture-v1",
       "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "4c509a13ee788d8fb454682348c246cf9c871ddff327f41d4e451b728b916ef7"
+      "evidence_sha256": "f60810f86942ff6199c56b584205b2d7334dc9d9e607022f06fb2fe9eddbdc1c"
     },
-    "approval": {
-      "status": "prototype",
-      "note": "Illustrative dummy data; not scientifically reviewed or approved."
+    "scoring_support": {
+      "status": "candidate",
+      "release_id": "ahmedml-native-all-splits-support-v1-candidate",
+      "manifest_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/ahmedml/scoring-support/ahmedml-native-all-splits-support-v1-candidate/manifest.json",
+      "manifest_sha256": "c727bad2ca2566dfed44920cc334af136f2fbe32f3c8886b2fcb130f495fd124"
+    },
+    "spatial_discretization": {
+      "format": "fluidsbench-discretization-v1",
+      "file": "submissions/ahmedml/ahmedml-geotransolver-calibrated-dev-fixture-v1/discretization.json",
+      "sha256": "f26fe26a2f7cec0d333719a3929faf27d9e6425be81b801081f49a1a0a5f5c6a",
+      "summary": {
+        "$schema": "https://fluidsbench.org/schemas/v3/discretization.schema.json",
+        "schema_version": "1.0",
+        "submission_id": "ahmedml-geotransolver-calibrated-dev-fixture-v1",
+        "dataset_id": "ahmedml",
+        "split_id": "full",
+        "scoring_support_release_id": "ahmedml-native-all-splits-support-v1-candidate",
+        "scoring_support_manifest_sha256": "c727bad2ca2566dfed44920cc334af136f2fbe32f3c8886b2fcb130f495fd124",
+        "training": {
+          "surface_input": {
+            "used": false,
+            "notes": "No model training is attributed to this development fixture."
+          },
+          "surface_supervision": {
+            "used": false,
+            "notes": "No model training is attributed to this development fixture."
+          },
+          "volume_input": {
+            "used": false,
+            "notes": "No model training is attributed to this development fixture."
+          },
+          "volume_supervision": {
+            "used": false,
+            "notes": "No model training is attributed to this development fixture."
+          }
+        },
+        "inference": {
+          "geometry_dependency": "native_cfd_mesh",
+          "surface_input": {
+            "used": true,
+            "representation": "complete native surface CFD truth used by the synthetic fixture transform",
+            "entity_counts": [
+              {
+                "entity": "cells",
+                "count": {
+                  "kind": "per_case",
+                  "minimum": 721602,
+                  "median": 1094776.0,
+                  "maximum": 1404826
+                }
+              }
+            ],
+            "native_comparison": {
+              "status": "reported",
+              "native_entity_counts": [
+                {
+                  "entity": "cells",
+                  "count": {
+                    "kind": "per_case",
+                    "minimum": 721602,
+                    "median": 1094776.0,
+                    "maximum": 1404826
+                  }
+                }
+              ],
+              "fractions": [
+                {
+                  "entity": "cells",
+                  "fraction": {
+                    "kind": "fixed",
+                    "value": 1.0
+                  }
+                }
+              ]
+            },
+            "sampling": {
+              "kind": "none"
+            },
+            "domain": {
+              "kind": "full_dataset_domain"
+            },
+            "connectivity": "native",
+            "case_record_id": "surface-native-input"
+          },
+          "volume_input": {
+            "used": true,
+            "representation": "complete native volume CFD truth used by the synthetic fixture transform",
+            "entity_counts": [
+              {
+                "entity": "cells",
+                "count": {
+                  "kind": "per_case",
+                  "minimum": 19461878,
+                  "median": 21252206.5,
+                  "maximum": 22773261
+                }
+              }
+            ],
+            "native_comparison": {
+              "status": "reported",
+              "native_entity_counts": [
+                {
+                  "entity": "cells",
+                  "count": {
+                    "kind": "per_case",
+                    "minimum": 19461878,
+                    "median": 21252206.5,
+                    "maximum": 22773261
+                  }
+                }
+              ],
+              "fractions": [
+                {
+                  "entity": "cells",
+                  "fraction": {
+                    "kind": "fixed",
+                    "value": 1.0
+                  }
+                }
+              ]
+            },
+            "sampling": {
+              "kind": "none"
+            },
+            "domain": {
+              "kind": "full_dataset_domain"
+            },
+            "connectivity": "native",
+            "case_record_id": "volume-native-input"
+          },
+          "direct_outputs": [
+            {
+              "id": "surface-native-output",
+              "domain": "surface",
+              "representation": {
+                "used": true,
+                "representation": "complete native surface-cell synthetic prediction fields",
+                "entity_counts": [
+                  {
+                    "entity": "cells",
+                    "count": {
+                      "kind": "per_case",
+                      "minimum": 721602,
+                      "median": 1094776.0,
+                      "maximum": 1404826
+                    }
+                  }
+                ],
+                "native_comparison": {
+                  "status": "reported",
+                  "native_entity_counts": [
+                    {
+                      "entity": "cells",
+                      "count": {
+                        "kind": "per_case",
+                        "minimum": 721602,
+                        "median": 1094776.0,
+                        "maximum": 1404826
+                      }
+                    }
+                  ],
+                  "fractions": [
+                    {
+                      "entity": "cells",
+                      "fraction": {
+                        "kind": "fixed",
+                        "value": 1.0
+                      }
+                    }
+                  ]
+                },
+                "sampling": {
+                  "kind": "none"
+                },
+                "domain": {
+                  "kind": "full_dataset_domain"
+                },
+                "connectivity": "native"
+              },
+              "queries_per_forward_pass": {
+                "kind": "fixed",
+                "value": 1
+              }
+            },
+            {
+              "id": "volume-native-output",
+              "domain": "volume",
+              "representation": {
+                "used": true,
+                "representation": "complete native volume-cell synthetic prediction fields",
+                "entity_counts": [
+                  {
+                    "entity": "cells",
+                    "count": {
+                      "kind": "per_case",
+                      "minimum": 19461878,
+                      "median": 21252206.5,
+                      "maximum": 22773261
+                    }
+                  }
+                ],
+                "native_comparison": {
+                  "status": "reported",
+                  "native_entity_counts": [
+                    {
+                      "entity": "cells",
+                      "count": {
+                        "kind": "per_case",
+                        "minimum": 19461878,
+                        "median": 21252206.5,
+                        "maximum": 22773261
+                      }
+                    }
+                  ],
+                  "fractions": [
+                    {
+                      "entity": "cells",
+                      "fraction": {
+                        "kind": "fixed",
+                        "value": 1.0
+                      }
+                    }
+                  ]
+                },
+                "sampling": {
+                  "kind": "none"
+                },
+                "domain": {
+                  "kind": "full_dataset_domain"
+                },
+                "connectivity": "native"
+              },
+              "queries_per_forward_pass": {
+                "kind": "fixed",
+                "value": 1
+              }
+            }
+          ],
+          "mappings": [
+            {
+              "support_id": "ahmedml-surface-native-cells-v1",
+              "source_output_id": "surface-native-output",
+              "method": {
+                "kind": "identity"
+              },
+              "implementation": "Predictions retain the exact native CellData entity order.",
+              "extrapolation_policy": "forbidden",
+              "unmapped_fraction": 0.0,
+              "extrapolated_fraction": 0.0,
+              "final_coverage_fraction": 1.0
+            },
+            {
+              "support_id": "ahmedml-volume-native-cells-v1",
+              "source_output_id": "volume-native-output",
+              "method": {
+                "kind": "identity"
+              },
+              "implementation": "Predictions retain the exact native CellData entity order.",
+              "extrapolation_policy": "forbidden",
+              "unmapped_fraction": 0.0,
+              "extrapolated_fraction": 0.0,
+              "final_coverage_fraction": 1.0
+            },
+            {
+              "support_id": "ahmedml-force-coefficients-v1",
+              "source_output_id": "surface-native-output",
+              "method": {
+                "kind": "reference_rule",
+                "rule_id": "ahmedml-evaluator-derived-support-v1",
+                "rule_version": "candidate-v1"
+              },
+              "implementation": "Dataset evaluator derives force or profile values from the same complete native prediction fields.",
+              "extrapolation_policy": "forbidden",
+              "unmapped_fraction": 0.0,
+              "extrapolated_fraction": 0.0,
+              "final_coverage_fraction": 1.0
+            },
+            {
+              "support_id": "ahmedml-surface-cp-profiles-v1",
+              "source_output_id": "surface-native-output",
+              "method": {
+                "kind": "reference_rule",
+                "rule_id": "ahmedml-evaluator-derived-support-v1",
+                "rule_version": "candidate-v1"
+              },
+              "implementation": "Dataset evaluator derives force or profile values from the same complete native prediction fields.",
+              "extrapolation_policy": "forbidden",
+              "unmapped_fraction": 0.0,
+              "extrapolated_fraction": 0.0,
+              "final_coverage_fraction": 1.0
+            },
+            {
+              "support_id": "ahmedml-volume-velocity-profiles-v1",
+              "source_output_id": "volume-native-output",
+              "method": {
+                "kind": "reference_rule",
+                "rule_id": "ahmedml-evaluator-derived-support-v1",
+                "rule_version": "candidate-v1"
+              },
+              "implementation": "Dataset evaluator derives force or profile values from the same complete native prediction fields.",
+              "extrapolation_policy": "forbidden",
+              "unmapped_fraction": 0.0,
+              "extrapolated_fraction": 0.0,
+              "final_coverage_fraction": 1.0
+            }
+          ]
+        },
+        "case_manifest": {
+          "format": "jsonl",
+          "file": "submissions/ahmedml/ahmedml-geotransolver-calibrated-dev-fixture-v1/discretization/cases.jsonl",
+          "sha256": "88f9bf2f9421a1d332dd7dea87999ceb2e3f9138e89e9da15ac2f5aa1edaacf9",
+          "case_count": 50
+        },
+        "notes": "Exact full-native-cell evaluator fixture. The direct-output wording describes generated fixture arrays, not neural-network inference."
+      }
+    },
+    "case_metrics": {
+      "format": "fluidsbench-case-metrics-v1",
+      "file": "submissions/ahmedml/ahmedml-geotransolver-calibrated-dev-fixture-v1/metrics/cases.json",
+      "sha256": "4510c094f14be60451ca007e0c036ec85548640a3fdcb7306543eb113c765479",
+      "case_count": 50
     },
     "metric_values": {
-      "surface_pressure_rel_l2": 3,
-      "surface_pressure_rel_l1": 2.16,
-      "surface_wall_shear_rel_l2": 3.88,
-      "surface_wall_shear_rel_l1": 2.638,
-      "volume_velocity_rel_l2": 1.88,
-      "volume_velocity_rel_l1": 1.316,
-      "volume_pressure_rel_l2": 1.98,
-      "volume_pressure_rel_l1": 1.366,
-      "cd_r2": 0.993,
-      "cl_r2": 0.987,
-      "velocity_profile_r2": 0.982,
-      "cp_cut_r2": 0.976,
-      "surface_pressure_mae": 15.1,
-      "surface_pressure_rmse": 21,
-      "surface_wall_shear_mae": 0.32,
-      "surface_wall_shear_rmse": 0.47,
-      "volume_velocity_mae": 0.53,
-      "volume_velocity_rmse": 0.75,
-      "volume_pressure_mae": 8.2,
-      "volume_pressure_rmse": 11.9,
-      "c_drag_mae": 0.0016,
-      "c_lift_mae": 0.0032,
-      "field_score": 82.78,
-      "force_score": 99.06,
-      "diagnostic_score": 97.96,
-      "overall_score": 90.645,
-      "surface_pressure_equal_entity_rel_l2": 2.82,
-      "surface_wall_shear_equal_entity_rel_l2": 3.6472,
-      "volume_velocity_physical_rel_l2": 2.0,
-      "volume_pressure_physical_rel_l2": 2.106383
+      "surface_pressure_equal_entity_rel_l2": 3.5069108003230154,
+      "surface_pressure_mae": 0.005306850762178214,
+      "surface_pressure_rel_l1": 3.5069108005130905,
+      "surface_pressure_rel_l2": 3.506910800076319,
+      "surface_pressure_rmse": 0.007310515578976348,
+      "surface_wall_shear_equal_entity_rel_l2": 5.47280609296826,
+      "surface_wall_shear_mae": 0.00010120980923982433,
+      "surface_wall_shear_rel_l1": 5.472806095479603,
+      "surface_wall_shear_rel_l2": 5.472806099198559,
+      "surface_wall_shear_rmse": 0.00012084518812279857,
+      "volume_pressure_mae": 0.007718986568340287,
+      "volume_pressure_physical_rel_l2": 9.651640113127634,
+      "volume_pressure_rel_l1": 9.65164009579354,
+      "volume_pressure_rel_l2": 9.651640162769075,
+      "volume_pressure_rmse": 0.012415400724947942,
+      "volume_velocity_mae": 0.0464299413433207,
+      "volume_velocity_physical_rel_l2": 5.1400571729721936,
+      "volume_velocity_rel_l1": 5.140057209400708,
+      "volume_velocity_rel_l2": 5.1400572107741676,
+      "volume_velocity_rmse": 0.04832085429824181,
+      "cd_r2": 0.9962764787141668,
+      "cl_r2": 0.9989208316658043,
+      "c_drag_mae": 0.00246045424154734,
+      "c_lift_mae": 0.005227936249007566,
+      "cp_cut_r2": 0.9974183266322754,
+      "velocity_profile_r2": 0.9804383875626065,
+      "field_score": 61.79437572335462,
+      "force_score": 99.73342198948218,
+      "diagnostic_score": 98.72303631904741,
+      "overall_score": 80.51130243880971
     },
     "profile_data": {
       "format": "fluidsbench-profile-chunks-v1",
-      "index_file": "submissions/ahmedml/ab-upt/profiles/index.json",
+      "index_file": "submissions/ahmedml/ahmedml-geotransolver-calibrated-dev-fixture-v1/profiles/index.json",
       "case_count": 50,
-      "case_set_id": "standard",
-      "index_sha256": "229c5db02975da75817db95cd2dd64397a61efb7fa699be806c90ce27acf23d1"
+      "case_set_id": "full-test",
+      "profile_ground_truth_release_id": "prototype-profile-ground-truth-2026-09-04",
+      "profile_ground_truth_manifest_sha256": "51d2e2ac4a4c0cbb9ff01e06b12551206d648e5bcb1d56955b8172c551607057",
+      "index_sha256": "d5b5d20eb4ebaf97c84eb4dcc86e1df9cf3ce42a249a8fc29aea23767064f52c"
     },
-    "note": "Reported AhmedML L2 metrics from AB-UPT v2; L1, force, and profile R2 values are example placeholders. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
-    "methodology": {
-      "format": "fluidsbench-method-v1",
-      "record_kind": "prototype_fixture",
-      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
-      "architecture": {
-        "description": "AB-UPT prototype row (Transformer). Attention-based Universal Physics Transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
-        "total_parameter_count": 8750000,
-        "parameter_count_basis": "rounded_from_reported_millions",
-        "submitter_trainable_parameter_count": 0,
-        "components": [
-          {
-            "id": "prototype-surrogate",
-            "family": "Transformer",
-            "role": "Prototype ahmedml field predictor.",
-            "description": "Aggregate placeholder for the named AB-UPT architecture. Attention-based Universal Physics Transformer family. No unverified internal split is invented.",
-            "parameter_count": 8750000
-          }
-        ],
-        "key_hyperparameters": [
-          {
-            "id": "reported-model-variant",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "reported_model_variant",
-            "value": "AB-UPT",
-            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
-          }
-        ],
-        "input_features": [
-          {
-            "id": "native-geometry",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "native_geometry_coordinates",
-            "domain": "mesh",
-            "component_count": 3,
-            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
-          }
-        ],
-        "predicted_fields": [
-          {
-            "field_id": "surface-native.pMean",
-            "domain": "surface",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean surface pressure used by the AhmedML surface-pressure metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "surface-native.wallShearStressMean",
-            "domain": "surface",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean wall-shear-stress vector used by the AhmedML surface wall-shear metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.UMean",
-            "domain": "volume",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean velocity vector used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.pMean",
-            "domain": "volume",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean pressure used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          }
-        ]
-      },
-      "data_handling": {
-        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
-        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
-        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
-      },
-      "training": {
-        "stages": [
-          {
-            "id": "prototype-training-not-recorded",
-            "status": "prototype_not_recorded",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
-          }
-        ]
-      },
-      "checkpoints": [],
-      "inference_compute": {
-        "status": "not_measured",
-        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
-      }
-    },
-    "parameter_count": 8.75,
-    "result_revision": {
-      "series_id": "ab-upt",
-      "version": 1,
-      "supersedes": null,
-      "change_summary": null,
-      "is_latest": true,
-      "latest_submission_id": "ab-upt",
-      "version_count": 1
-    },
-    "ranking": {
-      "metric_id": "overall_score",
-      "value": 90.645,
-      "ranked_value": 90.6,
-      "display_value": "90.6",
-      "unit": "",
-      "direction": "higher",
-      "decimal_places": 1,
-      "rounding": "decimal_half_up",
-      "method": "competition",
-      "rank": 1,
-      "ranked_result_count": 2,
-      "tied": false,
-      "tie_count": 1
-    },
-    "claim_eligibility": {
-      "academic_citation": false,
-      "promotion": false,
-      "reason_code": "prototype_dummy_data",
-      "reason": "Illustrative prototype data are not eligible for academic leaderboard claims or promotion."
-    }
-  },
-  {
-    "schema_version": "1.0",
-    "submission_id": "dummy-ahmedml-flowformer-v1",
-    "model": "FlowFormer",
-    "model_type": "Transformer",
-    "model_types": [
-      "Transformer",
-      "Neural operator"
-    ],
-    "training_regime": "pretrained_zero_shot",
-    "target_data_used": "none",
-    "external_pretraining": true,
-    "pretraining_data": [
-      {
-        "name": "Example external CFD pretraining corpus",
-        "type": "CFD simulations",
-        "public": false,
-        "samples": "TODO",
-        "notes": "Dummy metadata showing a zero-shot submission with no target dataset training data."
-      }
-    ],
-    "dataset": "AhmedML",
-    "dataset_id": "ahmedml",
-    "dataset_version": "prototype-1",
-    "split": "Medium",
-    "split_id": "medium",
-    "case_set_id": "standard",
-    "split_sha256": "f6993e6a7f842cd231fc1693da1e296046862806ba2941dc6277233f2f203c19",
-    "parameter_count_millions": 12.4,
-    "submitter_name": "Neil Ashton",
-    "institution": "Example University",
-    "paper_url": "https://example.com/fluidsbench-flowformer",
-    "code_url": "https://github.com/example/fluidsbench-flowformer",
-    "submitted_at": "2026-07-08",
-    "evaluation": {
-      "reference_version": "prototype-1",
-      "code_revision": "prototype-dummy-data",
-      "command": "not-applicable (illustrative dummy data)",
-      "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "a78a7cdad0b50632cc8c00337087af68549f3523bd17bb27177765787dc1780f"
-    },
-    "approval": {
-      "status": "prototype",
-      "note": "Illustrative dummy data; not scientifically reviewed or approved."
-    },
-    "metric_values": {
-      "surface_pressure_rel_l2": 2.72,
-      "surface_pressure_rel_l1": 1.96,
-      "surface_wall_shear_rel_l2": 3.64,
-      "surface_wall_shear_rel_l1": 2.48,
-      "volume_velocity_rel_l2": 1.74,
-      "volume_velocity_rel_l1": 1.22,
-      "volume_pressure_rel_l2": 1.88,
-      "volume_pressure_rel_l1": 1.3,
-      "cd_r2": 0.996,
-      "cl_r2": 0.989,
-      "velocity_profile_r2": 0.986,
-      "cp_cut_r2": 0.981,
-      "surface_pressure_mae": 13.7,
-      "surface_pressure_rmse": 19,
-      "surface_wall_shear_mae": 0.3,
-      "surface_wall_shear_rmse": 0.44,
-      "volume_velocity_mae": 0.49,
-      "volume_velocity_rmse": 0.7,
-      "volume_pressure_mae": 7.8,
-      "volume_pressure_rmse": 11.3,
-      "c_drag_mae": 0.0013,
-      "c_lift_mae": 0.003,
-      "field_score": 84.06333333333333,
-      "force_score": 99.32000000000001,
-      "diagnostic_score": 98.4,
-      "overall_score": 91.46166666666667,
-      "surface_pressure_equal_entity_rel_l2": 2.6112,
-      "surface_wall_shear_equal_entity_rel_l2": 3.4944,
-      "volume_velocity_physical_rel_l2": 1.8125,
-      "volume_pressure_physical_rel_l2": 1.958333
-    },
-    "profile_data": {
-      "format": "fluidsbench-profile-chunks-v1",
-      "index_file": "submissions/ahmedml/dummy-ahmedml-flowformer-v1/profiles/index.json",
+    "regional_diagnostics": {
+      "format": "ahmedml-regional-diagnostics-aggregate-v1",
+      "file": "submissions/ahmedml/ahmedml-geotransolver-calibrated-dev-fixture-v1/regional-diagnostics.json",
+      "sha256": "1ff7f0d87079db260184621733cd9bf08573d351082f05929e040f5df509cd17",
+      "contract_sha256": "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
+      "definition_id": "ahmedml-native-regions-v1-candidate",
       "case_count": 50,
-      "case_set_id": "standard",
-      "index_sha256": "c340e3f8ee5a04c5977811195364fb7bf3d0bc06a7d9f89cae74666928aa05ff"
+      "role": "report_only",
+      "weight": 0.0,
+      "official_score_changed": false
     },
-    "note": "Dummy AhmedML submission with compact profile curves. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
-    "methodology": {
-      "format": "fluidsbench-method-v1",
-      "record_kind": "prototype_fixture",
-      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
-      "architecture": {
-        "description": "FlowFormer prototype row (Transformer). Transformer surrogate-model family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
-        "total_parameter_count": 12400000,
-        "parameter_count_basis": "rounded_from_reported_millions",
-        "submitter_trainable_parameter_count": 0,
-        "components": [
-          {
-            "id": "prototype-surrogate",
-            "family": "Transformer",
-            "role": "Prototype ahmedml field predictor.",
-            "description": "Aggregate placeholder for the named FlowFormer architecture. Transformer surrogate-model family. No unverified internal split is invented.",
-            "parameter_count": 12400000
-          }
-        ],
-        "key_hyperparameters": [
-          {
-            "id": "reported-model-variant",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "reported_model_variant",
-            "value": "FlowFormer",
-            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
-          }
-        ],
-        "input_features": [
-          {
-            "id": "native-geometry",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "native_geometry_coordinates",
-            "domain": "mesh",
-            "component_count": 3,
-            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
-          }
-        ],
-        "predicted_fields": [
-          {
-            "field_id": "surface-native.pMean",
-            "domain": "surface",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean surface pressure used by the AhmedML surface-pressure metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "surface-native.wallShearStressMean",
-            "domain": "surface",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean wall-shear-stress vector used by the AhmedML surface wall-shear metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.UMean",
-            "domain": "volume",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean velocity vector used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.pMean",
-            "domain": "volume",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean pressure used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          }
-        ]
-      },
-      "data_handling": {
-        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
-        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
-        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
-      },
-      "training": {
-        "stages": [
-          {
-            "id": "prototype-training-not-recorded",
-            "status": "prototype_not_recorded",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
-          }
-        ]
-      },
-      "checkpoints": [],
-      "inference_compute": {
-        "status": "not_measured",
-        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
-      }
-    },
-    "parameter_count": 12.4,
-    "result_revision": {
-      "series_id": "dummy-ahmedml-flowformer",
-      "version": 1,
-      "supersedes": null,
-      "change_summary": null,
-      "is_latest": true,
-      "latest_submission_id": "dummy-ahmedml-flowformer-v1",
-      "version_count": 1
-    },
-    "ranking": {
-      "metric_id": "overall_score",
-      "value": 91.46166666666667,
-      "ranked_value": 91.5,
-      "display_value": "91.5",
-      "unit": "",
-      "direction": "higher",
-      "decimal_places": 1,
-      "rounding": "decimal_half_up",
-      "method": "competition",
-      "rank": 1,
-      "ranked_result_count": 2,
-      "tied": false,
-      "tie_count": 1
+    "record_type": "development_fixture",
+    "parameter_count": 20.166852,
+    "prediction_artifact_status": {
+      "sharing": "not_declared",
+      "declared_artifact_count": 0,
+      "maintainer_check_status": "not_recorded",
+      "checked_artifact_count": 0
     },
     "claim_eligibility": {
       "academic_citation": false,
       "promotion": false,
-      "reason_code": "prototype_dummy_data",
-      "reason": "Illustrative prototype data are not eligible for academic leaderboard claims or promotion."
-    }
-  },
-  {
-    "schema_version": "1.0",
-    "submission_id": "gino",
-    "model": "GINO",
-    "model_type": "Neural operator",
-    "model_types": [
-      "Neural operator"
-    ],
-    "training_regime": "from_scratch",
-    "target_data_used": "official_train",
-    "external_pretraining": false,
-    "pretraining_data": [],
-    "dataset": "AhmedML",
-    "dataset_id": "ahmedml",
-    "dataset_version": "prototype-1",
-    "split": "Scarce",
-    "split_id": "scarce",
-    "case_set_id": "standard",
-    "split_sha256": "ce95532798ea9a9bf35767815113e47120446c796bc0cfec2c3800c925fe7a28",
-    "parameter_count_millions": 15.6,
-    "submitter_name": "Neil Ashton",
-    "institution": "FluidsBench dummy data",
-    "paper_url": "",
-    "code_url": "",
-    "submitted_at": "2025-06-13",
-    "evaluation": {
-      "reference_version": "prototype-1",
-      "code_revision": "prototype-dummy-data",
-      "command": "not-applicable (illustrative dummy data)",
-      "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "71826c9540b9869a77b7d46794188453d1746e167e9a1ebcdcc23398cc7e5059"
-    },
-    "approval": {
-      "status": "prototype",
-      "note": "Illustrative dummy data; not scientifically reviewed or approved."
-    },
-    "metric_values": {
-      "surface_pressure_rel_l2": 7.9,
-      "surface_pressure_rel_l1": 5.688,
-      "surface_wall_shear_rel_l2": 8.18,
-      "surface_wall_shear_rel_l1": 5.562,
-      "volume_velocity_rel_l2": 6.23,
-      "volume_velocity_rel_l1": 4.361,
-      "volume_pressure_rel_l2": 8.1,
-      "volume_pressure_rel_l1": 5.589,
-      "cd_r2": 0.874,
-      "cl_r2": 0.841,
-      "velocity_profile_r2": 0.812,
-      "cp_cut_r2": 0.825,
-      "surface_pressure_mae": 39.8,
-      "surface_pressure_rmse": 55.3,
-      "surface_wall_shear_mae": 0.67,
-      "surface_wall_shear_rmse": 0.98,
-      "volume_velocity_mae": 1.74,
-      "volume_velocity_rmse": 2.49,
-      "volume_pressure_mae": 33.5,
-      "volume_pressure_rmse": 48.6,
-      "c_drag_mae": 0.0153,
-      "c_lift_mae": 0.0296,
-      "field_score": 49.644999999999996,
-      "force_score": 86.08,
-      "diagnostic_score": 81.72,
-      "overall_score": 66.77250000000001,
-      "surface_pressure_equal_entity_rel_l2": 7.821,
-      "surface_wall_shear_equal_entity_rel_l2": 8.0982,
-      "volume_velocity_physical_rel_l2": 6.292929,
-      "volume_pressure_physical_rel_l2": 8.181818
-    },
-    "profile_data": {
-      "format": "fluidsbench-profile-chunks-v1",
-      "index_file": "submissions/ahmedml/gino/profiles/index.json",
-      "case_count": 50,
-      "case_set_id": "standard",
-      "index_sha256": "d12419924e2b4d4acab49d67c30cc058641e3ee59160c6f8cfa93cb62c4d1eef"
-    },
-    "note": "Baseline L2 metrics from AB-UPT v2 appendix; L1 and profile R2 values are illustrative. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
-    "methodology": {
-      "format": "fluidsbench-method-v1",
-      "record_kind": "prototype_fixture",
-      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
-      "architecture": {
-        "description": "GINO prototype row (Neural operator). Geometry-informed neural-operator family coupling geometric and operator representations. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
-        "total_parameter_count": 15600000,
-        "parameter_count_basis": "rounded_from_reported_millions",
-        "submitter_trainable_parameter_count": 0,
-        "components": [
-          {
-            "id": "prototype-surrogate",
-            "family": "Neural operator",
-            "role": "Prototype ahmedml field predictor.",
-            "description": "Aggregate placeholder for the named GINO architecture. Geometry-informed neural-operator family coupling geometric and operator representations. No unverified internal split is invented.",
-            "parameter_count": 15600000
-          }
-        ],
-        "key_hyperparameters": [
-          {
-            "id": "reported-model-variant",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "reported_model_variant",
-            "value": "GINO",
-            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
-          }
-        ],
-        "input_features": [
-          {
-            "id": "native-geometry",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "native_geometry_coordinates",
-            "domain": "mesh",
-            "component_count": 3,
-            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
-          }
-        ],
-        "predicted_fields": [
-          {
-            "field_id": "surface-native.pMean",
-            "domain": "surface",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean surface pressure used by the AhmedML surface-pressure metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "surface-native.wallShearStressMean",
-            "domain": "surface",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean wall-shear-stress vector used by the AhmedML surface wall-shear metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.UMean",
-            "domain": "volume",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean velocity vector used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.pMean",
-            "domain": "volume",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean pressure used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          }
-        ]
-      },
-      "data_handling": {
-        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
-        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
-        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
-      },
-      "training": {
-        "stages": [
-          {
-            "id": "prototype-training-not-recorded",
-            "status": "prototype_not_recorded",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
-          }
-        ]
-      },
-      "checkpoints": [],
-      "inference_compute": {
-        "status": "not_measured",
-        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
-      }
-    },
-    "parameter_count": 15.6,
-    "result_revision": {
-      "series_id": "gino",
-      "version": 1,
-      "supersedes": null,
-      "change_summary": null,
-      "is_latest": true,
-      "latest_submission_id": "gino",
-      "version_count": 1
-    },
-    "ranking": {
-      "metric_id": "overall_score",
-      "value": 66.77250000000001,
-      "ranked_value": 66.8,
-      "display_value": "66.8",
-      "unit": "",
-      "direction": "higher",
-      "decimal_places": 1,
-      "rounding": "decimal_half_up",
-      "method": "competition",
-      "rank": 1,
-      "ranked_result_count": 1,
-      "tied": false,
-      "tie_count": 1
-    },
-    "claim_eligibility": {
-      "academic_citation": false,
-      "promotion": false,
-      "reason_code": "prototype_dummy_data",
-      "reason": "Illustrative prototype data are not eligible for academic leaderboard claims or promotion."
-    }
-  },
-  {
-    "schema_version": "1.0",
-    "submission_id": "graph-u-net",
-    "model": "Graph U-Net",
-    "model_type": "GNN",
-    "model_types": [
-      "GNN"
-    ],
-    "training_regime": "from_scratch",
-    "target_data_used": "official_train",
-    "external_pretraining": false,
-    "pretraining_data": [],
-    "dataset": "AhmedML",
-    "dataset_id": "ahmedml",
-    "dataset_version": "prototype-1",
-    "split": "Super scarce",
-    "split_id": "super_scarce",
-    "case_set_id": "standard",
-    "split_sha256": "250bdc465f7062c68445e1b88447f68df76d8afeaf49fc9b7b6be2245dfdeee8",
-    "parameter_count_millions": 14.11,
-    "submitter_name": "Neil Ashton",
-    "institution": "FluidsBench dummy data",
-    "paper_url": "",
-    "code_url": "",
-    "submitted_at": "2025-06-13",
-    "evaluation": {
-      "reference_version": "prototype-1",
-      "code_revision": "prototype-dummy-data",
-      "command": "not-applicable (illustrative dummy data)",
-      "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "ef4c6f7ae10d59828525a14acc5705502ed3f0f77155d8f984f886599d8adb4c"
-    },
-    "approval": {
-      "status": "prototype",
-      "note": "Illustrative dummy data; not scientifically reviewed or approved."
-    },
-    "metric_values": {
-      "surface_pressure_rel_l2": 6.42,
-      "surface_pressure_rel_l1": 4.622,
-      "surface_wall_shear_rel_l2": 7.21,
-      "surface_wall_shear_rel_l1": 4.903,
-      "volume_velocity_rel_l2": 4.14,
-      "volume_velocity_rel_l1": 2.898,
-      "volume_pressure_rel_l2": 5.17,
-      "volume_pressure_rel_l1": 3.567,
-      "cd_r2": 0.93,
-      "cl_r2": 0.902,
-      "velocity_profile_r2": 0.884,
-      "cp_cut_r2": 0.891,
-      "surface_pressure_mae": 32.4,
-      "surface_pressure_rmse": 44.9,
-      "surface_wall_shear_mae": 0.59,
-      "surface_wall_shear_rmse": 0.87,
-      "volume_velocity_mae": 1.16,
-      "volume_velocity_rmse": 1.66,
-      "volume_pressure_mae": 21.4,
-      "volume_pressure_rmse": 31,
-      "c_drag_mae": 0.009,
-      "c_lift_mae": 0.0182,
-      "field_score": 62.70666666666666,
-      "force_score": 91.88,
-      "diagnostic_score": 88.68,
-      "overall_score": 76.49333333333334,
-      "surface_pressure_equal_entity_rel_l2": 6.8052,
-      "surface_wall_shear_equal_entity_rel_l2": 7.6426,
-      "volume_velocity_physical_rel_l2": 3.90566,
-      "volume_pressure_physical_rel_l2": 4.877358
-    },
-    "profile_data": {
-      "format": "fluidsbench-profile-chunks-v1",
-      "index_file": "submissions/ahmedml/graph-u-net/profiles/index.json",
-      "case_count": 50,
-      "case_set_id": "standard",
-      "index_sha256": "e7e6fcc8f7811e9944e472a6bd43d096a280487c0d37ec611c63192f9f34affe"
-    },
-    "note": "Baseline L2 metrics from AB-UPT v2 appendix; L1 and profile R2 values are illustrative. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
-    "methodology": {
-      "format": "fluidsbench-method-v1",
-      "record_kind": "prototype_fixture",
-      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
-      "architecture": {
-        "description": "Graph U-Net prototype row (GNN). Multiscale graph encoder-decoder family with graph pooling and unpooling. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
-        "total_parameter_count": 14110000,
-        "parameter_count_basis": "rounded_from_reported_millions",
-        "submitter_trainable_parameter_count": 0,
-        "components": [
-          {
-            "id": "prototype-surrogate",
-            "family": "GNN",
-            "role": "Prototype ahmedml field predictor.",
-            "description": "Aggregate placeholder for the named Graph U-Net architecture. Multiscale graph encoder-decoder family with graph pooling and unpooling. No unverified internal split is invented.",
-            "parameter_count": 14110000
-          }
-        ],
-        "key_hyperparameters": [
-          {
-            "id": "reported-model-variant",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "reported_model_variant",
-            "value": "Graph U-Net",
-            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
-          }
-        ],
-        "input_features": [
-          {
-            "id": "native-geometry",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "native_geometry_coordinates",
-            "domain": "mesh",
-            "component_count": 3,
-            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
-          }
-        ],
-        "predicted_fields": [
-          {
-            "field_id": "surface-native.pMean",
-            "domain": "surface",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean surface pressure used by the AhmedML surface-pressure metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "surface-native.wallShearStressMean",
-            "domain": "surface",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean wall-shear-stress vector used by the AhmedML surface wall-shear metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.UMean",
-            "domain": "volume",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean velocity vector used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.pMean",
-            "domain": "volume",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean pressure used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          }
-        ]
-      },
-      "data_handling": {
-        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
-        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
-        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
-      },
-      "training": {
-        "stages": [
-          {
-            "id": "prototype-training-not-recorded",
-            "status": "prototype_not_recorded",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
-          }
-        ]
-      },
-      "checkpoints": [],
-      "inference_compute": {
-        "status": "not_measured",
-        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
-      }
-    },
-    "parameter_count": 14.11,
-    "result_revision": {
-      "series_id": "graph-u-net",
-      "version": 1,
-      "supersedes": null,
-      "change_summary": null,
-      "is_latest": true,
-      "latest_submission_id": "graph-u-net",
-      "version_count": 1
-    },
-    "ranking": {
-      "metric_id": "overall_score",
-      "value": 76.49333333333334,
-      "ranked_value": 76.5,
-      "display_value": "76.5",
-      "unit": "",
-      "direction": "higher",
-      "decimal_places": 1,
-      "rounding": "decimal_half_up",
-      "method": "competition",
-      "rank": 1,
-      "ranked_result_count": 1,
-      "tied": false,
-      "tie_count": 1
-    },
-    "claim_eligibility": {
-      "academic_citation": false,
-      "promotion": false,
-      "reason_code": "prototype_dummy_data",
-      "reason": "Illustrative prototype data are not eligible for academic leaderboard claims or promotion."
-    }
-  },
-  {
-    "schema_version": "1.0",
-    "submission_id": "lno",
-    "model": "LNO",
-    "model_type": "Neural operator",
-    "model_types": [
-      "Neural operator"
-    ],
-    "training_regime": "from_scratch",
-    "target_data_used": "official_train",
-    "external_pretraining": false,
-    "pretraining_data": [],
-    "dataset": "AhmedML",
-    "dataset_id": "ahmedml",
-    "dataset_version": "prototype-1",
-    "split": "Geometry",
-    "split_id": "geometry",
-    "case_set_id": "geometry",
-    "split_sha256": "03c96b42e9b172c2ad65cb86ca9ad19e53140380e0b5c2468ead1600bd19e5d8",
-    "parameter_count_millions": 6.3,
-    "submitter_name": "Neil Ashton",
-    "institution": "FluidsBench dummy data",
-    "paper_url": "",
-    "code_url": "",
-    "submitted_at": "2025-06-13",
-    "evaluation": {
-      "reference_version": "prototype-1",
-      "code_revision": "prototype-dummy-data",
-      "command": "not-applicable (illustrative dummy data)",
-      "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "ed08e1eef64c09feeb7bfec0f999f9b448677dab6cd341e2943a4f696a230cd7"
-    },
-    "approval": {
-      "status": "prototype",
-      "note": "Illustrative dummy data; not scientifically reviewed or approved."
-    },
-    "metric_values": {
-      "surface_pressure_rel_l2": 12.91,
-      "surface_pressure_rel_l1": 9.295,
-      "surface_wall_shear_rel_l2": 11.44,
-      "surface_wall_shear_rel_l1": 7.779,
-      "volume_velocity_rel_l2": 7.56,
-      "volume_velocity_rel_l1": 5.292,
-      "volume_pressure_rel_l2": 8.47,
-      "volume_pressure_rel_l1": 5.844,
-      "cd_r2": 0.829,
-      "cl_r2": 0.792,
-      "velocity_profile_r2": 0.778,
-      "cp_cut_r2": 0.764,
-      "surface_pressure_mae": 65.1,
-      "surface_pressure_rmse": 90.4,
-      "surface_wall_shear_mae": 0.93,
-      "surface_wall_shear_rmse": 1.37,
-      "volume_velocity_mae": 2.12,
-      "volume_velocity_rmse": 3.02,
-      "volume_pressure_mae": 35.1,
-      "volume_pressure_rmse": 50.8,
-      "c_drag_mae": 0.0212,
-      "c_lift_mae": 0.0377,
-      "field_score": 32.54666666666667,
-      "force_score": 81.42,
-      "diagnostic_score": 77.24000000000001,
-      "overall_score": 55.93833333333333,
-      "surface_pressure_equal_entity_rel_l2": 12.3936,
-      "surface_wall_shear_equal_entity_rel_l2": 10.9824,
-      "volume_velocity_physical_rel_l2": 7.875,
-      "volume_pressure_physical_rel_l2": 8.822917
-    },
-    "profile_data": {
-      "format": "fluidsbench-profile-chunks-v1",
-      "index_file": "submissions/ahmedml/lno/profiles/index.json",
-      "case_count": 100,
-      "case_set_id": "geometry",
-      "index_sha256": "56753e30374dc103ee3e49dd75dea8d5574ee41f9e84996f847738e3a4d7b014"
-    },
-    "note": "Baseline L2 metrics from AB-UPT v2 appendix; L1 and profile R2 values are illustrative. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
-    "methodology": {
-      "format": "fluidsbench-method-v1",
-      "record_kind": "prototype_fixture",
-      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
-      "architecture": {
-        "description": "LNO prototype row (Neural operator). Latent neural-operator family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
-        "total_parameter_count": 6300000,
-        "parameter_count_basis": "rounded_from_reported_millions",
-        "submitter_trainable_parameter_count": 0,
-        "components": [
-          {
-            "id": "prototype-surrogate",
-            "family": "Neural operator",
-            "role": "Prototype ahmedml field predictor.",
-            "description": "Aggregate placeholder for the named LNO architecture. Latent neural-operator family. No unverified internal split is invented.",
-            "parameter_count": 6300000
-          }
-        ],
-        "key_hyperparameters": [
-          {
-            "id": "reported-model-variant",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "reported_model_variant",
-            "value": "LNO",
-            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
-          }
-        ],
-        "input_features": [
-          {
-            "id": "native-geometry",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "native_geometry_coordinates",
-            "domain": "mesh",
-            "component_count": 3,
-            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
-          }
-        ],
-        "predicted_fields": [
-          {
-            "field_id": "surface-native.pMean",
-            "domain": "surface",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean surface pressure used by the AhmedML surface-pressure metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "surface-native.wallShearStressMean",
-            "domain": "surface",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean wall-shear-stress vector used by the AhmedML surface wall-shear metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.UMean",
-            "domain": "volume",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean velocity vector used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.pMean",
-            "domain": "volume",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean pressure used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          }
-        ]
-      },
-      "data_handling": {
-        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
-        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
-        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
-      },
-      "training": {
-        "stages": [
-          {
-            "id": "prototype-training-not-recorded",
-            "status": "prototype_not_recorded",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
-          }
-        ]
-      },
-      "checkpoints": [],
-      "inference_compute": {
-        "status": "not_measured",
-        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
-      }
-    },
-    "parameter_count": 6.3,
-    "result_revision": {
-      "series_id": "lno",
-      "version": 1,
-      "supersedes": null,
-      "change_summary": null,
-      "is_latest": true,
-      "latest_submission_id": "lno",
-      "version_count": 1
-    },
-    "ranking": {
-      "metric_id": "overall_score",
-      "value": 55.93833333333333,
-      "ranked_value": 55.9,
-      "display_value": "55.9",
-      "unit": "",
-      "direction": "higher",
-      "decimal_places": 1,
-      "rounding": "decimal_half_up",
-      "method": "competition",
-      "rank": 1,
-      "ranked_result_count": 1,
-      "tied": false,
-      "tie_count": 1
-    },
-    "claim_eligibility": {
-      "academic_citation": false,
-      "promotion": false,
-      "reason_code": "prototype_dummy_data",
-      "reason": "Illustrative prototype data are not eligible for academic leaderboard claims or promotion."
-    }
-  },
-  {
-    "schema_version": "1.0",
-    "submission_id": "oformer",
-    "model": "OFormer",
-    "model_type": "Transformer",
-    "model_types": [
-      "Transformer"
-    ],
-    "training_regime": "from_scratch",
-    "target_data_used": "official_train",
-    "external_pretraining": false,
-    "pretraining_data": [],
-    "dataset": "AhmedML",
-    "dataset_id": "ahmedml",
-    "dataset_version": "prototype-1",
-    "split": "High drag",
-    "split_id": "high_drag",
-    "case_set_id": "high_drag",
-    "split_sha256": "51e44305c719fac07a9df22cfe31d074bd3e7c5e02053c4242539dcc5c38798c",
-    "parameter_count_millions": 6.1,
-    "submitter_name": "Neil Ashton",
-    "institution": "FluidsBench dummy data",
-    "paper_url": "",
-    "code_url": "",
-    "submitted_at": "2025-06-13",
-    "evaluation": {
-      "reference_version": "prototype-1",
-      "code_revision": "prototype-dummy-data",
-      "command": "not-applicable (illustrative dummy data)",
-      "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "10b61f39d4c810ff29a11ac53222ad47b00dae6fa37f4835ef88e3f0f075a18c"
-    },
-    "approval": {
-      "status": "prototype",
-      "note": "Illustrative dummy data; not scientifically reviewed or approved."
-    },
-    "metric_values": {
-      "surface_pressure_rel_l2": 3.55,
-      "surface_pressure_rel_l1": 2.556,
-      "surface_wall_shear_rel_l2": 4.1,
-      "surface_wall_shear_rel_l1": 2.788,
-      "volume_velocity_rel_l2": 2.21,
-      "volume_velocity_rel_l1": 1.547,
-      "volume_pressure_rel_l2": 2.27,
-      "volume_pressure_rel_l1": 1.566,
-      "cd_r2": 0.979,
-      "cl_r2": 0.962,
-      "velocity_profile_r2": 0.958,
-      "cp_cut_r2": 0.952,
-      "surface_pressure_mae": 17.9,
-      "surface_pressure_rmse": 24.9,
-      "surface_wall_shear_mae": 0.33,
-      "surface_wall_shear_rmse": 0.49,
-      "volume_velocity_mae": 0.62,
-      "volume_velocity_rmse": 0.88,
-      "volume_pressure_mae": 9.4,
-      "volume_pressure_rmse": 13.6,
-      "c_drag_mae": 0.0028,
-      "c_lift_mae": 0.0077,
-      "field_score": 80.24833333333333,
-      "force_score": 97.22,
-      "diagnostic_score": 95.56,
-      "overall_score": 88.31916666666667,
-      "surface_pressure_equal_entity_rel_l2": 3.7275,
-      "surface_wall_shear_equal_entity_rel_l2": 4.305,
-      "volume_velocity_physical_rel_l2": 2.104762,
-      "volume_pressure_physical_rel_l2": 2.161905
-    },
-    "profile_data": {
-      "format": "fluidsbench-profile-chunks-v1",
-      "index_file": "submissions/ahmedml/oformer/profiles/index.json",
-      "case_count": 100,
-      "case_set_id": "high_drag",
-      "index_sha256": "80002af265100cd04ba495d3355d105c16983525897060db28735f3e3a707ea0"
-    },
-    "note": "Baseline L2 metrics from AB-UPT v2 appendix; L1 and profile R2 values are illustrative. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
-    "methodology": {
-      "format": "fluidsbench-method-v1",
-      "record_kind": "prototype_fixture",
-      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
-      "architecture": {
-        "description": "OFormer prototype row (Transformer). Operator-transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
-        "total_parameter_count": 6100000,
-        "parameter_count_basis": "rounded_from_reported_millions",
-        "submitter_trainable_parameter_count": 0,
-        "components": [
-          {
-            "id": "prototype-surrogate",
-            "family": "Transformer",
-            "role": "Prototype ahmedml field predictor.",
-            "description": "Aggregate placeholder for the named OFormer architecture. Operator-transformer family. No unverified internal split is invented.",
-            "parameter_count": 6100000
-          }
-        ],
-        "key_hyperparameters": [
-          {
-            "id": "reported-model-variant",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "reported_model_variant",
-            "value": "OFormer",
-            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
-          }
-        ],
-        "input_features": [
-          {
-            "id": "native-geometry",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "native_geometry_coordinates",
-            "domain": "mesh",
-            "component_count": 3,
-            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
-          }
-        ],
-        "predicted_fields": [
-          {
-            "field_id": "surface-native.pMean",
-            "domain": "surface",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean surface pressure used by the AhmedML surface-pressure metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "surface-native.wallShearStressMean",
-            "domain": "surface",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean wall-shear-stress vector used by the AhmedML surface wall-shear metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.UMean",
-            "domain": "volume",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean velocity vector used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.pMean",
-            "domain": "volume",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean pressure used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          }
-        ]
-      },
-      "data_handling": {
-        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
-        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
-        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
-      },
-      "training": {
-        "stages": [
-          {
-            "id": "prototype-training-not-recorded",
-            "status": "prototype_not_recorded",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
-          }
-        ]
-      },
-      "checkpoints": [],
-      "inference_compute": {
-        "status": "not_measured",
-        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
-      }
-    },
-    "parameter_count": 6.1,
-    "result_revision": {
-      "series_id": "oformer",
-      "version": 1,
-      "supersedes": null,
-      "change_summary": null,
-      "is_latest": true,
-      "latest_submission_id": "oformer",
-      "version_count": 1
-    },
-    "ranking": {
-      "metric_id": "overall_score",
-      "value": 88.31916666666667,
-      "ranked_value": 88.3,
-      "display_value": "88.3",
-      "unit": "",
-      "direction": "higher",
-      "decimal_places": 1,
-      "rounding": "decimal_half_up",
-      "method": "competition",
-      "rank": 1,
-      "ranked_result_count": 1,
-      "tied": false,
-      "tie_count": 1
-    },
-    "claim_eligibility": {
-      "academic_citation": false,
-      "promotion": false,
-      "reason_code": "prototype_dummy_data",
-      "reason": "Illustrative prototype data are not eligible for academic leaderboard claims or promotion."
-    }
-  },
-  {
-    "schema_version": "1.0",
-    "submission_id": "pointnet",
-    "model": "PointNet",
-    "model_type": "Point cloud",
-    "model_types": [
-      "Point cloud"
-    ],
-    "training_regime": "from_scratch",
-    "target_data_used": "official_train",
-    "external_pretraining": false,
-    "pretraining_data": [],
-    "dataset": "AhmedML",
-    "dataset_id": "ahmedml",
-    "dataset_version": "prototype-1",
-    "split": "Low drag",
-    "split_id": "low_drag",
-    "case_set_id": "low_drag",
-    "split_sha256": "6ca43bba491edaa9cb57b1cb4b3ca0a213643035bfc47d32cb7b3d763c51a0fa",
-    "parameter_count_millions": 3.6,
-    "submitter_name": "Neil Ashton",
-    "institution": "FluidsBench dummy data",
-    "paper_url": "",
-    "code_url": "",
-    "submitted_at": "2025-06-13",
-    "evaluation": {
-      "reference_version": "prototype-1",
-      "code_revision": "prototype-dummy-data",
-      "command": "not-applicable (illustrative dummy data)",
-      "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "582e8aff54c68ea356dbba0e5f3b4a26fc5e6f62f8fba11f0bc1d63f1c1eef44"
-    },
-    "approval": {
-      "status": "prototype",
-      "note": "Illustrative dummy data; not scientifically reviewed or approved."
-    },
-    "metric_values": {
-      "surface_pressure_rel_l2": 8.51,
-      "surface_pressure_rel_l1": 6.127,
-      "surface_wall_shear_rel_l2": 10.07,
-      "surface_wall_shear_rel_l1": 6.848,
-      "volume_velocity_rel_l2": 5.43,
-      "volume_velocity_rel_l1": 3.801,
-      "volume_pressure_rel_l2": 6.12,
-      "volume_pressure_rel_l1": 4.223,
-      "cd_r2": 0.889,
-      "cl_r2": 0.852,
-      "velocity_profile_r2": 0.831,
-      "cp_cut_r2": 0.846,
-      "surface_pressure_mae": 42.9,
-      "surface_pressure_rmse": 59.6,
-      "surface_wall_shear_mae": 0.82,
-      "surface_wall_shear_rmse": 1.21,
-      "volume_velocity_mae": 1.52,
-      "volume_velocity_rmse": 2.17,
-      "volume_pressure_mae": 25.3,
-      "volume_pressure_rmse": 36.7,
-      "c_drag_mae": 0.0135,
-      "c_lift_mae": 0.0273,
-      "field_score": 51.175,
-      "force_score": 87.41999999999999,
-      "diagnostic_score": 83.69999999999999,
-      "overall_score": 68.36749999999999,
-      "surface_pressure_equal_entity_rel_l2": 9.0206,
-      "surface_wall_shear_equal_entity_rel_l2": 10.6742,
-      "volume_velocity_physical_rel_l2": 5.122642,
-      "volume_pressure_physical_rel_l2": 5.773585
-    },
-    "profile_data": {
-      "format": "fluidsbench-profile-chunks-v1",
-      "index_file": "submissions/ahmedml/pointnet/profiles/index.json",
-      "case_count": 100,
-      "case_set_id": "low_drag",
-      "index_sha256": "e5a32ffba9df1dafb1ae6f17807807d3df71d2b8ecd24c54d63a01c1b9dde30d"
-    },
-    "note": "Baseline L2 metrics from AB-UPT v2 appendix; L1 and profile R2 values are illustrative. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
-    "methodology": {
-      "format": "fluidsbench-method-v1",
-      "record_kind": "prototype_fixture",
-      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
-      "architecture": {
-        "description": "PointNet prototype row (Point cloud). PointNet family using shared pointwise features and permutation-invariant aggregation. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
-        "total_parameter_count": 3600000,
-        "parameter_count_basis": "rounded_from_reported_millions",
-        "submitter_trainable_parameter_count": 0,
-        "components": [
-          {
-            "id": "prototype-surrogate",
-            "family": "Point cloud",
-            "role": "Prototype ahmedml field predictor.",
-            "description": "Aggregate placeholder for the named PointNet architecture. PointNet family using shared pointwise features and permutation-invariant aggregation. No unverified internal split is invented.",
-            "parameter_count": 3600000
-          }
-        ],
-        "key_hyperparameters": [
-          {
-            "id": "reported-model-variant",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "reported_model_variant",
-            "value": "PointNet",
-            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
-          }
-        ],
-        "input_features": [
-          {
-            "id": "native-geometry",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "native_geometry_coordinates",
-            "domain": "mesh",
-            "component_count": 3,
-            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
-          }
-        ],
-        "predicted_fields": [
-          {
-            "field_id": "surface-native.pMean",
-            "domain": "surface",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean surface pressure used by the AhmedML surface-pressure metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "surface-native.wallShearStressMean",
-            "domain": "surface",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean wall-shear-stress vector used by the AhmedML surface wall-shear metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.UMean",
-            "domain": "volume",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean velocity vector used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.pMean",
-            "domain": "volume",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean pressure used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          }
-        ]
-      },
-      "data_handling": {
-        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
-        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
-        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
-      },
-      "training": {
-        "stages": [
-          {
-            "id": "prototype-training-not-recorded",
-            "status": "prototype_not_recorded",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
-          }
-        ]
-      },
-      "checkpoints": [],
-      "inference_compute": {
-        "status": "not_measured",
-        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
-      }
-    },
-    "parameter_count": 3.6,
-    "result_revision": {
-      "series_id": "pointnet",
-      "version": 1,
-      "supersedes": null,
-      "change_summary": null,
-      "is_latest": true,
-      "latest_submission_id": "pointnet",
-      "version_count": 1
-    },
-    "ranking": {
-      "metric_id": "overall_score",
-      "value": 68.36749999999999,
-      "ranked_value": 68.4,
-      "display_value": "68.4",
-      "unit": "",
-      "direction": "higher",
-      "decimal_places": 1,
-      "rounding": "decimal_half_up",
-      "method": "competition",
-      "rank": 1,
-      "ranked_result_count": 1,
-      "tied": false,
-      "tie_count": 1
-    },
-    "claim_eligibility": {
-      "academic_citation": false,
-      "promotion": false,
-      "reason_code": "prototype_dummy_data",
-      "reason": "Illustrative prototype data are not eligible for academic leaderboard claims or promotion."
-    }
-  },
-  {
-    "schema_version": "1.0",
-    "submission_id": "transformer",
-    "model": "GeoTransformer",
-    "model_type": "Transformer",
-    "model_types": [
-      "Transformer"
-    ],
-    "training_regime": "from_scratch",
-    "target_data_used": "official_train",
-    "external_pretraining": false,
-    "pretraining_data": [],
-    "dataset": "AhmedML",
-    "dataset_id": "ahmedml",
-    "dataset_version": "prototype-1",
-    "split": "Image wake",
-    "split_id": "image_wake",
-    "case_set_id": "image_wake",
-    "split_sha256": "4abac076a5a80bae041e4894e937dd7a5ae3e10139a7100c57dfed52ad56be9c",
-    "parameter_count_millions": 5.49,
-    "submitter_name": "Neil Ashton",
-    "institution": "FluidsBench dummy data",
-    "paper_url": "",
-    "code_url": "",
-    "submitted_at": "2025-06-13",
-    "evaluation": {
-      "reference_version": "prototype-1",
-      "code_revision": "prototype-dummy-data",
-      "command": "not-applicable (illustrative dummy data)",
-      "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "ceca10b23df44f64ffa900a0391649260f6b925474b073dd829f52d0244dbf3f"
-    },
-    "approval": {
-      "status": "prototype",
-      "note": "Illustrative dummy data; not scientifically reviewed or approved."
-    },
-    "metric_values": {
-      "surface_pressure_rel_l2": 3.41,
-      "surface_pressure_rel_l1": 2.455,
-      "surface_wall_shear_rel_l2": 4.03,
-      "surface_wall_shear_rel_l1": 2.74,
-      "volume_velocity_rel_l2": 2.09,
-      "volume_velocity_rel_l1": 1.463,
-      "volume_pressure_rel_l2": 2.16,
-      "volume_pressure_rel_l1": 1.49,
-      "cd_r2": 0.985,
-      "cl_r2": 0.971,
-      "velocity_profile_r2": 0.969,
-      "cp_cut_r2": 0.961,
-      "surface_pressure_mae": 17.2,
-      "surface_pressure_rmse": 23.9,
-      "surface_wall_shear_mae": 0.33,
-      "surface_wall_shear_rmse": 0.48,
-      "volume_velocity_mae": 0.59,
-      "volume_velocity_rmse": 0.84,
-      "volume_pressure_mae": 8.9,
-      "volume_pressure_rmse": 13,
-      "c_drag_mae": 0.002,
-      "c_lift_mae": 0.0054,
-      "field_score": 81.045,
-      "force_score": 97.94,
-      "diagnostic_score": 96.58,
-      "overall_score": 89.15249999999999,
-      "surface_pressure_equal_entity_rel_l2": 3.5464,
-      "surface_wall_shear_equal_entity_rel_l2": 4.1912,
-      "volume_velocity_physical_rel_l2": 2.009615,
-      "volume_pressure_physical_rel_l2": 2.076923
-    },
-    "profile_data": {
-      "format": "fluidsbench-profile-chunks-v1",
-      "index_file": "submissions/ahmedml/transformer/profiles/index.json",
-      "case_count": 100,
-      "case_set_id": "image_wake",
-      "index_sha256": "d39d4249f307d8fce64508e51cbd326b58d47caefbf71fc3cd4d6e4c452429ea"
-    },
-    "note": "Baseline L2 metrics from AB-UPT v2 appendix; L1 and profile R2 values are illustrative. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
-    "methodology": {
-      "format": "fluidsbench-method-v1",
-      "record_kind": "prototype_fixture",
-      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
-      "architecture": {
-        "description": "GeoTransformer prototype row (Transformer). Geometry-aware transformer family for irregular spatial supports. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
-        "total_parameter_count": 5490000,
-        "parameter_count_basis": "rounded_from_reported_millions",
-        "submitter_trainable_parameter_count": 0,
-        "components": [
-          {
-            "id": "prototype-surrogate",
-            "family": "Transformer",
-            "role": "Prototype ahmedml field predictor.",
-            "description": "Aggregate placeholder for the named GeoTransformer architecture. Geometry-aware transformer family for irregular spatial supports. No unverified internal split is invented.",
-            "parameter_count": 5490000
-          }
-        ],
-        "key_hyperparameters": [
-          {
-            "id": "reported-model-variant",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "reported_model_variant",
-            "value": "GeoTransformer",
-            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
-          }
-        ],
-        "input_features": [
-          {
-            "id": "native-geometry",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "native_geometry_coordinates",
-            "domain": "mesh",
-            "component_count": 3,
-            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
-          }
-        ],
-        "predicted_fields": [
-          {
-            "field_id": "surface-native.pMean",
-            "domain": "surface",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean surface pressure used by the AhmedML surface-pressure metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "surface-native.wallShearStressMean",
-            "domain": "surface",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean wall-shear-stress vector used by the AhmedML surface wall-shear metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.UMean",
-            "domain": "volume",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean velocity vector used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.pMean",
-            "domain": "volume",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean pressure used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          }
-        ]
-      },
-      "data_handling": {
-        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
-        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
-        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
-      },
-      "training": {
-        "stages": [
-          {
-            "id": "prototype-training-not-recorded",
-            "status": "prototype_not_recorded",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
-          }
-        ]
-      },
-      "checkpoints": [],
-      "inference_compute": {
-        "status": "not_measured",
-        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
-      }
-    },
-    "parameter_count": 5.49,
-    "result_revision": {
-      "series_id": "transformer",
-      "version": 1,
-      "supersedes": null,
-      "change_summary": null,
-      "is_latest": true,
-      "latest_submission_id": "transformer",
-      "version_count": 1
-    },
-    "ranking": {
-      "metric_id": "overall_score",
-      "value": 89.15249999999999,
-      "ranked_value": 89.2,
-      "display_value": "89.2",
-      "unit": "",
-      "direction": "higher",
-      "decimal_places": 1,
-      "rounding": "decimal_half_up",
-      "method": "competition",
-      "rank": 1,
-      "ranked_result_count": 1,
-      "tied": false,
-      "tie_count": 1
-    },
-    "claim_eligibility": {
-      "academic_citation": false,
-      "promotion": false,
-      "reason_code": "prototype_dummy_data",
-      "reason": "Illustrative prototype data are not eligible for academic leaderboard claims or promotion."
-    }
-  },
-  {
-    "schema_version": "1.0",
-    "submission_id": "transolver",
-    "model": "Transolver",
-    "model_type": "Transformer",
-    "model_types": [
-      "Transformer"
-    ],
-    "training_regime": "from_scratch",
-    "target_data_used": "official_train",
-    "external_pretraining": false,
-    "pretraining_data": [],
-    "dataset": "AhmedML",
-    "dataset_id": "ahmedml",
-    "dataset_version": "prototype-1",
-    "split": "Full",
-    "split_id": "full",
-    "case_set_id": "standard",
-    "split_sha256": "a19dfa9f246a16c7e02c3f1cce8c34ea137e24a32c8f06a2afac3bb91102782c",
-    "parameter_count_millions": 5.49,
-    "submitter_name": "Neil Ashton",
-    "institution": "FluidsBench dummy data",
-    "paper_url": "",
-    "code_url": "",
-    "submitted_at": "2025-06-13",
-    "evaluation": {
-      "reference_version": "prototype-1",
-      "code_revision": "prototype-dummy-data",
-      "command": "not-applicable (illustrative dummy data)",
-      "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "fd0380e1cc13072c50a07c1f810f445e4e7ff4b02dcdf4ace2f3b0589d5952bd"
-    },
-    "approval": {
-      "status": "prototype",
-      "note": "Illustrative dummy data; not scientifically reviewed or approved."
-    },
-    "metric_values": {
-      "surface_pressure_rel_l2": 3.66,
-      "surface_pressure_rel_l1": 2.635,
-      "surface_wall_shear_rel_l2": 4,
-      "surface_wall_shear_rel_l1": 2.72,
-      "volume_velocity_rel_l2": 2.19,
-      "volume_velocity_rel_l1": 1.533,
-      "volume_pressure_rel_l2": 2.16,
-      "volume_pressure_rel_l1": 1.49,
-      "cd_r2": 0.981,
-      "cl_r2": 0.965,
-      "velocity_profile_r2": 0.963,
-      "cp_cut_r2": 0.954,
-      "surface_pressure_mae": 18.4,
-      "surface_pressure_rmse": 25.6,
-      "surface_wall_shear_mae": 0.33,
-      "surface_wall_shear_rmse": 0.48,
-      "volume_velocity_mae": 0.61,
-      "volume_velocity_rmse": 0.88,
-      "volume_pressure_mae": 8.9,
-      "volume_pressure_rmse": 13,
-      "c_drag_mae": 0.0029,
-      "c_lift_mae": 0.0065,
-      "field_score": 80.32499999999999,
-      "force_score": 97.46000000000001,
-      "diagnostic_score": 95.94,
-      "overall_score": 88.5125,
-      "surface_pressure_equal_entity_rel_l2": 3.4404,
-      "surface_wall_shear_equal_entity_rel_l2": 3.76,
-      "volume_velocity_physical_rel_l2": 2.329787,
-      "volume_pressure_physical_rel_l2": 2.297872
-    },
-    "profile_data": {
-      "format": "fluidsbench-profile-chunks-v1",
-      "index_file": "submissions/ahmedml/transolver/profiles/index.json",
-      "case_count": 50,
-      "case_set_id": "standard",
-      "index_sha256": "6f1742830bd89163e56e5d0d3e6e6a8837a1ec514293d6747bca1d29eecc79ff"
-    },
-    "note": "Baseline L2 metrics from AB-UPT v2 appendix; L1 and profile R2 values are illustrative. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
-    "methodology": {
-      "format": "fluidsbench-method-v1",
-      "record_kind": "prototype_fixture",
-      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
-      "architecture": {
-        "description": "Transolver prototype row (Transformer). Physics-attention transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
-        "total_parameter_count": 5490000,
-        "parameter_count_basis": "rounded_from_reported_millions",
-        "submitter_trainable_parameter_count": 0,
-        "components": [
-          {
-            "id": "prototype-surrogate",
-            "family": "Transformer",
-            "role": "Prototype ahmedml field predictor.",
-            "description": "Aggregate placeholder for the named Transolver architecture. Physics-attention transformer family. No unverified internal split is invented.",
-            "parameter_count": 5490000
-          }
-        ],
-        "key_hyperparameters": [
-          {
-            "id": "reported-model-variant",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "reported_model_variant",
-            "value": "Transolver",
-            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
-          }
-        ],
-        "input_features": [
-          {
-            "id": "native-geometry",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "native_geometry_coordinates",
-            "domain": "mesh",
-            "component_count": 3,
-            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
-          }
-        ],
-        "predicted_fields": [
-          {
-            "field_id": "surface-native.pMean",
-            "domain": "surface",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean surface pressure used by the AhmedML surface-pressure metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "surface-native.wallShearStressMean",
-            "domain": "surface",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean wall-shear-stress vector used by the AhmedML surface wall-shear metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.UMean",
-            "domain": "volume",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean velocity vector used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.pMean",
-            "domain": "volume",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean pressure used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          }
-        ]
-      },
-      "data_handling": {
-        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
-        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
-        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
-      },
-      "training": {
-        "stages": [
-          {
-            "id": "prototype-training-not-recorded",
-            "status": "prototype_not_recorded",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
-          }
-        ]
-      },
-      "checkpoints": [],
-      "inference_compute": {
-        "status": "not_measured",
-        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
-      }
-    },
-    "parameter_count": 5.49,
-    "result_revision": {
-      "series_id": "transolver",
-      "version": 1,
-      "supersedes": null,
-      "change_summary": null,
-      "is_latest": true,
-      "latest_submission_id": "transolver",
-      "version_count": 1
-    },
-    "ranking": {
-      "metric_id": "overall_score",
-      "value": 88.5125,
-      "ranked_value": 88.5,
-      "display_value": "88.5",
-      "unit": "",
-      "direction": "higher",
-      "decimal_places": 1,
-      "rounding": "decimal_half_up",
-      "method": "competition",
-      "rank": 2,
-      "ranked_result_count": 2,
-      "tied": false,
-      "tie_count": 1
-    },
-    "claim_eligibility": {
-      "academic_citation": false,
-      "promotion": false,
-      "reason_code": "prototype_dummy_data",
-      "reason": "Illustrative prototype data are not eligible for academic leaderboard claims or promotion."
-    }
-  },
-  {
-    "schema_version": "1.0",
-    "submission_id": "upt",
-    "model": "UPT",
-    "model_type": "Transformer",
-    "model_types": [
-      "Transformer"
-    ],
-    "training_regime": "from_scratch",
-    "target_data_used": "official_train",
-    "external_pretraining": false,
-    "pretraining_data": [],
-    "dataset": "AhmedML",
-    "dataset_id": "ahmedml",
-    "dataset_version": "prototype-1",
-    "split": "Medium",
-    "split_id": "medium",
-    "case_set_id": "standard",
-    "split_sha256": "f6993e6a7f842cd231fc1693da1e296046862806ba2941dc6277233f2f203c19",
-    "parameter_count_millions": 10.98,
-    "submitter_name": "Neil Ashton",
-    "institution": "FluidsBench dummy data",
-    "paper_url": "",
-    "code_url": "",
-    "submitted_at": "2025-06-13",
-    "evaluation": {
-      "reference_version": "prototype-1",
-      "code_revision": "prototype-dummy-data",
-      "command": "not-applicable (illustrative dummy data)",
-      "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "fc54a9b0fff64e2c3f59402bebbff71f109c1d9640091b56d5dc4d2221634adf"
-    },
-    "approval": {
-      "status": "prototype",
-      "note": "Illustrative dummy data; not scientifically reviewed or approved."
-    },
-    "metric_values": {
-      "surface_pressure_rel_l2": 3.9,
-      "surface_pressure_rel_l1": 2.808,
-      "surface_wall_shear_rel_l2": 5.52,
-      "surface_wall_shear_rel_l1": 3.754,
-      "volume_velocity_rel_l2": 2.62,
-      "volume_velocity_rel_l1": 1.834,
-      "volume_pressure_rel_l2": 3.01,
-      "volume_pressure_rel_l1": 2.077,
-      "cd_r2": 0.968,
-      "cl_r2": 0.948,
-      "velocity_profile_r2": 0.941,
-      "cp_cut_r2": 0.934,
-      "surface_pressure_mae": 19.7,
-      "surface_pressure_rmse": 27.3,
-      "surface_wall_shear_mae": 0.45,
-      "surface_wall_shear_rmse": 0.66,
-      "volume_velocity_mae": 0.73,
-      "volume_velocity_rmse": 1.05,
-      "volume_pressure_mae": 12.5,
-      "volume_pressure_rmse": 18.1,
-      "c_drag_mae": 0.0041,
-      "c_lift_mae": 0.0104,
-      "field_score": 76.11666666666666,
-      "force_score": 96,
-      "diagnostic_score": 93.82000000000001,
-      "overall_score": 85.51333333333334,
-      "surface_pressure_equal_entity_rel_l2": 3.666,
-      "surface_wall_shear_equal_entity_rel_l2": 5.1888,
-      "volume_velocity_physical_rel_l2": 2.787234,
-      "volume_pressure_physical_rel_l2": 3.202128
-    },
-    "profile_data": {
-      "format": "fluidsbench-profile-chunks-v1",
-      "index_file": "submissions/ahmedml/upt/profiles/index.json",
-      "case_count": 50,
-      "case_set_id": "standard",
-      "index_sha256": "de8b09b1685d2f3caa109e2302e924c0dbee995772de608ebdaba1bff234da46"
-    },
-    "note": "Baseline L2 metrics from AB-UPT v2 appendix; L1 and profile R2 values are illustrative. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
-    "methodology": {
-      "format": "fluidsbench-method-v1",
-      "record_kind": "prototype_fixture",
-      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
-      "architecture": {
-        "description": "UPT prototype row (Transformer). Universal Physics Transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
-        "total_parameter_count": 10980000,
-        "parameter_count_basis": "rounded_from_reported_millions",
-        "submitter_trainable_parameter_count": 0,
-        "components": [
-          {
-            "id": "prototype-surrogate",
-            "family": "Transformer",
-            "role": "Prototype ahmedml field predictor.",
-            "description": "Aggregate placeholder for the named UPT architecture. Universal Physics Transformer family. No unverified internal split is invented.",
-            "parameter_count": 10980000
-          }
-        ],
-        "key_hyperparameters": [
-          {
-            "id": "reported-model-variant",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "reported_model_variant",
-            "value": "UPT",
-            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
-          }
-        ],
-        "input_features": [
-          {
-            "id": "native-geometry",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "name": "native_geometry_coordinates",
-            "domain": "mesh",
-            "component_count": 3,
-            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
-          }
-        ],
-        "predicted_fields": [
-          {
-            "field_id": "surface-native.pMean",
-            "domain": "surface",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean surface pressure used by the AhmedML surface-pressure metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "surface-native.wallShearStressMean",
-            "domain": "surface",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean wall-shear-stress vector used by the AhmedML surface wall-shear metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.UMean",
-            "domain": "volume",
-            "component_count": 3,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean velocity vector used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          },
-          {
-            "field_id": "flow-domain-native.pMean",
-            "domain": "volume",
-            "component_count": 1,
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "production": "direct_model_output",
-            "description": "Prototype declaration for Dataset-native mean pressure used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
-          }
-        ]
-      },
-      "data_handling": {
-        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
-        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
-        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
-      },
-      "training": {
-        "stages": [
-          {
-            "id": "prototype-training-not-recorded",
-            "status": "prototype_not_recorded",
-            "component_ids": [
-              "prototype-surrogate"
-            ],
-            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
-          }
-        ]
-      },
-      "checkpoints": [],
-      "inference_compute": {
-        "status": "not_measured",
-        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
-      }
-    },
-    "parameter_count": 10.98,
-    "result_revision": {
-      "series_id": "upt",
-      "version": 1,
-      "supersedes": null,
-      "change_summary": null,
-      "is_latest": true,
-      "latest_submission_id": "upt",
-      "version_count": 1
-    },
-    "ranking": {
-      "metric_id": "overall_score",
-      "value": 85.51333333333334,
-      "ranked_value": 85.5,
-      "display_value": "85.5",
-      "unit": "",
-      "direction": "higher",
-      "decimal_places": 1,
-      "rounding": "decimal_half_up",
-      "method": "competition",
-      "rank": 2,
-      "ranked_result_count": 2,
-      "tied": false,
-      "tie_count": 1
-    },
-    "claim_eligibility": {
-      "academic_citation": false,
-      "promotion": false,
-      "reason_code": "prototype_dummy_data",
-      "reason": "Illustrative prototype data are not eligible for academic leaderboard claims or promotion."
+      "reason_code": "non_ranked_development_fixture",
+      "reason": "Synthetic truth-derived development fixture retained only to exercise the AhmedML evaluator and dev dashboard; it is not model inference or a benchmark submission."
     }
   }
 ]

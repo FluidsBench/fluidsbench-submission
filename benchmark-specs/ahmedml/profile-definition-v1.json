@@ -1,0 +1,126 @@
+{
+  "schema": "ahmedml-native-profile-definition-v1",
+  "definition_id": "ahmedml-native-profiles-v1-candidate",
+  "status": "candidate_owner_review_required",
+  "dataset_id": "ahmedml",
+  "dataset_version": "ahmedml-native-v1-candidate",
+  "dataset_repository": "neashton/ahmedml",
+  "dataset_revision": "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+  "association": "CellData",
+  "sample_count": 128,
+  "coordinate_frame": {
+    "axis_order": [
+      "x",
+      "y",
+      "z"
+    ],
+    "streamwise_axis": "+x",
+    "lateral_axis": "y",
+    "vertical_axis": "+z",
+    "ground_plane_m": 0.0,
+    "nominal_rear_plane_m": 0.0,
+    "length_unit": "m",
+    "geometry_parameter_input_unit": "mm"
+  },
+  "normalization": {
+    "u_infinity_m_per_s": 1.0,
+    "dynamic_pressure_kinematic_m2_per_s2": 0.5,
+    "cp_from_pmean": "Cp = pMean / 0.5 = 2*pMean",
+    "body_length": "body-length / 1000",
+    "body_height": "body-height / 1000",
+    "body_width": "body-width / 1000",
+    "slant_dx": "slant-angle-length / 1000",
+    "slant_dz": "slant-angle-height / 1000"
+  },
+  "mapping": {
+    "algorithm_id": "ahmedml-vtk-static-cell-locator-v1",
+    "surface_rule": "find the nearest native boundary polygon to each target point; freeze its zero-based source CellData index and projected point",
+    "volume_rule": "find the native volume cell containing each target point; if a roundoff-only miss occurs, freeze the nearest native cell",
+    "tie_breaking": "the generated mapping artifact is authoritative; evaluator runtime never repeats geometric nearest-neighbour selection",
+    "prediction_source": "sample the same complete native CellData prediction arrays used for field scoring; participant-provided profile values are forbidden"
+  },
+  "panels": [
+    {
+      "panel_id": "pressure_profiles",
+      "quantity_id": "cp",
+      "source_support_id": "ahmedml_surface_native_cells",
+      "source_field": "pMean",
+      "transform": "2*pMean",
+      "stations": [
+        {
+          "station_id": "upper_body_centerline",
+          "coordinate_id": "x_over_l",
+          "coordinate_range": [
+            0.0,
+            1.0
+          ],
+          "target_rule": "x=-L+t*(L-slant_dx), y=0, z=z_surface_max+0.05*L; nearest boundary polygon"
+        },
+        {
+          "station_id": "underbody_centerline",
+          "coordinate_id": "x_over_l",
+          "coordinate_range": [
+            0.0,
+            1.0
+          ],
+          "target_rule": "x=-L+t*L, y=0, z=0; nearest boundary polygon"
+        },
+        {
+          "station_id": "rear_slant_centerline",
+          "coordinate_id": "s_over_slant",
+          "coordinate_range": [
+            0.0,
+            1.0
+          ],
+          "target_rule": "x=-slant_dx+t*slant_dx, y=0, z=z_surface_max-t*slant_dz; nearest boundary polygon"
+        }
+      ]
+    },
+    {
+      "panel_id": "velocity_profiles",
+      "quantity_id": "ux_over_uinf",
+      "source_support_id": "ahmedml_volume_native_cells",
+      "source_field": "UMean",
+      "component": 0,
+      "transform": "Ux / U_infinity",
+      "stations": [
+        {
+          "station_id": "wake_vertical_x_0p25_l",
+          "coordinate_id": "z_over_h",
+          "coordinate_range": [
+            0.0,
+            2.0
+          ],
+          "target_rule": "x=0.25*L, y=0, z=t*H"
+        },
+        {
+          "station_id": "wake_vertical_x_0p50_l",
+          "coordinate_id": "z_over_h",
+          "coordinate_range": [
+            0.0,
+            2.0
+          ],
+          "target_rule": "x=0.50*L, y=0, z=t*H"
+        },
+        {
+          "station_id": "wake_vertical_x_1p00_l",
+          "coordinate_id": "z_over_h",
+          "coordinate_range": [
+            0.0,
+            2.0
+          ],
+          "target_rule": "x=1.00*L, y=0, z=t*H"
+        },
+        {
+          "station_id": "wake_lateral_x_0p50_l_z_0p50_h",
+          "coordinate_id": "y_over_w",
+          "coordinate_range": [
+            -1.0,
+            1.0
+          ],
+          "target_rule": "x=0.50*L, y=t*W, z=z_surface_min+0.50*H"
+        }
+      ]
+    }
+  ]
+}

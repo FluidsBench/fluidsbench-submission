@@ -29,7 +29,16 @@ from scripts.validate_submission import (
 )
 
 
-SOURCE = ROOT / "submissions" / "ahmedml" / "transolver"
+SOURCE = ROOT / "tests" / "fixtures" / "validator-ahmedml-v1"
+REGISTERED_SOURCE = (
+    ROOT
+    / "submissions"
+    / "ahmedml"
+    / "ahmedml-geotransolver-calibrated-dev-fixture-v1"
+)
+LEGACY_AHMEDML_FULL_SPLIT_SHA256 = (
+    "a19dfa9f246a16c7e02c3f1cce8c34ea137e24a32c8f06a2afac3bb91102782c"
+)
 V2_TEMPLATE = ROOT / "examples" / "v2-template"
 V3_TEMPLATE = ROOT / "examples" / "v3-template"
 AIRFRANS_PROTOTYPE = ROOT / "submissions" / "airfrans" / "dummy-airfrans-airfoiloperator-v1"
@@ -138,13 +147,67 @@ def official_contract_load_json(path: Path) -> object:
     value = load_json(Path(path))
     path = Path(path)
     if path == ROOT / "benchmark-specs" / "ahmedml" / "submission-spec.json":
+        value["dataset_version"] = "prototype-1"
+        value["evaluation_reference_version"] = "prototype-1"
         value["status"] = "official"
         for split in value["splits"]:
             if split["id"] == "full":
+                split["case_set_id"] = "standard"
                 split["case_id_status"] = "official"
+                split["sha256"] = LEGACY_AHMEDML_FULL_SPLIT_SHA256
+        pressure_profiles = next(
+            group for group in value["profile_panels"] if group["id"] == "pressure_profiles"
+        )
+        pressure_profiles.pop("exact_points", None)
+        pressure_profiles.pop("station_sample_counts", None)
+        pressure_profiles.pop("station_coordinate_intervals", None)
+        pressure_profiles.pop("station_coordinate_spacings", None)
+        pressure_profiles["minimum_points"] = 2
+        velocity_profiles = next(
+            group for group in value["profile_panels"] if group["id"] == "velocity_profiles"
+        )
+        velocity_profiles.update(
+            {
+                "required": False,
+                "minimum_points": 2,
+                "station_ids": [
+                    "prototype_0_25l",
+                    "prototype_0_50l",
+                    "prototype_1_00l",
+                    "wake_x_0_50l",
+                ],
+                "quantity_ids": ["velocity_ratio"],
+            }
+        )
+        velocity_profiles.pop("exact_points", None)
+        velocity_profiles.pop("station_sample_counts", None)
+        velocity_profiles.pop("station_coordinate_intervals", None)
+        velocity_profiles.pop("station_coordinate_spacings", None)
+        value.pop("profile_definition", None)
+        value.pop("regional_diagnostics", None)
     elif path == ROOT / "benchmark-specs" / "ahmedml" / "splits" / "full.json":
-        value["case_id_status"] = "official"
+        value = {
+            "schema_version": "1.0",
+            "dataset_id": "ahmedml",
+            "split_id": "full",
+            "case_set_id": "standard",
+            "split_label": "Full",
+            "case_id_status": "official",
+            "case_count": 50,
+            "case_ids": [
+                f"ahmedml_standard_test_{index:04d}" for index in range(1, 51)
+            ],
+            "note": "Stable validator fixture for the historical prototype contract.",
+        }
     return value
+
+
+def official_contract_sha256_file(path: Path) -> str:
+    """Return the historical split digest while exercising its frozen test fixture."""
+
+    if Path(path) == ROOT / "benchmark-specs" / "ahmedml" / "splits" / "full.json":
+        return LEGACY_AHMEDML_FULL_SPLIT_SHA256
+    return sha256_file(Path(path))
 
 
 def without_storage_error(errors: list[str]) -> list[str]:
@@ -576,7 +639,7 @@ class ValidatorTests(unittest.TestCase):
         )
 
     def test_complete_example_is_valid(self) -> None:
-        errors, stats = validate_submission_file(SOURCE / "submission.json")
+        errors, stats = validate_submission_file(REGISTERED_SOURCE / "submission.json")
         self.assertEqual(errors, [])
         self.assertEqual(stats["cases"], 50)
         self.assertGreater(stats["series"], 0)
@@ -885,7 +948,13 @@ class ValidatorTests(unittest.TestCase):
     def test_historical_v2_package_remains_valid_but_cannot_be_a_new_contribution(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             path = make_real_package(Path(temporary) / "transolver")
-            with patch("scripts.validate_submission.load_json", side_effect=official_contract_load_json):
+            with patch(
+                "scripts.validate_submission.load_json",
+                side_effect=official_contract_load_json,
+            ), patch(
+                "scripts.validate_submission.sha256_file",
+                side_effect=official_contract_sha256_file,
+            ):
                 historical_errors, _ = validate_submission_file(path)
                 contributor_errors, _ = validate_submission_file(path, contributor_stage=True)
             self.assertEqual(without_storage_error(historical_errors), [])
@@ -898,7 +967,13 @@ class ValidatorTests(unittest.TestCase):
     def test_approved_package_requires_and_verifies_submitted_data_validation(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             path = make_real_package(Path(temporary) / "transolver", approved=True)
-            with patch("scripts.validate_submission.load_json", side_effect=official_contract_load_json):
+            with patch(
+                "scripts.validate_submission.load_json",
+                side_effect=official_contract_load_json,
+            ), patch(
+                "scripts.validate_submission.sha256_file",
+                side_effect=official_contract_sha256_file,
+            ):
                 errors, _ = validate_submission_file(path)
             self.assertEqual(without_storage_error(errors), [])
 

@@ -71,6 +71,15 @@ from reference.hiliftaeroml.compact_profile_evaluator import (
     open_compact_support_release as open_hilift_compact_support_release,
     score_compact_profile_directory as score_hilift_compact_profile_directory,
 )
+from reference.ahmedml.regional_aggregate import (
+    AGGREGATE_REGIONAL_REPORT_SCHEMA as AHMEDML_AGGREGATE_REGIONAL_REPORT_SCHEMA,
+    REGIONAL_DEFINITION_ID as AHMEDML_REGION_DEFINITION_ID,
+    AhmedMLRegionalAggregateError,
+    validate_aggregate_regional_diagnostics as validate_ahmedml_aggregate_regional_diagnostics,
+)
+from reference.ahmedml.contract import (
+    REGION_DEFINITION_SHA256 as AHMEDML_REGION_DEFINITION_SHA256,
+)
 from reference.methodology import methodology_errors
 
 try:
@@ -532,6 +541,13 @@ HILIFT_REGISTERED_PREVIEW = HILIFT_REGISTERED_PREVIEW_CONFIGS[0]["binding"]
 HILIFT_REGISTERED_PREVIEW_RECORD_PATH = HILIFT_REGISTERED_PREVIEW_CONFIGS[0][
     "validation_record_path"
 ]
+AHMEDML_DEVELOPMENT_FIXTURE_ID = (
+    "ahmedml-geotransolver-calibrated-dev-fixture-v1"
+)
+AHMEDML_DEVELOPMENT_FIXTURE_PATH = (
+    "submissions/ahmedml/"
+    f"{AHMEDML_DEVELOPMENT_FIXTURE_ID}/submission.json"
+)
 LEGACY_V1_SUBMISSION_ID = re.compile(r"^(?P<series>[a-z0-9][a-z0-9-]{2,69})-v1$")
 
 DRIVAERML_RELATIVE_ACTIVATION_RECORD_SCHEMA = (
@@ -1057,6 +1073,69 @@ def registered_hiliftaeroml_preview(
     ):
         return None
     return deepcopy(binding)
+
+
+def registered_ahmedml_development_fixture(
+    path: Path,
+    submission: dict[str, Any],
+    manifest: dict[str, Any],
+    *,
+    root: Path | None = None,
+) -> dict[str, Any] | None:
+    """Recognize the one explicit, permanently non-ranked AhmedML dev fixture.
+
+    This is not an intake or approval route.  The ordinary schema-v3 evaluator,
+    support, discretization, case-metric, profile, and regional checks still run
+    in full; this binding only permits the validated fixture to appear in the
+    prototype dev feed without pretending that it is submitter model inference.
+    """
+
+    effective_root = (root or ROOT).resolve()
+    try:
+        relative_path = path.resolve().relative_to(effective_root).as_posix()
+    except (OSError, ValueError):
+        return None
+    methodology = submission.get("methodology", {})
+    if (
+        relative_path != AHMEDML_DEVELOPMENT_FIXTURE_PATH
+        or manifest.get("data_release", {}).get("status")
+        != "prototype_dummy_data"
+        or submission.get("submission_id") != AHMEDML_DEVELOPMENT_FIXTURE_ID
+        or submission.get("dataset_id") != "ahmedml"
+        or submission.get("dataset") != "AhmedML"
+        or submission.get("split_id") != "full"
+        or submission.get("schema_version") != "3.0"
+        or submission.get("approval") is not None
+        or submission.get("scoring_support", {}).get("status") != "candidate"
+        or methodology.get("record_kind") != "prototype_fixture"
+        or "DEVELOPMENT FIXTURE ONLY" not in submission.get("note", "")
+    ):
+        return None
+    evidence_file = submission.get("evaluation", {}).get("evidence_file")
+    if evidence_file != "evaluation-evidence.json":
+        return None
+    try:
+        evidence_path = path.parent / evidence_file
+        evidence = load_json(evidence_path)
+    except (OSError, json.JSONDecodeError):
+        return None
+    if (
+        evidence.get("status") != "submitted_evaluation"
+        or evidence.get("submission_id") != AHMEDML_DEVELOPMENT_FIXTURE_ID
+        or evidence.get("dataset_id") != "ahmedml"
+        or sha256_file(evidence_path)
+        != submission.get("evaluation", {}).get("evidence_sha256")
+        or "checkpoint was not executed" not in evidence.get("notes", "").lower()
+    ):
+        return None
+    return {
+        "record_type": "development_fixture",
+        "submission_id": AHMEDML_DEVELOPMENT_FIXTURE_ID,
+        "claim_eligibility": {
+            "academic_citation": False,
+            "promotion": False,
+        },
+    }
 
 
 def validate_registered_hiliftaeroml_preview_archive(
@@ -3741,6 +3820,7 @@ def validate_v3_scoring_support(
     support_aggregations = {
         "per_geometry_then_macro_average",
         "flatten_all_aligned_field_values",
+        "flatten_all_required_profile_samples",
         "all_test_cases",
         "benchmark_field_rrmse_across_cases",
         "benchmark_scalar_rrmse_across_cases",
@@ -5874,6 +5954,20 @@ def validate_regional_diagnostics(
                 expected_case_ids=split_case_ids,
                 expected_split_id=submission.get("split_id"),
             )
+        elif regional_format == AHMEDML_AGGREGATE_REGIONAL_REPORT_SCHEMA:
+            if (
+                contract.get("contract_sha256")
+                != AHMEDML_REGION_DEFINITION_SHA256
+                or contract.get("definition_id") != AHMEDML_REGION_DEFINITION_ID
+            ):
+                raise AhmedMLRegionalAggregateError(
+                    "AhmedML regional contract identity differs"
+                )
+            validate_ahmedml_aggregate_regional_diagnostics(
+                report,
+                expected_case_ids=split_case_ids,
+                expected_split_id=submission.get("split_id"),
+            )
         else:
             raise HiLiftRegionalAggregateError(
                 f"unsupported dataset regional format {regional_format!r}"
@@ -5883,6 +5977,7 @@ def validate_regional_diagnostics(
         json.JSONDecodeError,
         RegionalAggregateError,
         HiLiftRegionalAggregateError,
+        AhmedMLRegionalAggregateError,
     ) as error:
         add(f"regional-diagnostics.json is invalid: {error}")
 
@@ -5911,6 +6006,12 @@ def validate_open_reproducibility(
     methodology = submission.get("methodology")
     methodology_kind = (
         methodology.get("record_kind") if isinstance(methodology, dict) else None
+    )
+    development_fixture = (
+        candidate_dry_run
+        and submission.get("dataset_id") == "ahmedml"
+        and methodology_kind == "prototype_fixture"
+        and submission.get("submission_id") == AHMEDML_DEVELOPMENT_FIXTURE_ID
     )
     if submission_schema_version in {"2.0", "3.0"} and (directory / "maintainer-replay.json").exists():
         add("maintainer-replay.json is not part of the open-reproducibility contract")
@@ -5976,6 +6077,7 @@ def validate_open_reproducibility(
     if (
         submission_schema_version == "3.0"
         and methodology_kind != "submitter_reported"
+        and not development_fixture
     ):
         add(
             "real schema-v3 submitted data must use "
@@ -6842,7 +6944,9 @@ def validate_profiles(
                     else None
                 )
                 if expected_sample_count is None:
-                    expected_sample_count = panel.get("sample_count")
+                    expected_sample_count = panel.get(
+                        "sample_count", panel.get("exact_points")
+                    )
                 if (
                     not prototype_fixture
                     and isinstance(expected_sample_count, int)
@@ -7110,7 +7214,21 @@ def validate_submission_file(
         and not contributor_stage
         and not candidate_dry_run
     )
-    candidate_contract_validation = candidate_dry_run or registered_preview
+    development_fixture_binding = registered_ahmedml_development_fixture(
+        path,
+        submission,
+        manifest,
+    )
+    registered_development_fixture = (
+        development_fixture_binding is not None
+        and not contributor_stage
+        and not candidate_dry_run
+    )
+    candidate_contract_validation = (
+        candidate_dry_run
+        or registered_preview
+        or registered_development_fixture
+    )
     if registered_preview:
         if "approval" in submission:
             add("registered HiLiftAeroML previews must not contain approval metadata")
@@ -7156,6 +7274,7 @@ def validate_submission_file(
                 add("dataset methodology contract must be a JSON object")
     if candidate_contract_validation and dataset_spec.get("status") not in {
         "candidate",
+        "candidate_native_support",
         "candidate_scoring_contract",
         "owner_review_required",
     }:

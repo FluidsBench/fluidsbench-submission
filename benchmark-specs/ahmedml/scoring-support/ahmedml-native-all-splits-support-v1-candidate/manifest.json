@@ -1,0 +1,570 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/scoring-support/v1/manifest.schema.json",
+  "schema_version": "1.0",
+  "release_id": "ahmedml-native-all-splits-support-v1-candidate",
+  "status": "candidate",
+  "published_at": "2026-09-16T20:48:24Z",
+  "dataset_id": "ahmedml",
+  "dataset_version": "ahmedml-native-v1-candidate",
+  "evaluation_reference_version": "ahmedml-evaluator-v0.1-candidate",
+  "coordinate_frame": {
+    "id": "ahmedml-native-body-frame-v1",
+    "axis_order": [
+      "x",
+      "y",
+      "z"
+    ],
+    "handedness": "right",
+    "length_unit": "m",
+    "normalization": "none for scoring; Cp and profile coordinates use declared derived transforms"
+  },
+  "supports": [
+    {
+      "id": "ahmedml-surface-native-cells-v1",
+      "domain": "surface",
+      "location_definition": {
+        "mode": "native_entities",
+        "format": "vtk_xml_polydata",
+        "artifact_role": "public-boundary-vtp",
+        "entity": "surface_face",
+        "selection": {
+          "kind": "all_entities"
+        },
+        "coordinate_rule": "face_centres_v1",
+        "ordering": "source_entity_index",
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "geometric",
+          "measure": "face_area",
+          "rule_id": "native-polygon-area-v1",
+          "rule_version": "1"
+        }
+      },
+      "quantities": [
+        {
+          "id": "pmean",
+          "unit": "m2/s2",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "pMean",
+              "target_association": "cell_data",
+              "prediction_field": "pMean"
+            }
+          ]
+        },
+        {
+          "id": "wall_shear",
+          "unit": "m2/s2",
+          "components": [
+            {
+              "id": "x",
+              "target_field": "wallShearStressMean",
+              "target_association": "cell_data",
+              "prediction_field": "wallShearStressMean"
+            },
+            {
+              "id": "y",
+              "target_field": "wallShearStressMean",
+              "target_association": "cell_data",
+              "prediction_field": "wallShearStressMean"
+            },
+            {
+              "id": "z",
+              "target_field": "wallShearStressMean",
+              "target_association": "cell_data",
+              "prediction_field": "wallShearStressMean"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "surface_pressure_rel_l2",
+          "quantity_id": "pmean",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_equal_entity_rel_l2",
+          "quantity_id": "pmean",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_rel_l2",
+          "quantity_id": "wall_shear",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_equal_entity_rel_l2",
+          "quantity_id": "wall_shear",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_rel_l1",
+          "quantity_id": "pmean",
+          "reduction": "relative_l1_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_rel_l1",
+          "quantity_id": "wall_shear",
+          "reduction": "relative_l1_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_mae",
+          "quantity_id": "pmean",
+          "reduction": "mae",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_rmse",
+          "quantity_id": "pmean",
+          "reduction": "rmse",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_mae",
+          "quantity_id": "wall_shear",
+          "reduction": "mae",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_rmse",
+          "quantity_id": "wall_shear",
+          "reduction": "rmse",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden",
+      "notes": "Every native boundary polygon is scored in source CellData order."
+    },
+    {
+      "id": "ahmedml-volume-native-cells-v1",
+      "domain": "volume",
+      "location_definition": {
+        "mode": "native_entities",
+        "format": "vtk_xml_unstructured_grid",
+        "artifact_role": "public-volume-vtu",
+        "entity": "cell",
+        "selection": {
+          "kind": "all_entities"
+        },
+        "coordinate_rule": "cell_centres_v1",
+        "ordering": "source_entity_index",
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "geometric",
+          "measure": "cell_volume",
+          "rule_id": "vtk-cell-size-filter-v1",
+          "rule_version": "9.5.2"
+        }
+      },
+      "quantities": [
+        {
+          "id": "pmean",
+          "unit": "m2/s2",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "pMean",
+              "target_association": "cell_data",
+              "prediction_field": "pMean"
+            }
+          ]
+        },
+        {
+          "id": "umean",
+          "unit": "m/s",
+          "components": [
+            {
+              "id": "x",
+              "target_field": "UMean",
+              "target_association": "cell_data",
+              "prediction_field": "UMean"
+            },
+            {
+              "id": "y",
+              "target_field": "UMean",
+              "target_association": "cell_data",
+              "prediction_field": "UMean"
+            },
+            {
+              "id": "z",
+              "target_field": "UMean",
+              "target_association": "cell_data",
+              "prediction_field": "UMean"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "volume_pressure_rel_l2",
+          "quantity_id": "pmean",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_pressure_physical_rel_l2",
+          "quantity_id": "pmean",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "cell_volume",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_velocity_rel_l2",
+          "quantity_id": "umean",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_velocity_physical_rel_l2",
+          "quantity_id": "umean",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "cell_volume",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_pressure_rel_l1",
+          "quantity_id": "pmean",
+          "reduction": "relative_l1_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_velocity_rel_l1",
+          "quantity_id": "umean",
+          "reduction": "relative_l1_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_pressure_mae",
+          "quantity_id": "pmean",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_pressure_rmse",
+          "quantity_id": "pmean",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_velocity_mae",
+          "quantity_id": "umean",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_velocity_rmse",
+          "quantity_id": "umean",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden",
+      "notes": "Equal-native-cell relative L2 is primary; cell-volume weighting is secondary."
+    },
+    {
+      "id": "ahmedml-force-coefficients-v1",
+      "domain": "scalar_case",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "ahmedml-surface-force-integration-v1",
+        "generator_version": "ahmedml-evaluator-v0.1-candidate",
+        "parameters": {
+          "profile_definition_sha256": "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae",
+          "source_identity_sha256": "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44"
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "cd",
+          "unit": "",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "cd",
+              "target_association": "generated",
+              "prediction_field": "cd"
+            }
+          ]
+        },
+        {
+          "id": "cl",
+          "unit": "",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "cl",
+              "target_association": "generated",
+              "prediction_field": "cl"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "cd_r2",
+          "quantity_id": "cd",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "aggregate_only"
+        },
+        {
+          "metric_id": "cl_r2",
+          "quantity_id": "cl",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "aggregate_only"
+        },
+        {
+          "metric_id": "c_drag_mae",
+          "quantity_id": "cd",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "c_lift_mae",
+          "quantity_id": "cl",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden",
+      "notes": "Cd and Cl are integrated from the same complete native surface predictions."
+    },
+    {
+      "id": "ahmedml-surface-cp-profiles-v1",
+      "domain": "line",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "ahmedml-frozen-surface-profile-mapping-v1",
+        "generator_version": "ahmedml-evaluator-v0.1-candidate",
+        "parameters": {
+          "profile_definition_sha256": "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae",
+          "source_identity_sha256": "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44"
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "cp",
+          "unit": "",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "Cp",
+              "target_association": "generated",
+              "prediction_field": "Cp"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "cp_cut_r2",
+          "quantity_id": "cp",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "samples_equal",
+          "aggregation": "flatten_all_required_profile_samples",
+          "case_evidence": "aggregate_only"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden",
+      "notes": "Three evaluator-owned 128-sample Cp cuts; participant profile payloads are forbidden."
+    },
+    {
+      "id": "ahmedml-volume-velocity-profiles-v1",
+      "domain": "line",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "ahmedml-frozen-volume-profile-mapping-v1",
+        "generator_version": "ahmedml-evaluator-v0.1-candidate",
+        "parameters": {
+          "profile_definition_sha256": "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae",
+          "source_identity_sha256": "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44"
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "ux_over_uinf",
+          "unit": "",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "Ux_over_Uinf",
+              "target_association": "generated",
+              "prediction_field": "Ux_over_Uinf"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "velocity_profile_r2",
+          "quantity_id": "ux_over_uinf",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "samples_equal",
+          "aggregation": "flatten_all_required_profile_samples",
+          "case_evidence": "aggregate_only"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden",
+      "notes": "Four evaluator-owned 128-sample wake profiles; participant profile payloads are forbidden."
+    }
+  ],
+  "case_sets": [
+    {
+      "id": "full-test",
+      "case_count": 50,
+      "index_file": "case-sets/full-test/index.json",
+      "index_sha256": "935639a1f443fa645b45e3ee46b3476efe924dbab4a0177ee1a165bb9b53e96c"
+    },
+    {
+      "id": "geometry-test",
+      "case_count": 100,
+      "index_file": "case-sets/geometry-test/index.json",
+      "index_sha256": "b348411dff227ad72ba37485dedab0cfc6aa7b6381440f5b4a75bb4d5a972599"
+    },
+    {
+      "id": "high_drag-test",
+      "case_count": 100,
+      "index_file": "case-sets/high_drag-test/index.json",
+      "index_sha256": "77273ee7f4f3c9a575914ce34b68a2dc62dde67ee4051902ffa37d8937faad2e"
+    },
+    {
+      "id": "low_drag-test",
+      "case_count": 100,
+      "index_file": "case-sets/low_drag-test/index.json",
+      "index_sha256": "a0ededfe26414e108d7f572d0fe333241ad24c8ccb35a68cfddc6adf515fc788"
+    },
+    {
+      "id": "image_wake-test",
+      "case_count": 100,
+      "index_file": "case-sets/image_wake-test/index.json",
+      "index_sha256": "0a75c21ac55d89e8caa0f4c3beb82acf6b364c0bf6dab472e15922092214b736"
+    }
+  ],
+  "notes": "Closed owner-review candidate. Public source bytes are pinned exactly. Compact per-case manifests bind all generated array hashes, while the approximately 40 GB large-array payload remains maintainer-local until owner review. The run_492 force CSV/native-field discrepancy is one checksum- and value-bound source exception; native surface-field integration remains force truth."
+}

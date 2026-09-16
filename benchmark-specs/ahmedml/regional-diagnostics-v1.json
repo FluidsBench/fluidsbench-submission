@@ -1,0 +1,33 @@
+{
+  "schema": "ahmedml-native-region-definition-v1",
+  "definition_id": "ahmedml-native-regions-v1-candidate",
+  "status": "candidate_report_only",
+  "dataset_id": "ahmedml",
+  "dataset_revision": "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+  "association": "CellData",
+  "coordinate_source": "native volume cell centres",
+  "precedence": [
+    "near_body",
+    "wake",
+    "farfield"
+  ],
+  "regions": [
+    {
+      "id": "near_body",
+      "code": 0,
+      "rule": "-1.25*L <= x <= 0 and abs(y) <= 0.75*W and 0 <= z <= z_surface_min + 2*H"
+    },
+    {
+      "id": "wake",
+      "code": 1,
+      "rule": "0 < x <= 2*L and abs(y) <= W and 0 <= z <= z_surface_min + 2*H"
+    },
+    {
+      "id": "farfield",
+      "code": 2,
+      "rule": "all remaining cells"
+    }
+  ],
+  "ranking_effect": "none",
+  "notes": "Regions are mutually exclusive and exhaustive. They diagnose field error localization but do not alter the candidate overall score."
+}
