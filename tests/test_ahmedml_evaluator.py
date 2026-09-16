@@ -4,14 +4,18 @@ import hashlib
 import json
 import re
 import tempfile
+import unittest
 from pathlib import Path, PurePosixPath
 from types import MappingProxyType
 
 import numpy as np
 import pytest
 
-vtk = pytest.importorskip("vtk")
-from vtk.util.numpy_support import numpy_to_vtk  # noqa: E402
+try:
+    import vtk
+    from vtk.util.numpy_support import numpy_to_vtk  # noqa: E402
+except ModuleNotFoundError as error:
+    raise unittest.SkipTest("VTK is required for AhmedML evaluator fixtures") from error
 
 from reference.ahmedml.contract import (  # noqa: E402
     DATASET_VERSION,
