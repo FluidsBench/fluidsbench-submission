@@ -1,0 +1,180 @@
+{
+  "format": "fluidsbench-method-v1",
+  "record_kind": "format_example",
+  "record_note": "Illustrative values showing the required record shape; this is not a real model or benchmark result.",
+  "architecture": {
+    "description": "Twelve message-passing operator blocks with 256-wide latent features and separate native-surface and native-volume output heads.",
+    "total_parameter_count": 42612345,
+    "parameter_count_basis": "exact",
+    "submitter_trainable_parameter_count": 42612345,
+    "components": [
+      {
+        "id": "joint-predictor",
+        "family": "Graph neural operator",
+        "role": "Joint surface and volume field predictor.",
+        "description": "Twelve message-passing operator blocks with 256-wide latent features and separate native-surface and native-volume output heads.",
+        "parameter_count": 42612345
+      }
+    ],
+    "key_hyperparameters": [
+      {
+        "id": "operator-block-count",
+        "component_ids": [
+          "joint-predictor"
+        ],
+        "name": "operator_blocks",
+        "value": 12,
+        "description": "Number of message-passing operator blocks."
+      },
+      {
+        "id": "latent-width",
+        "component_ids": [
+          "joint-predictor"
+        ],
+        "name": "latent_width",
+        "value": 256,
+        "description": "Feature width used by every operator block."
+      }
+    ],
+    "input_features": [
+      {
+        "id": "surface-coordinates",
+        "component_ids": [
+          "joint-predictor"
+        ],
+        "name": "surface_coordinates",
+        "domain": "surface",
+        "component_count": 3,
+        "description": "Body-frame x/y/z coordinates in metres."
+      },
+      {
+        "id": "volume-coordinates",
+        "component_ids": [
+          "joint-predictor"
+        ],
+        "name": "volume_coordinates",
+        "domain": "volume",
+        "component_count": 3,
+        "description": "Body-frame x/y/z native-cell centres in metres."
+      }
+    ],
+    "predicted_fields": [
+      {
+        "field_id": "surface_native_cells.pMeanTrim",
+        "domain": "surface",
+        "component_count": 1,
+        "component_ids": [
+          "joint-predictor"
+        ],
+        "production": "direct_model_output",
+        "description": "Direct scalar surface-cell output."
+      },
+      {
+        "field_id": "surface_native_cells.wallShearStressMeanTrim",
+        "domain": "surface",
+        "component_count": 3,
+        "component_ids": [
+          "joint-predictor"
+        ],
+        "production": "direct_model_output",
+        "description": "Direct three-component surface-cell output."
+      },
+      {
+        "field_id": "volume_native_cells.pMeanTrim",
+        "domain": "volume",
+        "component_count": 1,
+        "component_ids": [
+          "joint-predictor"
+        ],
+        "production": "direct_model_output",
+        "description": "Direct scalar volume-cell output."
+      },
+      {
+        "field_id": "volume_native_cells.UMeanTrim",
+        "domain": "volume",
+        "component_count": 3,
+        "component_ids": [
+          "joint-predictor"
+        ],
+        "production": "direct_model_output",
+        "description": "Direct three-component volume-cell output."
+      }
+    ]
+  },
+  "data_handling": {
+    "normalization": "Per-field mean and standard deviation calculated from official training cases only.",
+    "preprocessing": "Body-frame centring and nondimensionalization using training-only constants.",
+    "sampling": "Fixed 100000-cell surface and volume samples per training case; complete native supports are queried at inference."
+  },
+  "training": {
+    "stages": [
+      {
+        "id": "joint-training",
+        "status": "performed_by_submitter",
+        "component_ids": [
+          "joint-predictor"
+        ],
+        "description": "Joint end-to-end training of all four field outputs.",
+        "procedure": {
+          "kind": "gradient_based",
+          "loss": {
+            "description": "Weighted sum of normalized mean-squared errors for the four required fields.",
+            "weighting": "Surface pressure 1.0, surface wall shear 0.5, volume pressure 1.0, and volume velocity 1.0."
+          },
+          "optimizers": [
+            {
+              "name": "AdamW",
+              "learning_rate": 0.0001,
+              "schedule": "Cosine decay after 1000 linear warm-up steps."
+            }
+          ],
+          "batch": {
+            "value": 4,
+            "unit": "cases",
+            "gradient_accumulation_steps": 1
+          },
+          "duration": {
+            "epochs": 200,
+            "optimizer_steps": 24200
+          }
+        },
+        "run_count": 1,
+        "stochastic": true,
+        "random_seeds": [
+          1234
+        ],
+        "compute": {
+          "hardware": "8 x NVIDIA A100 80GB",
+          "max_concurrent_device_count": 8,
+          "campaign_wall_time_hours": 18.5,
+          "aggregate_device_hours": 148.0,
+          "measurement_notes": "One constant eight-GPU allocation for the complete training run."
+        }
+      }
+    ]
+  },
+  "checkpoints": [
+    {
+      "id": "joint-surface-volume-model",
+      "component_ids": [
+        "joint-predictor"
+      ],
+      "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "digest_scope": "raw_loaded_file",
+      "bytes_description": "Raw bytes of the single checkpoint file loaded by the inference program.",
+      "role": "Exact loaded checkpoint for the joint surface and volume predictor.",
+      "selection_rule": "Lowest official-validation loss selected before evaluation-case inference."
+    }
+  ],
+  "inference_compute": {
+    "status": "measured",
+    "hardware": "1 x NVIDIA A100 80GB",
+    "max_concurrent_device_count": 1,
+    "case_count": 50,
+    "campaign_wall_time_seconds": 1452.0,
+    "aggregate_device_time_seconds": 1452.0,
+    "includes_preprocessing": true,
+    "includes_mapping": true,
+    "measurement_notes": "One end-to-end pass over all 50 evaluation cases in the official full split, excluding dataset download but including native-support mapping and prediction serialization."
+  }
+}

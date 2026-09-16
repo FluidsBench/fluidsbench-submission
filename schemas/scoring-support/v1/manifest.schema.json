@@ -24,7 +24,7 @@
     "schema_version": { "const": "1.0" },
     "release_id": { "$ref": "#/$defs/safe_id" },
     "status": {
-      "enum": ["prototype", "owner_review_required", "official", "retired"]
+      "enum": ["prototype", "candidate", "owner_review_required", "official", "retired"]
     },
     "published_at": { "type": "string", "format": "date-time" },
     "dataset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
@@ -55,6 +55,13 @@
         "required": ["status"]
       },
       "then": { "required": ["owner_approval"] }
+    },
+    {
+      "if": {
+        "properties": { "status": { "const": "candidate" } },
+        "required": ["status"]
+      },
+      "then": { "not": { "required": ["owner_approval"] } }
     }
   ],
   "$defs": {

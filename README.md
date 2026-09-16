@@ -2,8 +2,9 @@
 
 Submission repository and approved-data feed for the [FluidsBench leaderboard](https://fluidsbench.org/).
 
-> FluidsBench is currently a work in progress. The `dev` branch, split indexes, submissions, metrics, and profile curves are
-> prototype dummy data and are not approved benchmark results.
+> FluidsBench is currently a work in progress. Nothing on the `dev` branch is an approved benchmark result, and most rows remain
+> illustrative prototype data. The explicitly registered HiLiftAeroML Transolver and GeoTransolver previews are checksum-bound
+> retained surrogate inferences with real CFD comparison truth, but remain non-citable pre-release references.
 
 ## Responsibilities
 
@@ -111,7 +112,7 @@ python3 -m reference.example_calculation
 
 ## 2. Prepare metrics, spatial metadata, and profiles
 
-`submission.json` contains model, submitter, training, dataset, split, aggregate metrics, scoring-support, spatial-discretization,
+`submission.json` contains model, submitter, methodology, dataset, split, aggregate metrics, scoring-support, spatial-discretization,
 case-metric, profile-index, evaluation, and optional open-artifact metadata. New submissions must match
 [`schemas/v3/submission.schema.json`](schemas/v3/submission.schema.json). Historical approved schema-v2 packages remain readable and
 publishable, but the contributor-stage validator rejects new v2 packages because they lack mandatory v3 evidence.
@@ -129,6 +130,14 @@ evaluation-only data use, and an open licence for submitted result data. Public 
 documentation are optional and do not affect approval, rank, citation, or promotion eligibility. When declared, code must be pinned
 to a full commit, model and environment artifacts must be pinned by SHA-256, and code/model licences must use the allowed open SPDX
 identifiers. See [`OPEN_REPRODUCIBILITY.md`](OPEN_REPRODUCIBILITY.md) for the complete eligibility and validation policy.
+
+Every schema-v3 package includes the same structured methodology record covering architecture components, exact total and
+submitter-trainable parameter counts, inputs and outputs, data handling, training stages, checkpoint selection, and measured
+compute. Each dataset's `methodology-contract.json` names only that benchmark's existing required outputs; it does not change the
+prediction or scoring process. A SHA-256 digest is required for every checkpoint file actually loaded by a parameterized method so
+the result has an exact model identity; publishing those checkpoint bytes, source code, or a model archive remains optional. See
+the repository-wide [`methodology guide`](METHODOLOGY.md) and, for the native-mesh workflow, the
+[`DrivAerML participant guide`](benchmark-specs/drivaerml/PARTICIPANT_GUIDE.md).
 
 The required `metrics/cases.json` records every test case, canonical support, support/scored counts, complete count and weight
 coverage, unmapped/extrapolated counts, per-case metric values, and the additive sufficient statistics required by each relative-L2
@@ -149,7 +158,8 @@ those records with the fixed or minimum/median/maximum summary and verifies `fra
 Contributors leave `approval` absent and must not add `maintainer-validation.json` or
 `prediction-artifact-checks.json`. After submitted-data validation, maintainers add
 the separately hashed validation record and `approval.status=approved`. Prototype packages use `approval.status=prototype`; the feed
-builder publishes only prototype and maintainer-approved rows, so an unapproved source package cannot appear on the leaderboard.
+builder publishes only prototype and maintainer-approved rows. The sole exception class is an exact maintainer-registered,
+hash-bound HiLiftAeroML `pre_release_reference`; each remains unapproved and explicitly ineligible for citation or promotion.
 
 Sharing full or example prediction fields is optional. When used, `prediction_artifacts` points to a revision-pinned public Hugging
 Face dataset manifest. A maintainer may add one `prediction-artifact-checks.json` index recording accessibility, format, or explicit
@@ -191,6 +201,40 @@ manifest. The same values are repeated in the submitter-authored evaluation evid
 The profile index records the SHA-256 checksum and case IDs for each chunk. Normal JSON is used so pull requests remain readable;
 hosting can compress it during delivery.
 
+## Result versions
+
+Published result packages are immutable. Every schema-v3 submission declares a stable result series and an integer version:
+
+```json
+"submission_id": "team-model-drivaerml-full-v2",
+"result_revision": {
+  "series_id": "team-model-drivaerml-full",
+  "version": 2,
+  "supersedes": "team-model-drivaerml-full-v1",
+  "change_summary": "Retrained the model and corrected the mesh-to-support mapping."
+}
+```
+
+The first package is `<series-id>-v1`, uses `version: 1`, and sets `supersedes` to `null`. An update copies the previous package into
+a completely new `<series-id>-vN` directory, replaces every changed prediction, metric, profile, evidence record, and checksum,
+increments the version by exactly one, points to the immediately preceding published submission, and explains the material change.
+Never edit, rename, or delete an earlier published directory.
+
+For a result published before this versioning contract whose ID does not end in `-v1`, keep that package unchanged. Its first update
+uses `<legacy-submission-id>-v2`, retains `<legacy-submission-id>` as the series ID, and sets `supersedes` to the exact legacy ID. For
+example, `drivaerml-ab-upt-v2` supersedes `drivaerml-ab-upt`. The validator treats that immutable legacy package as v1.
+
+A revision remains in the same series only when the exact dataset version, split hash, case set, submitter, and institution are
+unchanged. A genuinely different benchmark contract, model family, or submitting team starts a new series at v1. The validator
+rejects skipped versions, forks, missing or unpublished predecessors, non-chronological dates, and IDs that do not match
+`<series-id>-vN`.
+
+The current leaderboard ranks only the latest published version in each series, so repeated updates cannot occupy multiple ranking
+positions. Earlier versions, their submitted scores, dates, metadata, and change summaries remain in the hash-bound revision-history
+feed and are available from the result details. An immutable release snapshot continues to preserve the exact version and rank that
+it originally published. Historical schema-v1/v2 packages are exposed as v1-compatible legacy records; all new schema-v3 packages
+must declare `result_revision` explicitly.
+
 ## 3. Validate and submit
 
 Create a Python environment and install the two validation/reference dependencies:
@@ -206,6 +250,21 @@ Validate one directory:
 ```bash
 python3 scripts/validate_submission.py --contributor-stage submissions/ahmedml/my-model-v1
 ```
+
+Dataset owners may exercise a closed schema-v3 candidate before activation
+only when the dataset specification pins an exact
+`scoring_support.candidate_manifest` (status, release ID, repository file,
+public URL, and SHA-256):
+
+```bash
+python3 scripts/validate_submission.py --candidate-dry-run submissions/<dataset-id>/<package-id>
+```
+
+This mode requires `scoring_support.status=candidate`,
+`submissions_open=false`, and a candidate support manifest. It rejects approval
+and maintainer-owned metadata and reports only non-approving candidate
+validity. Normal and `--contributor-stage` validation continue to require an
+official, open, owner-approved scoring-support release.
 
 Validate every source submission and verify that generated feeds are synchronized:
 
@@ -223,7 +282,8 @@ recompute submitted base metrics.
 After validation:
 
 1. Commit exactly one new submission directory. Do not modify schemas, specifications, validators, workflows, generated feeds, or
-   existing submissions in the same pull request; a new result version uses a new globally unique submission ID.
+   existing submissions in the same pull request. Use a new globally unique `<series-id>-vN` submission ID and the revision rules
+   above.
 2. Open a pull request against `main` once FluidsBench announces that the dataset is accepting real submissions.
 3. Complete the pull request checklist and resolve all automated validation failures.
 4. Maintainers review scientific provenance, public-evaluation-use eligibility, metadata, submitted values, result-data licence,
@@ -249,14 +309,17 @@ leaderboard/
   manifest.json
   datasets/<dataset-id>.json
   all.json
+  revisions.json
   claims/
     index.json
     <dataset-id>/<split-id>/<submission-id>.json
 leaderboard.json
 ```
 
-The website loads the selected scalar dataset lazily. Profile arrays are not copied into these feeds; each row contains a relative
-profile index path, and the browser fetches only the selected geometry's chunk.
+The website loads the selected scalar dataset lazily. `all.json`, `leaderboard.json`, and the dataset files contain only the latest
+version of each result series and therefore define the current rankings. `revisions.json` is a separately hash-pinned, unranked
+history containing every published version. Profile arrays are not copied into these feeds; each row contains a relative profile
+index path, and the browser fetches only the selected geometry's chunk.
 
 `leaderboard/manifest.json` also publishes the data-release identifier, generation time, source reference, contract version,
 licence scope, archive URL, immutable asset base, SHA-256 digest of the complete scalar feed, and the expected release ID and
@@ -264,6 +327,14 @@ manifest digest for the public profile ground truth. Every feed row carries the 
 releases use `archive_url: null`; an official release must provide an immutable HTTPS archive URL plus asset-base and interactive
 release-view URLs containing the release ID. The separate full `source_commit` records repository provenance without creating a
 self-referential commit hash.
+
+HiLiftAeroML's eleven registered Transolver previews and twelve registered
+GeoTransolver previews use the compact-v2 prediction contract. Their public
+Cp and velocity comparison truth lives in
+the website repository as a deduplicated 1,355-case release covering all eight
+official case sets. It is bound as plot-only metadata; the private lossless
+evaluator truth remains the scoring authority and is not copied into this
+repository.
 
 Official `asset_base_url` and `release_view_url` values are clean HTTPS directory bases: their final path segment is exactly the
 safe lowercase release ID, they end in `/`, and they contain no query or fragment. Official builds preserve the manifest's explicit

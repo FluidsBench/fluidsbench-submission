@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 import unittest
 from pathlib import Path
@@ -133,6 +134,46 @@ class V3SchemaExampleTests(unittest.TestCase):
                     ROOT / "schemas" / "v3" / schema_name,
                     json.loads((TEMPLATE / relative_value).read_text(encoding="utf-8")),
                 )
+
+    def test_methodology_is_required_for_every_schema_v3_dataset(self) -> None:
+        schema = json.loads(
+            (ROOT / "schemas/v3/submission.schema.json").read_text(encoding="utf-8")
+        )
+        validator = Draft202012Validator(schema, format_checker=FormatChecker())
+        generic = json.loads((TEMPLATE / "submission.json").read_text(encoding="utf-8"))
+        self.assertEqual(list(validator.iter_errors(generic)), [])
+        generic_without_method = copy.deepcopy(generic)
+        generic_without_method.pop("methodology")
+        self.assertTrue(
+            any(
+                "methodology" in error.message
+                for error in validator.iter_errors(generic_without_method)
+            )
+        )
+
+        drivaerml = copy.deepcopy(generic)
+        drivaerml["dataset_id"] = "drivaerml"
+        methodology = json.loads(
+            (
+                ROOT
+                / "examples/drivaerml-v3-candidate/methodology.example.json"
+            ).read_text(encoding="utf-8")
+        )
+        drivaerml["methodology"] = methodology
+        drivaerml["parameter_count_millions"] = 42.612345
+        self.assertEqual(list(validator.iter_errors(drivaerml)), [])
+
+        invalid_hash = copy.deepcopy(drivaerml)
+        invalid_hash["methodology"]["checkpoints"][0]["sha256"] = "not-a-hash"
+        self.assertTrue(list(validator.iter_errors(invalid_hash)))
+
+        unknown_key = copy.deepcopy(drivaerml)
+        unknown_key["methodology"]["architecture"]["invented"] = True
+        self.assertTrue(list(validator.iter_errors(unknown_key)))
+
+        null_size = copy.deepcopy(drivaerml)
+        null_size["parameter_count_millions"] = None
+        self.assertTrue(list(validator.iter_errors(null_size)))
 
     def test_discretization_jsonl_records(self) -> None:
         schema_path = ROOT / "schemas/v3/discretization-case.schema.json"

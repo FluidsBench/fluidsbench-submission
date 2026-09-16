@@ -65,11 +65,13 @@
     "case_set_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_]*$"},
     "split_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "parameter_count_millions": {"type": ["number", "null"], "minimum": 0},
+    "methodology": {"type": "object"},
     "submitter_name": {"type": "string", "minLength": 1},
     "institution": {"type": "string", "minLength": 1},
     "paper_url": {"type": "string", "pattern": "^$|^https?://"},
     "code_url": {"type": "string", "pattern": "^$|^https?://"},
     "submitted_at": {"type": "string", "format": "date"},
+    "record_type": {"enum": ["pre_release_reference"]},
     "note": {"type": "string"},
     "evaluation": {
       "type": "object",
@@ -171,10 +173,31 @@
       "additionalProperties": false,
       "required": ["format", "index_file", "case_count", "case_set_id"],
       "properties": {
-        "format": {"const": "fluidsbench-profile-chunks-v1"},
+        "format": {
+          "enum": [
+            "fluidsbench-profile-chunks-v1",
+            "fluidsbench-drivaerml-physical-profile-chunks-v1",
+            "fluidsbench-drivaerml-relative-profile-chunks-v3-candidate"
+          ]
+        },
         "index_file": {"const": "profiles/index.json"},
         "case_count": {"type": "integer", "minimum": 1},
         "case_set_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "regional_diagnostics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "file", "sha256", "contract_sha256", "case_count", "role", "weight", "official_score_changed"],
+      "properties": {
+        "format": {"const": "drivaerml-regional-aggregate-v2"},
+        "file": {"const": "regional-diagnostics.json"},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "contract_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "case_count": {"type": "integer", "minimum": 1},
+        "role": {"const": "report_only"},
+        "weight": {"const": 0.0},
+        "official_score_changed": {"const": false}
       }
     }
   },
@@ -190,6 +213,31 @@
         "required": ["approval"]
       },
       "then": {"required": ["reproducibility"]}
+    },
+    {
+      "if": {
+        "properties": {
+          "profile_data": {
+            "properties": {
+              "format": {
+                "const": "fluidsbench-drivaerml-relative-profile-chunks-v3-candidate"
+              }
+            },
+            "required": ["format"]
+          }
+        },
+        "required": ["profile_data"]
+      },
+      "then": {
+        "required": ["record_type", "approval"],
+        "properties": {
+          "record_type": {"const": "pre_release_reference"},
+          "approval": {
+            "properties": {"status": {"const": "prototype"}},
+            "required": ["status"]
+          }
+        }
+      }
     }
   ]
 }

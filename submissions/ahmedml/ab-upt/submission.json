@@ -73,5 +73,112 @@
     "case_count": 50,
     "case_set_id": "standard"
   },
-  "note": "Reported AhmedML L2 metrics from AB-UPT v2; L1, force, and profile R2 values are example placeholders. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields."
+  "note": "Reported AhmedML L2 metrics from AB-UPT v2; L1, force, and profile R2 values are example placeholders. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+  "methodology": {
+    "format": "fluidsbench-method-v1",
+    "record_kind": "prototype_fixture",
+    "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+    "architecture": {
+      "description": "AB-UPT prototype row (Transformer). Attention-based Universal Physics Transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+      "total_parameter_count": 8750000,
+      "parameter_count_basis": "rounded_from_reported_millions",
+      "submitter_trainable_parameter_count": 0,
+      "components": [
+        {
+          "id": "prototype-surrogate",
+          "family": "Transformer",
+          "role": "Prototype ahmedml field predictor.",
+          "description": "Aggregate placeholder for the named AB-UPT architecture. Attention-based Universal Physics Transformer family. No unverified internal split is invented.",
+          "parameter_count": 8750000
+        }
+      ],
+      "key_hyperparameters": [
+        {
+          "id": "reported-model-variant",
+          "component_ids": [
+            "prototype-surrogate"
+          ],
+          "name": "reported_model_variant",
+          "value": "AB-UPT",
+          "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+        }
+      ],
+      "input_features": [
+        {
+          "id": "native-geometry",
+          "component_ids": [
+            "prototype-surrogate"
+          ],
+          "name": "native_geometry_coordinates",
+          "domain": "mesh",
+          "component_count": 3,
+          "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+        }
+      ],
+      "predicted_fields": [
+        {
+          "field_id": "surface-native.pMean",
+          "domain": "surface",
+          "component_count": 1,
+          "component_ids": [
+            "prototype-surrogate"
+          ],
+          "production": "direct_model_output",
+          "description": "Prototype declaration for Dataset-native mean surface pressure used by the AhmedML surface-pressure metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+        },
+        {
+          "field_id": "surface-native.wallShearStressMean",
+          "domain": "surface",
+          "component_count": 3,
+          "component_ids": [
+            "prototype-surrogate"
+          ],
+          "production": "direct_model_output",
+          "description": "Prototype declaration for Dataset-native mean wall-shear-stress vector used by the AhmedML surface wall-shear metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+        },
+        {
+          "field_id": "flow-domain-native.UMean",
+          "domain": "volume",
+          "component_count": 3,
+          "component_ids": [
+            "prototype-surrogate"
+          ],
+          "production": "direct_model_output",
+          "description": "Prototype declaration for Dataset-native mean velocity vector used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+        },
+        {
+          "field_id": "flow-domain-native.pMean",
+          "domain": "volume",
+          "component_count": 1,
+          "component_ids": [
+            "prototype-surrogate"
+          ],
+          "production": "direct_model_output",
+          "description": "Prototype declaration for Dataset-native mean pressure used by the AhmedML flow-domain metrics. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+        }
+      ]
+    },
+    "data_handling": {
+      "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+      "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+      "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+    },
+    "training": {
+      "stages": [
+        {
+          "id": "prototype-training-not-recorded",
+          "status": "prototype_not_recorded",
+          "component_ids": [
+            "prototype-surrogate"
+          ],
+          "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+        }
+      ]
+    },
+    "checkpoints": [],
+    "inference_compute": {
+      "status": "not_measured",
+      "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+    }
+  }
 }

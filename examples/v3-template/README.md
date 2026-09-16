@@ -6,6 +6,11 @@ are internally consistent so the complete contract can be tested. It is only
 a format and evaluator fixture, not a recognized FluidsBench dataset, result,
 or artifact check.
 
+The `result_revision` block identifies this immutable package as version 1 of
+the `synthetic-open-model` result series. A later update would use a new
+`synthetic-open-model-v2` directory, set `version` to `2`, point `supersedes`
+to `synthetic-open-model-v1`, and explain the change without editing v1.
+
 The benchmark-owned chain is:
 
 ```text
@@ -50,3 +55,8 @@ The synthetic `submission.json` also demonstrates optional public code,
 model, environment, and artifact-documentation metadata. A real v3 submission
 may omit those optional fields without affecting eligibility. If included,
 they remain subject to the schema's version, digest, URL, and licence checks.
+Its required `methodology` block demonstrates the common architecture,
+input/output, training, checkpoint, and measured-inference record used by every
+dataset. Replace every fictional value and follow the selected dataset's
+`benchmark-specs/<dataset-id>/methodology-contract.json`; see
+[`METHODOLOGY.md`](../../METHODOLOGY.md).

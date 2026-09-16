@@ -1,0 +1,561 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/scoring-support/v1/manifest.schema.json",
+  "schema_version": "1.0",
+  "release_id": "hiliftaeroml-native-all-splits-support-v1-candidate",
+  "status": "candidate",
+  "published_at": "2026-08-31T00:00:00Z",
+  "dataset_id": "hiliftaeroml",
+  "dataset_version": "hiliftaeroml-native-v1-candidate",
+  "evaluation_reference_version": "hiliftaeroml-evaluator-v0.1-candidate",
+  "coordinate_frame": {
+    "id": "hiliftaeroml-native-body-frame-v1",
+    "axis_order": [
+      "x",
+      "y",
+      "z"
+    ],
+    "handedness": "right",
+    "length_unit": "in",
+    "normalization": "none for scoring; checkpoint normalization is model-owned and does not change native support identity"
+  },
+  "supports": [
+    {
+      "id": "surface-native-points-v1",
+      "domain": "surface",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "hiliftaeroml-native-surface-pointdata-v1",
+        "generator_version": "hiliftaeroml-evaluator-v0.1-candidate",
+        "parameters": {
+          "association": "PointData",
+          "selection": "all_native_boundary_points",
+          "ordering": "raw_source_point_index_ascending",
+          "source_pattern": "geo_LHC<id>_AoA_<angle>/boundary_geo_LHC<id>_AoA_<angle>.vtu",
+          "candidate_source_content_pinning_complete": false
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "canonical_rule",
+          "rule_id": "native-point-fan-barycentric-dual-area-v1",
+          "rule_version": "1"
+        }
+      },
+      "quantities": [
+        {
+          "id": "pressure_coefficient",
+          "unit": "",
+          "components": [
+            {
+              "id": "pressure_coefficient",
+              "target_field": "(PROJ(AVG(P))-p_inf)/q_inf",
+              "target_association": "generated",
+              "prediction_field": "pressure_coefficient"
+            }
+          ]
+        },
+        {
+          "id": "pressure",
+          "unit": "Pa",
+          "components": [
+            {
+              "id": "pressure",
+              "target_field": "PROJ(AVG(P))",
+              "target_association": "point_data",
+              "prediction_field": "pressure"
+            }
+          ]
+        },
+        {
+          "id": "wall_shear_coefficient",
+          "unit": "",
+          "components": [
+            {
+              "id": "x",
+              "target_field": "AVG(TAU_WALL(0))/q_inf",
+              "target_association": "generated",
+              "prediction_field": "tau_wall_coefficient_x"
+            },
+            {
+              "id": "y",
+              "target_field": "AVG(TAU_WALL(1))/q_inf",
+              "target_association": "generated",
+              "prediction_field": "tau_wall_coefficient_y"
+            },
+            {
+              "id": "z",
+              "target_field": "AVG(TAU_WALL(2))/q_inf",
+              "target_association": "generated",
+              "prediction_field": "tau_wall_coefficient_z"
+            }
+          ]
+        },
+        {
+          "id": "wall_shear_stress",
+          "unit": "Pa",
+          "components": [
+            {
+              "id": "x",
+              "target_field": "AVG(TAU_WALL(0))",
+              "target_association": "point_data",
+              "prediction_field": "tau_wall_x"
+            },
+            {
+              "id": "y",
+              "target_field": "AVG(TAU_WALL(1))",
+              "target_association": "point_data",
+              "prediction_field": "tau_wall_y"
+            },
+            {
+              "id": "z",
+              "target_field": "AVG(TAU_WALL(2))",
+              "target_association": "point_data",
+              "prediction_field": "tau_wall_z"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "surface_pressure_rel_l2",
+          "quantity_id": "pressure_coefficient",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_equal_entity_rel_l2",
+          "quantity_id": "pressure_coefficient",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_rel_l2",
+          "quantity_id": "wall_shear_coefficient",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_equal_entity_rel_l2",
+          "quantity_id": "wall_shear_coefficient",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_rel_l1",
+          "quantity_id": "pressure_coefficient",
+          "reduction": "relative_l1_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_rel_l1",
+          "quantity_id": "wall_shear_coefficient",
+          "reduction": "relative_l1_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_mae",
+          "quantity_id": "pressure",
+          "reduction": "mae",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_mae",
+          "quantity_id": "wall_shear_stress",
+          "reduction": "mae",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_rmse",
+          "quantity_id": "pressure",
+          "reduction": "rmse",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_rmse",
+          "quantity_id": "wall_shear_stress",
+          "reduction": "rmse",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden",
+      "notes": "Primary relative L2 uses released nodal dual area; equal-node relative L2 is diagnostic. Relative L1/L2 use the frozen Table-5 nondimensional targets (Cp and tau_wall/q_inf); dimensional MAE/RMSE use Pa after the per-case q_inf inverse scale. Chunks contribute additive sums only, followed by one square root after a complete case. No epsilon is used."
+    },
+    {
+      "id": "volume-native-valid-points-v1",
+      "domain": "volume",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "hiliftaeroml-native-volume-pointdata-v1",
+        "generator_version": "hiliftaeroml-evaluator-v0.1-candidate",
+        "parameters": {
+          "association": "PointData",
+          "selection": "raw_float32_avg(P)_not_equal_to_zero",
+          "ordering": "retained_raw_source_point_index_ascending",
+          "source_pattern": "geo_LHC<id>_AoA_<angle>/volume_geo_LHC<id>_AoA_<angle>.vtu",
+          "candidate_source_content_pinning_complete": false
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "pressure_coefficient",
+          "unit": "",
+          "components": [
+            {
+              "id": "pressure_coefficient",
+              "target_field": "(avg(P)-p_inf)/q_inf",
+              "target_association": "generated",
+              "prediction_field": "pressure_coefficient"
+            }
+          ]
+        },
+        {
+          "id": "pressure",
+          "unit": "Pa",
+          "components": [
+            {
+              "id": "pressure",
+              "target_field": "avg(P)",
+              "target_association": "point_data",
+              "prediction_field": "pressure"
+            }
+          ]
+        },
+        {
+          "id": "velocity_over_u_inf",
+          "unit": "",
+          "components": [
+            {
+              "id": "x",
+              "target_field": "avg(u)[0]/|U_inf|",
+              "target_association": "generated",
+              "prediction_field": "velocity_over_u_inf_x"
+            },
+            {
+              "id": "y",
+              "target_field": "avg(u)[1]/|U_inf|",
+              "target_association": "generated",
+              "prediction_field": "velocity_over_u_inf_y"
+            },
+            {
+              "id": "z",
+              "target_field": "avg(u)[2]/|U_inf|",
+              "target_association": "generated",
+              "prediction_field": "velocity_over_u_inf_z"
+            }
+          ]
+        },
+        {
+          "id": "velocity",
+          "unit": "m/s",
+          "components": [
+            {
+              "id": "x",
+              "target_field": "avg(u)[0]",
+              "target_association": "point_data",
+              "prediction_field": "velocity_x"
+            },
+            {
+              "id": "y",
+              "target_field": "avg(u)[1]",
+              "target_association": "point_data",
+              "prediction_field": "velocity_y"
+            },
+            {
+              "id": "z",
+              "target_field": "avg(u)[2]",
+              "target_association": "point_data",
+              "prediction_field": "velocity_z"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "volume_velocity_rel_l2",
+          "quantity_id": "velocity_over_u_inf",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_points_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_pressure_rel_l2",
+          "quantity_id": "pressure_coefficient",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_points_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_velocity_rel_l1",
+          "quantity_id": "velocity_over_u_inf",
+          "reduction": "relative_l1_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_points_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_pressure_rel_l1",
+          "quantity_id": "pressure_coefficient",
+          "reduction": "relative_l1_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_points_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_velocity_mae",
+          "quantity_id": "velocity",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_points_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_pressure_mae",
+          "quantity_id": "pressure",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_points_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_velocity_rmse",
+          "quantity_id": "velocity",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_points_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_pressure_rmse",
+          "quantity_id": "pressure",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_points_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden",
+      "notes": "Primary relative L2 weights every retained valid native PointData node equally. Relative L1/L2 use the frozen Table-5 nondimensional targets ((P-p_inf)/q_inf and U/|U_inf|); dimensional MAE/RMSE use Pa or m/s after the per-case inverse scale. Chunks contribute additive sums only, followed by one square root after a complete case. No epsilon is used."
+    },
+    {
+      "id": "aerodynamic-case-coefficients-v1",
+      "domain": "scalar_case",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "hiliftaeroml-native-surface-loads-v1",
+        "generator_version": "hiliftaeroml-evaluator-v0.1-candidate",
+        "parameters": {
+          "derivation": "canonical_force_and_moment_integration_from_native_surface_fields",
+          "candidate_source_content_pinning_complete": false
+        },
+        "support_id_rule": {
+          "kind": "canonical_rule",
+          "rule_id": "one-coefficient-row-per-case-v1",
+          "rule_version": "1"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "c_drag",
+          "unit": "",
+          "components": [
+            {
+              "id": "c_drag",
+              "target_field": "truth_c_drag",
+              "target_association": "generated",
+              "prediction_field": "predicted_c_drag"
+            }
+          ]
+        },
+        {
+          "id": "c_lift",
+          "unit": "",
+          "components": [
+            {
+              "id": "c_lift",
+              "target_field": "truth_c_lift",
+              "target_association": "generated",
+              "prediction_field": "predicted_c_lift"
+            }
+          ]
+        },
+        {
+          "id": "c_pitch",
+          "unit": "",
+          "components": [
+            {
+              "id": "c_pitch",
+              "target_field": "truth_c_pitch",
+              "target_association": "generated",
+              "prediction_field": "predicted_c_pitch"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "cd_r2",
+          "quantity_id": "c_drag",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "aggregate_only"
+        },
+        {
+          "metric_id": "cl_r2",
+          "quantity_id": "c_lift",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "aggregate_only"
+        },
+        {
+          "metric_id": "c_drag_mae",
+          "quantity_id": "c_drag",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "c_lift_mae",
+          "quantity_id": "c_lift",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "c_pitch_mae",
+          "quantity_id": "c_pitch",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden",
+      "notes": "Dataset-level R2 uses every case in the selected split; scalar MAE weights selected cases equally."
+    }
+  ],
+  "case_sets": [
+    {
+      "id": "caseset-ac791749e527",
+      "case_count": 360,
+      "index_file": "case-sets/caseset-ac791749e527/index.json",
+      "index_sha256": "2d176314affa1c96771b9c21f019955cbb161d7d0d06fb69e2b7dbab2082a6a3"
+    },
+    {
+      "id": "caseset-53990ea68fa6",
+      "case_count": 360,
+      "index_file": "case-sets/caseset-53990ea68fa6/index.json",
+      "index_sha256": "3c71bd8cf8125029f2fd7bfc55268f31e6bae92e7572271fff448d4de02f6231"
+    },
+    {
+      "id": "caseset-7a743a20b3bd",
+      "case_count": 36,
+      "index_file": "case-sets/caseset-7a743a20b3bd/index.json",
+      "index_sha256": "6d9ea1f435c59cffc4ce16cefeba52398536fd42b420914cf6574005f3c3a928"
+    },
+    {
+      "id": "caseset-02fc12ff3494",
+      "case_count": 36,
+      "index_file": "case-sets/caseset-02fc12ff3494/index.json",
+      "index_sha256": "d76f810bb60e865376062f48eb7f257406f6ad86df10404df7e2458b3414e767"
+    },
+    {
+      "id": "caseset-85ecccd9ccda",
+      "case_count": 36,
+      "index_file": "case-sets/caseset-85ecccd9ccda/index.json",
+      "index_sha256": "31b38288062c16f68aa462344be6c7c45cdb6e2e0046748b3a48c46810673bf2"
+    },
+    {
+      "id": "caseset-29693354ed8a",
+      "case_count": 900,
+      "index_file": "case-sets/caseset-29693354ed8a/index.json",
+      "index_sha256": "52671194a3bc658a26365a1ed80eb2299c46bfe741e6fa65d3276bf0c0080e22"
+    },
+    {
+      "id": "caseset-c0ecb14de138",
+      "case_count": 360,
+      "index_file": "case-sets/caseset-c0ecb14de138/index.json",
+      "index_sha256": "75ba6a8d57b90f6aef56119b0865b2760f958e746a2e5d94c6dc7542c78a6196"
+    },
+    {
+      "id": "caseset-804491c8956e",
+      "case_count": 723,
+      "index_file": "case-sets/caseset-804491c8956e/index.json",
+      "index_sha256": "0392fa064757add079cfd0fce483c29837903ab053734abc44091206f827dca8"
+    }
+  ],
+  "notes": "Closed owner-review candidate. Per-case provenance is filtered from the complete all-1,800 internal integrity manifests; no private path is part of the participant contract. Public source archive/member content pinning remains mandatory before activation."
+}

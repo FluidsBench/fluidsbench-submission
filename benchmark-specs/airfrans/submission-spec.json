@@ -71,7 +71,7 @@
   "profile_definition": {
     "id": "airfrans-boundary-layer-v1",
     "file": "velocity-profiles-v1.json",
-    "sha256": "a3022f5085bd03c784753f16957b7a81a00dadcc24a433a2fb79afd1de9f0ab7",
+    "sha256": "2d662d89a133dd9329ee6540325883825907f5a1ff771af3904e1dc477a2753c",
     "status": "owner_review_required"
   },
   "evaluation_reference_version": "prototype-1",
@@ -287,9 +287,9 @@
       "unit": "",
       "direction": "higher",
       "kind": "r2",
-      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
-      "aggregation": "flatten_all_required_profile_samples",
-      "weighting": "samples_equal"
+      "equation": "\\frac{1}{|S||Q|}\\sum_{s\\in S}\\sum_{q\\in Q}\\operatorname{clip}_{[0,1]}\\left(1-\\frac{\\sum_{c,i}(y_{c,s,q,i}-\\hat{y}_{c,s,q,i})^2}{\\sum_{c,i}(y_{c,s,q,i}-\\bar{y}_{s,q})^2}\\right)",
+      "aggregation": "equal_station_equal_quantity_mean_bounded_r2_across_split",
+      "weighting": "stations_equal_quantities_equal_samples_within_each_station_quantity_group"
     },
     {
       "id": "cd_r2",
@@ -355,7 +355,7 @@
         "velocity_x_ratio",
         "velocity_y_ratio"
       ],
-      "note": "Required Cartesian velocity profiles on the extrados at x/c = 0.25, 0.50, 0.75, and 0.95. The complete extraction contract is pinned by profile_definition."
+      "note": "Required Cartesian velocity profiles on the extrados at x/c = 0.25, 0.50, 0.75, and 0.95. One R2 is calculated for each of the eight station/quantity groups across the complete split, bounded to [0, 1], and averaged equally into the overall profile score. The complete extraction contract is pinned by profile_definition."
     }
   ],
   "splits": [

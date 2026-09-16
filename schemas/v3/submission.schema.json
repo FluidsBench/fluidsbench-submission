@@ -8,6 +8,7 @@
     "$schema",
     "schema_version",
     "submission_id",
+    "result_revision",
     "model",
     "model_type",
     "model_types",
@@ -23,6 +24,7 @@
     "case_set_id",
     "split_sha256",
     "parameter_count_millions",
+    "methodology",
     "submitter_name",
     "institution",
     "paper_url",
@@ -44,6 +46,9 @@
     },
     "submission_id": {
       "$ref": "#/$defs/submission_id"
+    },
+    "result_revision": {
+      "$ref": "#/$defs/result_revision"
     },
     "model": {
       "type": "string",
@@ -134,9 +139,15 @@
     "split_sha256": {
       "$ref": "#/$defs/sha256"
     },
+    "prediction_scope": {
+      "enum": ["surface_and_volume", "surface_only"]
+    },
     "parameter_count_millions": {
-      "type": ["number", "null"],
+      "type": "number",
       "minimum": 0
+    },
+    "methodology": {
+      "$ref": "#/$defs/fluidsbench_methodology"
     },
     "submitter_name": {
       "type": "string",
@@ -252,6 +263,9 @@
     },
     "profile_data": {
       "$ref": "#/$defs/profile_data"
+    },
+    "regional_diagnostics": {
+      "$ref": "#/$defs/regional_diagnostics"
     }
   },
   "$defs": {
@@ -266,6 +280,35 @@
     "submission_id": {
       "type": "string",
       "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"
+    },
+    "result_revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["series_id", "version", "supersedes", "change_summary"],
+      "properties": {
+        "series_id": {
+          "$ref": "#/$defs/submission_id"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "supersedes": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/submission_id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "change_summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
     },
     "dataset_id": {
       "type": "string",
@@ -297,6 +340,628 @@
     },
     "model_license": {
       "enum": ["Apache-2.0", "MIT", "BSD-2-Clause", "BSD-3-Clause", "ISC", "MPL-2.0", "CC0-1.0", "CC-BY-4.0", "CC-BY-SA-4.0"]
+    },
+    "fluidsbench_methodology": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "record_kind",
+        "record_note",
+        "architecture",
+        "data_handling",
+        "training",
+        "checkpoints",
+        "inference_compute"
+      ],
+      "properties": {
+        "format": {
+          "const": "fluidsbench-method-v1"
+        },
+        "record_kind": {
+          "enum": ["submitter_reported", "prototype_fixture", "format_example"]
+        },
+        "record_note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 3000
+        },
+        "architecture": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "description",
+            "total_parameter_count",
+            "parameter_count_basis",
+            "submitter_trainable_parameter_count",
+            "components",
+            "key_hyperparameters",
+            "input_features",
+            "predicted_fields"
+          ],
+          "properties": {
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4000
+            },
+            "total_parameter_count": {
+              "$ref": "#/$defs/methodology_parameter_count"
+            },
+            "parameter_count_basis": {
+              "enum": ["exact", "rounded_from_reported_millions"]
+            },
+            "submitter_trainable_parameter_count": {
+              "$ref": "#/$defs/methodology_parameter_count"
+            },
+            "components": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "family", "role", "description", "parameter_count"],
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/safe_id"
+                  },
+                  "family": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "role": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 3000
+                  },
+                  "parameter_count": {
+                    "$ref": "#/$defs/methodology_parameter_count"
+                  }
+                }
+              }
+            },
+            "key_hyperparameters": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "component_ids", "name", "value", "description"],
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/safe_id"
+                  },
+                  "component_ids": {
+                    "$ref": "#/$defs/methodology_component_ids"
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "value": {
+                    "type": ["string", "number", "boolean"]
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  }
+                }
+              }
+            },
+            "input_features": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "component_ids",
+                  "name",
+                  "domain",
+                  "component_count",
+                  "description"
+                ],
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/safe_id"
+                  },
+                  "component_ids": {
+                    "$ref": "#/$defs/methodology_component_ids"
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "domain": {
+                    "enum": ["case", "curve", "surface", "volume", "domain", "mesh", "global"]
+                  },
+                  "component_count": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  }
+                }
+              }
+            },
+            "predicted_fields": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "field_id",
+                  "domain",
+                  "component_count",
+                  "component_ids",
+                  "production",
+                  "description"
+                ],
+                "properties": {
+                  "field_id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,239}$"
+                  },
+                  "domain": {
+                    "enum": ["case", "curve", "surface", "volume", "domain", "global"]
+                  },
+                  "component_count": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "component_ids": {
+                    "$ref": "#/$defs/methodology_component_ids"
+                  },
+                  "production": {
+                    "enum": ["direct_model_output", "derived_from_model_output"]
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "data_handling": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["normalization", "preprocessing", "sampling"],
+          "properties": {
+            "normalization": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "preprocessing": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "sampling": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "training": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["stages"],
+          "properties": {
+            "stages": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "oneOf": [
+                  {"$ref": "#/$defs/methodology_submitter_training_stage"},
+                  {"$ref": "#/$defs/methodology_upstream_training_stage"},
+                  {"$ref": "#/$defs/methodology_prototype_training_stage"}
+                ]
+              }
+            }
+          }
+        },
+        "checkpoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "component_ids",
+              "sha256",
+              "digest_scope",
+              "bytes_description",
+              "role",
+              "selection_rule"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/safe_id"
+              },
+              "component_ids": {
+                "$ref": "#/$defs/methodology_component_ids"
+              },
+              "sha256": {
+                "$ref": "#/$defs/sha256"
+              },
+              "digest_scope": {
+                "const": "raw_loaded_file"
+              },
+              "bytes_description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "role": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              },
+              "selection_rule": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              }
+            }
+          }
+        },
+        "inference_compute": {
+          "oneOf": [
+            {"$ref": "#/$defs/methodology_measured_inference_compute"},
+            {"$ref": "#/$defs/methodology_unmeasured_inference_compute"}
+          ]
+        }
+      }
+    },
+    "methodology_parameter_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000000000000
+    },
+    "methodology_component_ids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/safe_id"
+      }
+    },
+    "methodology_submitter_training_stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "status",
+        "component_ids",
+        "description",
+        "procedure",
+        "run_count",
+        "stochastic",
+        "random_seeds",
+        "compute"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/safe_id"
+        },
+        "status": {
+          "const": "performed_by_submitter"
+        },
+        "component_ids": {
+          "$ref": "#/$defs/methodology_component_ids"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "procedure": {
+          "oneOf": [
+            {"$ref": "#/$defs/methodology_gradient_training_procedure"},
+            {"$ref": "#/$defs/methodology_other_training_procedure"}
+          ]
+        },
+        "run_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "stochastic": {
+          "type": "boolean"
+        },
+        "random_seeds": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "compute": {
+          "$ref": "#/$defs/methodology_training_compute"
+        }
+      }
+    },
+    "methodology_upstream_training_stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "component_ids", "description", "upstream_reference"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/safe_id"
+        },
+        "status": {
+          "const": "performed_upstream"
+        },
+        "component_ids": {
+          "$ref": "#/$defs/methodology_component_ids"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "upstream_reference": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "methodology_prototype_training_stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "component_ids", "description"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/safe_id"
+        },
+        "status": {
+          "const": "prototype_not_recorded"
+        },
+        "component_ids": {
+          "$ref": "#/$defs/methodology_component_ids"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "methodology_gradient_training_procedure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "loss", "optimizers", "batch", "duration"],
+      "properties": {
+        "kind": {
+          "const": "gradient_based"
+        },
+        "loss": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["description", "weighting"],
+          "properties": {
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "weighting": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        "optimizers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "learning_rate", "schedule"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "learning_rate": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "schedule": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000
+              }
+            }
+          }
+        },
+        "batch": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["value", "unit", "gradient_accumulation_steps"],
+          "properties": {
+            "value": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "gradient_accumulation_steps": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        },
+        "duration": {
+          "$ref": "#/$defs/methodology_training_duration"
+        }
+      }
+    },
+    "methodology_other_training_procedure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "description", "duration"],
+      "properties": {
+        "kind": {
+          "const": "other"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 3000
+        },
+        "duration": {
+          "$ref": "#/$defs/methodology_training_duration"
+        }
+      }
+    },
+    "methodology_training_duration": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "epochs": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "optimizer_steps": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "anyOf": [
+        {"required": ["epochs"]},
+        {"required": ["optimizer_steps"]},
+        {"required": ["description"]}
+      ]
+    },
+    "methodology_training_compute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hardware",
+        "max_concurrent_device_count",
+        "campaign_wall_time_hours",
+        "aggregate_device_hours",
+        "measurement_notes"
+      ],
+      "properties": {
+        "hardware": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "max_concurrent_device_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "campaign_wall_time_hours": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "aggregate_device_hours": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "measurement_notes": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "methodology_measured_inference_compute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "hardware",
+        "max_concurrent_device_count",
+        "case_count",
+        "campaign_wall_time_seconds",
+        "aggregate_device_time_seconds",
+        "includes_preprocessing",
+        "includes_mapping",
+        "measurement_notes"
+      ],
+      "properties": {
+        "status": {
+          "const": "measured"
+        },
+        "hardware": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "max_concurrent_device_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "case_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "campaign_wall_time_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "aggregate_device_time_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "includes_preprocessing": {
+          "type": "boolean"
+        },
+        "includes_mapping": {
+          "type": "boolean"
+        },
+        "measurement_notes": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "methodology_unmeasured_inference_compute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason"],
+      "properties": {
+        "status": {
+          "const": "not_measured"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
     },
     "reproducibility": {
       "type": "object",
@@ -383,7 +1048,7 @@
       "required": ["status", "release_id", "manifest_url", "manifest_sha256"],
       "properties": {
         "status": {
-          "const": "official"
+          "enum": ["candidate", "official"]
         },
         "release_id": {
           "$ref": "#/$defs/safe_id"
@@ -541,13 +1206,66 @@
         }
       }
     },
+    "regional_diagnostics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "file",
+        "sha256",
+        "contract_sha256",
+        "case_count",
+        "role",
+        "weight",
+        "official_score_changed"
+      ],
+      "properties": {
+        "format": {
+          "enum": [
+            "drivaerml-regional-aggregate-v2",
+            "hiliftaeroml-regional-diagnostics-aggregate-v1",
+            "hiliftaeroml-regional-diagnostics-aggregate-v2"
+          ]
+        },
+        "file": {
+          "const": "regional-diagnostics.json"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "contract_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "definition_id": {
+          "$ref": "#/$defs/safe_id"
+        },
+        "case_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "role": {
+          "const": "report_only"
+        },
+        "weight": {
+          "const": 0.0
+        },
+        "official_score_changed": {
+          "const": false
+        }
+      }
+    },
     "profile_data": {
       "type": "object",
       "additionalProperties": false,
       "required": ["format", "index_file", "case_count", "case_set_id", "profile_ground_truth_release_id", "profile_ground_truth_manifest_sha256"],
       "properties": {
         "format": {
-          "const": "fluidsbench-profile-chunks-v1"
+          "enum": [
+            "fluidsbench-profile-chunks-v1",
+            "fluidsbench-drivaerml-relative-profile-chunks-v3-candidate",
+            "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate",
+            "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
+          ]
         },
         "index_file": {
           "const": "profiles/index.json"
@@ -564,8 +1282,76 @@
         },
         "profile_ground_truth_manifest_sha256": {
           "$ref": "#/$defs/sha256"
+        },
+        "evaluator_support_release_id": {
+          "$ref": "#/$defs/safe_id"
+        },
+        "evaluator_support_manifest_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "compact_profile_implementation_binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "activation_effect",
+            "code_revision",
+            "implementation_manifest_sha256",
+            "base_dataset_evaluator_scope"
+          ],
+          "properties": {
+            "status": { "const": "unbound_worktree_candidate" },
+            "activation_effect": { "const": "none" },
+            "code_revision": { "type": "null" },
+            "implementation_manifest_sha256": { "type": "null" },
+            "base_dataset_evaluator_scope": {
+              "const": "native_v1_base_field_force_and_noncompact_scoring_only"
+            }
+          }
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
+              }
+            },
+            "required": ["format"]
+          },
+          "then": {
+            "required": [
+              "evaluator_support_release_id",
+              "evaluator_support_manifest_sha256",
+              "compact_profile_implementation_binding"
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {"required": ["evaluator_support_release_id"]},
+                {"required": ["evaluator_support_manifest_sha256"]},
+                {"required": ["compact_profile_implementation_binding"]}
+              ]
+            }
+          }
+        }
+      ]
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "scoring_support": {
+            "properties": { "status": { "const": "candidate" } },
+            "required": ["status"]
+          }
+        },
+        "required": ["scoring_support"]
+      },
+      "then": { "not": { "required": ["approval"] } }
+    }
+  ]
 }

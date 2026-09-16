@@ -20,6 +20,8 @@ if __package__:
     from .validate_submission import (
         load_json,
         manifest_with_benchmark_contract,
+        normalized_result_revision,
+        registered_hiliftaeroml_preview,
         schema_errors,
         sha256_file,
         submission_files,
@@ -30,6 +32,8 @@ else:
     from validate_submission import (
         load_json,
         manifest_with_benchmark_contract,
+        normalized_result_revision,
+        registered_hiliftaeroml_preview,
         schema_errors,
         sha256_file,
         submission_files,
@@ -42,8 +46,10 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "leaderboard" / "manifest.json"
 CLAIMS_ROOT = ROOT / "leaderboard" / "claims"
 CLAIMS_INDEX_PATH = CLAIMS_ROOT / "index.json"
+REVISION_HISTORY_PATH = ROOT / "leaderboard" / "revisions.json"
 CLAIM_SCHEMA_URL = "https://fluidsbench.org/schemas/releases/result-claim.schema.json"
 CLAIM_INDEX_SCHEMA_URL = "https://fluidsbench.org/schemas/releases/claim-index.schema.json"
+REVISION_HISTORY_SCHEMA_URL = "https://fluidsbench.org/schemas/releases/revision-history.schema.json"
 RANKING_METHOD = "competition"
 RANKING_ROUNDING = "decimal_half_up"
 RANKING_SCOPE = ["release_id", "dataset_id", "split_id"]
@@ -290,10 +296,22 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
     allowed_approval_status = "prototype" if release_status == "prototype_dummy_data" else "approved"
     for path in submission_files():
         submission = load_json(path)
-        if submission.get("approval", {}).get("status") != allowed_approval_status:
+        registered_preview = registered_hiliftaeroml_preview(
+            path,
+            submission,
+            manifest,
+            root=ROOT,
+        )
+        if (
+            registered_preview is None
+            and submission.get("approval", {}).get("status")
+            != allowed_approval_status
+        ):
             continue
         row = deepcopy(submission)
         row.pop("$schema", None)
+        if registered_preview is not None:
+            row["record_type"] = registered_preview["record_type"]
         row["parameter_count"] = row.get("parameter_count_millions")
         # .as_posix() keeps embedded feed paths platform-independent (Windows
         # str(Path) would embed backslashes and change every feed byte).
@@ -303,6 +321,12 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
         profile_index_path = ROOT / row["profile_data"]["index_file"]
         if profile_index_path.is_file():
             row["profile_data"]["index_sha256"] = sha256_file(profile_index_path)
+        regional = row.get("regional_diagnostics")
+        if isinstance(regional, dict):
+            regional_path = path.parent / regional["file"]
+            row["regional_diagnostics"]["file"] = regional_path.relative_to(ROOT).as_posix()
+            if regional_path.is_file():
+                row["regional_diagnostics"]["sha256"] = sha256_file(regional_path)
         if submission.get("schema_version") == "3.0":
             discretization_path = path.parent / submission["spatial_discretization"]["file"]
             row["spatial_discretization"]["file"] = discretization_path.relative_to(ROOT).as_posix()
@@ -317,7 +341,6 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
                     )
             case_metrics_path = path.parent / submission["case_metrics"]["file"]
             row["case_metrics"]["file"] = case_metrics_path.relative_to(ROOT).as_posix()
-
             declared_artifacts = submission.get("prediction_artifacts", [])
             checks_path = path.parent / "prediction-artifact-checks.json"
             prediction_status: dict[str, Any] = {
@@ -380,7 +403,89 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
                 if key in validation:
                     row["maintainer_validation"][key] = validation[key]
         rows[submission["dataset"]].append(row)
+    annotate_result_revisions(rows)
     return rows
+
+
+def annotate_result_revisions(rows_by_dataset: dict[str, list[dict[str, Any]]]) -> None:
+    """Add derived current-version information without changing source packages."""
+
+    groups: dict[tuple[Any, Any, Any], list[dict[str, Any]]] = {}
+    for rows in rows_by_dataset.values():
+        for row in rows:
+            revision = normalized_result_revision(row)
+            row["result_revision"] = revision
+            key = (row.get("dataset_id"), row.get("split_id"), revision.get("series_id"))
+            groups.setdefault(key, []).append(row)
+
+    for group in groups.values():
+        ordered = sorted(
+            group,
+            key=lambda row: (
+                int(row["result_revision"].get("version") or 0),
+                str(row.get("submitted_at") or ""),
+                str(row.get("submission_id") or ""),
+            ),
+        )
+        latest = ordered[-1]
+        for row in ordered:
+            row["result_revision"].update(
+                {
+                    "is_latest": row is latest,
+                    "latest_submission_id": latest.get("submission_id"),
+                    "version_count": len(ordered),
+                }
+            )
+
+
+def latest_rows_by_dataset(
+    rows_by_dataset: dict[str, list[dict[str, Any]]],
+) -> dict[str, list[dict[str, Any]]]:
+    """Return only the current revision in each result series."""
+
+    return {
+        dataset: [
+            deepcopy(row)
+            for row in rows
+            if row.get("result_revision", {}).get("is_latest") is True
+        ]
+        for dataset, rows in rows_by_dataset.items()
+    }
+
+
+def revision_history_payload(
+    manifest: dict[str, Any],
+    rows_by_dataset: dict[str, list[dict[str, Any]]],
+) -> dict[str, Any]:
+    records = sorted(
+        (deepcopy(row) for rows in rows_by_dataset.values() for row in rows),
+        key=lambda row: (
+            str(row.get("dataset_id") or ""),
+            str(row.get("split_id") or ""),
+            str(row.get("result_revision", {}).get("series_id") or ""),
+            int(row.get("result_revision", {}).get("version") or 0),
+            str(row.get("submission_id") or ""),
+        ),
+    )
+    series = {
+        (
+            row.get("dataset_id"),
+            row.get("split_id"),
+            row.get("result_revision", {}).get("series_id"),
+        )
+        for row in records
+    }
+    release = manifest.get("data_release", {})
+    return {
+        "$schema": REVISION_HISTORY_SCHEMA_URL,
+        "schema_version": "1.0",
+        "release_id": release.get("id"),
+        "release_status": release.get("status"),
+        "generated_at": release.get("generated_at"),
+        "record_count": len(records),
+        "series_count": len(series),
+        "records": records,
+    }
 
 
 def published_metric_value(value: int | float, decimal_places: int) -> tuple[Decimal, float, str]:
@@ -395,6 +500,25 @@ def published_metric_value(value: int | float, decimal_places: int) -> tuple[Dec
 
 def claim_eligibility(release_status: str, row: dict[str, Any]) -> dict[str, Any]:
     if release_status == "prototype_dummy_data":
+        if row.get("record_type") == "pre_release_reference":
+            if row.get("dataset_id") == "hiliftaeroml":
+                reason = (
+                    "Genuine HiLiftAeroML pre-release reference data retained to "
+                    "exercise the evaluator and leaderboard before submissions "
+                    "open; it is not an official benchmark result or ranking claim."
+                )
+            else:
+                reason = (
+                    "Genuine pre-release reference data retained to validate the "
+                    "DrivAerML workflow before submissions open; it is not an "
+                    "official benchmark result or ranking claim."
+                )
+            return {
+                "academic_citation": False,
+                "promotion": False,
+                "reason_code": "pre_release_reference",
+                "reason": reason,
+            }
         return {
             "academic_citation": False,
             "promotion": False,
@@ -480,6 +604,14 @@ def claim_record_path(row: dict[str, Any]) -> str:
     return f"leaderboard/claims/{row['dataset_id']}/{row['split_id']}/{row['submission_id']}.json"
 
 
+def feed_result_revision(row: dict[str, Any]) -> dict[str, Any]:
+    revision = deepcopy(row.get("result_revision") or normalized_result_revision(row))
+    revision.setdefault("is_latest", True)
+    revision.setdefault("latest_submission_id", row.get("submission_id"))
+    revision.setdefault("version_count", 1)
+    return revision
+
+
 def result_permalink(release: dict[str, Any], row: dict[str, Any]) -> str | None:
     release_view_url = release.get("release_view_url")
     if release.get("status") != "official" or not isinstance(release_view_url, str):
@@ -528,6 +660,7 @@ def scoring_support_file_binding(row: dict[str, Any]) -> dict[str, str] | None:
 
 def build_claim_record(manifest: dict[str, Any], row: dict[str, Any], row_index: int) -> dict[str, Any]:
     release = manifest["data_release"]
+    result_revision = feed_result_revision(row)
 
     source_directory = ROOT / "submissions" / row["dataset_id"] / row["submission_id"]
     bindings: dict[str, Any] = {
@@ -566,6 +699,9 @@ def build_claim_record(manifest: dict[str, Any], row: dict[str, Any], row_index:
             / row["spatial_discretization"]["summary"]["case_manifest"]["file"],
             "case_metrics": ROOT / row["case_metrics"]["file"],
         }
+        regional = row.get("regional_diagnostics")
+        if isinstance(regional, dict):
+            v3_binding_paths["regional_diagnostics"] = ROOT / regional["file"]
         for binding_name, binding_path in v3_binding_paths.items():
             binding = available_file_binding(binding_path)
             if binding is None:
@@ -605,12 +741,21 @@ def build_claim_record(manifest: dict[str, Any], row: dict[str, Any], row_index:
         },
         "result": {
             "submission_id": row["submission_id"],
+            "result_revision": result_revision,
             "model": row["model"],
             "dataset": row["dataset"],
             "dataset_id": row["dataset_id"],
             "split": row["split"],
             "split_id": row["split_id"],
             "submission_schema_version": row.get("schema_version", "1.0"),
+            **(
+                {"prediction_scope": row["prediction_scope"]}
+                if row.get("prediction_scope") in {
+                    "surface_and_volume",
+                    "surface_only",
+                }
+                else {}
+            ),
         },
         "ranking": deepcopy(row["ranking"]),
         "eligibility": deepcopy(row["claim_eligibility"]),
@@ -647,6 +792,8 @@ def expected_claim_artifacts(
             {
                 "claim_id": record["claim_id"],
                 "submission_id": record["result"]["submission_id"],
+                "series_id": record["result"]["result_revision"]["series_id"],
+                "version": record["result"]["result_revision"]["version"],
                 "dataset_id": record["result"]["dataset_id"],
                 "split_id": record["result"]["split_id"],
                 "eligible": record["eligibility"]["academic_citation"]
@@ -655,7 +802,15 @@ def expected_claim_artifacts(
                 "sha256": hashlib.sha256(json_bytes(record)).hexdigest(),
             }
         )
-    entries.sort(key=lambda entry: (entry["dataset_id"], entry["split_id"], entry["submission_id"]))
+    entries.sort(
+        key=lambda entry: (
+            entry["dataset_id"],
+            entry["split_id"],
+            entry["series_id"],
+            entry["version"],
+            entry["submission_id"],
+        )
+    )
     eligible_count = sum(entry["eligible"] for entry in entries)
     index = {
         "$schema": CLAIM_INDEX_SCHEMA_URL,
@@ -687,6 +842,56 @@ def claim_index_semantic_errors(index: dict[str, Any]) -> list[str]:
     return errors
 
 
+def revision_history_semantic_errors(history: dict[str, Any]) -> list[str]:
+    records = history.get("records")
+    if not isinstance(records, list):
+        return []  # JSON Schema reports the structural error.
+    errors: list[str] = []
+    if history.get("record_count") != len(records):
+        errors.append("record_count must equal the number of revision-history records")
+    submission_ids = [record.get("submission_id") for record in records if isinstance(record, dict)]
+    if len(submission_ids) != len(set(submission_ids)):
+        errors.append("revision-history submission IDs must be unique")
+    groups: dict[tuple[Any, Any, Any], list[dict[str, Any]]] = {}
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        revision = record.get("result_revision", {})
+        key = (record.get("dataset_id"), record.get("split_id"), revision.get("series_id"))
+        groups.setdefault(key, []).append(record)
+    if history.get("series_count") != len(groups):
+        errors.append("series_count must equal the number of dataset/split/result series")
+    for key, group in groups.items():
+        ordered = sorted(
+            group,
+            key=lambda record: record.get("result_revision", {}).get("version", 0),
+        )
+        versions = [record.get("result_revision", {}).get("version") for record in ordered]
+        if not all(isinstance(version, int) and not isinstance(version, bool) for version in versions):
+            continue
+        if sorted(versions) != list(range(1, max(versions) + 1)):
+            errors.append(f"revision series {key} must contain every sequential version from 1")
+            continue
+        latest = [record for record in ordered if record.get("result_revision", {}).get("is_latest") is True]
+        if len(latest) != 1 or latest[0].get("result_revision", {}).get("version") != max(versions):
+            errors.append(f"revision series {key} must mark only its highest version as latest")
+            continue
+        latest_submission_id = ordered[-1].get("submission_id")
+        for index, record in enumerate(ordered):
+            revision = record.get("result_revision", {})
+            expected_supersedes = None if index == 0 else ordered[index - 1].get("submission_id")
+            if revision.get("supersedes") != expected_supersedes:
+                errors.append(f"revision series {key} must link each version to its exact predecessor")
+                break
+            if (
+                revision.get("version_count") != len(ordered)
+                or revision.get("latest_submission_id") != latest_submission_id
+            ):
+                errors.append(f"revision series {key} has inconsistent derived version metadata")
+                break
+    return errors
+
+
 def official_release_seal_errors(
     expected_manifest: dict[str, Any],
     expected_index: dict[str, Any],
@@ -713,6 +918,20 @@ def official_release_seal_errors(
         errors.append("the computed feed digest changed for an existing official release ID; choose a new release ID")
     if existing_index.get("ranking_contract") != expected_index.get("ranking_contract"):
         errors.append("the ranking contract changed for an existing official release ID; choose a new release ID")
+    expected_history = expected_manifest.get("data_release", {}).get("revision_history")
+    if isinstance(expected_history, dict):
+        try:
+            existing_manifest = load_json(MANIFEST_PATH)
+        except (OSError, json.JSONDecodeError) as error:
+            errors.append(f"cannot verify the existing official revision history: {error}")
+        else:
+            existing_history = existing_manifest.get("data_release", {}).get("revision_history")
+            if existing_history != expected_history:
+                errors.append("the revision history changed for an existing official release ID; choose a new release ID")
+            elif isinstance(existing_history, dict):
+                expected_digest = existing_history.get("sha256")
+                if not REVISION_HISTORY_PATH.is_file() or sha256_file(REVISION_HISTORY_PATH) != expected_digest:
+                    errors.append("the sealed revision-history bytes no longer match the existing official release")
 
     existing_entries = {
         entry.get("file"): entry
@@ -781,16 +1000,24 @@ def expected_outputs(
     manifest: dict[str, Any],
     *,
     generated_at: str | None = None,
-) -> tuple[dict[str, Any], dict[str, list[dict[str, Any]]], list[dict[str, Any]]]:
+) -> tuple[
+    dict[str, Any],
+    dict[str, list[dict[str, Any]]],
+    list[dict[str, Any]],
+    dict[str, Any],
+]:
     updated_manifest = manifest_with_benchmark_contract(manifest)
-    rows_by_dataset = source_rows_by_dataset(updated_manifest)
+    revision_rows_by_dataset = source_rows_by_dataset(updated_manifest)
+    rows_by_dataset = latest_rows_by_dataset(revision_rows_by_dataset)
     add_release_rankings(updated_manifest, rows_by_dataset)
     all_rows: list[dict[str, Any]] = []
     latest_dates: list[str] = []
     for dataset in updated_manifest["datasets"]:
         rows = rows_by_dataset[dataset["name"]]
-        latest = latest_submission_date(rows)
+        revision_rows = revision_rows_by_dataset[dataset["name"]]
+        latest = latest_submission_date(revision_rows)
         dataset["submission_count"] = len(rows)
+        dataset["revision_count"] = len(revision_rows)
         dataset["updated_at"] = latest
         if latest is not None:
             latest_dates.append(latest)
@@ -817,6 +1044,14 @@ def expected_outputs(
     if release.get("status") == "prototype_dummy_data":
         release["id"] = f"prototype-dev-{latest_global}-{feed_sha256[:12]}"
     release["feed_sha256"] = feed_sha256
+    revision_history = revision_history_payload(updated_manifest, revision_rows_by_dataset)
+    release["revision_history"] = {
+        "schema_version": revision_history["schema_version"],
+        "file": REVISION_HISTORY_PATH.relative_to(ROOT).as_posix(),
+        "sha256": hashlib.sha256(json_bytes(revision_history)).hexdigest(),
+        "record_count": revision_history["record_count"],
+        "series_count": revision_history["series_count"],
+    }
     claim_index, _ = expected_claim_artifacts(updated_manifest, all_rows)
     release["claims"] = {
         "schema_version": claim_index["schema_version"],
@@ -825,14 +1060,16 @@ def expected_outputs(
         "record_count": claim_index["record_count"],
         "eligible_record_count": claim_index["eligible_record_count"],
     }
-    return updated_manifest, rows_by_dataset, all_rows
+    return updated_manifest, rows_by_dataset, all_rows, revision_history
 
 
 def build(manifest: dict[str, Any]) -> list[str]:
     generated_at = None
     if manifest.get("data_release", {}).get("status") != "official":
         generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-    updated_manifest, rows_by_dataset, all_rows = expected_outputs(manifest, generated_at=generated_at)
+    updated_manifest, rows_by_dataset, all_rows, revision_history = expected_outputs(
+        manifest, generated_at=generated_at
+    )
     claim_index, claim_records = expected_claim_artifacts(updated_manifest, all_rows)
     seal_errors = official_release_seal_errors(updated_manifest, claim_index, claim_records)
     if seal_errors:
@@ -841,6 +1078,7 @@ def build(manifest: dict[str, Any]) -> list[str]:
         write_json(ROOT / dataset["file"], rows_by_dataset[dataset["name"]])
     write_json(ROOT / updated_manifest["all_file"], all_rows)
     write_json(ROOT / "leaderboard.json", all_rows)
+    write_json(REVISION_HISTORY_PATH, revision_history)
     expected_claim_paths = {ROOT / path_value for path_value in claim_records}
     for stale_path in CLAIMS_ROOT.glob("*/*/*.json"):
         if stale_path not in expected_claim_paths:
@@ -853,7 +1091,7 @@ def build(manifest: dict[str, Any]) -> list[str]:
 
 
 def check_generated_feeds(manifest: dict[str, Any]) -> list[str]:
-    expected_manifest, rows_by_dataset, all_rows = expected_outputs(manifest)
+    expected_manifest, rows_by_dataset, all_rows, revision_history = expected_outputs(manifest)
     expected_claim_index, expected_claim_records = expected_claim_artifacts(expected_manifest, all_rows)
     errors = []
     for dataset in expected_manifest["datasets"]:
@@ -866,6 +1104,23 @@ def check_generated_feeds(manifest: dict[str, Any]) -> list[str]:
             errors.append(f"{path.relative_to(ROOT)} is not synchronized with source submissions")
         elif sha256_file(path) != expected_manifest["data_release"]["feed_sha256"]:
             errors.append(f"{path.relative_to(ROOT)} bytes do not match data_release.feed_sha256")
+    revision_metadata = expected_manifest["data_release"]["revision_history"]
+    if not REVISION_HISTORY_PATH.is_file() or load_json(REVISION_HISTORY_PATH) != revision_history:
+        errors.append("leaderboard/revisions.json is not synchronized with source submission revisions")
+    elif sha256_file(REVISION_HISTORY_PATH) != revision_metadata["sha256"]:
+        errors.append("leaderboard/revisions.json does not match data_release.revision_history.sha256")
+    if REVISION_HISTORY_PATH.is_file():
+        actual_revision_history = load_json(REVISION_HISTORY_PATH)
+        for error in schema_errors(
+            actual_revision_history,
+            "revision-history.schema.json",
+            schema_version="releases",
+        ):
+            errors.append(f"leaderboard/revisions.json {error}")
+        errors.extend(
+            f"leaderboard/revisions.json {error}"
+            for error in revision_history_semantic_errors(actual_revision_history)
+        )
     actual_claim_index = load_json(CLAIMS_INDEX_PATH) if CLAIMS_INDEX_PATH.is_file() else None
     if actual_claim_index is None or actual_claim_index != expected_claim_index:
         errors.append("leaderboard/claims/index.json is not synchronized with the ranked scalar feed")
@@ -960,6 +1215,9 @@ def approval_documents(
         "discretization_sha256": reviewed_submission["spatial_discretization"]["sha256"],
         "case_metrics_sha256": reviewed_submission["case_metrics"]["sha256"],
     }
+    regional = reviewed_submission.get("regional_diagnostics")
+    if isinstance(regional, dict):
+        validation["regional_diagnostics_sha256"] = regional["sha256"]
     validation_path = directory / "maintainer-validation.json"
     approved_submission = deepcopy(reviewed_submission)
     approved_submission["approval"] = {
@@ -1016,6 +1274,33 @@ def approve_submission(
         return [f"cannot read submission: {error}"]
     if submission.get("schema_version") != "3.0":
         return ["new approvals require submission schema_version=3.0"]
+    if submission.get("dataset_id") == "hiliftaeroml":
+        specification = load_json(
+            ROOT / "benchmark-specs" / "hiliftaeroml" / "submission-spec.json"
+        )
+        scoring_support = specification.get("scoring_support", {})
+        profile_definition = specification.get("profile_definition", {})
+        compact_definition = specification.get("compact_profile_definition", {})
+        compact_profile = (
+            submission.get("profile_data", {}).get("format")
+            == "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
+        )
+        if (
+            specification.get("status") != "official"
+            or scoring_support.get("status") != "official"
+            or scoring_support.get("submissions_open") is not True
+            or profile_definition.get("profile_ground_truth", {}).get("status")
+            != "published"
+            or (
+                compact_profile
+                and compact_definition.get("evaluator_support", {}).get("status")
+                != "published"
+            )
+        ):
+            return [
+                "HiLiftAeroML approval is closed until scoring support, profile "
+                "truth, and any compact evaluator support are officially published"
+            ]
     existing_approval = submission.get("approval")
     if existing_approval is not None and not update_existing:
         return ["submission already has approval metadata; pass --update-existing to update its PR URL"]
@@ -1040,7 +1325,7 @@ def approve_submission(
 
     reviewed = deepcopy(submission)
     reviewed.pop("approval", None)
-    pre_errors, _ = validate_submission_file(path)
+    pre_errors, _ = validate_many([path])
     if pre_errors:
         return [f"cannot approve an invalid source package: {error}" for error in pre_errors]
 
@@ -1063,7 +1348,7 @@ def approve_submission(
     try:
         write_json(validation_path, validation)
         write_json(path, approved_submission)
-        errors, _ = validate_submission_file(path)
+        errors, _ = validate_many([path])
         if errors:
             operation_errors.extend(f"generated approval is invalid: {error}" for error in errors)
         if not operation_errors and rebuild_feeds:

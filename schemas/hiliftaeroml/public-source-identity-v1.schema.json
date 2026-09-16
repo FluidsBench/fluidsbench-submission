@@ -1,0 +1,346 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/hiliftaeroml/public-source-identity-v1.schema.json",
+  "title": "HiLiftAeroML public archive and exact-member identity inventory v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "schema_version",
+    "status",
+    "dataset",
+    "binding_contract",
+    "source_evidence",
+    "case_set",
+    "aggregate",
+    "cases"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://fluidsbench.org/schemas/hiliftaeroml/public-source-identity-v1.schema.json"
+    },
+    "schema_id": {
+      "const": "hiliftaeroml-public-source-identity-v1"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "status": {
+      "const": "complete_archive_member_binding"
+    },
+    "dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_id",
+        "repository_type",
+        "revision",
+        "revision_url",
+        "archive_hash_algorithm",
+        "archive_hash_source"
+      ],
+      "properties": {
+        "repository_id": {"const": "nvidia/HiLiftAeroML"},
+        "repository_type": {"const": "dataset"},
+        "revision": {
+          "const": "1c266d3869bc2968ff97d2107c9c3919be03ed32"
+        },
+        "revision_url": {
+          "const": "https://huggingface.co/datasets/nvidia/HiLiftAeroML/tree/1c266d3869bc2968ff97d2107c9c3919be03ed32"
+        },
+        "archive_hash_algorithm": {"const": "SHA-256"},
+        "archive_hash_source": {"const": "Hugging Face LFS object oid"}
+      }
+    },
+    "binding_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authoritative_tier",
+        "rule",
+        "preexisting_extracted_file_policy",
+        "optional_expensive_tier"
+      ],
+      "properties": {
+        "authoritative_tier": {"const": "verified_archive_exact_member-v1"},
+        "rule": {"type": "string", "minLength": 1},
+        "preexisting_extracted_file_policy": {"type": "string", "minLength": 1},
+        "optional_expensive_tier": {"const": "extracted-member-content-sha256-v1"}
+      }
+    },
+    "source_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hf_archive_snapshot_sha256",
+        "published_volume_manifest_sha256",
+        "volume_stencil_source_content_attestations"
+      ],
+      "properties": {
+        "hf_archive_snapshot_sha256": {"$ref": "#/$defs/sha256"},
+        "published_volume_manifest_sha256": {"$ref": "#/$defs/sha256"},
+        "volume_stencil_source_content_attestations": {
+          "oneOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/attestationSet"}
+          ]
+        }
+      }
+    },
+    "case_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_count",
+        "case_ordering",
+        "case_set_sha256",
+        "case_set_sha256_rule"
+      ],
+      "properties": {
+        "case_count": {"const": 1355},
+        "case_ordering": {
+          "const": "geometry_id ascending, then numeric AoA ascending"
+        },
+        "case_set_sha256": {"$ref": "#/$defs/sha256"},
+        "case_set_sha256_rule": {
+          "const": "sha256(utf8(case_id + newline) in listed order)"
+        }
+      }
+    },
+    "aggregate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surface_archive_size_bytes",
+        "volume_archive_size_bytes",
+        "surface_member_declared_size_bytes",
+        "volume_member_declared_size_bytes",
+        "optional_extracted_content_sha256_count",
+        "local_surface_content_sha256_count",
+        "local_volume_content_sha256_count",
+        "local_extracted_content_sha256_count",
+        "member_declared_size_bytes"
+      ],
+      "properties": {
+        "surface_archive_size_bytes": {"type": "integer", "minimum": 1},
+        "volume_archive_size_bytes": {"type": "integer", "minimum": 1},
+        "surface_member_declared_size_bytes": {"type": "integer", "minimum": 1},
+        "volume_member_declared_size_bytes": {"type": "integer", "minimum": 1},
+        "member_declared_size_bytes": {"type": "integer", "minimum": 1},
+        "optional_extracted_content_sha256_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2710
+        },
+        "local_surface_content_sha256_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1355
+        },
+        "local_volume_content_sha256_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1355
+        },
+        "local_extracted_content_sha256_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2710
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1355,
+      "maxItems": 1355,
+      "items": {"$ref": "#/$defs/case"}
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "localAttestation": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "content_sha256",
+            "size_bytes",
+            "attestation_origin",
+            "receipt_sha256",
+            "record_sha256",
+            "audit_sha256",
+            "payload_sha256",
+            "public_archive_equivalence"
+          ],
+          "properties": {
+            "content_sha256": {"$ref": "#/$defs/sha256"},
+            "size_bytes": {"type": "integer", "minimum": 1},
+            "attestation_origin": {
+              "const": "velocity_profile_stencil_generator_full_file_sha256"
+            },
+            "receipt_sha256": {"$ref": "#/$defs/sha256"},
+            "record_sha256": {"$ref": "#/$defs/sha256"},
+            "audit_sha256": {"$ref": "#/$defs/sha256"},
+            "payload_sha256": {"$ref": "#/$defs/sha256"},
+            "public_archive_equivalence": {"const": "not_established"}
+          }
+        }
+      ]
+    },
+    "attestationSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_id",
+        "case_count",
+        "unique_source_content_sha256_count",
+        "chain_sha256",
+        "chain_sha256_rule",
+        "inventory_sha256",
+        "inventory_size_bytes",
+        "table5_campaign_sha256",
+        "table5_campaign_size_bytes",
+        "origins",
+        "record_bytes_rehashed",
+        "audit_bytes_rehashed",
+        "payload_bytes_stat_bound",
+        "source_full_sha256_reverified_by_finalizer_count",
+        "source_hash_origin",
+        "public_archive_equivalence"
+      ],
+      "properties": {
+        "schema_id": {
+          "const": "hiliftaeroml-volume-stencil-source-content-attestation-set-v1"
+        },
+        "case_count": {"const": 1355},
+        "unique_source_content_sha256_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1355
+        },
+        "chain_sha256": {"$ref": "#/$defs/sha256"},
+        "chain_sha256_rule": {"type": "string", "minLength": 1},
+        "inventory_sha256": {"$ref": "#/$defs/sha256"},
+        "inventory_size_bytes": {"type": "integer", "minimum": 1},
+        "table5_campaign_sha256": {"$ref": "#/$defs/sha256"},
+        "table5_campaign_size_bytes": {"type": "integer", "minimum": 1},
+        "origins": {
+          "type": "object",
+          "additionalProperties": {"type": "integer", "minimum": 1}
+        },
+        "record_bytes_rehashed": {"type": "integer", "minimum": 1},
+        "audit_bytes_rehashed": {"type": "integer", "minimum": 1},
+        "payload_bytes_stat_bound": {"type": "integer", "minimum": 1},
+        "source_full_sha256_reverified_by_finalizer_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1355
+        },
+        "source_hash_origin": {"type": "string", "minLength": 1},
+        "public_archive_equivalence": {"const": "not_established"}
+      }
+    },
+    "archive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository_path", "size_bytes", "lfs_sha256"],
+      "properties": {
+        "repository_path": {"type": "string", "minLength": 1},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "lfs_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "member": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "type",
+            "declared_size_bytes",
+            "extraction_rule",
+            "extracted_content_sha256",
+            "extracted_content_sha256_status",
+            "local_content_attestation"
+          ],
+          "properties": {
+            "path": {"type": "string", "pattern": "^[^/]+\\.vtu$"},
+            "type": {"const": "regular_file"},
+            "declared_size_bytes": {"type": "integer", "minimum": 1},
+            "extraction_rule": {
+              "const": "exactly-one-regular-member-exact-basename-no-links-v1"
+            },
+            "extracted_content_sha256": {"type": "null"},
+            "extracted_content_sha256_status": {"const": "optional_not_computed"},
+            "local_content_attestation": {"$ref": "#/$defs/localAttestation"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "type",
+            "declared_size_bytes",
+            "extraction_rule",
+            "extracted_content_sha256",
+            "extracted_content_sha256_status",
+            "local_content_attestation"
+          ],
+          "properties": {
+            "path": {"type": "string", "pattern": "^[^/]+\\.vtu$"},
+            "type": {"const": "regular_file"},
+            "declared_size_bytes": {"type": "integer", "minimum": 1},
+            "extraction_rule": {
+              "const": "exactly-one-regular-member-exact-basename-no-links-v1"
+            },
+            "extracted_content_sha256": {"$ref": "#/$defs/sha256"},
+            "extracted_content_sha256_status": {
+              "const": "complete_verified_archive_member"
+            },
+            "local_content_attestation": {"$ref": "#/$defs/localAttestation"}
+          }
+        }
+      ]
+    },
+    "domain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["archive", "member"],
+      "properties": {
+        "archive": {"$ref": "#/$defs/archive"},
+        "member": {"$ref": "#/$defs/member"}
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_index",
+        "case_id",
+        "geometry_id",
+        "aoa_degrees",
+        "surface",
+        "volume"
+      ],
+      "properties": {
+        "case_index": {"type": "integer", "minimum": 0, "maximum": 1354},
+        "case_id": {
+          "type": "string",
+          "pattern": "^geo_LHC[0-9]{3}_AoA_(4|6|8|10|12|14|16|18|20|22)$"
+        },
+        "geometry_id": {"type": "integer", "minimum": 1, "maximum": 180},
+        "aoa_degrees": {"enum": [4, 6, 8, 10, 12, 14, 16, 18, 20, 22]},
+        "surface": {"$ref": "#/$defs/domain"},
+        "volume": {"$ref": "#/$defs/domain"}
+      }
+    }
+  }
+}

@@ -35,14 +35,16 @@
     "result": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["submission_id", "model", "dataset", "dataset_id", "split", "split_id", "submission_schema_version"],
+      "required": ["submission_id", "result_revision", "model", "dataset", "dataset_id", "split", "split_id", "submission_schema_version"],
       "properties": {
         "submission_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$" },
+        "result_revision": { "$ref": "#/$defs/result_revision" },
         "model": { "type": "string", "minLength": 1 },
         "dataset": { "type": "string", "minLength": 1 },
         "dataset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
         "split": { "type": "string", "minLength": 1 },
         "split_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_]*$" },
+        "prediction_scope": { "enum": ["surface_and_volume", "surface_only"] },
         "submission_schema_version": { "enum": ["1.0", "2.0", "3.0"] }
       }
     },
@@ -93,6 +95,7 @@
         "spatial_discretization": { "$ref": "#/$defs/file_binding" },
         "discretization_cases": { "$ref": "#/$defs/file_binding" },
         "case_metrics": { "$ref": "#/$defs/file_binding" },
+        "regional_diagnostics": { "$ref": "#/$defs/file_binding" },
         "prediction_artifact_checks": { "$ref": "#/$defs/file_binding" },
         "maintainer_validation": {
           "type": "object",
@@ -127,7 +130,9 @@
             "properties": {
               "academic_citation": { "const": false },
               "promotion": { "const": false },
-              "reason_code": { "const": "prototype_dummy_data" }
+              "reason_code": {
+                "enum": ["prototype_dummy_data", "pre_release_reference"]
+              }
             }
           },
           "result_permalink": { "type": "null" },
@@ -204,6 +209,33 @@
   ],
   "$defs": {
     "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "result_revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "series_id",
+        "version",
+        "supersedes",
+        "change_summary",
+        "is_latest",
+        "latest_submission_id",
+        "version_count"
+      ],
+      "properties": {
+        "series_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$" },
+        "version": { "type": "integer", "minimum": 1 },
+        "supersedes": {
+          "oneOf": [
+            { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$" },
+            { "type": "null" }
+          ]
+        },
+        "change_summary": { "type": ["string", "null"], "minLength": 1, "maxLength": 2000 },
+        "is_latest": { "const": true },
+        "latest_submission_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$" },
+        "version_count": { "type": "integer", "minimum": 1 }
+      }
+    },
     "file_binding": {
       "type": "object",
       "additionalProperties": false,
@@ -255,7 +287,7 @@
         "academic_citation": { "type": "boolean" },
         "promotion": { "type": "boolean" },
         "reason_code": {
-          "enum": ["prototype_dummy_data", "approved_submitted_data_result", "not_approved_and_validated"]
+          "enum": ["prototype_dummy_data", "pre_release_reference", "approved_submitted_data_result", "not_approved_and_validated"]
         },
         "reason": { "type": "string", "minLength": 1 }
       }

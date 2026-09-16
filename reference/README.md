@@ -168,7 +168,21 @@ For non-negative declared weights \(\alpha_k\) that sum to one:
 S_{overall}=\sum_k \alpha_k S_k.
 \]
 
-The exact component metric IDs, transforms, caps, and weights live in each dataset's `overall_score_composite` object. The
+Some benchmark contracts instead use an explicit physics-null reference error
+\(B_k>0\):
+
+\[
+S_k^{null}=100(1-e_k/B_k).
+\]
+
+This transform is not clipped. A perfect prediction scores 100, the frozen null
+prediction scores 0, and a method worse than that null retains negative skill.
+The component is executable only after the specification publishes its finite,
+strictly positive `baseline_error`; a candidate contract may keep the composite
+at `pending_reference_baselines`, in which case submitted prototype score values
+are not recomputed or eligible for ranking.
+
+The exact component metric IDs, transforms, caps or baseline errors, and weights live in each dataset's `overall_score_composite` object. The
 validator recalculates the composite from those component values. External-aerodynamics specifications additionally partition
 those components into field, force, and diagnostic groups through `component_score_groups`. For any declared group \(G\), its
 intermediate score is the normalized weighted score

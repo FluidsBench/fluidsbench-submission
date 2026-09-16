@@ -11,6 +11,9 @@
     },
     "schema_version": { "const": "1.0" },
     "submission_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$" },
+    "dataset_evaluator_recomputation": {
+      "$ref": "#/$defs/dataset_evaluator_recomputation"
+    },
     "checks": {
       "type": "array",
       "minItems": 1,
@@ -22,6 +25,51 @@
     "safe_id": {
       "type": "string",
       "pattern": "^[a-z0-9][a-z0-9._-]{0,159}$"
+    },
+    "dataset_evaluator_recomputation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dataset_id",
+        "status",
+        "evaluator_reference_version",
+        "evaluator_code_revision",
+        "command",
+        "case_count",
+        "case_metrics_sha256",
+        "nonspatial_metric_ids",
+        "nonspatial_values_sha256",
+        "prediction_artifact_ids"
+      ],
+      "properties": {
+        "dataset_id": { "$ref": "#/$defs/safe_id" },
+        "status": { "const": "complete_native_evaluator_recomputation" },
+        "evaluator_reference_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "evaluator_code_revision": {
+          "type": "string",
+          "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+        },
+        "command": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "case_count": { "type": "integer", "minimum": 1 },
+        "case_metrics_sha256": { "$ref": "#/$defs/sha256" },
+        "nonspatial_metric_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/safe_id" }
+        },
+        "nonspatial_values_sha256": { "$ref": "#/$defs/sha256" },
+        "prediction_artifact_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/safe_id" }
+        }
+      }
     },
     "check": {
       "type": "object",

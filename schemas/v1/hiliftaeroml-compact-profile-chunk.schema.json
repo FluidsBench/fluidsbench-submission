@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/v1/hiliftaeroml-compact-profile-chunk.schema.json",
+  "title": "HiLiftAeroML compact evaluator-support profile prediction chunk",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "format",
+    "contract_id",
+    "contract_sha256",
+    "submission_id",
+    "dataset_id",
+    "split_id",
+    "case_set_id",
+    "cases"
+  ],
+  "properties": {
+    "schema": {
+      "const": "hiliftaeroml-compact-profile-chunk-v2-candidate"
+    },
+    "schema_version": {
+      "const": "2.0"
+    },
+    "format": {
+      "const": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
+    },
+    "contract_id": {
+      "const": "hiliftaeroml-compact-profile-predictions-v2-candidate"
+    },
+    "contract_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "submission_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"
+    },
+    "dataset_id": {
+      "const": "hiliftaeroml"
+    },
+    "split_id": {
+      "$ref": "#/$defs/safe_id"
+    },
+    "case_set_id": {
+      "$ref": "#/$defs/safe_id"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,159}$"
+    },
+    "positive_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "file",
+        "sha256",
+        "byte_size",
+        "array_order",
+        "ownership",
+        "content"
+      ],
+      "properties": {
+        "format": {
+          "const": "numpy-npz-v1"
+        },
+        "file": {
+          "type": "string",
+          "pattern": "^artifacts/geo_LHC[0-9]{3}_AoA_(?:4|6|8|10|12|14|16|18|20|22)/compact-profile-predictions\\.npz$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "byte_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "array_order": {
+          "const": [
+            "cp_q_delta",
+            "velocity_speed_over_u_inf"
+          ]
+        },
+        "ownership": {
+          "const": "participant"
+        },
+        "content": {
+          "const": "predictions_only"
+        }
+      }
+    },
+    "surface_cp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "support_identity_sha256",
+        "prediction_order_sha256",
+        "physical_graph_count",
+        "retained_branch_count",
+        "retained_point_count",
+        "maximum_points_per_physical_graph",
+        "quantization_scale",
+        "quantization_dtype",
+        "delta_dtype",
+        "prediction_array"
+      ],
+      "properties": {
+        "support_identity_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "prediction_order_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "physical_graph_count": {
+          "$ref": "#/$defs/positive_count"
+        },
+        "retained_branch_count": {
+          "$ref": "#/$defs/positive_count"
+        },
+        "retained_point_count": {
+          "$ref": "#/$defs/positive_count"
+        },
+        "maximum_points_per_physical_graph": {
+          "const": 128
+        },
+        "quantization_scale": {
+          "const": 1024
+        },
+        "quantization_dtype": {
+          "const": "int16"
+        },
+        "delta_dtype": {
+          "const": "int16"
+        },
+        "prediction_array": {
+          "const": "cp_q_delta"
+        }
+      }
+    },
+    "station_order": {
+      "const": [
+        "B.2",
+        "B.3",
+        "C.1",
+        "C.2",
+        "C.3"
+      ]
+    },
+    "volume_velocity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "support_identity_sha256",
+        "prediction_order_sha256",
+        "station_order",
+        "station_count",
+        "row_count",
+        "valid_row_count",
+        "invalid_row_count",
+        "prediction_dtype",
+        "prediction_array",
+        "storage_dtype",
+        "storage_encoding",
+        "stored_byte_count"
+      ],
+      "properties": {
+        "support_identity_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "prediction_order_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "station_order": {
+          "$ref": "#/$defs/station_order"
+        },
+        "station_count": {
+          "const": 5
+        },
+        "row_count": {
+          "const": 4005
+        },
+        "valid_row_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4005
+        },
+        "invalid_row_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4004
+        },
+        "prediction_dtype": {
+          "const": "float32"
+        },
+        "prediction_array": {
+          "const": "velocity_speed_over_u_inf"
+        },
+        "storage_dtype": {
+          "const": "uint8"
+        },
+        "storage_encoding": {
+          "const": "little_endian_float32_bits_unsigned_delta_modulo_2pow32_byte_shuffle_v1"
+        },
+        "stored_byte_count": {
+          "type": "integer",
+          "minimum": 4,
+          "maximum": 16020,
+          "multipleOf": 4
+        }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "artifact",
+        "surface_cp",
+        "volume_velocity"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^geo_LHC[0-9]{3}_AoA_(?:4|6|8|10|12|14|16|18|20|22)$"
+        },
+        "artifact": {
+          "$ref": "#/$defs/artifact"
+        },
+        "surface_cp": {
+          "$ref": "#/$defs/surface_cp"
+        },
+        "volume_velocity": {
+          "$ref": "#/$defs/volume_velocity"
+        }
+      }
+    }
+  }
+}

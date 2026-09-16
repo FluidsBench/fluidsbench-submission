@@ -34,6 +34,8 @@ def main() -> int:
         declaration = specification.get("overall_score_composite")
         if not isinstance(declaration, dict):
             continue
+        if declaration.get("status", "active") != "active":
+            continue
         dataset_id = specification["dataset_id"]
         tolerance = float(declaration.get("tolerance", 1e-6))
         for submission_path in sorted((ROOT / "submissions" / dataset_id).glob("*/submission.json")):

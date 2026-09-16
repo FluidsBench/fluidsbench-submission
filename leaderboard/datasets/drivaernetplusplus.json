@@ -50,7 +50,93 @@
       "index_sha256": "59ed8a9617b6eb8d320b7313c87c34934ffe9f20d6bb1fae2be8e851c08a2b2c"
     },
     "note": "CarBench Table 1 reports DrivAerNet++ surface-pressure Rel L2, pressure-field R2, and parameter count; force, volume, wall-shear, and profile metrics are placeholders until a DrivAerNet++ evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "AB-UPT prototype row (Transformer). Attention-based Universal Physics Transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 6010000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype drivaernetplusplus field predictor.",
+            "description": "Aggregate placeholder for the named AB-UPT architecture. Attention-based Universal Physics Transformer family. No unverified internal split is invented.",
+            "parameter_count": 6010000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "AB-UPT",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-pressure-native.p",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Dataset-native kinematic pressure on every official DrivAerNet++ surface point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 6.01,
+    "result_revision": {
+      "series_id": "drivaernetpp-ab-upt",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "drivaernetpp-ab-upt",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 86.0,
@@ -124,7 +210,93 @@
       "index_sha256": "b4d345569856e59bfa0ab14724d0d2ab147b401d9d6aa10f2cf6b93305332f12"
     },
     "note": "CarBench Table 1 reports DrivAerNet++ surface-pressure Rel L2, pressure-field R2, and parameter count; force, volume, wall-shear, and profile metrics are placeholders until a DrivAerNet++ evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Fourier Neural Operator prototype row (Neural operator). Fourier-domain neural-operator family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 2100000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Neural operator",
+            "role": "Prototype drivaernetplusplus field predictor.",
+            "description": "Aggregate placeholder for the named Fourier Neural Operator architecture. Fourier-domain neural-operator family. No unverified internal split is invented.",
+            "parameter_count": 2100000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Fourier Neural Operator",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-pressure-native.p",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Dataset-native kinematic pressure on every official DrivAerNet++ surface point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 2.1,
+    "result_revision": {
+      "series_id": "drivaernetpp-neuraloperator",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "drivaernetpp-neuraloperator",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 71.54717,
@@ -199,7 +371,93 @@
       "index_sha256": "48f85e57ed717816cdc48c88d56c55831e61d98b87f5041d372eb389039b3819"
     },
     "note": "CarBench Table 1 reports DrivAerNet++ surface-pressure Rel L2, pressure-field R2, and parameter count; force, volume, wall-shear, and profile metrics are placeholders until a DrivAerNet++ evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Point-MAE prototype row (Point cloud). Masked point-cloud autoencoder family adapted to field prediction. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 1670000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Point cloud",
+            "role": "Prototype drivaernetplusplus field predictor.",
+            "description": "Aggregate placeholder for the named Point-MAE architecture. Masked point-cloud autoencoder family adapted to field prediction. No unverified internal split is invented.",
+            "parameter_count": 1670000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Point-MAE",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-pressure-native.p",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Dataset-native kinematic pressure on every official DrivAerNet++ surface point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 1.67,
+    "result_revision": {
+      "series_id": "drivaernetpp-pointmae",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "drivaernetpp-pointmae",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 73.401961,
@@ -273,7 +531,93 @@
       "index_sha256": "bda2c08ddba8253365e4af4fbd81db1f2215745b4addadc3c05e567495bf72c5"
     },
     "note": "CarBench Table 1 reports DrivAerNet++ surface-pressure Rel L2, pressure-field R2, and parameter count; force, volume, wall-shear, and profile metrics are placeholders until a DrivAerNet++ evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "PointNet prototype row (Point cloud). PointNet family using shared pointwise features and permutation-invariant aggregation. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 1670000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Point cloud",
+            "role": "Prototype drivaernetplusplus field predictor.",
+            "description": "Aggregate placeholder for the named PointNet architecture. PointNet family using shared pointwise features and permutation-invariant aggregation. No unverified internal split is invented.",
+            "parameter_count": 1670000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "PointNet",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-pressure-native.p",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Dataset-native kinematic pressure on every official DrivAerNet++ surface point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 1.67,
+    "result_revision": {
+      "series_id": "drivaernetpp-pointnet",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "drivaernetpp-pointnet",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 64.122642,
@@ -347,7 +691,93 @@
       "index_sha256": "be8222faa6486712955e3e1beeec5fa99c41f5fbf845165fb110db64126fa400"
     },
     "note": "CarBench Table 1 reports DrivAerNet++ surface-pressure Rel L2, pressure-field R2, and parameter count; force, volume, wall-shear, and profile metrics are placeholders until a DrivAerNet++ evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "PointNet-Large prototype row (Point cloud). Larger PointNet-family variant. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 32580000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Point cloud",
+            "role": "Prototype drivaernetplusplus field predictor.",
+            "description": "Aggregate placeholder for the named PointNet-Large architecture. Larger PointNet-family variant. No unverified internal split is invented.",
+            "parameter_count": 32580000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "PointNet-Large",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-pressure-native.p",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Dataset-native kinematic pressure on every official DrivAerNet++ surface point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 32.58,
+    "result_revision": {
+      "series_id": "drivaernetpp-pointnet-large",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "drivaernetpp-pointnet-large",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 74.62500000000001,
@@ -422,7 +852,93 @@
       "index_sha256": "482f8c64e3a283ceb9a8babe29b2a498653e95209b598ed70a9e85e40fcca287"
     },
     "note": "CarBench Table 1 reports DrivAerNet++ surface-pressure Rel L2, pressure-field R2, and parameter count; force, volume, wall-shear, and profile metrics are placeholders until a DrivAerNet++ evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Point Transformer prototype row (Point cloud). Point-cloud transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 3050000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Point cloud",
+            "role": "Prototype drivaernetplusplus field predictor.",
+            "description": "Aggregate placeholder for the named Point Transformer architecture. Point-cloud transformer family. No unverified internal split is invented.",
+            "parameter_count": 3050000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Point Transformer",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-pressure-native.p",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Dataset-native kinematic pressure on every official DrivAerNet++ surface point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 3.05,
+    "result_revision": {
+      "series_id": "drivaernetpp-pointtransformer",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "drivaernetpp-pointtransformer",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 80.717172,
@@ -496,7 +1012,93 @@
       "index_sha256": "ee3fb36c3ea8504c1949f01336d6a9387fe7c7fd5df3dcb02b79ef17b10e5d84"
     },
     "note": "CarBench Table 1 reports DrivAerNet++ surface-pressure Rel L2, pressure-field R2, and parameter count; force, volume, wall-shear, and profile metrics are placeholders until a DrivAerNet++ evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "RegDGCNN prototype row (GNN). Dynamic graph-convolution family adapted to regression. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 1440000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "GNN",
+            "role": "Prototype drivaernetplusplus field predictor.",
+            "description": "Aggregate placeholder for the named RegDGCNN architecture. Dynamic graph-convolution family adapted to regression. No unverified internal split is invented.",
+            "parameter_count": 1440000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "RegDGCNN",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-pressure-native.p",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Dataset-native kinematic pressure on every official DrivAerNet++ surface point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 1.44,
+    "result_revision": {
+      "series_id": "drivaernetpp-regdgcnn",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "drivaernetpp-regdgcnn",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 78.65957399999999,
@@ -570,7 +1172,93 @@
       "index_sha256": "1b4b3145a09d0d9eddccdf0bc3071f76d9e6d2bfeb55524e59d6178b12ba600e"
     },
     "note": "CarBench Table 1 reports DrivAerNet++ surface-pressure Rel L2, pressure-field R2, and parameter count; force, volume, wall-shear, and profile metrics are placeholders until a DrivAerNet++ evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Transolver prototype row (Transformer). Physics-attention transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 2470000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype drivaernetplusplus field predictor.",
+            "description": "Aggregate placeholder for the named Transolver architecture. Physics-attention transformer family. No unverified internal split is invented.",
+            "parameter_count": 2470000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Transolver",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-pressure-native.p",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Dataset-native kinematic pressure on every official DrivAerNet++ surface point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 2.47,
+    "result_revision": {
+      "series_id": "drivaernetpp-transolver",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "drivaernetpp-transolver",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 85.548077,
@@ -644,7 +1332,93 @@
       "index_sha256": "099b90c96531874752c6e4b36ade510889ccc906703a83d5236f735ddabdbb6f"
     },
     "note": "CarBench Table 1 reports DrivAerNet++ surface-pressure Rel L2, pressure-field R2, and parameter count; force, volume, wall-shear, and profile metrics are placeholders until a DrivAerNet++ evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Transolver-Large prototype row (Transformer). Larger Transolver physics-attention variant. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 7580000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype drivaernetplusplus field predictor.",
+            "description": "Aggregate placeholder for the named Transolver-Large architecture. Larger Transolver physics-attention variant. No unverified internal split is invented.",
+            "parameter_count": 7580000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Transolver-Large",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-pressure-native.p",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Dataset-native kinematic pressure on every official DrivAerNet++ surface point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 7.58,
+    "result_revision": {
+      "series_id": "drivaernetpp-transolver-large",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "drivaernetpp-transolver-large",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 86.254717,
@@ -718,7 +1492,93 @@
       "index_sha256": "8e275b411a5a745c76d44e9851e97bb137e7150afccd81267f141ee917b504a6"
     },
     "note": "CarBench Table 1 reports DrivAerNet++ surface-pressure Rel L2, pressure-field R2, and parameter count; force, volume, wall-shear, and profile metrics are placeholders until a DrivAerNet++ evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Transolver++ prototype row (Transformer). Enhanced Transolver physics-attention family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 1810000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype drivaernetplusplus field predictor.",
+            "description": "Aggregate placeholder for the named Transolver++ architecture. Enhanced Transolver physics-attention family. No unverified internal split is invented.",
+            "parameter_count": 1810000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Transolver++",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-pressure-native.p",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Dataset-native kinematic pressure on every official DrivAerNet++ surface point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 1.81,
+    "result_revision": {
+      "series_id": "drivaernetpp-transolver-plus-plus",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "drivaernetpp-transolver-plus-plus",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 84.72815499999999,
@@ -792,7 +1652,93 @@
       "index_sha256": "eb89319cb2fe72bb412a2570dd4d4182753c4adca94f7bf62de1c6a407b5e4fb"
     },
     "note": "CarBench Table 1 reports DrivAerNet++ surface-pressure Rel L2, pressure-field R2, and parameter count; force, volume, wall-shear, and profile metrics are placeholders until a DrivAerNet++ evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "TriPNet prototype row (Implicit field). Implicit-field prediction family using tri-plane representations. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 24100000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Implicit field",
+            "role": "Prototype drivaernetplusplus field predictor.",
+            "description": "Aggregate placeholder for the named TriPNet architecture. Implicit-field prediction family using tri-plane representations. No unverified internal split is invented.",
+            "parameter_count": 24100000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "TriPNet",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-pressure-native.p",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Dataset-native kinematic pressure on every official DrivAerNet++ surface point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 24.1,
+    "result_revision": {
+      "series_id": "drivaernetpp-tripnet",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "drivaernetpp-tripnet",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 83.591837,
@@ -866,7 +1812,93 @@
       "index_sha256": "5895fecdac45c344c823ab774c0c7fc3e8b61b231c8dbcb10ca6bf376361796d"
     },
     "note": "Dummy DrivAerNet++ submission with compact profile curves. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "MeshGraphNets prototype row (GNN). Encode-process-decode message-passing graph-network family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 9600000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "GNN",
+            "role": "Prototype drivaernetplusplus field predictor.",
+            "description": "Aggregate placeholder for the named MeshGraphNets architecture. Encode-process-decode message-passing graph-network family. No unverified internal split is invented.",
+            "parameter_count": 9600000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "MeshGraphNets",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-pressure-native.p",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Dataset-native kinematic pressure on every official DrivAerNet++ surface point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 9.6,
+    "result_revision": {
+      "series_id": "dummy-drivaernetplusplus-surfacegnn",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "dummy-drivaernetplusplus-surfacegnn-v1",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 96.616162,

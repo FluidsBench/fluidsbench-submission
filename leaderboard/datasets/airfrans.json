@@ -66,7 +66,113 @@
       "index_sha256": "12e8534dc202dd62de16abf0c7dbb8550e0f87bbad0f950d42dbf45f43a56d9a"
     },
     "note": "AirfRANS full-data baseline from the arXiv v3 benchmark tables. Field columns are prototype conversions from normalized MSE values; force R2 columns are placeholders derived from force relative-error comparisons until a dimensional FluidsBench evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Graph U-Net prototype row (GNN). Multiscale graph encoder-decoder family with graph pooling and unpooling. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 70000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "GNN",
+            "role": "Prototype airfrans field predictor.",
+            "description": "Aggregate placeholder for the named Graph U-Net architecture. Multiscale graph encoder-decoder family with graph pooling and unpooling. No unverified internal split is invented.",
+            "parameter_count": 70000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Graph U-Net",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.U",
+            "domain": "domain",
+            "component_count": 2,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Cartesian velocity on every official two-dimensional flow-domain point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.p",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Kinematic pressure on every official two-dimensional flow-domain point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "airfoil-curve-native.p",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Kinematic pressure on the official airfoil boundary curve; this may be derived by selecting the corresponding model output. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 0.07,
+    "result_revision": {
+      "series_id": "airfrans-graph-u-net-full",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "airfrans-graph-u-net-full",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 43.93333333333334,
@@ -156,7 +262,113 @@
       "index_sha256": "ed1923a5c93d3d03d7756231f52d151dff88db066ecb26b29c56ea8423717b50"
     },
     "note": "AirfRANS full-data baseline from the arXiv v3 benchmark tables. Field columns are prototype conversions from normalized MSE values; force R2 columns are placeholders derived from force relative-error comparisons until a dimensional FluidsBench evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "GraphSAGE prototype row (GNN). Graph neighborhood-aggregation family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 30000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "GNN",
+            "role": "Prototype airfrans field predictor.",
+            "description": "Aggregate placeholder for the named GraphSAGE architecture. Graph neighborhood-aggregation family. No unverified internal split is invented.",
+            "parameter_count": 30000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "GraphSAGE",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.U",
+            "domain": "domain",
+            "component_count": 2,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Cartesian velocity on every official two-dimensional flow-domain point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.p",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Kinematic pressure on every official two-dimensional flow-domain point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "airfoil-curve-native.p",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Kinematic pressure on the official airfoil boundary curve; this may be derived by selecting the corresponding model output. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 0.03,
+    "result_revision": {
+      "series_id": "airfrans-graphsage-full",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "airfrans-graphsage-full",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 55.33533333333334,
@@ -246,7 +458,113 @@
       "index_sha256": "741e3d20b4de92ea4694b3faa59934f22c6394c4997028b2f4b4155db63d655f"
     },
     "note": "AirfRANS full-data baseline from the arXiv v3 benchmark tables. Field columns are prototype conversions from normalized MSE values; force R2 columns are placeholders derived from force relative-error comparisons until a dimensional FluidsBench evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "MLP prototype row (MLP). Pointwise multilayer-perceptron family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 20000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "MLP",
+            "role": "Prototype airfrans field predictor.",
+            "description": "Aggregate placeholder for the named MLP architecture. Pointwise multilayer-perceptron family. No unverified internal split is invented.",
+            "parameter_count": 20000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "MLP",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.U",
+            "domain": "domain",
+            "component_count": 2,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Cartesian velocity on every official two-dimensional flow-domain point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.p",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Kinematic pressure on every official two-dimensional flow-domain point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "airfoil-curve-native.p",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Kinematic pressure on the official airfoil boundary curve; this may be derived by selecting the corresponding model output. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 0.02,
+    "result_revision": {
+      "series_id": "airfrans-mlp-full",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "airfrans-mlp-full",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 54.155,
@@ -336,7 +654,113 @@
       "index_sha256": "d641a1354733cad42bbc4fb56f0df533fc42394fe963f14dfab4bbd238945754"
     },
     "note": "AirfRANS full-data baseline from the arXiv v3 benchmark tables. Field columns are prototype conversions from normalized MSE values; force R2 columns are placeholders derived from force relative-error comparisons until a dimensional FluidsBench evaluator is available. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "PointNet prototype row (Point cloud). PointNet family using shared pointwise features and permutation-invariant aggregation. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 80000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Point cloud",
+            "role": "Prototype airfrans field predictor.",
+            "description": "Aggregate placeholder for the named PointNet architecture. PointNet family using shared pointwise features and permutation-invariant aggregation. No unverified internal split is invented.",
+            "parameter_count": 80000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "PointNet",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.U",
+            "domain": "domain",
+            "component_count": 2,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Cartesian velocity on every official two-dimensional flow-domain point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.p",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Kinematic pressure on every official two-dimensional flow-domain point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "airfoil-curve-native.p",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Kinematic pressure on the official airfoil boundary curve; this may be derived by selecting the corresponding model output. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 0.08,
+    "result_revision": {
+      "series_id": "airfrans-pointnet-full",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "airfrans-pointnet-full",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 37.06166666666667,
@@ -426,7 +850,113 @@
       "index_sha256": "2a1cec2feb48dad9d4098b1f36d5e854fc1e18d4e1ef6e4931d30d4dc6b12100"
     },
     "note": "Dummy AirfRANS submission with compact profile curves. The displayed split assignment is illustrative dummy data. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "MeshGraphNets prototype row (GNN). Encode-process-decode message-passing graph-network family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 4900000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "GNN",
+            "role": "Prototype airfrans field predictor.",
+            "description": "Aggregate placeholder for the named MeshGraphNets architecture. Encode-process-decode message-passing graph-network family. No unverified internal split is invented.",
+            "parameter_count": 4900000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "MeshGraphNets",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.U",
+            "domain": "domain",
+            "component_count": 2,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Cartesian velocity on every official two-dimensional flow-domain point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.p",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Kinematic pressure on every official two-dimensional flow-domain point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "airfoil-curve-native.p",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Kinematic pressure on the official airfoil boundary curve; this may be derived by selecting the corresponding model output. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 4.9,
+    "result_revision": {
+      "series_id": "dummy-airfrans-airfoiloperator",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "dummy-airfrans-airfoiloperator-v1",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 78.72800000000001,

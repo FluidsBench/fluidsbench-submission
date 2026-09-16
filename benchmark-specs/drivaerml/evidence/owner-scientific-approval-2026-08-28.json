@@ -1,0 +1,84 @@
+{
+  "schema": "drivaerml-owner-scientific-approval-v1",
+  "schema_version": 1,
+  "dataset_id": "drivaerml",
+  "status": "approved",
+  "approved_by": "neilashton",
+  "approved_by_name": "Neil Ashton",
+  "approved_at": "2026-08-28",
+  "authority": "dataset_owner",
+  "scope": {
+    "dataset_repository": "neashton/drivaerml",
+    "dataset_revision": "7a5c0948ce27be709b1116a3a190f806e7a8f79f",
+    "profile_definition_id": "drivaerml-diagnostics-v10-candidate",
+    "ranked_profile_family": "drivaerml-autocfd5-constant-v1",
+    "report_only_profile_families": [
+      "drivaerml-velocity-relative-v3",
+      "drivaerml_cp_relative_v1"
+    ]
+  },
+  "approved_scientific_decisions": {
+    "native_field_support": "Approve native surface VTP CellData and reconstructed native volume VTU CellData, raw VTK cell order, surface-area weighting, and equal-native-cell volume weighting for the candidate benchmark.",
+    "force_convention": "Approve the published pressure gauge, wall-shear sign, constant reference quantities, body-force and body-moment equations, and candidate CmPitch truth defined as (Clf-Clr)/2; Clf and Clr remain report-only.",
+    "velocity_profiles": "Approve all 16 fixed-location AutoCFD5 lines on the published 10 mm grid and the separately labelled geometry-relative family for report-only visualization. Truth is the exact zeroth-order native CellData value selected by the published support. Visible stair steps are expected native-cell sampling and must not be smoothed, interpolated, extrapolated, snapped, or joined across unsupported gaps in truth or scoring.",
+    "velocity_validity": "Approve the published deterministic containing-cell support, explicit unsupported rows and segment breaks, the 1e-6 m boundary closure tolerance, and the 1e-3 steradian fail-closed polyhedron classification tolerance as sufficient for this release candidate. The earlier proposed 1/2/5/10 mm convergence and 0.5/1/2 micrometre tolerance campaigns are not additional scientific activation gates for the accepted 10 mm support.",
+    "continuous_cp_cuts": "Approve the four published continuous native-surface cuts: upper-body centreline, underbody centreline, sidewall at z=0.15 m, and front-left wheelhouse at y=-0.6 m. Approve native intersection-segment support, source ordering, explicit segment boundaries, normalized native-segment-length reduction, and no interpolation or resampling.",
+    "cp_coordinates": "Approve surface arc length as the scoring and reproducibility coordinate and the native segment-midpoint streamwise x coordinate in metres as a display-only coordinate. Physical x may repeat or reverse locally and must not be sorted or used to join separate segments.",
+    "profile_truth": "Approve the published all-484-case native CFD profile truth and its run_419 Transolver array-level validation as sufficient scientific evidence for the candidate profile support.",
+    "discrete_cp_probes": "Confirm that the historical 209 discrete Cp probes remain excluded from participant submissions, scoring, and activation."
+  },
+  "evidence_bindings": {
+    "native_source_pin": {
+      "file": "proposal/native-source-pin.json",
+      "sha256": "4fc9077f8f23f4994c98f4d0e7a17aef7b998de4c996638e3a8a616b6d923fdd"
+    },
+    "profile_definition_v10": {
+      "file": "drivaerml-diagnostics-v10.json",
+      "sha256": "9136feac7ac276d91f7cbcfb6c558beffc97cfaf0f0174626fee67a1f2a52bd0"
+    },
+    "force_replay_all484": {
+      "file": "evidence/force-replay-all484.json",
+      "sha256": "631cd02c3a4215b254489652c1d93dfd781ecdb9478ff1ab11f24294743e8a17"
+    },
+    "native_volume_audit_all484": {
+      "file": "evidence/native-volume-equal-cell-primary-all484.json",
+      "sha256": "bda42a125ffb4d6484756e77ac7e495974f39d4bce3e663154322e9e560827c7"
+    },
+    "velocity_placement_all484": {
+      "file": "support/relative-v3/manifests/velocity-placement-all484-v1.json",
+      "sha256": "70627d6af9e6b254739b29d54d856b470d6152066e09a1097ebe20c034179925"
+    },
+    "velocity_mapping_all484": {
+      "file": "support/relative-v3/manifests/velocity-mapping-all484-v1.json",
+      "sha256": "9b88c36e2268bf72c9baec9418ef2d9afc9faba1d98c9c12ed73b79e683a6a3d"
+    },
+    "cp_support_all484": {
+      "file": "support/relative-v3/manifests/cp-native-support-all484-v3.json",
+      "sha256": "4e6a4c3495ea4938895868162480dcb20b5bbea42114c94013a2c76e26128c90"
+    },
+    "retained_run419_validation": {
+      "file": "evidence/drivaerml-native-profile-truth-run419-validation-v1.json",
+      "sha256": "ea614d5404a5a0c83283d2bc19d5153214297863a009cf7ff469921d86b8edf6"
+    },
+    "published_native_v3_profile_truth": {
+      "website_repository": "neilashton/fluidsbench",
+      "website_dev_revision": "7fbae2b8530bc648090c8f605b8babeeba6aa49e",
+      "case_count": 484,
+      "series_count": 19360,
+      "index_sha256": "e7cf14f161fc7dbf22794e6f66db4e157329be960d2a4368140e08cf0608a5ae",
+      "release_receipt_sha256": "ef59ca838c828ac1c5505ef4d35f1b91a55e07ad90df359491599114ec0d878c",
+      "website_ground_truth_manifest_sha256": "88bc872ae66c181aaff94ee15a2550345ec55d294f8444b622fd2c0749e09e47"
+    }
+  },
+  "non_activation": {
+    "submissions_opened": false,
+    "official_ranking_enabled": false,
+    "production_evaluator_release_bound": false,
+    "scoring_support_release_bound": false,
+    "genuine_three_model_sensitivity_complete": false,
+    "independent_full_submission_dry_run_complete": false,
+    "relative_profile_format_authorized": false,
+    "relative_composite_weight": 0.0,
+    "note": "This record completes the dataset-owner scientific review of the cited candidate evidence and decisions. It is not the final release-specific approval record, which must bind the frozen evaluator, scoring-support release, sensitivity evidence, and approving release commit."
+  }
+}

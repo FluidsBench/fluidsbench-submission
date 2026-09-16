@@ -35,8 +35,15 @@
     "split_id": { "$ref": "#/$defs/safe_id" },
     "split_sha256": { "$ref": "#/$defs/sha256" },
     "case_set_id": { "$ref": "#/$defs/safe_id" },
+    "prediction_scope": { "enum": ["surface_and_volume", "surface_only"] },
     "reference_version": { "type": "string", "minLength": 1, "maxLength": 160 },
     "code_revision": { "type": "string", "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$" },
+    "dataset_evaluator_binding": {
+      "$ref": "#/$defs/dataset_evaluator_binding"
+    },
+    "compact_profile_implementation_binding": {
+      "$ref": "#/$defs/compact_profile_implementation_binding"
+    },
     "command": { "type": "string", "minLength": 1, "maxLength": 2000 },
     "generated_at": { "type": "string", "format": "date-time" },
     "status": { "const": "submitted_evaluation" },
@@ -52,6 +59,7 @@
     "scoring_support_manifest_sha256": { "$ref": "#/$defs/sha256" },
     "discretization_sha256": { "$ref": "#/$defs/sha256" },
     "case_metrics_sha256": { "$ref": "#/$defs/sha256" },
+    "regional_diagnostics_sha256": { "$ref": "#/$defs/sha256" },
     "notes": { "type": "string" }
   },
   "$defs": {
@@ -59,6 +67,43 @@
     "safe_id": {
       "type": "string",
       "pattern": "^[a-z0-9][a-z0-9._-]{0,159}$"
+    },
+    "dataset_evaluator_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reference_version", "code_revision"],
+      "properties": {
+        "status": { "const": "frozen" },
+        "reference_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "code_revision": {
+          "type": "string",
+          "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"
+        }
+      }
+    },
+    "compact_profile_implementation_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "activation_effect",
+        "code_revision",
+        "implementation_manifest_sha256",
+        "base_dataset_evaluator_scope"
+      ],
+      "properties": {
+        "status": { "const": "unbound_worktree_candidate" },
+        "activation_effect": { "const": "none" },
+        "code_revision": { "type": "null" },
+        "implementation_manifest_sha256": { "type": "null" },
+        "base_dataset_evaluator_scope": {
+          "const": "native_v1_base_field_force_and_noncompact_scoring_only"
+        }
+      }
     }
   }
 }

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import shutil
 import tempfile
 import unittest
@@ -19,9 +20,11 @@ from scripts.validate_submission import (
     validate_open_reproducibility,
     validate_metrics,
     validate_profiles,
+    validate_result_revisions,
     validate_v3_case_metrics,
     validate_v3_discretization,
     validate_v3_prediction_metadata,
+    validate_drivaerml_maintainer_receipt_hash,
     validate_submission_file,
 )
 
@@ -46,6 +49,9 @@ def make_real_package(destination: Path, *, approved: bool = False) -> Path:
     commit = "a" * 40
     submission["$schema"] = "https://fluidsbench.org/schemas/v2/submission.schema.json"
     submission["schema_version"] = "2.0"
+    # This helper models a historical v2 contribution, predating the optional
+    # structured method record carried by today's prototype fixtures.
+    submission.pop("methodology", None)
     ground_truth = load_json(ROOT / "leaderboard" / "manifest.json")["data_release"]["profile_ground_truth"]
     submission["profile_data"]["profile_ground_truth_release_id"] = ground_truth["release_id"]
     submission["profile_data"]["profile_ground_truth_manifest_sha256"] = ground_truth["manifest_sha256"]
@@ -146,6 +152,92 @@ def without_storage_error(errors: list[str]) -> list[str]:
 
 
 class ValidatorTests(unittest.TestCase):
+    def test_result_revisions_are_sequential_and_keep_the_same_owner_scope(self) -> None:
+        first_path = Path("/tmp/team-model-v1/submission.json")
+        second_path = Path("/tmp/team-model-v2/submission.json")
+        first = {
+            "submission_id": "team-model-v1",
+            "result_revision": {
+                "series_id": "team-model",
+                "version": 1,
+                "supersedes": None,
+                "change_summary": "Initial result.",
+            },
+            "dataset_id": "example",
+            "split_id": "full",
+            "submitter_name": "Example Researcher",
+            "institution": "Example University",
+            "submitted_at": "2026-08-01",
+            "approval": {"status": "approved"},
+        }
+        second = {
+            **first,
+            "submission_id": "team-model-v2",
+            "submitted_at": "2026-08-02",
+            "approval": {},
+            "result_revision": {
+                "series_id": "team-model",
+                "version": 2,
+                "supersedes": "team-model-v1",
+                "change_summary": "Retrained checkpoint.",
+            },
+        }
+        self.assertEqual(
+            validate_result_revisions(
+                [(first_path, first), (second_path, second)],
+                focus_paths={second_path},
+            ),
+            [],
+        )
+
+        malformed = dict(second)
+        malformed["result_revision"] = {
+            **second["result_revision"],
+            "version": 3,
+            "supersedes": "team-model-v1",
+        }
+        malformed["institution"] = "Different University"
+        joined = "\n".join(
+            validate_result_revisions(
+                [(first_path, first), (second_path, malformed)],
+                focus_paths={second_path},
+            )
+        )
+        self.assertIn("submission_id must equal", joined)
+        self.assertIn("must supersede 'team-model-v2'", joined)
+
+    def test_result_revision_v2_can_supersede_an_unnumbered_legacy_result(self) -> None:
+        legacy_path = Path("/tmp/team-model/submission.json")
+        update_path = Path("/tmp/team-model-v2/submission.json")
+        legacy = {
+            "submission_id": "team-model",
+            "dataset_id": "example",
+            "split_id": "full",
+            "submitter_name": "Example Researcher",
+            "institution": "Example University",
+            "submitted_at": "2026-07-01",
+            "approval": {"status": "approved"},
+        }
+        update = {
+            **legacy,
+            "submission_id": "team-model-v2",
+            "submitted_at": "2026-08-01",
+            "approval": {},
+            "result_revision": {
+                "series_id": "team-model",
+                "version": 2,
+                "supersedes": "team-model",
+                "change_summary": "Updated checkpoint.",
+            },
+        }
+        self.assertEqual(
+            validate_result_revisions(
+                [(legacy_path, legacy), (update_path, update)],
+                focus_paths={update_path},
+            ),
+            [],
+        )
+
     def test_benchmark_contract_overlay_allows_manifest_rebuild_after_spec_change(self) -> None:
         manifest = load_json(ROOT / "leaderboard" / "manifest.json")
         airfrans = next(dataset for dataset in manifest["datasets"] if dataset["slug"] == "airfrans")
@@ -312,6 +404,7 @@ class ValidatorTests(unittest.TestCase):
     def test_v3_optional_reproducibility_artifacts_may_be_omitted(self) -> None:
         submission = load_json(V3_TEMPLATE / "submission.json")
         evidence = load_json(V3_TEMPLATE / "evaluation-evidence.json")
+        submission["methodology"]["record_kind"] = "submitter_reported"
         submission.pop("code_url")
         submission["evaluation"].pop("code_revision")
         evidence.pop("code_revision")
@@ -623,6 +716,102 @@ class ValidatorTests(unittest.TestCase):
             with patch("scripts.validate_submission.ROOT", temporary_root):
                 validate_profiles(errors.append, directory, submission, dataset_spec, split_entry)
             self.assertEqual(errors, [])
+
+    def test_declared_station_profile_sample_count_is_required(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            temporary_root = Path(temporary)
+            directory = temporary_root / "submissions" / "dataset" / "model"
+            profiles = directory / "profiles"
+            split_path = temporary_root / "benchmark-specs" / "dataset" / "splits" / "full.json"
+            write_json(
+                split_path,
+                {
+                    "schema_version": "1.0",
+                    "dataset_id": "dataset",
+                    "split_id": "full",
+                    "case_set_id": "standard",
+                    "case_id_status": "official",
+                    "case_count": 1,
+                    "case_ids": ["case-001"],
+                },
+            )
+            chunk_path = profiles / "chunk-000.json"
+            write_json(
+                chunk_path,
+                {
+                    "schema_version": "1.0",
+                    "cases": [
+                        {
+                            "case_id": "case-001",
+                            "series": [
+                                {
+                                    "panel_id": "profiles",
+                                    "station_id": "long",
+                                    "quantity_id": "value",
+                                    "coordinate": [0.0, 0.5, 1.0],
+                                    "prediction": [1.0, 1.0, 1.0],
+                                }
+                            ],
+                        }
+                    ],
+                },
+            )
+            index_path = profiles / "index.json"
+            write_json(
+                index_path,
+                {
+                    "schema_version": "1.0",
+                    "submission_id": "model",
+                    "dataset_id": "dataset",
+                    "split_id": "full",
+                    "case_set_id": "standard",
+                    "case_count": 1,
+                    "chunks": [
+                        {
+                            "file": "chunk-000.json",
+                            "case_ids": ["case-001"],
+                            "sha256": sha256_file(chunk_path),
+                        }
+                    ],
+                },
+            )
+            submission = {
+                "submission_id": "model",
+                "dataset_id": "dataset",
+                "split_id": "full",
+                "case_set_id": "standard",
+                "split_sha256": sha256_file(split_path),
+                "profile_data": {
+                    "index_file": "profiles/index.json",
+                    "case_count": 1,
+                    "case_set_id": "standard",
+                },
+            }
+            dataset_spec = {
+                "profile_panels": [
+                    {
+                        "id": "profiles",
+                        "required": True,
+                        "minimum_points": 2,
+                        "station_ids": ["long"],
+                        "quantity_ids": ["value"],
+                        "station_sample_counts": {"long": 4},
+                        "station_coordinate_intervals": {"long": [0.0, 1.0]},
+                        "station_coordinate_spacings": {"long": "uniform"},
+                    }
+                ]
+            }
+            split_entry = {
+                "index_file": "splits/full.json",
+                "sha256": sha256_file(split_path),
+                "case_set_id": "standard",
+                "case_id_status": "official",
+                "case_count": 1,
+            }
+            errors: list[str] = []
+            with patch("scripts.validate_submission.ROOT", temporary_root):
+                validate_profiles(errors.append, directory, submission, dataset_spec, split_entry)
+            self.assertIn("must contain exactly 4 points", "\n".join(errors))
 
     def test_non_finite_profile_value_fails(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1265,6 +1454,417 @@ class ValidatorTests(unittest.TestCase):
                 "performed metric recomputation requires the complete benchmark split",
                 "\n".join(errors),
             )
+
+    def test_drivaerml_prediction_artifacts_and_recomputation_are_optional_audits(
+        self,
+    ) -> None:
+        from reference.drivaerml.dataset_scorer import (
+            validate_schema_v3_candidate_nonspatial_metrics,
+        )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            split_case_ids = ["run_1", "run_2"]
+            force_ids = (
+                "field_integrated_cd_rmse",
+                "field_integrated_cl_rmse",
+                "field_integrated_cmpitch_rmse",
+                "field_integrated_clf_rmse",
+                "field_integrated_clr_rmse",
+                "field_integrated_lift_closure_max_abs",
+            )
+            rows = (
+                dict(zip(force_ids, (1.0, 2.0, 3.0, 4.0, 5.0, 0.0))),
+                dict(zip(force_ids, (3.0, 4.0, 5.0, 6.0, 7.0, 0.0))),
+            )
+            force_coefficients = (
+                {"cd": 0.1, "cl": 0.2, "cm_pitch": 0.02, "clf": 0.12, "clr": 0.08},
+                {"cd": 0.2, "cl": 0.4, "cm_pitch": -0.03, "clf": 0.17, "clr": 0.23},
+            )
+            aggregate = {
+                metric_id: math.sqrt(
+                    sum(row[metric_id] ** 2 for row in rows) / len(rows)
+                )
+                for metric_id in force_ids[:-1]
+            }
+            aggregate[force_ids[-1]] = 0.0
+            case_metrics = {
+                "$schema": "https://fluidsbench.org/schemas/v3/case-metrics.schema.json",
+                "schema_version": "1.0",
+                "submission_id": "drivaerml-model-v3",
+                "dataset_id": "drivaerml",
+                "split_id": "full",
+                "case_set_id": "standard",
+                "scoring_support_release_id": "drivaerml-candidate-support-v1",
+                "scoring_support_manifest_sha256": "a" * 64,
+                "case_count": 2,
+                "cases": [
+                    {
+                        "case_id": case_id,
+                        "supports": [
+                            {
+                                "support_id": "dummy-native-cells",
+                                "support_count": 1,
+                                "scored_count": 1,
+                                "coverage_fraction": 1.0,
+                                "weight_coverage_fraction": 1.0,
+                                "unmapped_count": 0,
+                                "extrapolated_count": 0,
+                                "metric_values": {},
+                                "metric_sufficient_statistics": {},
+                            }
+                        ],
+                        "nonspatial_metric_values": row,
+                        "force_coefficients": coefficients,
+                    }
+                    for case_id, row, coefficients in zip(
+                        split_case_ids, rows, force_coefficients, strict=True
+                    )
+                ],
+                "metric_values": aggregate,
+            }
+            binding = validate_schema_v3_candidate_nonspatial_metrics(
+                case_metrics
+            )
+            candidate_dataset_spec = load_json(
+                ROOT / "benchmark-specs" / "drivaerml" / "submission-spec.json"
+            )
+            self.assertEqual(
+                candidate_dataset_spec["scoring_support"][
+                    "dataset_evaluator_binding"
+                ]["status"],
+                "pending_frozen_release",
+            )
+            self.assertIsNone(
+                candidate_dataset_spec["scoring_support"][
+                    "dataset_evaluator_binding"
+                ]["evaluator_code_revision"]
+            )
+            frozen_dataset_spec = json.loads(json.dumps(candidate_dataset_spec))
+            frozen_dataset_spec["scoring_support"]["dataset_evaluator_binding"].update(
+                {
+                    "status": "frozen",
+                    "evaluator_code_revision": "e" * 40,
+                }
+            )
+            submission = {
+                "submission_id": "drivaerml-model-v3",
+                "dataset_id": "drivaerml",
+                "split_id": "full",
+                "evaluation": {
+                    "reference_version": "drivaerml-evaluator-v3-candidate"
+                },
+                "case_metrics": {
+                    "file": "metrics/cases.json",
+                    "sha256": "d" * 64,
+                    "case_count": 2,
+                },
+                "metric_values": aggregate,
+                "case_set_id": "standard",
+                "scoring_support": {
+                    "release_id": "drivaerml-candidate-support-v1",
+                    "manifest_sha256": "a" * 64,
+                },
+                "prediction_artifacts": [
+                    {
+                        "artifact_id": "drivaerml-predictions",
+                        "kind": "scored_predictions",
+                        "support_release_id": "drivaerml-candidate-support-v1",
+                        "support_manifest_sha256": "a" * 64,
+                        "split_id": "full",
+                        "revision": "b" * 40,
+                        "manifest_sha256": "c" * 64,
+                        "coverage": {
+                            "kind": "complete_split",
+                            "case_count": 2,
+                            "expected_case_count": 2,
+                        },
+                    }
+                ],
+            }
+            case_metrics_path = directory / "metrics" / "cases.json"
+            write_json(case_metrics_path, case_metrics)
+            submission["case_metrics"]["sha256"] = sha256_file(
+                case_metrics_path
+            )
+
+            no_predictions = dict(submission)
+            no_predictions.pop("prediction_artifacts")
+            errors = []
+            validate_v3_prediction_metadata(
+                errors.append,
+                directory,
+                no_predictions,
+                split_case_ids,
+                contributor_stage=True,
+                case_metrics=case_metrics,
+            )
+            self.assertEqual(errors, [])
+            errors = []
+            validate_v3_prediction_metadata(
+                errors.append,
+                directory,
+                no_predictions,
+                split_case_ids,
+                contributor_stage=False,
+                case_metrics=case_metrics,
+            )
+            self.assertEqual(errors, [])
+            support_manifest = {
+                "supports": [
+                    {
+                        "id": "dummy-native-cells",
+                        "extrapolation_policy": "forbidden",
+                        "metric_bindings": [],
+                    }
+                ]
+            }
+            support_case_index = {
+                "_loaded_cases": [
+                    {
+                        "case_id": case_id,
+                        "support_instances": [
+                            {
+                                "support_id": "dummy-native-cells",
+                                "entity_count": 1,
+                            }
+                        ],
+                    }
+                    for case_id in split_case_ids
+                ]
+            }
+            errors: list[str] = []
+            validate_v3_case_metrics(
+                errors.append,
+                directory,
+                submission,
+                split_case_ids,
+                support_manifest,
+                support_case_index,
+            )
+            self.assertEqual(errors, [])
+
+            tampered_case_metrics = json.loads(json.dumps(case_metrics))
+            tampered_case_metrics["cases"][0]["nonspatial_metric_values"][
+                "field_integrated_cd_rmse"
+            ] += 0.25
+            write_json(case_metrics_path, tampered_case_metrics)
+            submission["case_metrics"]["sha256"] = sha256_file(
+                case_metrics_path
+            )
+            errors = []
+            validate_v3_case_metrics(
+                errors.append,
+                directory,
+                submission,
+                split_case_ids,
+                support_manifest,
+                support_case_index,
+            )
+            self.assertIn(
+                "DrivAerML nonspatial validation failed",
+                "\n".join(errors),
+            )
+            write_json(case_metrics_path, case_metrics)
+            submission["case_metrics"]["sha256"] = sha256_file(
+                case_metrics_path
+            )
+
+            errors = []
+            validate_v3_prediction_metadata(
+                errors.append,
+                directory,
+                submission,
+                split_case_ids,
+                contributor_stage=True,
+                case_metrics=case_metrics,
+            )
+            self.assertEqual(errors, [])
+            errors = []
+            validate_v3_prediction_metadata(
+                errors.append,
+                directory,
+                submission,
+                split_case_ids,
+                contributor_stage=False,
+                case_metrics=case_metrics,
+            )
+            self.assertEqual(errors, [])
+
+            checks = {
+                "$schema": "https://fluidsbench.org/schemas/v3/prediction-artifact-checks.schema.json",
+                "schema_version": "1.0",
+                "submission_id": submission["submission_id"],
+                "dataset_evaluator_recomputation": {
+                    "dataset_id": "drivaerml",
+                    "status": "complete_native_evaluator_recomputation",
+                    "evaluator_reference_version": submission["evaluation"][
+                        "reference_version"
+                    ],
+                    "evaluator_code_revision": "e" * 40,
+                    "command": "python scripts/score_drivaerml_candidate_dataset.py ...",
+                    "case_count": 2,
+                    "case_metrics_sha256": submission["case_metrics"]["sha256"],
+                    "nonspatial_metric_ids": binding["metric_ids"],
+                    "nonspatial_values_sha256": binding[
+                        "nonspatial_values_sha256"
+                    ],
+                    "prediction_artifact_ids": ["drivaerml-predictions"],
+                },
+                "checks": [
+                    {
+                        "artifact_id": "drivaerml-predictions",
+                        "status": "metrics_recomputed",
+                        "checked_at": "2026-08-20T12:00:00Z",
+                        "checked_by": "Maintainer",
+                        "repository_revision": "b" * 40,
+                        "manifest_sha256": "c" * 64,
+                        "checked_case_count": 2,
+                        "recomputed_case_count": 2,
+                        "expected_case_count": 2,
+                        "metric_recomputation": "performed",
+                    }
+                ],
+            }
+            checks_path = directory / "prediction-artifact-checks.json"
+            checks_without_recomputation = json.loads(json.dumps(checks))
+            checks_without_recomputation.pop("dataset_evaluator_recomputation")
+            write_json(checks_path, checks_without_recomputation)
+            errors = []
+            validate_v3_prediction_metadata(
+                errors.append,
+                directory,
+                submission,
+                split_case_ids,
+                contributor_stage=False,
+                case_metrics=case_metrics,
+                dataset_spec=candidate_dataset_spec,
+            )
+            self.assertEqual(errors, [])
+
+            write_json(checks_path, checks)
+            errors = []
+            validate_v3_prediction_metadata(
+                errors.append,
+                directory,
+                submission,
+                split_case_ids,
+                contributor_stage=False,
+                case_metrics=case_metrics,
+                dataset_spec=candidate_dataset_spec,
+            )
+            self.assertIn(
+                "candidate evaluator revision is not frozen",
+                "\n".join(errors),
+            )
+
+            errors = []
+            validate_v3_prediction_metadata(
+                errors.append,
+                directory,
+                submission,
+                split_case_ids,
+                contributor_stage=False,
+                case_metrics=case_metrics,
+                dataset_spec=frozen_dataset_spec,
+            )
+            self.assertEqual(errors, [])
+
+            checks["dataset_evaluator_recomputation"][
+                "evaluator_code_revision"
+            ] = "f" * 40
+            write_json(checks_path, checks)
+            errors = []
+            validate_v3_prediction_metadata(
+                errors.append,
+                directory,
+                submission,
+                split_case_ids,
+                contributor_stage=False,
+                case_metrics=case_metrics,
+                dataset_spec=frozen_dataset_spec,
+            )
+            self.assertIn(
+                "evaluator_code_revision must match the benchmark-owned frozen",
+                "\n".join(errors),
+            )
+            checks["dataset_evaluator_recomputation"][
+                "evaluator_code_revision"
+            ] = "e" * 40
+
+            wrong_reference_spec = json.loads(json.dumps(frozen_dataset_spec))
+            wrong_reference_spec["scoring_support"]["dataset_evaluator_binding"][
+                "evaluator_reference_version"
+            ] = "drivaerml-evaluator-other"
+            write_json(checks_path, checks)
+            errors = []
+            validate_v3_prediction_metadata(
+                errors.append,
+                directory,
+                submission,
+                split_case_ids,
+                contributor_stage=False,
+                case_metrics=case_metrics,
+                dataset_spec=wrong_reference_spec,
+            )
+            self.assertIn(
+                "frozen dataset_evaluator_binding reference version must match",
+                "\n".join(errors),
+            )
+
+            checks["dataset_evaluator_recomputation"][
+                "nonspatial_values_sha256"
+            ] = "f" * 64
+            write_json(checks_path, checks)
+            errors = []
+            validate_v3_prediction_metadata(
+                errors.append,
+                directory,
+                submission,
+                split_case_ids,
+                contributor_stage=False,
+                case_metrics=case_metrics,
+                dataset_spec=frozen_dataset_spec,
+            )
+            self.assertIn(
+                "nonspatial_values_sha256 must equal",
+                "\n".join(errors),
+            )
+
+            validation: dict[str, str] = {}
+            errors = []
+            validate_drivaerml_maintainer_receipt_hash(
+                errors.append, directory, validation
+            )
+            self.assertIn("must bind", "\n".join(errors))
+            validation["prediction_artifact_checks_sha256"] = sha256_file(
+                checks_path
+            )
+            errors = []
+            validate_drivaerml_maintainer_receipt_hash(
+                errors.append, directory, validation
+            )
+            self.assertEqual(errors, [])
+            checks["dataset_evaluator_recomputation"]["command"] += " --changed"
+            write_json(checks_path, checks)
+            errors = []
+            validate_drivaerml_maintainer_receipt_hash(
+                errors.append, directory, validation
+            )
+            self.assertIn("must bind", "\n".join(errors))
+
+            checks_path.unlink()
+            errors = []
+            validate_drivaerml_maintainer_receipt_hash(
+                errors.append, directory, {}
+            )
+            self.assertEqual(errors, [])
+
+            errors = []
+            validate_drivaerml_maintainer_receipt_hash(
+                errors.append, directory, validation
+            )
+            self.assertIn("must be absent", "\n".join(errors))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/releases/revision-history.schema.json",
+  "title": "FluidsBench result revision history",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "release_id",
+    "release_status",
+    "generated_at",
+    "record_count",
+    "series_count",
+    "records"
+  ],
+  "properties": {
+    "$schema": { "const": "https://fluidsbench.org/schemas/releases/revision-history.schema.json" },
+    "schema_version": { "const": "1.0" },
+    "release_id": { "type": "string", "minLength": 1 },
+    "release_status": { "enum": ["prototype_dummy_data", "official"] },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "record_count": { "type": "integer", "minimum": 0 },
+    "series_count": { "type": "integer", "minimum": 0 },
+    "records": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/revision_record" }
+    }
+  },
+  "$defs": {
+    "submission_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"
+    },
+    "result_revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "series_id",
+        "version",
+        "supersedes",
+        "change_summary",
+        "is_latest",
+        "latest_submission_id",
+        "version_count"
+      ],
+      "properties": {
+        "series_id": { "$ref": "#/$defs/submission_id" },
+        "version": { "type": "integer", "minimum": 1 },
+        "supersedes": {
+          "oneOf": [
+            { "$ref": "#/$defs/submission_id" },
+            { "type": "null" }
+          ]
+        },
+        "change_summary": { "type": ["string", "null"], "minLength": 1, "maxLength": 2000 },
+        "is_latest": { "type": "boolean" },
+        "latest_submission_id": { "$ref": "#/$defs/submission_id" },
+        "version_count": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "revision_record": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "submission_id",
+        "result_revision",
+        "model",
+        "dataset",
+        "dataset_id",
+        "split",
+        "split_id",
+        "submitter_name",
+        "institution",
+        "submitted_at",
+        "metric_values",
+        "profile_data"
+      ],
+      "properties": {
+        "submission_id": { "$ref": "#/$defs/submission_id" },
+        "result_revision": { "$ref": "#/$defs/result_revision" },
+        "dataset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+        "split_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_]*$" },
+        "submitted_at": { "type": "string", "format": "date" },
+        "metric_values": { "type": "object", "minProperties": 1 },
+        "profile_data": { "type": "object" }
+      }
+    }
+  }
+}

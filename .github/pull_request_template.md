@@ -8,6 +8,9 @@
 ## Checklist
 
 - [ ] I used the exact dataset and split version recorded in `submission.json`.
+- [ ] `submission_id` is `<result_revision.series_id>-v<result_revision.version>`; v1 sets `supersedes` to `null`, while later
+      versions point to the immediately preceding published submission and summarize what changed.
+- [ ] I added a new immutable submission directory and did not edit or replace an earlier result version.
 - [ ] The dataset specification marks my exact scoring-support release `official`, owner-approved, and open for submissions.
 - [ ] I followed the published FluidsBench metric equations and dataset-specific reductions.
 - [ ] `metrics/cases.json` covers every official case and support with complete count and weight coverage.
@@ -20,6 +23,9 @@
 - [ ] The dataset version, split hash, case set, scoring-support release/hash, spatial hash, per-case-metric hash, and profile
       ground-truth release/hash match throughout the package.
 - [ ] I used public evaluation data only for final evaluation, not fitting, selection, tuning, or preprocessing statistics.
+- [ ] For a schema-v3 DrivAerML result, `methodology` accurately records every architecture component, total and
+      submitter-trainable parameter counts, scoped inputs and outputs, data handling, training stages, every loaded checkpoint-file
+      digest, and measured training/inference compute.
 - [ ] If I supplied optional code, model, environment, or documentation artifacts, their revisions, digests, URLs, and licences are
       accurate and public.
 - [ ] I left `approval` absent and did not add `maintainer-validation.json` or `prediction-artifact-checks.json`.

@@ -1,0 +1,383 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/hiliftaeroml/evaluator-implementation-manifest-v1.schema.json",
+  "title": "HiLiftAeroML candidate evaluator implementation manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "schema_version",
+    "status",
+    "activation_effect",
+    "dataset_id",
+    "source_roots",
+    "source_groups",
+    "source_group_count",
+    "source_file_count",
+    "source_inventory_fingerprint",
+    "source_identity_policy",
+    "runtime_boundaries",
+    "release_state",
+    "excluded_by_design",
+    "content_fingerprint"
+  ],
+  "properties": {
+    "schema_id": {
+      "const": "hiliftaeroml-evaluator-implementation-manifest-v1"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "status": {
+      "const": "candidate_source_bytes_bound_revisions_unresolved"
+    },
+    "activation_effect": {
+      "const": "none"
+    },
+    "dataset_id": {
+      "const": "hiliftaeroml"
+    },
+    "source_roots": {
+      "type": "object",
+      "minProperties": 5,
+      "maxProperties": 5,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["repository", "role", "revision_binding"],
+        "properties": {
+          "repository": {
+            "type": "string",
+            "format": "uri"
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "revision_binding": {
+            "const": "pending_candidate_commit"
+          }
+        }
+      }
+    },
+    "source_groups": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "group_id",
+          "root_id",
+          "purpose",
+          "file_count",
+          "files",
+          "group_fingerprint"
+        ],
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]+$"
+          },
+          "root_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]+$"
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          },
+          "file_count": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "files": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/fileIdentity"
+            }
+          },
+          "group_fingerprint": {
+            "$ref": "#/$defs/sha256"
+          }
+        }
+      }
+    },
+    "source_group_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source_file_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source_inventory_fingerprint": {
+      "$ref": "#/$defs/sha256"
+    },
+    "source_identity_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "default_mode",
+        "normalized_json_exception_mode",
+        "normalized_json_exception_count",
+        "purpose"
+      ],
+      "properties": {
+        "default_mode": {
+          "const": "raw_bytes_sha256"
+        },
+        "normalized_json_exception_mode": {
+          "const": "canonical_json_sha256_excluding_lifecycle_v1"
+        },
+        "normalized_json_exception_count": {
+          "const": 2
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "runtime_boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fluidsbench_evaluator_python", "native_gpu_container"],
+      "properties": {
+        "fluidsbench_evaluator_python": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "scope", "interpreter", "install_contract", "artifact_hashes_in_lock", "lock_file"],
+          "properties": {
+            "status": {
+              "const": "exact_versions_locked_from_tested_environment"
+            },
+            "scope": {
+              "const": "assembler_scorer_validator_only"
+            },
+            "interpreter": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["implementation", "version", "platform_observed"],
+              "properties": {
+                "implementation": {
+                  "const": "CPython"
+                },
+                "version": {
+                  "const": "3.12.13"
+                },
+                "platform_observed": {
+                  "const": "Linux aarch64 glibc 2.39"
+                }
+              }
+            },
+            "install_contract": {
+              "type": "string"
+            },
+            "artifact_hashes_in_lock": {
+              "const": false
+            },
+            "lock_file": {
+              "$ref": "#/$defs/rawFileIdentity"
+            }
+          }
+        },
+        "native_gpu_container": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "scope", "image_reference", "image_digest", "host_python_environment_reference", "host_python_environment_lock", "host_physicsnemo_sources_hash_bound", "note"],
+          "properties": {
+            "status": {
+              "const": "external_container_reference_not_content_locked"
+            },
+            "scope": {
+              "const": "native_model_inference_third_party_runtime"
+            },
+            "image_reference": {
+              "type": "string",
+              "minLength": 1
+            },
+            "image_digest": {
+              "type": "null"
+            },
+            "host_python_environment_reference": {
+              "type": "string",
+              "minLength": 1
+            },
+            "host_python_environment_lock": {
+              "type": "null"
+            },
+            "host_physicsnemo_sources_hash_bound": {
+              "const": true
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "release_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "git_revisions_bound",
+        "owner_approval_recorded",
+        "submissions_opened",
+        "implementation_manifest_gate_changed",
+        "runtime_lock_gate_changed"
+      ],
+      "properties": {
+        "git_revisions_bound": {"const": false},
+        "owner_approval_recorded": {"const": false},
+        "submissions_opened": {"const": false},
+        "implementation_manifest_gate_changed": {"const": false},
+        "runtime_lock_gate_changed": {"const": false}
+      }
+    },
+    "excluded_by_design": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["reason"],
+        "properties": {
+          "path": {"type": "string"},
+          "category": {"type": "string"},
+          "reason": {"type": "string", "minLength": 1}
+        },
+        "oneOf": [
+          {"required": ["path"]},
+          {"required": ["category"]}
+        ]
+      }
+    },
+    "content_fingerprint": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "fileIdentity": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/rawFileIdentity"
+        },
+        {
+          "$ref": "#/$defs/normalizedJsonIdentity"
+        }
+      ]
+    },
+    "rawFileIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "identity_mode", "size_bytes", "sha256"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "not": {
+            "pattern": "(^/|(^|/)\\.\\.(/|$))"
+          }
+        },
+        "identity_mode": {
+          "const": "raw_bytes_sha256"
+        },
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "normalizedJsonIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "identity_mode",
+        "selection",
+        "excluded_relative_json_pointers",
+        "canonical_size_bytes",
+        "canonical_sha256"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "not": {
+            "pattern": "(^/|(^|/)\\.\\.(/|$))"
+          }
+        },
+        "identity_mode": {
+          "const": "canonical_json_sha256_excluding_lifecycle_v1"
+        },
+        "selection": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind"],
+              "properties": {
+                "kind": {
+                  "const": "document_root"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "array_json_pointer",
+                "match_key",
+                "match_value"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unique_array_object"
+                },
+                "array_json_pointer": {
+                  "type": "string",
+                  "pattern": "^/"
+                },
+                "match_key": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "match_value": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          ]
+        },
+        "excluded_relative_json_pointers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^/"
+          }
+        },
+        "canonical_size_bytes": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "canonical_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  }
+}

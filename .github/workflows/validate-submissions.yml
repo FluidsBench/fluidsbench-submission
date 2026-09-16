@@ -23,6 +23,8 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - name: Validate dataset scoring-support publication gates
         run: python scripts/validate_scoring_supports.py
+      - name: Verify prototype methodology fixtures
+        run: python scripts/add_prototype_methodologies.py --check
       - name: Validate source submissions
         run: python scripts/validate_submission.py
       - name: Enforce external contributor pull-request scope

@@ -71,7 +71,163 @@
       "index_sha256": "fc010a0de7d8697c40fb56c34c7fbe98e9e31d2a71d66c2dabc272cbcb330903"
     },
     "note": "Dummy WindsorML submission with compact profile curves. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "MeshGraphNets prototype row (GNN). Encode-process-decode message-passing graph-network family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 7800000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "GNN",
+            "role": "Prototype windsorml field predictor.",
+            "description": "Aggregate placeholder for the named MeshGraphNets architecture. Encode-process-decode message-passing graph-network family. No unverified internal split is invented.",
+            "parameter_count": 7800000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "MeshGraphNets",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.cpavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean surface pressure coefficient on every official WindsorML boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfxavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfyavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfzavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityxavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityyavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityzavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.pressureavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean pressure on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 7.8,
+    "result_revision": {
+      "series_id": "dummy-windsorml-wakenet",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "dummy-windsorml-wakenet-v1",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 86.67833333333333,
@@ -166,7 +322,163 @@
       "index_sha256": "4db1e8cc387280a2f3e2873ae1c6f2814a3ef2b41fbf34a08b8c68c96ead9697"
     },
     "note": "Illustrative WindsorML prototype row. AB-UPT v2 does not report WindsorML benchmark metrics; replace with evaluator outputs. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "AB-UPT prototype row (Transformer). Attention-based Universal Physics Transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 8750000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype windsorml field predictor.",
+            "description": "Aggregate placeholder for the named AB-UPT architecture. Attention-based Universal Physics Transformer family. No unverified internal split is invented.",
+            "parameter_count": 8750000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "AB-UPT",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.cpavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean surface pressure coefficient on every official WindsorML boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfxavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfyavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfzavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityxavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityyavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityzavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.pressureavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean pressure on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 8.75,
+    "result_revision": {
+      "series_id": "windsorml-ab-upt",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "windsorml-ab-upt",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 82.6225,
@@ -261,7 +573,163 @@
       "index_sha256": "d971d604db6b64b93276c4cde62c4d42b7a91763043f55ee27d284bed5b824ef"
     },
     "note": "Illustrative WindsorML prototype row. AB-UPT v2 does not report WindsorML benchmark metrics; replace with evaluator outputs. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "GINO prototype row (Neural operator). Geometry-informed neural-operator family coupling geometric and operator representations. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 15600000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Neural operator",
+            "role": "Prototype windsorml field predictor.",
+            "description": "Aggregate placeholder for the named GINO architecture. Geometry-informed neural-operator family coupling geometric and operator representations. No unverified internal split is invented.",
+            "parameter_count": 15600000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "GINO",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.cpavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean surface pressure coefficient on every official WindsorML boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfxavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfyavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfzavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityxavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityyavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityzavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.pressureavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean pressure on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 15.6,
+    "result_revision": {
+      "series_id": "windsorml-gino",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "windsorml-gino",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 38.144999999999996,
@@ -356,7 +824,163 @@
       "index_sha256": "b1b83484031ea339d3befcee8880f823a2ce35aeabf8adaac6f7de18d8e81d8f"
     },
     "note": "Illustrative WindsorML prototype row. AB-UPT v2 does not report WindsorML benchmark metrics; replace with evaluator outputs. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Graph U-Net prototype row (GNN). Multiscale graph encoder-decoder family with graph pooling and unpooling. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 14110000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "GNN",
+            "role": "Prototype windsorml field predictor.",
+            "description": "Aggregate placeholder for the named Graph U-Net architecture. Multiscale graph encoder-decoder family with graph pooling and unpooling. No unverified internal split is invented.",
+            "parameter_count": 14110000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Graph U-Net",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.cpavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean surface pressure coefficient on every official WindsorML boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfxavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfyavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfzavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityxavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityyavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityzavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.pressureavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean pressure on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 14.11,
+    "result_revision": {
+      "series_id": "windsorml-graph-u-net",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "windsorml-graph-u-net",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 41.185,
@@ -451,7 +1075,163 @@
       "index_sha256": "15135e04d8feb8d4b810bc03cee211dfab051327afab3f1f0733d8964b80fb82"
     },
     "note": "Illustrative WindsorML prototype row. AB-UPT v2 does not report WindsorML benchmark metrics; replace with evaluator outputs. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "LNO prototype row (Neural operator). Latent neural-operator family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 6300000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Neural operator",
+            "role": "Prototype windsorml field predictor.",
+            "description": "Aggregate placeholder for the named LNO architecture. Latent neural-operator family. No unverified internal split is invented.",
+            "parameter_count": 6300000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "LNO",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.cpavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean surface pressure coefficient on every official WindsorML boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfxavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfyavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfzavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityxavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityyavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityzavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.pressureavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean pressure on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 6.3,
+    "result_revision": {
+      "series_id": "windsorml-lno",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "windsorml-lno",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 38.78,
@@ -546,7 +1326,163 @@
       "index_sha256": "15180c818829865f36c6abee46f4a962ba62618cf7643ec7f6cc8d2941dbd188"
     },
     "note": "Illustrative WindsorML prototype row. AB-UPT v2 does not report WindsorML benchmark metrics; replace with evaluator outputs. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "OFormer prototype row (Transformer). Operator-transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 6100000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype windsorml field predictor.",
+            "description": "Aggregate placeholder for the named OFormer architecture. Operator-transformer family. No unverified internal split is invented.",
+            "parameter_count": 6100000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "OFormer",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.cpavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean surface pressure coefficient on every official WindsorML boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfxavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfyavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfzavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityxavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityyavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityzavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.pressureavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean pressure on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 6.1,
+    "result_revision": {
+      "series_id": "windsorml-oformer",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "windsorml-oformer",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 78.91166666666666,
@@ -641,7 +1577,163 @@
       "index_sha256": "42d6464e5907adc5ebcedfe3bf9e40c64024a861c75798d1082c97ed14189add"
     },
     "note": "Illustrative WindsorML prototype row. AB-UPT v2 does not report WindsorML benchmark metrics; replace with evaluator outputs. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "PointNet prototype row (Point cloud). PointNet family using shared pointwise features and permutation-invariant aggregation. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 3600000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Point cloud",
+            "role": "Prototype windsorml field predictor.",
+            "description": "Aggregate placeholder for the named PointNet architecture. PointNet family using shared pointwise features and permutation-invariant aggregation. No unverified internal split is invented.",
+            "parameter_count": 3600000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "PointNet",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.cpavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean surface pressure coefficient on every official WindsorML boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfxavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfyavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfzavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityxavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityyavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityzavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.pressureavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean pressure on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 3.6,
+    "result_revision": {
+      "series_id": "windsorml-pointnet",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "windsorml-pointnet",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 36.78,
@@ -736,7 +1828,163 @@
       "index_sha256": "8889e1d12da39fee60f7403bab54de3e397a96a7d26048588cd8d1f1750754e3"
     },
     "note": "Illustrative WindsorML prototype row. AB-UPT v2 does not report WindsorML benchmark metrics; replace with evaluator outputs. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "GeoTransformer prototype row (Transformer). Geometry-aware transformer family for irregular spatial supports. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 5490000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype windsorml field predictor.",
+            "description": "Aggregate placeholder for the named GeoTransformer architecture. Geometry-aware transformer family for irregular spatial supports. No unverified internal split is invented.",
+            "parameter_count": 5490000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "GeoTransformer",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.cpavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean surface pressure coefficient on every official WindsorML boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfxavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfyavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfzavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityxavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityyavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityzavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.pressureavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean pressure on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 5.49,
+    "result_revision": {
+      "series_id": "windsorml-transformer",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "windsorml-transformer",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 79.56166666666667,
@@ -831,7 +2079,163 @@
       "index_sha256": "3ceb5878deacb34133e97da977e36d6b42a2db4147042e253f9170d44228273e"
     },
     "note": "Illustrative WindsorML prototype row. AB-UPT v2 does not report WindsorML benchmark metrics; replace with evaluator outputs. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Transolver prototype row (Transformer). Physics-attention transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 5490000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype windsorml field predictor.",
+            "description": "Aggregate placeholder for the named Transolver architecture. Physics-attention transformer family. No unverified internal split is invented.",
+            "parameter_count": 5490000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Transolver",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.cpavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean surface pressure coefficient on every official WindsorML boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfxavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfyavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfzavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityxavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityyavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityzavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.pressureavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean pressure on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 5.49,
+    "result_revision": {
+      "series_id": "windsorml-transolver",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "windsorml-transolver",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 78.52166666666668,
@@ -926,7 +2330,163 @@
       "index_sha256": "de7d0ae985d3540c239091ace358e3728ea75cbd67f7ff7171045b2df4e9f0a4"
     },
     "note": "Illustrative WindsorML prototype row. AB-UPT v2 does not report WindsorML benchmark metrics; replace with evaluator outputs. Dummy JSON mirrors the existing generated placeholder profile curves so the frontend can load this row through the submission feed. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "UPT prototype row (Transformer). Universal Physics Transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 10980000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype windsorml field predictor.",
+            "description": "Aggregate placeholder for the named UPT architecture. Universal Physics Transformer family. No unverified internal split is invented.",
+            "parameter_count": 10980000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "UPT",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 3,
+            "description": "3D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.cpavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean surface pressure coefficient on every official WindsorML boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfxavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfyavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "surface-native.cfzavg",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z skin-friction-coefficient component on every official boundary point. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityxavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean x velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityyavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean y velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.velocityzavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean z velocity component on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "flow-domain-native.pressureavg",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mean pressure on every official WindsorML volume cell. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 10.98,
+    "result_revision": {
+      "series_id": "windsorml-upt",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "windsorml-upt",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 68.44666666666667,

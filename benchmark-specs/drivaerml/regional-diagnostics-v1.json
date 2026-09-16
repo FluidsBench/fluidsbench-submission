@@ -1,0 +1,236 @@
+{
+  "schema": "autocfd5-aiml-drivaerml-regional-diagnostics-contract-v1",
+  "schema_version": 1,
+  "dataset_id": "drivaerml",
+  "status": "approved_report_only",
+  "scoring": {
+    "weight": 0.0,
+    "affects_official_metric_values": false,
+    "affects_component_or_overall_scores": false,
+    "changes_prediction_format": false,
+    "requires_new_inference": false
+  },
+  "partition_rules": {
+    "native_raw_cell_order_preserved": true,
+    "mutually_exclusive": true,
+    "exhaustive": true,
+    "regional_additive_sums_must_reconstruct_global_sums": true
+  },
+  "surface": {
+    "support_id": "surface_native_cells",
+    "fields": ["pMeanTrim", "wallShearStressMeanTrim"],
+    "primary_weighting": "published_native_polygon_area_m2",
+    "coordinate_frame": "raw_native_vtp_coordinates",
+    "coordinate_unit": "m",
+    "face_centre_method": "OpenFOAM_v2212_primitiveMeshTools_makeFaceCentresAndAreas",
+    "unit_normal_definition": "oriented_area_vector_m2 / calculated_polygon_area_m2",
+    "region_order": [
+      "low_z_horizontal_normal",
+      "low_z_other_normal",
+      "high_z_horizontal_normal",
+      "high_z_other_normal"
+    ],
+    "regions": [
+      {
+        "region_id": "low_z_horizontal_normal",
+        "predicate": {
+          "face_centre_z_m": {"less_than": 0.75},
+          "absolute_unit_normal_z": {"greater_than_or_equal": 0.5}
+        }
+      },
+      {
+        "region_id": "low_z_other_normal",
+        "predicate": {
+          "face_centre_z_m": {"less_than": 0.75},
+          "absolute_unit_normal_z": {"less_than": 0.5}
+        }
+      },
+      {
+        "region_id": "high_z_horizontal_normal",
+        "predicate": {
+          "face_centre_z_m": {"greater_than_or_equal": 0.75},
+          "absolute_unit_normal_z": {"greater_than_or_equal": 0.5}
+        }
+      },
+      {
+        "region_id": "high_z_other_normal",
+        "predicate": {
+          "face_centre_z_m": {"greater_than_or_equal": 0.75},
+          "absolute_unit_normal_z": {"less_than": 0.5}
+        }
+      }
+    ]
+  },
+  "volume": {
+    "support_id": "volume_native_cells",
+    "fields": ["pMeanTrim", "UMeanTrim"],
+    "primary_weighting": "one_per_native_cell",
+    "coordinate_frame": "raw_native_vtu_coordinates",
+    "coordinate_unit": "m",
+    "cell_centre_method": "vtkCellCenters_parametric_center_in_native_GetCell_order",
+    "cell_centre_definition": "For each raw_cell_id, evaluate the native VTK cell at GetParametricCenter; this is the vtkCellCenters result with VertexCellsOff.",
+    "region_order": [
+      "underbody_and_wheels",
+      "near_body_upper",
+      "near_wake",
+      "upstream_and_outer"
+    ],
+    "regions": [
+      {
+        "region_id": "underbody_and_wheels",
+        "predicate": {
+          "x_m": {"greater_than_or_equal": -0.85, "less_than": 3.65},
+          "absolute_y_m": {"less_than": 1.25},
+          "z_m": {"less_than": 0.75}
+        }
+      },
+      {
+        "region_id": "near_body_upper",
+        "predicate": {
+          "x_m": {"greater_than_or_equal": -0.85, "less_than": 3.65},
+          "absolute_y_m": {"less_than": 1.25},
+          "z_m": {"greater_than_or_equal": 0.75, "less_than": 2.0}
+        }
+      },
+      {
+        "region_id": "near_wake",
+        "predicate": {
+          "x_m": {"greater_than_or_equal": 3.65, "less_than": 6.0},
+          "absolute_y_m": {"less_than": 2.0},
+          "z_m": {"less_than": 2.5}
+        }
+      },
+      {
+        "region_id": "upstream_and_outer",
+        "predicate": {
+          "complement_of_region_ids": [
+            "underbody_and_wheels",
+            "near_body_upper",
+            "near_wake"
+          ]
+        },
+        "retained_source_components": {
+          "upstream_near": {
+            "x_m": {"greater_than_or_equal": -2.0, "less_than": -0.85},
+            "absolute_y_m": {"less_than": 2.0},
+            "z_m": {"less_than": 2.5}
+          },
+          "outer_volume": "all remaining native cells"
+        }
+      }
+    ]
+  },
+  "executable_projection": {
+    "definitions": {
+      "surface": {
+        "definition_id": "drivaerml-surface-four-geometric-regions-v1",
+        "support_id": "surface_native_cells",
+        "coordinate_frame": "raw_native_VTP_coordinates",
+        "coordinate_method": "OpenFOAM_v2212_primitiveMeshTools_makeFaceCentresAndAreas; signed unit normal is native-order oriented area vector divided by its calculated magnitude",
+        "coordinate_unit": "m",
+        "regions_in_code_order": [
+          {
+            "code": 0,
+            "region_id": "low_z_horizontal_normal",
+            "predicate": "face_centre_z_m < 0.75 and abs(signed_unit_normal_z) >= 0.5"
+          },
+          {
+            "code": 1,
+            "region_id": "low_z_other_normal",
+            "predicate": "face_centre_z_m < 0.75 and abs(signed_unit_normal_z) < 0.5"
+          },
+          {
+            "code": 2,
+            "region_id": "high_z_horizontal_normal",
+            "predicate": "face_centre_z_m >= 0.75 and abs(signed_unit_normal_z) >= 0.5"
+          },
+          {
+            "code": 3,
+            "region_id": "high_z_other_normal",
+            "predicate": "face_centre_z_m >= 0.75 and abs(signed_unit_normal_z) < 0.5"
+          }
+        ],
+        "partition_properties": "mutually_exclusive_and_exhaustive",
+        "semantic_limit": "geometric orientation bins only; not OpenFOAM patches and not validated underfloor, wheel, roof, or base semantic labels",
+        "scoring_role": "report_only_zero_weight",
+        "scoring_weight": 0.0
+      },
+      "volume": {
+        "definition_id": "drivaerml-volume-four-geometric-regions-v1",
+        "support_id": "volume_native_cells",
+        "coordinate_frame": "raw_native_VTU_coordinates",
+        "coordinate_method": "VTK cell parametric centre in native GetCell order",
+        "coordinate_unit": "m",
+        "regions_in_code_order": [
+          {
+            "code": 0,
+            "region_id": "underbody_and_wheels",
+            "predicate": "-0.85 <= x < 3.65 and abs(y) < 1.25 and z < 0.75"
+          },
+          {
+            "code": 1,
+            "region_id": "near_body_upper",
+            "predicate": "-0.85 <= x < 3.65 and abs(y) < 1.25 and 0.75 <= z < 2.0"
+          },
+          {
+            "code": 2,
+            "region_id": "near_wake",
+            "predicate": "3.65 <= x < 6.0 and abs(y) < 2.0 and z < 2.5"
+          },
+          {
+            "code": 3,
+            "region_id": "upstream_and_outer",
+            "predicate": "all remaining native volume cells"
+          }
+        ],
+        "partition_properties": "mutually_exclusive_and_exhaustive",
+        "semantic_limit": "coarse Cartesian envelopes only; underbody_and_wheels is not an exclusive floor-boundary-layer or wheel-patch mask",
+        "scoring_role": "report_only_zero_weight",
+        "scoring_weight": 0.0
+      }
+    },
+    "fields": {
+      "surface_pressure": {
+        "quantity": "pMeanTrim",
+        "unit": "m2 s-2",
+        "component_labels": ["p"],
+        "primary_weighting": "physical"
+      },
+      "surface_wall_shear": {
+        "quantity": "wallShearStressMeanTrim",
+        "unit": "m2 s-2",
+        "component_labels": ["x", "y", "z"],
+        "primary_weighting": "physical"
+      },
+      "volume_pressure": {
+        "quantity": "pMeanTrim",
+        "unit": "m2 s-2",
+        "component_labels": ["p"],
+        "primary_weighting": "equal_entity"
+      },
+      "volume_velocity": {
+        "quantity": "UMeanTrim",
+        "unit": "m s-1",
+        "component_labels": ["Ux", "Uy", "Uz"],
+        "primary_weighting": "equal_entity"
+      }
+    },
+    "metric_semantics": {
+      "relative_l2_percent": "100*sqrt(sum(weight*||prediction-truth||^2)/sum(weight*||truth||^2))",
+      "rmse": "sqrt(sum(weight*||prediction-truth||^2)/sum(weight))",
+      "mae": "sum(weight*||prediction-truth||)/sum(weight)",
+      "component_metrics": "same formulas applied independently to ordered components",
+      "speed_magnitude_error": "abs(||prediction||-||truth||); relative L2 denominator is vector truth squared norm",
+      "direction_selection": "both truth and prediction speed >= 1.94445 m s-1 (0.05*38.889)",
+      "direction_metrics": "mean cosine similarity and mean angular error in degrees over selected cells",
+      "case_reconstruction_tolerance": {
+        "relative": 5e-12,
+        "absolute": 1e-12
+      },
+      "aggregate_pooled": "sum additive numerators/denominators over exact split cases before deriving metrics",
+      "aggregate_macro": "equal arithmetic mean of complete per-case regional metrics",
+      "aggregate_distribution": "linear order-statistic interpolation at minimum, median, p90 and maximum",
+      "regional_scoring_weight": 0.0
+    }
+  }
+}

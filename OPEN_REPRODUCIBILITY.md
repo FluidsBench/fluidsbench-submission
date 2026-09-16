@@ -17,6 +17,12 @@ URL, and licence fields must satisfy the schema so the website does not present 
 The required `reproducibility.access=public` declaration applies to the submitted result package; it does not assert that any
 optional external artifact was supplied.
 
+This publication policy is separate from method identity inside required result metadata. In particular, every schema-v3
+DrivAerML result records the SHA-256 digest of each raw checkpoint file whose bytes were loaded for inference, along with its role
+and pre-evaluation selection rule. The digest identifies the method used to produce the result; it does not require the checkpoint
+to be uploaded or made public. A separately declared optional model archive may contain those bytes and therefore may have a
+different archive digest.
+
 Every release manifest records the applicable identifier as `data_release.reproducibility_contract_version`.
 
 ## Public evaluation-data policy

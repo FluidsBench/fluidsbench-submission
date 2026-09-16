@@ -1,0 +1,250 @@
+{
+  "schema": "hiliftaeroml-compact-cp-representation-decision-v1",
+  "recorded_on": "2026-09-03",
+  "decision": {
+    "status": "selected_candidate_unbound",
+    "activation": "none",
+    "selected_points_per_physical_graph": 128,
+    "maximum_points_per_physical_graph": 128,
+    "selection_rule": "smallest tested budget satisfying prediction_visual_rmse_max_cp <= 0.02",
+    "representation": {
+      "scope": "prediction_profiles_only",
+      "support_owner": "evaluator",
+      "graph_identity": [
+        "branch_row_code",
+        "branch_graph_component_code"
+      ],
+      "sampling": "uniform_native_physical_arc_length_per_retained_branch",
+      "allocation": "fixed_total_points_per_graph_minimum_two_per_retained_branch_then_arc_length_largest_remainder",
+      "relative_branch_prune_threshold": 0.0001,
+      "overbudget_prune": "retain_longest_floor(points_per_graph/2)_branches",
+      "cp_encoding": "q=int16(round(Cp*1024)); first q absolute per retained branch; remaining values cp_q_delta=int16 differences; decoded_Cp=q/1024"
+    },
+    "candidate_format": {
+      "name": "native-profile-format-v2.json",
+      "status": "candidate_unbound_unpublished_inactive",
+      "selection_constraint": "maximum points_per_physical_graph remains 128"
+    }
+  },
+  "study_scope": {
+    "full360_case_count": 360,
+    "tested_points_per_physical_graph": [
+      64,
+      96,
+      128,
+      160,
+      192
+    ],
+    "prediction_visual_rmse_gate_cp": 0.02,
+    "quadrature": "same exact piecewise-linear squared-error integral as the current evaluator"
+  },
+  "budget_sweep": [
+    {
+      "points_per_physical_graph": 64,
+      "prediction_visual_rmse_max_cp": 0.03858372558625636,
+      "visual_gate_pass": false,
+      "current_transolver_native_macro_r2": 0.9636931485730299,
+      "current_transolver_compact_macro_r2_before_fixed_int16": 0.9622553744991962,
+      "current_transolver_macro_r2_delta_before_fixed_int16": -0.0014377740738338528,
+      "cp_q_delta_zlib9_bytes": 3953760,
+      "projected_payload_bytes_before_json_zip_overhead": 9261708,
+      "selected": false
+    },
+    {
+      "points_per_physical_graph": 96,
+      "prediction_visual_rmse_max_cp": 0.020376874778451397,
+      "visual_gate_pass": false,
+      "current_transolver_native_macro_r2": 0.9636931485730299,
+      "current_transolver_compact_macro_r2_before_fixed_int16": 0.9630592119422756,
+      "current_transolver_macro_r2_delta_before_fixed_int16": -0.0006339366307544453,
+      "cp_q_delta_zlib9_bytes": 5180276,
+      "projected_payload_bytes_before_json_zip_overhead": 10488224,
+      "selected": false
+    },
+    {
+      "points_per_physical_graph": 128,
+      "prediction_visual_rmse_max_cp": 0.015306833551980112,
+      "visual_gate_pass": true,
+      "current_transolver_native_macro_r2": 0.9636931485730299,
+      "current_transolver_compact_macro_r2_before_fixed_int16": 0.9633831286779517,
+      "current_transolver_macro_r2_delta_before_fixed_int16": -0.00031001989507826793,
+      "fixed_int16_quantization_macro_r2_delta": -6.859706667753127e-7,
+      "fixed_int16_quantization_abs_case_r2_delta_max": 0.000015943772702087244,
+      "cp_q_delta_zlib9_bytes": 6281236,
+      "projected_payload_bytes_before_json_zip_overhead": 11589184,
+      "selected": true
+    },
+    {
+      "points_per_physical_graph": 160,
+      "prediction_visual_rmse_max_cp": 0.013581184912690952,
+      "visual_gate_pass": true,
+      "current_transolver_native_macro_r2": 0.9636931485730299,
+      "current_transolver_compact_macro_r2_before_fixed_int16": 0.9634676261207571,
+      "current_transolver_macro_r2_delta_before_fixed_int16": -0.00022552245227293137,
+      "cp_q_delta_zlib9_bytes": 7299991,
+      "projected_payload_bytes_before_json_zip_overhead": 12607939,
+      "selected": false
+    },
+    {
+      "points_per_physical_graph": 192,
+      "prediction_visual_rmse_max_cp": 0.012105194506603837,
+      "visual_gate_pass": true,
+      "current_transolver_native_macro_r2": 0.9636931485730299,
+      "current_transolver_compact_macro_r2_before_fixed_int16": 0.9635612715198616,
+      "current_transolver_macro_r2_delta_before_fixed_int16": -0.0001318770531684647,
+      "cp_q_delta_zlib9_bytes": 8249842,
+      "projected_payload_bytes_before_json_zip_overhead": 13557790,
+      "selected": false
+    }
+  ],
+  "package_projection": {
+    "selected_points_per_physical_graph": 128,
+    "cp_q_delta_zlib9_bytes": 6281236,
+    "volume_velocity_float32_zlib9_bytes": 4783039,
+    "existing_non_profile_compressed_payload_bytes": 524909,
+    "projected_payload_bytes_before_json_zip_overhead": 11589184,
+    "maximum_final_archive_bytes": 15000000,
+    "headroom_before_json_zip_overhead_bytes": 3410816,
+    "existing_non_profile_payload_reference": {
+      "archive": "hiliftaeroml-transolver-submission-v1/release/full360_schema_v3_candidate_20260902/hiliftaeroml-transolver-full360-candidate-v1.zip",
+      "archive_size_bytes": 2264458600,
+      "archive_sha256": "a8dfd6ffbe6d103bc1a3123f6e6f756bacf960f92acc7079237b443bbbb62504",
+      "archive_member_count": 763,
+      "calculation": "sum of member compressed sizes after excluding 360 surface-Cp and 360 volume-velocity profile payloads"
+    },
+    "qualification": "Projection only. Modest JSON and ZIP container overhead is not included; two deterministic final builds and the final <=15000000-byte archive check are authoritative."
+  },
+  "placement_comparison": {
+    "points_per_physical_graph": 128,
+    "focused_case_count": 5,
+    "selected": "uniform_native_physical_arc_length_per_retained_branch",
+    "uniform": {
+      "prediction_visual_rmse_mean_cp": 0.01085534682189094,
+      "prediction_visual_rmse_max_cp": 0.015306833551980112,
+      "abs_case_r2_delta_mean": 0.0009966159282952525,
+      "abs_case_r2_delta_max": 0.0031755904270630575,
+      "cp_q_delta_zlib9_bytes_for_five_cases": 91815
+    },
+    "native_index": {
+      "prediction_visual_rmse_mean_cp": 0.011266829298423398,
+      "prediction_visual_rmse_max_cp": 0.013512880372793072,
+      "abs_case_r2_delta_mean": 0.0008361855019461739,
+      "abs_case_r2_delta_max": 0.00249548416684231,
+      "cp_q_delta_zlib9_bytes_for_five_cases": 96703
+    },
+    "best_truth_dependent_hybrid": {
+      "method": "hybrid_truth_geometry",
+      "prediction_visual_rmse_mean_cp": 0.010707392989896643,
+      "prediction_visual_rmse_max_cp": 0.014307730006928152,
+      "excluded_reason": "Truth-dependent placement is incompatible with a prediction-only submission contract."
+    },
+    "selection_rationale": "Uniform physical-arc placement is deterministic, truth-independent, topology-aware through evaluator-owned branch support, has lower mean visual RMSE than native-index placement, and had the smallest compressed Cp bytes among the six focused methods."
+  },
+  "ranking_stress_test": {
+    "case_count": 360,
+    "native_order_best_to_worst": [
+      "perfect_truth",
+      "half_transolver_error",
+      "truth_plus_deterministic_noise",
+      "truth_plus_smooth_transolver_error",
+      "current_transolver",
+      "one_point_five_transolver_error",
+      "truth_plus_low_frequency_error",
+      "current_plus_0.25_bias",
+      "zero_cp"
+    ],
+    "preserved_order_excluding_deliberately_high_frequency_native_index_oscillation": [
+      "perfect_truth",
+      "half_transolver_error",
+      "truth_plus_smooth_transolver_error",
+      "current_transolver",
+      "one_point_five_transolver_error",
+      "truth_plus_low_frequency_error",
+      "current_plus_0.25_bias",
+      "zero_cp"
+    ],
+    "budgets": [
+      {
+        "points_per_physical_graph": 128,
+        "kendall_tau_b_all_nine_methods": 0.9444444444444444,
+        "concordant_pairs": 35,
+        "discordant_pairs": 1,
+        "total_pairs": 36,
+        "native_near_tie_margin_half_error_over_noise": 0.0005581043718727585,
+        "compact_reversed_margin_noise_over_half_error": 0.0026114910797991886
+      },
+      {
+        "points_per_physical_graph": 160,
+        "kendall_tau_b_all_nine_methods": 0.9444444444444444,
+        "concordant_pairs": 35,
+        "discordant_pairs": 1,
+        "total_pairs": 36,
+        "native_near_tie_margin_half_error_over_noise": 0.0005581043718727585,
+        "compact_reversed_margin_noise_over_half_error": 0.0026233524713726863
+      },
+      {
+        "points_per_physical_graph": 192,
+        "kendall_tau_b_all_nine_methods": 0.9444444444444444,
+        "concordant_pairs": 35,
+        "discordant_pairs": 1,
+        "total_pairs": 36,
+        "native_near_tie_margin_half_error_over_noise": 0.0005581043718727585,
+        "compact_reversed_margin_noise_over_half_error": 0.0026225606950118774
+      }
+    ],
+    "sole_reversal": {
+      "native_better": "half_transolver_error",
+      "compact_better": "truth_plus_deterministic_noise",
+      "disturbance_definition": "0.05*sin(native_point_index*sqrt(2)+case_phase)",
+      "interpretation": "The synthetic disturbance oscillates in native point-index space and is outside the plot-bandlimited intent of the compact profile. Increasing the budget from 128 to 160 or 192 does not remove the reversal."
+    },
+    "preservation_statement": "Every other pair is concordant at 128, 160, and 192; in particular the smooth, current-model, bias, scaled-error, low-frequency, perfect-truth, and zero baselines retain their native ordering.",
+    "claim_exclusion": "No Kendall tau >= 0.99 claim is made for the nine-method set containing the deliberately adversarial native-index oscillation."
+  },
+  "scoring_and_lifecycle": {
+    "full_surface_scoring_changed": false,
+    "compact_profile_role": "plotting and profile diagnostics only; it does not replace canonical full-surface scoring inputs or results",
+    "contract_bound": false,
+    "published": false,
+    "activated": false,
+    "package_built_from_candidate": false
+  },
+  "source_evidence": [
+    {
+      "role": "full360_64_96_128_sweep",
+      "generation_path": "/tmp/hilift_cp_compaction_full360_uniform_v1.json",
+      "size_bytes": 1327299,
+      "sha256": "3c316e5ae1ce4edf08708ec7d756488510f6116cf89915eea3c42addf57e7707"
+    },
+    {
+      "role": "full360_160_sweep",
+      "generation_path": "/tmp/hilift_cp_compaction_full360_uniform_160_v1.json",
+      "size_bytes": 563651,
+      "sha256": "bdc563b900d0bd00261b4a1f84e40771fde51b981ae8c405a464a347e67d6ea0"
+    },
+    {
+      "role": "full360_192_sweep",
+      "generation_path": "/tmp/hilift_cp_compaction_full360_uniform_192_v1.json",
+      "size_bytes": 563710,
+      "sha256": "82610c7c2d15b3143c9b8a042b579a24188b23c6f6569ffc30ec620444d3354d"
+    },
+    {
+      "role": "focused_128_placement_comparison",
+      "generation_path": "/tmp/hilift_cp_adaptive_128_focused_v1.json",
+      "size_bytes": 56368,
+      "sha256": "713478f1c523e0faef7524d3c39bfa77a56af27901a2cc52f906e0a8bad817bd"
+    },
+    {
+      "role": "full360_128_ranking_stress_test",
+      "generation_path": "/tmp/hilift_cp_ranking_stability_full360_v1.json",
+      "size_bytes": 2471,
+      "sha256": "1965222decbec5307b7d927d97619b52d8c24f9ddb2f400556677eb2fc357d29"
+    },
+    {
+      "role": "full360_160_192_ranking_stress_test",
+      "generation_path": "/tmp/hilift_cp_ranking_stability_full360_b160_b192_v1.json",
+      "size_bytes": 23425,
+      "sha256": "a3a71a4422718fe9ecd098624d40c74a7918566c13da373cf23cb5149438781d"
+    }
+  ]
+}

@@ -95,7 +95,10 @@ the reference documentation. Derived metrics list either `derived_score_equation
 Every dataset currently ranks by the higher-is-better `overall_score` at one decimal place. The dataset's
 `overall_score_composite` object is the machine-readable source of truth for its component metric IDs, weights, transforms, and
 error caps. A `bounded_error` component contributes `clip(100 * (1 - error / cap), 0, 100)`; a `bounded_quality` component
-contributes `100 * clip(value, 0, 1)`. The declared non-negative component weights sum to one. The validator recomputes this
+contributes `100 * clip(value, 0, 1)`. A `physics_null_skill` component contributes
+`100 * (1 - error / baseline_error)` without clipping, so worse-than-null methods retain negative skill. Its strictly positive
+baseline error must be published by the frozen evaluator before the composite status can become `active`; a
+`pending_reference_baselines` candidate is not rankable. The declared non-negative component weights sum to one. The validator recomputes this
 composite from the submitted component values, so `overall_score` cannot be supplied independently. BlendedNet uses its four
 area-weighted surface-field L2 values; DrivAerNet++ currently uses its one active area-weighted pressure L2; Rotor37 uses its six
 existing RRMSE quantities; and VKI-LS59 uses its eight existing RRMSE quantities. Supplementary metrics remain visible but do not

@@ -26,13 +26,16 @@
     "code_revision": {"type": "string", "minLength": 1},
     "command": {"type": "string", "minLength": 1, "maxLength": 2000},
     "generated_at": {"type": "string", "format": "date-time"},
-    "status": {"enum": ["prototype_dummy_data", "submitted_evaluation"]},
+    "status": {"enum": ["prototype_dummy_data", "pre_release_reference", "submitted_evaluation"]},
     "metric_values": {
       "type": "object",
       "minProperties": 1,
       "additionalProperties": {"type": "number"}
     },
     "profile_index_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "regional_diagnostics_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_archive_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_package_manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "notes": {"type": "string"}
   }
 }

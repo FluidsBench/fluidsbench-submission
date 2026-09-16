@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 AIRFRANS_ROOT = ROOT / "benchmark-specs" / "airfrans"
+AIRFRANS_EXAMPLE_ROOT = ROOT / "examples" / "airfrans-profile-extraction"
 
 
 def load_json(path: Path) -> dict:
@@ -69,6 +70,13 @@ class AirfransContractTests(unittest.TestCase):
             )
         self.assertEqual(extraction["resolution_segments"], 1000)
         self.assertEqual(extraction["sample_count"], 1001)
+        self.assertEqual(extraction["surface"], "extrados")
+        self.assertEqual(extraction["line_direction"], "outward_airfoil_surface_normal")
+        self.assertEqual(extraction["source_normal_orientation"], "inward_since_airfrans_0.1.4")
+        self.assertEqual(
+            extraction["normal_transform"],
+            "negate_inward_normal_then_l2_normalize",
+        )
 
         panel = self.specification["profile_panels"][0]
         self.assertTrue(panel["required"])
@@ -85,6 +93,160 @@ class AirfransContractTests(unittest.TestCase):
             panel["quantity_ids"],
             [quantity["id"] for quantity in self.profile_definition["quantities"]],
         )
+
+        metric_binding = self.profile_definition["metric_binding"]
+        aggregation = "equal_station_equal_quantity_mean_bounded_r2_across_split"
+        self.assertEqual(metric_binding["metric_id"], panel["metric_id"])
+        self.assertEqual(metric_binding["aggregation"], aggregation)
+        self.assertEqual(
+            metric_binding["grouping"],
+            "calculate_one_r2_for_each_station_quantity_pair_across_all_cases_and_samples",
+        )
+        self.assertEqual(metric_binding["r2_bounds_before_averaging"], [0.0, 1.0])
+        self.assertEqual(metric_binding["station_weighting"], "equal")
+        self.assertEqual(metric_binding["quantity_weighting"], "equal")
+        self.assertEqual(metric_binding["sample_weighting_within_group"], "equal")
+
+        metric = next(
+            item for item in self.specification["metrics"] if item["id"] == panel["metric_id"]
+        )
+        self.assertEqual(metric["aggregation"], aggregation)
+        self.assertEqual(
+            metric["weighting"],
+            "stations_equal_quantities_equal_samples_within_each_station_quantity_group",
+        )
+
+    def test_profile_runtime_and_reference_fixture_are_hash_bound(self) -> None:
+        runtime = self.profile_definition["sampling_runtime"]
+        requirements_path = ROOT / runtime["requirements_file"]
+        self.assertEqual(runtime["airfrans_distribution_version"], "0.1.5.1")
+        self.assertEqual(runtime["airfrans_module_version"], "0.1.2")
+        self.assertEqual(runtime["numpy_version"], "2.5.2")
+        self.assertEqual(runtime["pyvista_version"], "0.48.4")
+        self.assertEqual(runtime["vtk_version"], "9.6.2")
+        self.assertEqual(runtime["requirements_sha256"], sha256_file(requirements_path))
+        self.assertEqual(
+            requirements_path.read_text(encoding="utf-8").splitlines(),
+            [
+                "airfrans==0.1.5.1",
+                "numpy==2.5.2",
+                "pyvista==0.48.4",
+                "vtk==9.6.2",
+            ],
+        )
+
+        binding = self.profile_definition["reference_fixture"]
+        fixture_path = ROOT / binding["file"]
+        self.assertEqual(fixture_path, AIRFRANS_EXAMPLE_ROOT / "example_extraction.json")
+        self.assertEqual(binding["sha256"], sha256_file(fixture_path))
+
+    def test_reference_fixture_has_valid_outward_normal_profiles(self) -> None:
+        fixture_binding = self.profile_definition["reference_fixture"]
+        fixture = load_json(ROOT / fixture_binding["file"])
+        provenance = fixture["provenance"]
+        runtime = self.profile_definition["sampling_runtime"]
+        extraction = self.profile_definition["extraction"]
+        validation = self.profile_definition["validation"]
+
+        self.assertEqual(provenance["mode"], fixture_binding["mode"])
+        self.assertEqual(
+            provenance["profile_definition_id"],
+            self.profile_definition["profile_definition_id"],
+        )
+        self.assertEqual(
+            provenance["extractor_sha256"],
+            sha256_file(AIRFRANS_EXAMPLE_ROOT / "extract.py"),
+        )
+        self.assertEqual(
+            provenance["versions"],
+            {
+                "airfrans_distribution": runtime["airfrans_distribution_version"],
+                "airfrans_module": runtime["airfrans_module_version"],
+                "numpy": runtime["numpy_version"],
+                "pyvista": runtime["pyvista_version"],
+                "vtk": runtime["vtk_version"],
+            },
+        )
+        self.assertEqual(
+            provenance["airfrans_runtime_source_file_sha256"],
+            runtime["airfrans_runtime_source_file_sha256"],
+        )
+        perfect_copy = provenance["perfect_copy_validation"]
+        self.assertEqual(
+            perfect_copy["absolute_tolerance"],
+            validation["perfect_copy_absolute_tolerance"],
+        )
+        self.assertLessEqual(
+            perfect_copy["maximum_absolute_difference"],
+            perfect_copy["absolute_tolerance"],
+        )
+
+        expected_station_ids = [station["id"] for station in self.profile_definition["stations"]]
+        sampling = provenance["sampling"]
+        self.assertEqual(sampling["surface"], "extrados")
+        self.assertEqual(sampling["normal_transform"], extraction["normal_transform"])
+        self.assertEqual(
+            [station["station_id"] for station in sampling["stations"]],
+            expected_station_ids,
+        )
+        for station in sampling["stations"]:
+            self.assertEqual(station["valid_sample_count"], extraction["sample_count"])
+            self.assertEqual(len(station["origin_m"]), 3)
+            self.assertEqual(len(station["outward_unit_normal"]), 2)
+            self.assertTrue(
+                math.isclose(
+                    math.hypot(*station["outward_unit_normal"]),
+                    1.0,
+                    rel_tol=0.0,
+                    abs_tol=1e-12,
+                )
+            )
+
+        self.assertEqual(len(fixture["cases"]), 1)
+        self.assertEqual(fixture["cases"][0]["case_id"], fixture_binding["case_id"])
+        series = fixture["cases"][0]["series"]
+        expected_series = {
+            (self.profile_definition["metric_binding"]["panel_id"], station_id, quantity["id"])
+            for station_id in expected_station_ids
+            for quantity in self.profile_definition["quantities"]
+        }
+        observed_series = {
+            (entry["panel_id"], entry["station_id"], entry["quantity_id"])
+            for entry in series
+        }
+        self.assertEqual(observed_series, expected_series)
+        by_identity = {
+            (entry["station_id"], entry["quantity_id"]): entry
+            for entry in series
+        }
+        for entry in series:
+            coordinates = entry["coordinate"]
+            predictions = entry["prediction"]
+            self.assertEqual(len(coordinates), extraction["sample_count"])
+            self.assertEqual(len(predictions), extraction["sample_count"])
+            self.assertEqual(coordinates[0], 0.0)
+            self.assertEqual(coordinates[-1], extraction["line_length_m"])
+            self.assertTrue(all(math.isfinite(value) for value in coordinates + predictions))
+            spacing = extraction["line_length_m"] / extraction["resolution_segments"]
+            self.assertTrue(
+                all(
+                    math.isclose(
+                        coordinates[index + 1] - coordinates[index],
+                        spacing,
+                        rel_tol=0.0,
+                        abs_tol=1e-15,
+                    )
+                    for index in range(len(coordinates) - 1)
+                )
+            )
+
+        for station_id in expected_station_ids:
+            velocity_x = by_identity[(station_id, "velocity_x_ratio")]["prediction"]
+            velocity_y = by_identity[(station_id, "velocity_y_ratio")]["prediction"]
+            self.assertFalse(
+                any(x == 0.0 and y == 0.0 for x, y in zip(velocity_x, velocity_y, strict=True)),
+                f"{station_id} contains VTK fill-value samples",
+            )
 
     def test_split_ids_are_bound_to_the_official_manifest_member(self) -> None:
         expected_manifest_keys = {
@@ -167,6 +329,10 @@ class AirfransContractTests(unittest.TestCase):
         )
         self.assertTrue(panel["required"])
         self.assertFalse(panel["allow_unlisted_stations"])
+        self.assertEqual(
+            dataset["metric_definition_overrides"]["velocity_profile_r2"]["label"],
+            "Balanced velocity profile score",
+        )
 
 
 if __name__ == "__main__":

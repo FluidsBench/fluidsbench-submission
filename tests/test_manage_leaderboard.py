@@ -50,6 +50,54 @@ class ManageLeaderboardTests(unittest.TestCase):
         profile_index_path = manage_leaderboard.ROOT / row["profile_data"]["index_file"]
         self.assertEqual(row["profile_data"]["index_sha256"], manage_leaderboard.sha256_file(profile_index_path))
 
+    def test_only_latest_revision_is_ranked_and_all_versions_remain_in_history(self) -> None:
+        rows = {
+            "Example": [
+                {
+                    "submission_id": "team-model-v1",
+                    "dataset_id": "example",
+                    "split_id": "full",
+                    "submitted_at": "2026-08-01",
+                    "result_revision": {
+                        "series_id": "team-model",
+                        "version": 1,
+                        "supersedes": None,
+                        "change_summary": "Initial result.",
+                    },
+                },
+                {
+                    "submission_id": "team-model-v2",
+                    "dataset_id": "example",
+                    "split_id": "full",
+                    "submitted_at": "2026-08-02",
+                    "result_revision": {
+                        "series_id": "team-model",
+                        "version": 2,
+                        "supersedes": "team-model-v1",
+                        "change_summary": "Updated result.",
+                    },
+                },
+            ]
+        }
+        manage_leaderboard.annotate_result_revisions(rows)
+        latest = manage_leaderboard.latest_rows_by_dataset(rows)
+        self.assertEqual([row["submission_id"] for row in latest["Example"]], ["team-model-v2"])
+        self.assertFalse(rows["Example"][0]["result_revision"]["is_latest"])
+        self.assertTrue(rows["Example"][1]["result_revision"]["is_latest"])
+        history = manage_leaderboard.revision_history_payload(
+            {
+                "data_release": {
+                    "id": "example-release",
+                    "status": "official",
+                    "generated_at": "2026-08-02T00:00:00Z",
+                }
+            },
+            rows,
+        )
+        self.assertEqual(history["record_count"], 2)
+        self.assertEqual(history["series_count"], 1)
+        self.assertEqual(manage_leaderboard.revision_history_semantic_errors(history), [])
+
     def test_prototype_feed_contains_only_prototype_rows(self) -> None:
         paths = [
             manage_leaderboard.ROOT / "submissions" / "ahmedml" / submission_id / "submission.json"
@@ -137,10 +185,12 @@ class ManageLeaderboardTests(unittest.TestCase):
         }
         rows = {"AhmedML": [{"submission_id": "example", "submitted_at": "2026-07-15"}]}
         with patch.object(manage_leaderboard, "source_rows_by_dataset", return_value=rows):
-            updated, _, all_rows = manage_leaderboard.expected_outputs(manifest)
+            updated, _, all_rows, revision_history = manage_leaderboard.expected_outputs(manifest)
         digest = hashlib.sha256(manage_leaderboard.json_bytes(all_rows)).hexdigest()
         self.assertEqual(updated["data_release"]["feed_sha256"], digest)
         self.assertEqual(updated["data_release"]["id"], f"prototype-dev-2026-07-15-{digest[:12]}")
+        self.assertEqual(revision_history["record_count"], 1)
+        self.assertEqual(revision_history["series_count"], 1)
 
     def test_official_release_requires_archive_and_license_provenance(self) -> None:
         manifest = {"data_release": {"status": "official", "archive_url": None}}
@@ -445,10 +495,10 @@ class ManageLeaderboardTests(unittest.TestCase):
             "source_rows_by_dataset",
             return_value={"Example": []},
         ):
-            first, _, first_rows = manage_leaderboard.expected_outputs(
+            first, _, first_rows, _ = manage_leaderboard.expected_outputs(
                 manifest, generated_at="2030-01-01T00:00:00Z"
             )
-            second, _, second_rows = manage_leaderboard.expected_outputs(
+            second, _, second_rows, _ = manage_leaderboard.expected_outputs(
                 manifest, generated_at="2040-01-01T00:00:00Z"
             )
         self.assertEqual(first, second)
@@ -839,7 +889,7 @@ class ManageLeaderboardTests(unittest.TestCase):
     def test_approve_submission_writes_validation_and_rebuilds(self) -> None:
         with TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
-            directory = root / "submissions" / "example" / "model-v3"
+            directory = root / "submissions" / "example" / "model-v1"
             profile_path = directory / "profiles" / "index.json"
             manifest_path = root / "leaderboard" / "manifest.json"
             manage_leaderboard.write_json(profile_path, {"schema_version": "1.0"})
@@ -850,7 +900,13 @@ class ManageLeaderboardTests(unittest.TestCase):
                 {
                     "$schema": "https://fluidsbench.org/schemas/v3/submission.schema.json",
                     "schema_version": "3.0",
-                    "submission_id": "model-v3",
+                    "submission_id": "model-v1",
+                    "result_revision": {
+                        "series_id": "model",
+                        "version": 1,
+                        "supersedes": None,
+                        "change_summary": "Initial result.",
+                    },
                     "submitted_at": "2026-07-26",
                     "dataset_id": "example",
                     "split_id": "full",
@@ -878,7 +934,7 @@ class ManageLeaderboardTests(unittest.TestCase):
                 patch.object(manage_leaderboard, "MANIFEST_PATH", manifest_path),
                 patch.object(
                     manage_leaderboard,
-                    "validate_submission_file",
+                    "validate_many",
                     side_effect=[([], {}), ([], {})],
                 ),
                 patch.object(manage_leaderboard, "release_contract_errors", return_value=[]),

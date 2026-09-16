@@ -1,0 +1,67 @@
+{
+  "schema": "drivaerml-fluidsbench-candidate-release-bindings-v1",
+  "status": "unresolved",
+  "unresolved_token_prefix": "__UNRESOLVED_DRIVAERML_",
+  "candidate_manifest": {
+    "status": "candidate",
+    "release_id": "__UNRESOLVED_DRIVAERML_CANDIDATE_SUPPORT_RELEASE_ID__",
+    "manifest_file": "__UNRESOLVED_DRIVAERML_CANDIDATE_SUPPORT_MANIFEST_FILE__",
+    "manifest_url": "__UNRESOLVED_DRIVAERML_CANDIDATE_SUPPORT_MANIFEST_URL__",
+    "manifest_sha256": "__UNRESOLVED_DRIVAERML_CANDIDATE_SUPPORT_MANIFEST_SHA256__"
+  },
+  "evaluator": {
+    "reference_version": "drivaerml-evaluator-v3-candidate",
+    "code_revision": "__UNRESOLVED_DRIVAERML_CANDIDATE_EVALUATOR_CODE_REVISION__"
+  },
+  "profile_definition_v10": {
+    "file": "drivaerml-diagnostics-v10.json",
+    "sha256": "9136feac7ac276d91f7cbcfb6c558beffc97cfaf0f0174626fee67a1f2a52bd0"
+  },
+  "relative_diagnostics_v3": {
+    "file": "drivaerml-relative-diagnostics-v3.json",
+    "sha256": "a6066fa83a7af0d18b84a18c11079f020023a6aed81292c4251186c14fc0461a",
+    "profile_chunk_schema_file": "schemas/v1/drivaerml-relative-profile-chunk.schema.json",
+    "profile_chunk_schema_sha256": "ff5c5965bb00633303b9372360879d02535f7946c882b9cfcefe1ee55446a0d2"
+  },
+  "relative_support": {
+    "status": "ready",
+    "required_case_count": 484,
+    "velocity_placement_manifest": {
+      "family_id": "drivaerml-velocity-relative-v3",
+      "producer_file": "velocity_support_v3/production_campaign_v1/aggregate/relative-velocity-v3-production-all484-inputs-v1.json",
+      "manifest_file": "support/relative-v3/manifests/velocity-placement-all484-v1.json",
+      "expected_schema": "drivaerml-relative-velocity-v3-production-input-manifest-v1",
+      "manifest_sha256": "70627d6af9e6b254739b29d54d856b470d6152066e09a1097ebe20c034179925"
+    },
+    "velocity_mapping_manifest": {
+      "family_id": "drivaerml-velocity-relative-v3",
+      "producer_file": "velocity_mapping_v3/aggregate/relative-velocity-v3-mapping-all484-v1.json",
+      "manifest_file": "support/relative-v3/manifests/velocity-mapping-all484-v1.json",
+      "expected_schema": "drivaerml-velocity-relative-v3-mapping-aggregate-v1",
+      "manifest_sha256": "9b88c36e2268bf72c9baec9418ef2d9afc9faba1d98c9c12ed73b79e683a6a3d"
+    },
+    "cp_manifest": {
+      "family_id": "drivaerml_cp_relative_v1",
+      "producer_file": "cp_support/campaign_v3/aggregate_v3/all484/relative-cp-native-support-manifest-v3.json",
+      "manifest_file": "support/relative-v3/manifests/cp-native-support-all484-v3.json",
+      "expected_schema": "drivaerml-relative-cp-native-support-manifest-v3",
+      "manifest_sha256": "4e6a4c3495ea4938895868162480dcb20b5bbea42114c94013a2c76e26128c90"
+    }
+  },
+  "profile_ground_truth": {
+    "release_id": "__UNRESOLVED_DRIVAERML_PROFILE_GROUND_TRUTH_RELEASE_ID__",
+    "manifest_sha256": "__UNRESOLVED_DRIVAERML_PROFILE_GROUND_TRUTH_MANIFEST_SHA256__"
+  },
+  "scientific_approval": {
+    "status": "approved",
+    "approved_by": "neilashton",
+    "approved_at": "2026-08-28",
+    "approval_record": {
+      "file": "evidence/owner-scientific-approval-2026-08-28.json",
+      "sha256": "448f2b852df7066fc311eed75ea94caa756ae6f63573d12a50798804c08929b3",
+      "schema": "drivaerml-owner-scientific-approval-v1"
+    },
+    "release_activation_effect": "none_until_remaining_release_gates_complete"
+  },
+  "notes": "This file is the release hand-off, not an active scoring-support declaration. The local constant-v10 and report-only relative-v3 contract and schema are hash-bound. Exact retained copies of the all-484 velocity-placement, velocity-mapping, and relative-Cp manifests are byte-hashed, schema-checked, and verified against the official 484-case registry, so the independent nested relative_support hand-off is ready. The dataset owner approved the cited scientific evidence and profile decisions on 2026-08-28. Top-level status governs the ranked constant candidate and remains unresolved only until its scoring-support, evaluator, and profile-ground-truth identities resolve; relative_support never blocks the constant candidate. Relative families retain weight 0 and their format remains closed pending genuine-model sensitivity and a final release-specific approval record that binds that evidence."
+}

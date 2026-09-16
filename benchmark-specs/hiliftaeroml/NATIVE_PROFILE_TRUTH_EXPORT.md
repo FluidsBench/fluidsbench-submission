@@ -1,0 +1,126 @@
+# HiLiftAeroML native profile truth candidate
+
+`scripts/export_hiliftaeroml_native_profile_truth.py` builds the separate,
+benchmark-owned truth required by the prediction-only native profile contract.
+It does not publish truth, complete owner approval, activate scoring, or open
+submissions. The exact format is frozen in
+`native-profile-truth-release-format-v1.json`.
+
+## Scientific and privacy boundary
+
+Each of the 1,355 unique physical cases is stored once. The eight exact case
+sets are thin indexes into that common universe, so overlapping split labels do
+not duplicate case data. A case truth NPZ contains only `truth_cp` and
+`reference_velocity_nd`. Participant artifacts remain prediction-only.
+
+The case JSON binds all alignment information without copying multi-megabyte Cp
+topology into the truth release: exact per-array Cp topology and geometry
+identities, the code catalogs, and the truth identity. Velocity binds the
+requested coordinates, validity mask, row weights, fixed station order, and a
+separate coordinate/mask/weight/truth/gap identity for B.2, B.3, C.1, C.2, and
+C.3. Invalid runs are retained as half-open row intervals and remain NaN in the
+truth array; filling or interpolating across a gap fails validation.
+
+## Inputs
+
+The production exporter requires:
+
+1. the checked-in eight-case-set scoring-support candidate manifest;
+2. frozen geometry-only surface Cp stencils, volume velocity stencils, and
+   volume training-validity records/payloads;
+3. the original native surface `PROJ(AVG(P))` and volume `avg(u)` truth fields;
+4. the five frozen training freestream memmaps; and
+5. an internal prerequisite-authority index. Its absolute paths are never
+   copied into participant packages.
+
+Only the unique native nodes referenced by each stencil are read. No model is
+loaded and no full VTU/PDMsh field scan occurs. The volume training-validity
+map proves every referenced raw node survives the training filter. Sparse
+native `avg(u)` replay is byte-identical to the randomized PDMsh evaluator
+truth, without regenerating its full permutation.
+
+Completed evaluator outputs are never truth authorities. The optional
+`--oracle-case-root` check requires exact array equality against a completed
+case, then records that the oracle was not used as a source. The legacy
+`oracle-*` CLI modes exist only for isolated regression fixtures.
+
+## Source inventory and preflight
+
+Layer prerequisite roots. Duplicate complete records are accepted only when
+their record and payload bytes are identical:
+
+```bash
+python scripts/export_hiliftaeroml_native_profile_truth.py \
+  --mode prerequisite-index \
+  --cp-record-root /path/to/surface_cp_stencils \
+  --velocity-record-root /path/to/volume_velocity_profile_stencils \
+  --validity-record-root /path/to/volume_training_validity \
+  --authority-index /private/staging/hilift-profile-truth-authority.json
+```
+
+An incomplete authority index is valid for planning but cannot generate cases.
+Record the exact missing case list and scheduler plan with:
+
+```bash
+python scripts/export_hiliftaeroml_native_profile_truth.py \
+  --mode prerequisite-preflight \
+  --authority-index /private/staging/hilift-profile-truth-authority.json \
+  --preflight-receipt /private/staging/preflight.json
+```
+
+## Parallel deterministic generation
+
+Once all 1,355 prerequisite sources are complete, case mode is safe for a
+zero-based CPU scheduler array. Start at eight concurrent tasks because the
+sources reside on shared storage:
+
+```bash
+python scripts/export_hiliftaeroml_native_profile_truth.py \
+  --mode prerequisite-case \
+  --case-index "$SLURM_ARRAY_TASK_ID" \
+  --authority-index /private/staging/hilift-profile-truth-authority.json \
+  --output-dir /private/staging/hilift-native-profile-truth-v1
+```
+
+The checked-in Slurm workflow has three explicit stages:
+
+1. `run_hiliftaeroml_native_profile_truth_authority.sbatch` builds the exact
+   authority index and preflight receipt with one CPU, 4 GiB, and 30 minutes;
+2. `run_hiliftaeroml_native_profile_truth_cases.sbatch` fixes the worker array
+   at `0-1354%8`, one CPU, 4 GiB, and five minutes per case; and
+3. `run_hiliftaeroml_native_profile_truth_assemble.sbatch` builds the shared
+   chunks and indexes with two CPUs, 8 GiB, and one hour.
+
+Every stage refuses non-absolute campaign paths. The case and assembly stages
+also require a pinned authority SHA-256 and the explicit owner-approval
+sentinel. Preparing or validating this candidate does not itself grant that
+approval. Submit assembly with an `afterok` dependency on the case array.
+
+After every task succeeds, assemble the shared chunks and eight thin indexes:
+
+```bash
+python scripts/export_hiliftaeroml_native_profile_truth.py \
+  --mode prerequisite-assemble \
+  --authority-index /private/staging/hilift-profile-truth-authority.json \
+  --output-dir /private/staging/hilift-native-profile-truth-v1
+```
+
+Repeat both phases with `--check` to compare every generated byte without
+overwriting anything.
+
+## Validation
+
+The default validation rematerializes all 1,355 cases from the prediction-free
+prerequisites and checks every release hash and membership edge:
+
+```bash
+python scripts/validate_hiliftaeroml_native_profile_truth.py \
+  --authority-index /private/staging/hilift-profile-truth-authority.json \
+  --output-dir /private/staging/hilift-native-profile-truth-v1 \
+  --receipt /private/staging/hilift-native-profile-truth-validation.json
+```
+
+`--metadata-only` checks the closed release graph and truth-array identities
+without reading the external benchmark sources. It is useful for storage
+transport checks, but it is not a substitute for the full pre-publication
+source replay.

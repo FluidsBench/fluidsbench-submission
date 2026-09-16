@@ -21,6 +21,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from reference.scores import composite_component_group_scores, composite_overall_score
+from scripts.prototype_methodologies import build_prototype_methodology
 
 
 SUBMISSION_SPLITS = {
@@ -66,6 +67,9 @@ def profile_series(panel: dict[str, Any]) -> list[dict[str, Any]]:
 
 def main() -> None:
     specification = load_json(ROOT / "benchmark-specs" / "airfrans" / "submission-spec.json")
+    methodology_contract = load_json(
+        ROOT / "benchmark-specs" / "airfrans" / "methodology-contract.json"
+    )
     split_entries = {entry["id"]: entry for entry in specification["splits"]}
     panel = next(item for item in specification["profile_panels"] if item["id"] == "velocity_profiles")
     expected_prototype_count = load_json(
@@ -165,6 +169,10 @@ def main() -> None:
         submission["profile_data"]["case_count"] = len(case_ids)
         submission["profile_data"]["case_set_id"] = split["case_set_id"]
         submission["profile_data"]["index_file"] = "profiles/index.json"
+        submission["methodology"] = build_prototype_methodology(
+            submission,
+            methodology_contract,
+        )
         write_json(submission_path, submission)
         print(f"Regenerated AirfRANS prototype fixture: {submission_id}")
 

@@ -2,12 +2,27 @@
   "schema_version": "1.1",
   "dataset_id": "hiliftaeroml",
   "dataset_name": "HiLiftAeroML",
-  "dataset_version": "prototype-1",
-  "status": "prototype_dummy_data",
+  "dataset_version": "hiliftaeroml-native-v1-candidate",
+  "submission_format": "hiliftaeroml_native_candidate_v3",
+  "status": "owner_review_required",
   "scoring_support": {
     "status": "owner_review_required",
     "submissions_open": false,
-    "closed_reason": "Submissions are currently closed.",
+    "closed_reason": "Closed owner-review candidate: immutable public source-content pins, public profile-truth publication, and owner scientific approval remain pending. The immutable evaluator revision is frozen only for closed candidate dry runs and has no activation effect.",
+    "candidate_manifest": {
+      "status": "candidate",
+      "release_id": "hiliftaeroml-native-all-splits-support-v1-candidate",
+      "manifest_file": "scoring-support/hiliftaeroml-native-all-splits-support-v1-candidate/manifest.json",
+      "manifest_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/hiliftaeroml/scoring-support/hiliftaeroml-native-all-splits-support-v1-candidate/manifest.json",
+      "manifest_sha256": "98a9a8d015e42c80f5993e30da94201011bebf67ff44d5574a7ef68a8b5dfbee"
+    },
+    "dataset_evaluator_binding": {
+      "status": "frozen",
+      "repository_url": "https://github.com/neilashton/fluidsbench-submission",
+      "evaluator_reference_version": "hiliftaeroml-evaluator-v0.1-candidate",
+      "evaluator_code_revision": "68899f780d96b70f2badb5658971c87af0b17172",
+      "activation_rule": "This frozen revision may be used only for closed maintainer-local candidate dry runs; it does not publish profile truth, record owner approval, open submissions, or activate a public or private leaderboard."
+    },
     "coverage_contract": {
       "dimensionality": "3D surface and 3D flow domain",
       "rule": "complete_original_public_release_entities",
@@ -35,29 +50,110 @@
         "format": "tar-gzipped VTK UnstructuredGrid",
         "domain": "three_dimensional_flow_domain",
         "association": "PointData",
-        "entities": "all_native_volume_points",
-        "physical_weight": "mass_lumped_dual_cell_volume",
-        "verification": "confirmed_in_public_release_documentation"
+        "entities": "retained_native_volume_points_with_raw_float32_avg(P)_not_equal_to_zero",
+        "verification": "confirmed_in_public_release_documentation",
+        "primary_weight": "one_per_retained_valid_native_point"
       }
     ],
     "relative_l2_policy": {
       "surface_or_curve_primary": "physical_measure_weighted",
       "surface_or_curve_secondary": "equal_native_entity",
-      "flow_domain_primary": "equal_native_entity",
-      "flow_domain_secondary": "physical_measure_weighted",
-      "point_or_vertex_physical_weights": "deterministic_mass_lumped_dual_measure_from_the_exact_public_mesh",
+      "flow_domain_primary": "equal_valid_native_entity",
+      "flow_domain_secondary": "not_part_of_closed_candidate",
+      "point_or_vertex_physical_weights": "surface_only_deterministic_mass_lumped_dual_area_from_the_exact_public_mesh",
       "vector_rule": "one_entity_weight_multiplies_the_squared_vector_magnitude",
       "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
     },
+    "field_metric_value_bases": {
+      "relative_l1_l2": {
+        "surface_pressure": "(P-p_inf)/q_inf",
+        "surface_wall_shear": "tau_wall/q_inf",
+        "volume_pressure": "(P-p_inf)/q_inf",
+        "volume_velocity": "U/|U_inf|",
+        "aggregation": "form each complete-case ratio from additive sufficient statistics, then macro-average all cases in the selected split equally"
+      },
+      "dimensional_mae_rmse": {
+        "surface_pressure": "inverse-scale each case by q_inf into Pa",
+        "surface_wall_shear": "inverse-scale each case by q_inf into Pa",
+        "volume_pressure": "inverse-scale each case by q_inf into Pa",
+        "volume_velocity": "inverse-scale each case by |U_inf| into m/s",
+        "aggregation": "derive each dimensional complete-case value before macro-averaging all cases in the selected split equally"
+      },
+      "vector_reduction": {
+        "relative_l1": "component-flattened absolute numerator and denominator",
+        "relative_l2": "one nodal weight multiplies the squared three-component vector error and truth magnitude",
+        "mae_rmse": "current native-evaluator per-component convention over 3*N weighted scalar components"
+      }
+    },
+    "candidate_migration_notes": [
+      "The closed schema-v3 candidate removes the legacy diagnostic volume_velocity_physical_rel_l2 and volume_pressure_physical_rel_l2 requirements. The native Table-5 evaluator has never published or consumed volume dual-volume support; its frozen primary contract is equal valid native nodes. This candidate migration is not an activated public scoring change because submissions remain closed and unapproved.",
+      "Relative field metrics are bound to the frozen Table-5 nondimensional targets, while the existing paper-compatible MAE/RMSE metrics remain dimensional. A candidate aggregate must emit and audit both bases from the same per-case inference stream.",
+      "The closed candidate replaces the stale prototype 16-station velocity panel with the five frozen Table-5 stations B.2, B.3, C.1, C.2, and C.3. Velocity profiles use physical polyline arc length and within-station centering; Cp retains exact rows A-J with physical connected-cut arc length and independently centered connected graphs. This is not an activated public profile-contract change while submissions remain closed."
+    ],
     "owner_decisions_required": [
-      "pin_exact_public_release_files_revisions_and_hashes",
-      "confirm_array_names_entity_associations_masks_and_order",
-      "publish_authoritative_physical_weights_and_stable_entity_ids",
-      "approve_public_ground_truth_case_set_and_split_bindings",
-      "approve_loader_evaluator_and_immutable_scoring_support_manifest"
+      "pin_exact_public_release_archive_and_extracted_member_content_sha256_for_all_1355_unique_evaluation_cases",
+      "confirm_public_source_array_names_associations_retained_volume_mask_and_raw_point_order",
+      "publish_and_approve_authoritative_surface_dual_area_support",
+      "approve_all_exact_split_bindings_and_candidate_scoring_support_release",
+      "exercise_and_audit_same_stream_nondimensional_relative_and_dimensional_absolute_field_aggregation",
+      "freeze_lossless_cp_connected_graph_and_five_station_velocity_profile_serialization_and_public_truth_release",
+      "owner_approve_the_frozen_dataset_evaluator_git_revision_without_public_activation",
+      "approve_the_zero_weight_regional_contract_and_complete_split_aggregator"
     ]
   },
-  "evaluation_reference_version": "prototype-1",
+  "profile_definition": {
+    "status": "candidate_owner_review_required",
+    "contract_id": "hiliftaeroml-native-profile-predictions-v1-candidate",
+    "file": "native-profile-format-v1.json",
+    "format": "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate",
+    "sha256": "39a1e79edf951b3e4f5d1b5fa456cbd1fad524e93dac1bdca58534e01647ae25",
+    "profile_ground_truth": {
+      "status": "not_published",
+      "release_id": null,
+      "manifest_sha256": null
+    },
+    "candidate_dry_run_profile_ground_truth": {
+      "status": "complete_candidate_not_published",
+      "usage": "maintainer_local_candidate_dry_run_only",
+      "release_id": "hiliftaeroml-native-profile-truth-v1-candidate",
+      "manifest_sha256": "3e20b857e12055e16f1d248d125b8df62a3669c604411dc67322fe98d9ab4477",
+      "binding_file": "candidate-profile-truth-binding.json",
+      "binding_sha256": "11deb05bb29d98149c72712aef571b9be4de543cd69d5d6a1ef68b5bd53f7b93"
+    },
+    "activation_rule": "Publish and owner-approve one complete profile ground-truth release bound to this exact contract SHA-256 before accepting native profile chunks."
+  },
+  "compact_profile_definition": {
+    "status": "additive_candidate_not_bound",
+    "contract_id": "hiliftaeroml-compact-profile-predictions-v2-candidate",
+    "file": "native-profile-format-v2.json",
+    "format": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate",
+    "sha256": "b1fd29b2cb6c1c84c694ddffc5d85f6cd68fd175b79c3695a443aa78bf962c2f",
+    "representation_decision": {
+      "status": "full360_sensitivity_complete_128_selected",
+      "file": "compact-cp-representation-decision-v1.json",
+      "sha256": "f0290ad8c2b390dc09cf8e43797d4d838fba616a0695ba53ebf0e9b72fd64bd7"
+    },
+    "evaluator_support": {
+      "status": "not_published",
+      "release_id": null,
+      "manifest_sha256": null
+    },
+    "candidate_dry_run_evaluator_support": {
+      "status": "complete_candidate_not_published",
+      "usage": "maintainer_local_candidate_dry_run_only",
+      "release_id": "hiliftaeroml-compact-profile-support-v2-candidate",
+      "manifest_sha256": "7f946510cf8f63d05adaff4c91980d74f29c45ed7209b5a8f7e604e521cb823b"
+    },
+    "public_plot_ground_truth": {
+      "status": "public_plot_only_candidate",
+      "usage": "browser_visualization_only_not_metric_recomputation",
+      "activation_effect": "none",
+      "binding_file": "public-compact-profile-truth-binding-v1.json",
+      "binding_sha256": "69bc6e8c8503fbd86bdce1ec692e8967e8502d09582a3e06fc7c67cca203cedd"
+    },
+    "activation_rule": "Owner approval, publication of immutable evaluator support and profile truth bound to this exact contract SHA-256, and an explicit status change are required before compact-v2 submissions open."
+  },
+  "evaluation_reference_version": "hiliftaeroml-evaluator-v0.1-candidate",
   "default_field_reduction": "per_geometry_then_macro_average",
   "ranking": {
     "metric_id": "overall_score",
@@ -70,14 +166,50 @@
     "metric_id": "overall_score",
     "operation": "weighted_component_scores",
     "components": [
-      { "metric_id": "surface_pressure_rel_l2", "weight": 0.15, "transform": "bounded_error", "cap": 15.0 },
-      { "metric_id": "surface_wall_shear_rel_l2", "weight": 0.1, "transform": "bounded_error", "cap": 20.0 },
-      { "metric_id": "volume_velocity_rel_l2", "weight": 0.15, "transform": "bounded_error", "cap": 12.0 },
-      { "metric_id": "volume_pressure_rel_l2", "weight": 0.1, "transform": "bounded_error", "cap": 15.0 },
-      { "metric_id": "cd_r2", "weight": 0.15, "transform": "bounded_quality" },
-      { "metric_id": "cl_r2", "weight": 0.1, "transform": "bounded_quality" },
-      { "metric_id": "velocity_profile_r2", "weight": 0.15, "transform": "bounded_quality" },
-      { "metric_id": "cp_cut_r2", "weight": 0.1, "transform": "bounded_quality" }
+      {
+        "metric_id": "surface_pressure_rel_l2",
+        "weight": 0.15,
+        "transform": "bounded_error",
+        "cap": 15.0
+      },
+      {
+        "metric_id": "surface_wall_shear_rel_l2",
+        "weight": 0.1,
+        "transform": "bounded_error",
+        "cap": 20.0
+      },
+      {
+        "metric_id": "volume_velocity_rel_l2",
+        "weight": 0.15,
+        "transform": "bounded_error",
+        "cap": 12.0
+      },
+      {
+        "metric_id": "volume_pressure_rel_l2",
+        "weight": 0.1,
+        "transform": "bounded_error",
+        "cap": 15.0
+      },
+      {
+        "metric_id": "cd_r2",
+        "weight": 0.15,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "cl_r2",
+        "weight": 0.1,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "velocity_profile_r2",
+        "weight": 0.15,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "cp_cut_r2",
+        "weight": 0.1,
+        "transform": "bounded_quality"
+      }
     ],
     "tolerance": 1e-06
   },
@@ -193,15 +325,6 @@
       "weighting": "volume_points_equal"
     },
     {
-      "id": "volume_velocity_physical_rel_l2",
-      "unit": "%",
-      "direction": "lower",
-      "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
-      "aggregation": "per_geometry_then_macro_average",
-      "weighting": "volume_point_dual_volume"
-    },
-    {
       "id": "volume_pressure_rel_l2",
       "unit": "%",
       "direction": "lower",
@@ -209,15 +332,6 @@
       "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
       "aggregation": "per_geometry_then_macro_average",
       "weighting": "volume_points_equal"
-    },
-    {
-      "id": "volume_pressure_physical_rel_l2",
-      "unit": "%",
-      "direction": "lower",
-      "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
-      "aggregation": "per_geometry_then_macro_average",
-      "weighting": "volume_point_dual_volume"
     },
     {
       "id": "surface_pressure_rel_l1",
@@ -260,18 +374,18 @@
       "unit": "",
       "direction": "higher",
       "kind": "r2",
-      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
-      "aggregation": "flatten_all_required_profile_samples",
-      "weighting": "samples_equal"
+      "equation": "1-\\frac{\\sum_s\\sum_i w_{s,i}(y_{s,i}-\\hat{y}_{s,i})^2}{\\sum_s\\sum_i w_{s,i}(y_{s,i}-\\bar{y}_s)^2}",
+      "aggregation": "per_case_station_centered_then_macro_average",
+      "weighting": "physical_polyline_arc_length"
     },
     {
       "id": "cp_cut_r2",
       "unit": "",
       "direction": "higher",
       "kind": "r2",
-      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
-      "aggregation": "flatten_all_required_profile_samples",
-      "weighting": "samples_equal"
+      "equation": "1-\\frac{\\sum_g\\sum_i w_{g,i}(y_{g,i}-\\hat{y}_{g,i})^2}{\\sum_g\\sum_i w_{g,i}(y_{g,i}-\\bar{y}_g)^2}",
+      "aggregation": "per_case_connected_graph_centered_then_macro_average",
+      "weighting": "physical_connected_cut_arc_length"
     },
     {
       "id": "surface_pressure_mae",
@@ -412,7 +526,22 @@
       ],
       "quantity_ids": [
         "cp"
-      ]
+      ],
+      "source_station_map": {
+        "pressure_belt_a": "A",
+        "pressure_belt_b": "B",
+        "pressure_belt_c": "C",
+        "pressure_belt_d": "D",
+        "pressure_belt_e": "E",
+        "pressure_belt_f": "F",
+        "pressure_belt_g": "G",
+        "pressure_belt_h": "H",
+        "pressure_belt_i": "I",
+        "pressure_belt_j": "J"
+      },
+      "weighting": "physical_connected_cut_arc_length",
+      "r2_protocol": "center truth independently within each physical connected cut graph, pool graph SSE/SST across rows A-J within a case, then macro-average complete-case R2 values equally",
+      "serialization_gate": "freeze a lossless disconnected-graph profile-chunk mapping and matching public profile-ground-truth release before activation"
     },
     {
       "id": "velocity_profiles",
@@ -421,26 +550,25 @@
       "minimum_points": 2,
       "coordinate_order": "strictly_increasing",
       "station_ids": [
-        "hlpw5_a_1",
-        "hlpw5_a_2",
-        "hlpw5_a_3",
-        "hlpw5_a_4",
-        "hlpw5_a_5",
-        "hlpw5_a_6",
-        "hlpw5_b_1",
         "hlpw5_b_2",
         "hlpw5_b_3",
-        "hlpw5_b_4",
         "hlpw5_c_1",
         "hlpw5_c_2",
-        "hlpw5_c_3",
-        "hlpw5_d_1",
-        "hlpw5_d_2",
-        "hlpw5_d_3"
+        "hlpw5_c_3"
       ],
       "quantity_ids": [
         "velocity_ratio"
-      ]
+      ],
+      "source_station_map": {
+        "hlpw5_b_2": "B.2",
+        "hlpw5_b_3": "B.3",
+        "hlpw5_c_1": "C.1",
+        "hlpw5_c_2": "C.2",
+        "hlpw5_c_3": "C.3"
+      },
+      "quantity_source": "velocity_magnitude/|U_inf|",
+      "weighting": "physical_polyline_arc_length",
+      "r2_protocol": "center truth within each of B.2/B.3/C.1/C.2/C.3, pool station SSE/SST within a case, then macro-average complete-case R2 values equally"
     }
   ],
   "splits": [
@@ -449,126 +577,141 @@
       "label": "Full",
       "index_file": "splits/full.json",
       "case_count": 360,
-      "case_set_id": "standard",
-      "case_id_status": "prototype_generated",
-      "sha256": "8001e19b8f18c0dcc348172eb88a7300283ee40ff5ecdc81e7c6be2718814062"
+      "case_set_id": "caseset-ac791749e527",
+      "case_id_status": "official",
+      "sha256": "2c8192e1c2d03f92c4701e4257d18cf8a2c70489cdfcc26206344c6cb01666c0"
     },
     {
       "id": "medium",
       "label": "Medium",
       "index_file": "splits/medium.json",
       "case_count": 360,
-      "case_set_id": "standard",
-      "case_id_status": "prototype_generated",
-      "sha256": "ad0eb263b2d350b95c33dd9e45fd30947982167e937df6c9385d749abdc50a06"
+      "case_set_id": "caseset-ac791749e527",
+      "case_id_status": "official",
+      "sha256": "7d2edc23690244c7ed84a6e31d287ba618669279bd2c1664892e2ab7ba99041e"
     },
     {
       "id": "scarce",
       "label": "Scarce",
       "index_file": "splits/scarce.json",
       "case_count": 360,
-      "case_set_id": "standard",
-      "case_id_status": "prototype_generated",
-      "sha256": "205c4d1e034fa136ababca492584608c90444503d3d72ed8541a2bb13df9d7b0"
+      "case_set_id": "caseset-ac791749e527",
+      "case_id_status": "official",
+      "sha256": "1c20c8a3079dd99db01146aca9513f14c4129f7f5fc575199901de17f65e012b"
     },
     {
       "id": "super_scarce",
       "label": "Super scarce",
       "index_file": "splits/super_scarce.json",
       "case_count": 360,
-      "case_set_id": "standard",
-      "case_id_status": "prototype_generated",
-      "sha256": "7485ddcb0d93bc6213a9ebdc1dbf218851af3756aa43ff6737aaa91cb91a9228"
+      "case_set_id": "caseset-ac791749e527",
+      "case_id_status": "official",
+      "sha256": "cde993c38dd1ec7bf106590408574c519ac52b9086d06573d216d28dc952f2b1"
     },
     {
       "id": "geometry",
       "label": "Geometry",
       "index_file": "splits/geometry.json",
       "case_count": 360,
-      "case_set_id": "geometry",
-      "case_id_status": "prototype_generated",
-      "sha256": "de59675471905b74b94e2f5a6c761286036f3622b1f93cef6c4a5ea253864fa0"
+      "case_set_id": "caseset-53990ea68fa6",
+      "case_id_status": "official",
+      "sha256": "8f43bdc4c970ed3f64eea3f080ac67f948ebbcdeb20a15dba10e959807c6da12"
     },
     {
       "id": "geometry_medium",
       "label": "Geometry medium",
       "index_file": "splits/geometry_medium.json",
       "case_count": 360,
-      "case_set_id": "geometry",
-      "case_id_status": "prototype_generated",
-      "sha256": "f54d7f0561cb7f022b80e8e93ce953a4eae6c5dc185ee74b2394477997ab305e"
+      "case_set_id": "caseset-53990ea68fa6",
+      "case_id_status": "official",
+      "sha256": "cda86411c1d234d3b674c1d14639314a0b876fa6b3e2eda1568f17ca2627b493"
     },
     {
       "id": "geometry_scarce",
       "label": "Geometry scarce",
       "index_file": "splits/geometry_scarce.json",
       "case_count": 360,
-      "case_set_id": "geometry",
-      "case_id_status": "prototype_generated",
-      "sha256": "8214f2fe7a6955692507e8ea8dc94ab1bc247ce72eed98ec6518d44493570e53"
+      "case_set_id": "caseset-53990ea68fa6",
+      "case_id_status": "official",
+      "sha256": "374d15fb278b05ae27346576e9b4db3e54d3bbc7d622a323ba370bcbf7b6b6e2"
     },
     {
       "id": "geometry_super_scarce",
       "label": "Geometry super scarce",
       "index_file": "splits/geometry_super_scarce.json",
       "case_count": 360,
-      "case_set_id": "geometry",
-      "case_id_status": "prototype_generated",
-      "sha256": "c332bea58a20f43203acc637c0e621b316e7cd70687dbc31ea68f983ca1f132e"
+      "case_set_id": "caseset-53990ea68fa6",
+      "case_id_status": "official",
+      "sha256": "9ffe2f753bf4a3972ca79ba5373f91486f3a462ea883df874e2e58f92130f197"
     },
     {
       "id": "single_aoa_4",
       "label": "AoA 4",
       "index_file": "splits/single_aoa_4.json",
       "case_count": 36,
-      "case_set_id": "single_aoa_4",
-      "case_id_status": "prototype_generated",
-      "sha256": "c7511c4a5dbd2dc7af8397574a0f5c93bb361f4d132d3c00682eb9d51a48c944"
+      "case_set_id": "caseset-7a743a20b3bd",
+      "case_id_status": "official",
+      "sha256": "c2cd86e1779f987709e150baa5c5487d4b08edc3244a4976393194451af965ce"
     },
     {
       "id": "single_aoa_12",
       "label": "AoA 12",
       "index_file": "splits/single_aoa_12.json",
       "case_count": 36,
-      "case_set_id": "single_aoa_12",
-      "case_id_status": "prototype_generated",
-      "sha256": "39b083bb3157581fc905860585014a6624d7a80d90a002fd97633ff9028888a4"
+      "case_set_id": "caseset-02fc12ff3494",
+      "case_id_status": "official",
+      "sha256": "317ed34e9d2774b163c7992bfbc021c0946a43caf35b18821933795dfecfeb64"
     },
     {
       "id": "single_aoa_22",
       "label": "AoA 22",
       "index_file": "splits/single_aoa_22.json",
       "case_count": 36,
-      "case_set_id": "single_aoa_22",
-      "case_id_status": "prototype_generated",
-      "sha256": "ce98186a0e579de51ba7d70fdf01efb229448a931b929bc4dad60bc776eefb46"
+      "case_set_id": "caseset-85ecccd9ccda",
+      "case_id_status": "official",
+      "sha256": "d8754a74ceb06fce476df0e92f683fc4503c74eac2d3043a5ccd82515ef89f62"
     },
     {
       "id": "aoa",
       "label": "AoA extrapolation",
       "index_file": "splits/aoa.json",
       "case_count": 900,
-      "case_set_id": "aoa",
-      "case_id_status": "prototype_generated",
-      "sha256": "14c004526cb7fe881f04e5fb13f17ca2765be763b5b7c53896e7e735469c1369"
+      "case_set_id": "caseset-29693354ed8a",
+      "case_id_status": "official",
+      "sha256": "d44e453ab44bf4a2cd478036c2d97e53d4c7e04b3aa38b579eaaf87a0bb0645a"
     },
     {
       "id": "deflection",
       "label": "Deflection",
       "index_file": "splits/deflection.json",
       "case_count": 360,
-      "case_set_id": "deflection",
-      "case_id_status": "prototype_generated",
-      "sha256": "cae0c6a572e5853c2c7a59f940cf4874b4e6724365b1e7d079e7d22478df5096"
+      "case_set_id": "caseset-c0ecb14de138",
+      "case_id_status": "official",
+      "sha256": "84366744097d2cc2321f10f4606b2e021a358031d898c2982b777a016cffe33c"
     },
     {
       "id": "stall",
       "label": "Stall",
       "index_file": "splits/stall.json",
       "case_count": 723,
-      "case_set_id": "stall",
-      "case_id_status": "prototype_generated",
-      "sha256": "d997da7307a5e2125cc4ec02fdeccf54e833643a5f11816e9e41545e81b2a76b"
+      "case_set_id": "caseset-804491c8956e",
+      "case_id_status": "official",
+      "sha256": "58418bb96655504591f8e02b906e633224c047dfe0ee0d7c0f07ba7292b0d8ff"
     }
-  ]
+  ],
+  "regional_diagnostics": {
+    "status": "candidate_report_only",
+    "required_for_new_submissions": false,
+    "format": "hiliftaeroml-regional-diagnostics-aggregate-v2",
+    "definition_id": "hiliftaeroml-native-geometric-regions-v1",
+    "contract_file": "regional-diagnostics-v2.json",
+    "contract_sha256": "8cf926d06706b8cc7fd58d821f395bf8cb6565ef1f3aabe6be18e0a279101da4",
+    "role": "report_only",
+    "weight": 0.0,
+    "affects_official_metrics": false,
+    "affects_official_score": false,
+    "requires_new_inference": false,
+    "prediction_format_changed": false,
+    "activation_gate": "Set required_for_new_submissions=true only after the exact 360-case aggregate reporter and validator are exercised end to end."
+  }
 }

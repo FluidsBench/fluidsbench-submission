@@ -1,0 +1,84 @@
+{
+  "activation_caveat": "This audits definitions and reference transformations for all 484 cases; activation still requires native-field force and moment replay for every case.",
+  "case_count": 484,
+  "closure_Cl_minus_Clf_minus_Clr": {
+    "aggregate_constant_table": {
+      "maximum_absolute": 1.0000000000287557e-07,
+      "rms": 3.1789355727392037e-08
+    },
+    "individual_constant_tables": {
+      "maximum_absolute": 1.0000000000287557e-07,
+      "rms": 3.1789355727392037e-08
+    },
+    "individual_geometry_specific_tables": {
+      "maximum_absolute": 9.700000000445463e-08,
+      "rms": 2.9530790067449416e-08
+    }
+  },
+  "constant_reference_unique_values": {
+    "A_ref_m2": [
+      2.17
+    ],
+    "L_ref_m": [
+      2.78618
+    ],
+    "equivalent_front_x_m": [
+      0.007000000000000117
+    ],
+    "equivalent_rear_x_m": [
+      2.79318
+    ],
+    "forces_CoR_m": [
+      [
+        1.40009,
+        0.0,
+        -0.3176
+      ]
+    ]
+  },
+  "geometry_specific_vs_constant_reference_physical_force_N": {
+    "maximum_absolute": 0.0001639392083916391,
+    "rms": 4.2758693577199694e-05
+  },
+  "individual_constant_minus_aggregate_constant": {
+    "Cd": {
+      "maximum_absolute": 0.0,
+      "rms": 0.0
+    },
+    "Cl": {
+      "maximum_absolute": 0.0,
+      "rms": 0.0
+    },
+    "Clf": {
+      "maximum_absolute": 0.0,
+      "rms": 0.0
+    },
+    "Clr": {
+      "maximum_absolute": 0.0,
+      "rms": 0.0
+    },
+    "Cs": {
+      "maximum_absolute": 0.0,
+      "rms": 0.0
+    }
+  },
+  "moment_reference_translation_y_N_m": {
+    "equation": "M_const_y=M_geom_y+cross(CoR_geom-CoR_const,F)_y",
+    "maximum_absolute": 0.00035432446622962743,
+    "rms": 9.374549108642141e-05
+  },
+  "operational_definition": {
+    "Clf": "Cl/2+CmPitch",
+    "Clr": "Cl/2-CmPitch",
+    "CmPitch": "M_CoR_y/(0.5*rho_inf*U_inf^2*A_ref*L_ref)",
+    "interpretation": "whole-surface equivalent axle loads, not surface partitions",
+    "normative_source": "https://api.openfoam.com/2212/classFoam_1_1functionObjects_1_1forceCoeffs.html"
+  },
+  "schema": "drivaerml-force-axle-definition-audit-v1",
+  "source": {
+    "aggregate_constant_path": "force_mom_constref_all.csv at pinned dataset revision",
+    "aggregate_constant_sha256": "4e9e003da38ccdcacad359451079888361eae221d3c8dad7fd5682250d257865",
+    "individual_case_root": "run_N/force_mom_N.csv, force_mom_constref_N.csv, and geo_ref_N.csv at pinned dataset revision"
+  },
+  "status": "definition_audit_not_all_case_native_field_replay"
+}

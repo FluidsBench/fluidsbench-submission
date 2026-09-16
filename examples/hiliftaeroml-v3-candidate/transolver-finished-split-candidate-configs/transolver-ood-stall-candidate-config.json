@@ -1,0 +1,690 @@
+{
+  "schema": "hiliftaeroml-fluidsbench-schema-v3-package-config-v1",
+  "split_id": "stall",
+  "profile_cases_per_chunk": 10,
+  "include_regional_diagnostics": true,
+  "participant": {
+    "submission_id": "hiliftaeroml-transolver-ood-stall-candidate-v1",
+    "result_revision": {
+      "series_id": "hiliftaeroml-transolver-ood-stall-candidate",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": "Initial maintainer-local schema-v3 replay of the retained OOD Stall Transolver result (epoch 1000)."
+    },
+    "model": "Transolver surface and volume, OOD Stall, epoch 1000",
+    "model_type": "Transformer neural operator",
+    "model_types": [
+      "Transformer neural operator"
+    ],
+    "training_regime": "from_scratch",
+    "target_data_used": "official_train",
+    "external_pretraining": false,
+    "pretraining_data": [],
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "submitter_reported",
+      "record_note": "Candidate mechanics replay from the retained OOD Stall resolved training configurations, raw loaded checkpoint hashes, training logs, and complete native-support Slurm inference. Training timing uses conservative retained calendar envelopes; inference timing uses the recorded campaign allocation ledger. This local record is not an accepted submission.",
+      "architecture": {
+        "description": "Two independently trained PhysicsNeMo Transolver models: one predicts nine native surface channels and one predicts six native flow-domain channels. Both use 16 Transolver layers, hidden width 320, eight attention heads, MLP ratio four, and 256 slices.",
+        "total_parameter_count": 37087183,
+        "parameter_count_basis": "exact",
+        "submitter_trainable_parameter_count": 37087183,
+        "components": [
+          {
+            "id": "surface-transolver",
+            "family": "PhysicsNeMo Transolver",
+            "role": "Surface-field predictor",
+            "description": "Six-input, nine-output, 16-layer Transolver for native surface points.",
+            "parameter_count": 18543753
+          },
+          {
+            "id": "volume-transolver",
+            "family": "PhysicsNeMo Transolver",
+            "role": "Flow-domain predictor",
+            "description": "Seven-input, six-output, 16-layer Transolver for retained valid native flow-domain points.",
+            "parameter_count": 18543430
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "surface-architecture",
+            "component_ids": [
+              "surface-transolver"
+            ],
+            "name": "Transolver architecture",
+            "value": "layers=16,width=320,heads=8,mlp_ratio=4,slices=256",
+            "description": "Exact resolved surface model configuration."
+          },
+          {
+            "id": "volume-architecture",
+            "component_ids": [
+              "volume-transolver"
+            ],
+            "name": "Transolver architecture",
+            "value": "layers=16,width=320,heads=8,mlp_ratio=4,slices=256",
+            "description": "Exact resolved volume model configuration."
+          },
+          {
+            "id": "training-query-count",
+            "component_ids": [
+              "surface-transolver",
+              "volume-transolver"
+            ],
+            "name": "Training sampling resolution",
+            "value": 200000,
+            "description": "Maximum sampled native points per case during training."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "surface-local-input",
+            "component_ids": [
+              "surface-transolver"
+            ],
+            "name": "Surface coordinates and normals",
+            "domain": "surface",
+            "component_count": 6,
+            "description": "Three native point coordinates and three vehicle surface-normal components."
+          },
+          {
+            "id": "surface-global-input",
+            "component_ids": [
+              "surface-transolver"
+            ],
+            "name": "Freestream velocity",
+            "domain": "global",
+            "component_count": 3,
+            "description": "The case freestream velocity expanded at queried surface points."
+          },
+          {
+            "id": "volume-local-input",
+            "component_ids": [
+              "volume-transolver"
+            ],
+            "name": "Volume coordinates, signed distance, and signed-distance normals",
+            "domain": "volume",
+            "component_count": 7,
+            "description": "Three native point coordinates, scalar signed distance, and three signed-distance-normal components."
+          },
+          {
+            "id": "volume-global-input",
+            "component_ids": [
+              "volume-transolver"
+            ],
+            "name": "Freestream velocity",
+            "domain": "global",
+            "component_count": 3,
+            "description": "The case freestream velocity expanded at queried volume points."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.pressure",
+            "domain": "surface",
+            "component_count": 1,
+            "component_ids": [
+              "surface-transolver"
+            ],
+            "production": "direct_model_output",
+            "description": "Surface pressure is a direct output channel."
+          },
+          {
+            "field_id": "surface-native.wall_shear_stress",
+            "domain": "surface",
+            "component_count": 3,
+            "component_ids": [
+              "surface-transolver"
+            ],
+            "production": "direct_model_output",
+            "description": "The three wall-shear-stress components are direct output channels."
+          },
+          {
+            "field_id": "flow-domain-native.velocity",
+            "domain": "volume",
+            "component_count": 3,
+            "component_ids": [
+              "volume-transolver"
+            ],
+            "production": "direct_model_output",
+            "description": "The three nondimensional velocity components are direct output channels."
+          },
+          {
+            "field_id": "flow-domain-native.pressure",
+            "domain": "volume",
+            "component_count": 1,
+            "component_ids": [
+              "volume-transolver"
+            ],
+            "production": "direct_model_output",
+            "description": "Nondimensional flow-domain pressure is a direct output channel."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Dataset transforms nondimensionalize fields from case metadata; fixed training-set channel centering/scaling is applied by the retained training pipeline. Inference reverses model normalization before scoring nondimensional pressure, wall shear, and velocity.",
+        "preprocessing": "Surface inputs use native coordinates and vehicle normals. Volume inputs are centered native coordinates augmented with signed distance and signed-distance normals; the freestream vector is expanded per query.",
+        "sampling": "Training samples at most 200000 native points per case. OOD Stall inference deterministically traverses every retained native support point in bounded chunks and scores immediately without retaining dense prediction fields."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "surface-training",
+            "status": "performed_by_submitter",
+            "component_ids": [
+              "surface-transolver"
+            ],
+            "description": "From-scratch distributed training on the official OOD Stall surface training split. Retained logs cover 1000 complete epochs.",
+            "procedure": {
+              "kind": "gradient_based",
+              "loss": {
+                "description": "Huber loss over predicted surface fields.",
+                "weighting": "pressure=2.0, temperature=0.25, density=0.5, velocity=0.5, wall shear=1.0"
+              },
+              "optimizers": [
+                {
+                  "name": "CombinedOptimizer (Muon and AdamW)",
+                  "learning_rate": 0.001,
+                  "schedule": "StepLR every 150 epochs with gamma 0.5"
+                }
+              ],
+              "batch": {
+                "value": 1,
+                "unit": "case per rank",
+                "gradient_accumulation_steps": 1
+              },
+              "duration": {
+                "epochs": 1000,
+                "optimizer_steps": 29000
+              }
+            },
+            "run_count": 1,
+            "stochastic": true,
+            "random_seeds": [
+              42
+            ],
+            "compute": {
+              "hardware": "Four-GPU NVIDIA Slurm training allocations recorded by the retained rank logs; exact accelerator SKU requires owner metadata confirmation",
+              "max_concurrent_device_count": 4,
+              "campaign_wall_time_hours": 877.193392,
+              "aggregate_device_hours": 3508.773568,
+              "measurement_notes": "Conservative calendar envelope from the first through final retained optimizer-step timestamps, multiplied by the four recorded ranks; it includes any restart gaps and must be replaced by summed Slurm allocation time before an official release."
+            }
+          },
+          {
+            "id": "volume-training",
+            "status": "performed_by_submitter",
+            "component_ids": [
+              "volume-transolver"
+            ],
+            "description": "From-scratch distributed training on the official OOD Stall flow-domain training split. Retained logs cover 1000 complete epochs.",
+            "procedure": {
+              "kind": "gradient_based",
+              "loss": {
+                "description": "Huber loss over predicted flow-domain fields.",
+                "weighting": "Unweighted configured field loss across pressure, temperature, density, and velocity outputs."
+              },
+              "optimizers": [
+                {
+                  "name": "CombinedOptimizer (Muon and AdamW)",
+                  "learning_rate": 0.001,
+                  "schedule": "StepLR every 150 epochs with gamma 0.5"
+                }
+              ],
+              "batch": {
+                "value": 1,
+                "unit": "case per rank",
+                "gradient_accumulation_steps": 1
+              },
+              "duration": {
+                "epochs": 1000,
+                "optimizer_steps": 29000
+              }
+            },
+            "run_count": 1,
+            "stochastic": true,
+            "random_seeds": [
+              42
+            ],
+            "compute": {
+              "hardware": "Four-GPU NVIDIA Slurm training allocations recorded by the retained rank logs; exact accelerator SKU requires owner metadata confirmation",
+              "max_concurrent_device_count": 4,
+              "campaign_wall_time_hours": 55.926796,
+              "aggregate_device_hours": 223.707184,
+              "measurement_notes": "Conservative calendar envelope from the first through final retained optimizer-step timestamps, multiplied by the four recorded ranks; it includes any restart gaps and must be replaced by summed Slurm allocation time before an official release."
+            }
+          }
+        ]
+      },
+      "checkpoints": [
+        {
+          "id": "surface-epoch-1000",
+          "component_ids": [
+            "surface-transolver"
+          ],
+          "sha256": "9896b8fdd8bcfbaa026b8c550df53b8fcacf8d1eaad4c84df28dad4a75330cd1",
+          "digest_scope": "raw_loaded_file",
+          "bytes_description": "Raw 74283869-byte Transolver.0.1000.mdlus model-state file loaded by inference.",
+          "role": "Surface prediction checkpoint used for every OOD Stall evaluation case.",
+          "selection_rule": "Epoch 1000 checkpoint from the retained OOD Stall training run; fixed before this submission replay."
+        },
+        {
+          "id": "volume-epoch-1000",
+          "component_ids": [
+            "volume-transolver"
+          ],
+          "sha256": "bd6cbdfa445e19fcfd7d444e70a439019039e14cac69790b1919fc70460068a3",
+          "digest_scope": "raw_loaded_file",
+          "bytes_description": "Raw 74282589-byte Transolver.0.1000.mdlus model-state file loaded by inference.",
+          "role": "Flow-domain prediction checkpoint used for every OOD Stall evaluation case.",
+          "selection_rule": "Epoch 1000 checkpoint from the retained OOD Stall training run; fixed before this submission replay."
+        }
+      ],
+      "inference_compute": {
+        "status": "measured",
+        "hardware": "Slurm GPU nodes: interrupted multi-node wide-lane attempts followed by four-GPU targeted paired recovery tasks; exact accelerator SKU requires owner metadata confirmation",
+        "max_concurrent_device_count": 96,
+        "case_count": 723,
+        "campaign_wall_time_seconds": 26473.0,
+        "aggregate_device_time_seconds": 1007976.0,
+        "includes_preprocessing": true,
+        "includes_mapping": true,
+        "measurement_notes": "Exact allocation-envelope and allocated-GPU time include the interrupted wide-lane attempts as well as the successful four-GPU recovery tasks. A full post-recovery all-case output audit is retained; no incomplete output contributes to this candidate result. The allocation total includes discarded capacity and is not an inference-efficiency claim."
+      }
+    },
+    "submitter_name": "Neil Ashton",
+    "institution": "NVIDIA",
+    "paper_url": "",
+    "submitted_at": "2026-09-08",
+    "reproducibility": {
+      "contract_version": "open-reproducibility-3.0",
+      "access": "public",
+      "public_test_data_use": "evaluation_only",
+      "result_data_license_spdx": "CC-BY-4.0"
+    },
+    "note": "Maintainer-local OOD Stall candidate dry run only; not an accepted or owner-approved FluidsBench result."
+  },
+  "evaluation": {
+    "command": "python scripts/assemble_hiliftaeroml_schema_v3_candidate.py --config ../hiliftaeroml-transolver-submission-v1/release/all10_compact_support_rebind_nodecache_candidate_20260908/configs/finished/transolver-ood-stall-candidate-config.json --native-aggregate ../hiliftaeroml-transolver-submission-v1/aggregates/finished_splits_v1/stall/aggregate-a --native-surface-outputs ../hiliftaeroml-transolver-submission-v1/outputs/finished_splits_v1/stall --native-volume-outputs ../hiliftaeroml-transolver-submission-v1/outputs/finished_splits_v1/stall --native-receipts ../hiliftaeroml-transolver-submission-v1/outputs/finished_splits_v1_receipts/stall/receipts-a --candidate-profile-truth-release ../eval_runs/hilift_native_profile_truth_v1_candidate_20260901/release/hiliftaeroml-native-profile-truth-v1-candidate --output ../hiliftaeroml-transolver-submission-v1/release/all10_compact_support_rebind_nodecache_candidate_20260908/packages/stall/package-a",
+    "generated_at": "2026-09-08T06:44:40-07:00"
+  },
+  "compact_evaluation": {
+    "command": "python scripts/assemble_hiliftaeroml_schema_v3_candidate.py --config ../hiliftaeroml-transolver-submission-v1/release/all10_compact_support_rebind_nodecache_candidate_20260908/configs/finished/transolver-ood-stall-candidate-config.json --native-aggregate ../hiliftaeroml-transolver-submission-v1/aggregates/finished_splits_v1/stall/aggregate-a --native-surface-outputs ../hiliftaeroml-transolver-submission-v1/outputs/finished_splits_v1/stall --native-volume-outputs ../hiliftaeroml-transolver-submission-v1/outputs/finished_splits_v1/stall --native-receipts ../hiliftaeroml-transolver-submission-v1/outputs/finished_splits_v1_receipts/stall/receipts-a --candidate-compact-profile-support-release ../eval_runs/hilift_compact_profile_support_v2_all1355_candidate_20260907/release/hiliftaeroml-compact-profile-support-v2-candidate --output ../hiliftaeroml-transolver-submission-v1/release/all10_compact_support_rebind_nodecache_candidate_20260908/packages/stall/package-a",
+    "generated_at": "2026-09-08T06:44:40-07:00"
+  },
+  "spatial_discretization": {
+    "training": {
+      "surface_input": {
+        "used": true,
+        "representation": "sampled native surface point cloud",
+        "entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "fixed",
+              "value": 200000
+            }
+          }
+        ],
+        "native_comparison": {
+          "status": "unknown_with_explanation",
+          "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."
+        },
+        "sampling": {
+          "kind": "resampled_each_epoch",
+          "method": "dataset native-point subsampling",
+          "seed": 42
+        },
+        "domain": {
+          "kind": "full_dataset_domain"
+        },
+        "connectivity": "none"
+      },
+      "surface_supervision": {
+        "used": true,
+        "representation": "sampled native surface point targets",
+        "entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "fixed",
+              "value": 200000
+            }
+          }
+        ],
+        "native_comparison": {
+          "status": "unknown_with_explanation",
+          "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."
+        },
+        "sampling": {
+          "kind": "resampled_each_epoch",
+          "method": "dataset native-point subsampling",
+          "seed": 42
+        },
+        "domain": {
+          "kind": "full_dataset_domain"
+        },
+        "connectivity": "none"
+      },
+      "volume_input": {
+        "used": true,
+        "representation": "sampled retained valid native flow-domain point cloud",
+        "entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "fixed",
+              "value": 200000
+            }
+          }
+        ],
+        "native_comparison": {
+          "status": "unknown_with_explanation",
+          "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."
+        },
+        "sampling": {
+          "kind": "resampled_each_epoch",
+          "method": "dataset native-point subsampling",
+          "seed": 42
+        },
+        "domain": {
+          "kind": "full_dataset_domain"
+        },
+        "connectivity": "none"
+      },
+      "volume_supervision": {
+        "used": true,
+        "representation": "sampled retained valid native flow-domain point targets",
+        "entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "fixed",
+              "value": 200000
+            }
+          }
+        ],
+        "native_comparison": {
+          "status": "unknown_with_explanation",
+          "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."
+        },
+        "sampling": {
+          "kind": "resampled_each_epoch",
+          "method": "dataset native-point subsampling",
+          "seed": 42
+        },
+        "domain": {
+          "kind": "full_dataset_domain"
+        },
+        "connectivity": "none"
+      }
+    },
+    "inference": {
+      "geometry_dependency": "native_cfd_mesh",
+      "surface_input": {
+        "used": true,
+        "representation": "complete native surface point support queried in deterministic chunks",
+        "entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "per_case",
+              "minimum": 135575212,
+              "median": 141803812,
+              "maximum": 152543694
+            }
+          }
+        ],
+        "native_comparison": {
+          "status": "reported",
+          "native_entity_counts": [
+            {
+              "entity": "points",
+              "count": {
+                "kind": "per_case",
+                "minimum": 135575212,
+                "median": 141803812,
+                "maximum": 152543694
+              }
+            }
+          ],
+          "fractions": [
+            {
+              "entity": "points",
+              "fraction": {
+                "kind": "fixed",
+                "value": 1.0
+              }
+            }
+          ]
+        },
+        "sampling": {
+          "kind": "none"
+        },
+        "domain": {
+          "kind": "full_dataset_domain"
+        },
+        "connectivity": "native"
+      },
+      "volume_input": {
+        "used": true,
+        "representation": "complete retained valid native flow-domain point support queried in deterministic chunks",
+        "entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "per_case",
+              "minimum": 223829255,
+              "median": 236547519,
+              "maximum": 252336627
+            }
+          }
+        ],
+        "native_comparison": {
+          "status": "reported",
+          "native_entity_counts": [
+            {
+              "entity": "points",
+              "count": {
+                "kind": "per_case",
+                "minimum": 223829255,
+                "median": 236547519,
+                "maximum": 252336627
+              }
+            }
+          ],
+          "fractions": [
+            {
+              "entity": "points",
+              "fraction": {
+                "kind": "fixed",
+                "value": 1.0
+              }
+            }
+          ]
+        },
+        "sampling": {
+          "kind": "none"
+        },
+        "domain": {
+          "kind": "full_dataset_domain"
+        },
+        "connectivity": "native"
+      },
+      "direct_outputs": [
+        {
+          "id": "surface-native-output",
+          "domain": "surface",
+          "representation": {
+            "used": true,
+            "representation": "native surface point predictions",
+            "entity_counts": [
+              {
+                "entity": "points",
+                "count": {
+                  "kind": "per_case",
+                  "minimum": 135575212,
+                  "median": 141803812,
+                  "maximum": 152543694
+                }
+              }
+            ],
+            "native_comparison": {
+              "status": "reported",
+              "native_entity_counts": [
+                {
+                  "entity": "points",
+                  "count": {
+                    "kind": "per_case",
+                    "minimum": 135575212,
+                    "median": 141803812,
+                    "maximum": 152543694
+                  }
+                }
+              ],
+              "fractions": [
+                {
+                  "entity": "points",
+                  "fraction": {
+                    "kind": "fixed",
+                    "value": 1.0
+                  }
+                }
+              ]
+            },
+            "sampling": {
+              "kind": "none"
+            },
+            "domain": {
+              "kind": "full_dataset_domain"
+            },
+            "connectivity": "native"
+          },
+          "queries_per_forward_pass": {
+            "kind": "per_case",
+            "minimum": 678,
+            "median": 710,
+            "maximum": 763
+          }
+        },
+        {
+          "id": "volume-native-output",
+          "domain": "volume",
+          "representation": {
+            "used": true,
+            "representation": "retained valid native flow-domain point predictions",
+            "entity_counts": [
+              {
+                "entity": "points",
+                "count": {
+                  "kind": "per_case",
+                  "minimum": 223829255,
+                  "median": 236547519,
+                  "maximum": 252336627
+                }
+              }
+            ],
+            "native_comparison": {
+              "status": "reported",
+              "native_entity_counts": [
+                {
+                  "entity": "points",
+                  "count": {
+                    "kind": "per_case",
+                    "minimum": 223829255,
+                    "median": 236547519,
+                    "maximum": 252336627
+                  }
+                }
+              ],
+              "fractions": [
+                {
+                  "entity": "points",
+                  "fraction": {
+                    "kind": "fixed",
+                    "value": 1.0
+                  }
+                }
+              ]
+            },
+            "sampling": {
+              "kind": "none"
+            },
+            "domain": {
+              "kind": "full_dataset_domain"
+            },
+            "connectivity": "native"
+          },
+          "queries_per_forward_pass": {
+            "kind": "per_case",
+            "minimum": 1120,
+            "median": 1183,
+            "maximum": 1262
+          }
+        }
+      ],
+      "mappings": [
+        {
+          "support_id": "surface-native-points-v1",
+          "source_output_id": "surface-native-output",
+          "method": {
+            "kind": "identity"
+          },
+          "implementation": "Predictions are emitted in the frozen raw native support order.",
+          "extrapolation_policy": "forbidden",
+          "unmapped_fraction": 0.0,
+          "extrapolated_fraction": 0.0,
+          "final_coverage_fraction": 1.0
+        },
+        {
+          "support_id": "volume-native-valid-points-v1",
+          "source_output_id": "volume-native-output",
+          "method": {
+            "kind": "identity"
+          },
+          "implementation": "Predictions are emitted in the frozen retained-valid native support order.",
+          "extrapolation_policy": "forbidden",
+          "unmapped_fraction": 0.0,
+          "extrapolated_fraction": 0.0,
+          "final_coverage_fraction": 1.0
+        },
+        {
+          "support_id": "aerodynamic-case-coefficients-v1",
+          "source_output_id": "surface-native-output",
+          "method": {
+            "kind": "reference_rule",
+            "rule_id": "hiliftaeroml-surface-load-integration",
+            "rule_version": "candidate-v1"
+          },
+          "implementation": "Integrate predicted pressure and wall shear over the retained oriented surface support.",
+          "extrapolation_policy": "forbidden",
+          "unmapped_fraction": 0.0,
+          "extrapolated_fraction": 0.0,
+          "final_coverage_fraction": 1.0
+        }
+      ]
+    },
+    "notes": "Candidate-only complete OOD Stall native-support replay; no dense prediction fields are retained. Point and forward-query counts are exact minimum, median, and maximum values across all 723 completed summaries."
+  },
+  "release_bindings": {
+    "candidate_manifest": {
+      "status": "candidate",
+      "release_id": "hiliftaeroml-native-all-splits-support-v1-candidate",
+      "manifest_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/hiliftaeroml/scoring-support/hiliftaeroml-native-all-splits-support-v1-candidate/manifest.json",
+      "manifest_sha256": "98a9a8d015e42c80f5993e30da94201011bebf67ff44d5574a7ef68a8b5dfbee"
+    },
+    "evaluator": {
+      "reference_version": "hiliftaeroml-evaluator-v0.1-candidate",
+      "code_revision": "68899f780d96b70f2badb5658971c87af0b17172"
+    },
+    "native_profile_contract": {
+      "contract_id": "hiliftaeroml-native-profile-predictions-v1-candidate",
+      "file": "native-profile-format-v1.json",
+      "format": "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate",
+      "sha256": "39a1e79edf951b3e4f5d1b5fa456cbd1fad524e93dac1bdca58534e01647ae25"
+    },
+    "profile_ground_truth": {
+      "release_id": "hiliftaeroml-native-profile-truth-v1-candidate",
+      "manifest_sha256": "3e20b857e12055e16f1d248d125b8df62a3669c604411dc67322fe98d9ab4477"
+    }
+  }
+}

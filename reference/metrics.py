@@ -155,3 +155,42 @@ def aggregate_case_metrics(
     if not values:
         raise ValueError("at least one test geometry is required")
     return float(np.mean(values))
+
+
+def arc_length_rmse(
+    coordinate: ArrayLike,
+    y_true: ArrayLike,
+    y_pred: ArrayLike,
+) -> float:
+    """Return trapezoid-integrated RMSE along a strictly ordered profile.
+
+    This is the DrivAerML AutoCFD5 velocity-profile reduction. Every edge is
+    weighted by its arc-length increment and the squared endpoint errors are
+    integrated with the trapezoid rule.
+    """
+
+    distance = np.asarray(coordinate, dtype=np.float64)
+    truth = np.asarray(y_true, dtype=np.float64)
+    prediction = np.asarray(y_pred, dtype=np.float64)
+    if distance.ndim != 1 or truth.ndim != 1 or prediction.ndim != 1:
+        raise ValueError("profile coordinate, truth, and prediction must be one-dimensional")
+    if len(distance) < 2 or truth.shape != distance.shape or prediction.shape != distance.shape:
+        raise ValueError("profile arrays must have matching lengths of at least two")
+    if not (
+        np.all(np.isfinite(distance))
+        and np.all(np.isfinite(truth))
+        and np.all(np.isfinite(prediction))
+    ):
+        raise ValueError("profile arrays must contain only finite values")
+    increments = np.diff(distance)
+    if np.any(increments <= 0.0):
+        raise ValueError("profile coordinates must be strictly increasing")
+    squared_error = np.square(prediction - truth)
+    integral = np.sum(increments * (squared_error[:-1] + squared_error[1:]) / 2.0)
+    return float(np.sqrt(integral / np.sum(increments)))
+
+
+def unique_probe_rmse(y_true: ArrayLike, y_pred: ArrayLike) -> float:
+    """Return equal-probe RMSE for one case's unique diagnostic probes."""
+
+    return weighted_rmse(y_true, y_pred)

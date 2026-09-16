@@ -43,10 +43,12 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["claim_id", "submission_id", "dataset_id", "split_id", "eligible", "file", "sha256"],
+        "required": ["claim_id", "submission_id", "series_id", "version", "dataset_id", "split_id", "eligible", "file", "sha256"],
         "properties": {
           "claim_id": {"type": "string", "minLength": 1},
           "submission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"},
+          "series_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"},
+          "version": {"type": "integer", "minimum": 1},
           "dataset_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
           "split_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_]*$"},
           "eligible": {"type": "boolean"},

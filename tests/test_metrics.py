@@ -6,11 +6,13 @@ import numpy as np
 
 from reference.metrics import (
     aggregate_case_metrics,
+    arc_length_rmse,
     field_rrmse,
     r2_score,
     relative_l1,
     relative_l2,
     scalar_rrmse,
+    unique_probe_rmse,
     weighted_mae,
     weighted_mse,
     weighted_rmse,
@@ -49,6 +51,35 @@ class MetricTests(unittest.TestCase):
     def test_macro_average(self) -> None:
         cases = [([1.0], [2.0], None), ([10.0], [12.0], None)]
         self.assertAlmostEqual(aggregate_case_metrics(cases, weighted_mae), 1.5)
+
+    def test_profile_rmse_reductions(self) -> None:
+        coordinate = [0.0, 1.0, 3.0]
+        truth = [0.0, 0.0, 0.0]
+        prediction = [0.0, 2.0, 2.0]
+        self.assertAlmostEqual(
+            arc_length_rmse(coordinate, truth, prediction),
+            np.sqrt(10.0 / 3.0),
+        )
+        self.assertAlmostEqual(
+            unique_probe_rmse([0.0, 0.0, 0.0], [1.0, 2.0, 2.0]),
+            np.sqrt(3.0),
+        )
+
+    def test_physics_null_skill_is_not_clipped(self) -> None:
+        declaration = {
+            "operation": "weighted_component_scores",
+            "components": [
+                {
+                    "metric_id": "error",
+                    "weight": 1.0,
+                    "transform": "physics_null_skill",
+                    "baseline_error": 2.0,
+                }
+            ],
+        }
+        self.assertEqual(composite_overall_score({"error": 0.0}, declaration), 100.0)
+        self.assertEqual(composite_overall_score({"error": 2.0}, declaration), 0.0)
+        self.assertEqual(composite_overall_score({"error": 3.0}, declaration), -50.0)
 
     def test_score_reductions(self) -> None:
         values = {
@@ -173,6 +204,45 @@ class MetricTests(unittest.TestCase):
         invalid["components"] = [dict(declaration["components"][0], weight=0.5)]
         with self.assertRaises(ValueError):
             composite_overall_score({"error": 10.0}, invalid)
+
+    def test_scope_unavailable_components_keep_their_weights_at_zero(self) -> None:
+        declaration = {
+            "operation": "weighted_component_scores",
+            "components": [
+                {"metric_id": "surface", "weight": 0.35, "transform": "bounded_quality"},
+                {"metric_id": "force", "weight": 0.25, "transform": "bounded_quality"},
+                {"metric_id": "volume", "weight": 0.25, "transform": "bounded_quality"},
+                {"metric_id": "velocity", "weight": 0.15, "transform": "bounded_quality"},
+            ],
+        }
+        groups = {
+            "operation": "normalized_weighted_component_scores",
+            "groups": [
+                {"metric_id": "field_score", "component_metric_ids": ["surface", "volume"]},
+                {"metric_id": "force_score", "component_metric_ids": ["force"]},
+                {"metric_id": "diagnostic_score", "component_metric_ids": ["velocity"]},
+            ],
+        }
+        # The unavailable raw values are intentionally absent.  With the two
+        # available components perfect, their 0.60 published weight is the
+        # exact overall ceiling; the groups still expose the zero components.
+        values = {"surface": 1.0, "force": 1.0}
+        unavailable = ("volume", "velocity")
+        self.assertEqual(
+            composite_overall_score(
+                values, declaration, fixed_zero_component_ids=unavailable
+            ),
+            60.0,
+        )
+        self.assertEqual(
+            composite_component_group_scores(
+                values,
+                declaration,
+                groups,
+                fixed_zero_component_ids=unavailable,
+            ),
+            {"field_score": 58.333333333333336, "force_score": 100.0, "diagnostic_score": 0.0},
+        )
 
     def test_invalid_inputs_raise(self) -> None:
         with self.assertRaises(ValueError):

@@ -15,6 +15,14 @@ from scripts.validate_scoring_supports import sha256_file, validate_specificatio
 ROOT = Path(__file__).resolve().parents[1]
 SPEC_ROOT = ROOT / "benchmark-specs"
 MANIFEST_PATH = ROOT / "leaderboard" / "manifest.json"
+REMOVED_DRIVAERML_PHYSICAL_VOLUME_METRIC_IDS = {
+    "volume_velocity_physical_rel_l2",
+    "volume_pressure_physical_rel_l2",
+    "drivaerml_volume_velocity_physical_mae",
+    "drivaerml_volume_velocity_physical_rmse",
+    "drivaerml_volume_pressure_physical_mae",
+    "drivaerml_volume_pressure_physical_rmse",
+}
 
 
 def load_json(path: Path) -> dict:
@@ -34,6 +42,25 @@ class ScoringSupportSpecGateTests(unittest.TestCase):
     ) -> tuple[Path, Path, Path]:
         temporary_spec_root = temporary_root / "benchmark-specs"
         dataset_directory = temporary_spec_root / "synthetic"
+        dataset_directory.mkdir(parents=True)
+        methodology_contract = {
+            "$schema": "https://fluidsbench.org/schemas/methodology-contract-v1.schema.json",
+            "format": "fluidsbench-methodology-contract-v1",
+            "dataset_id": "synthetic",
+            "allow_additional_predicted_fields": True,
+            "required_predicted_fields": [
+                {
+                    "field_id": "synthetic-support.pressure",
+                    "domain": "domain",
+                    "component_count": 1,
+                    "description": "Synthetic scalar pressure fixture.",
+                }
+            ],
+        }
+        (dataset_directory / "methodology-contract.json").write_text(
+            json.dumps(methodology_contract, indent=2) + "\n",
+            encoding="utf-8",
+        )
         support_directory = (
             dataset_directory / "scoring-support" / "synthetic-support-v1"
         )
@@ -317,6 +344,85 @@ class ScoringSupportSpecGateTests(unittest.TestCase):
         self.assertIn(
             "publish_authoritative_physical_weights_and_stable_entity_ids",
             required_decisions,
+        )
+
+    def test_drivaerml_uses_only_equal_native_volume_cell_weighting(self) -> None:
+        specification = load_json(
+            SPEC_ROOT / "drivaerml" / "submission-spec.json"
+        )
+        support = specification["scoring_support"]
+        self.assertEqual(support["status"], "owner_review_required")
+        self.assertFalse(support["submissions_open"])
+        self.assertTrue(support["closed_reason"].strip())
+        self.assertEqual(
+            specification["evaluation_reference_version"],
+            "drivaerml-evaluator-v3-candidate",
+        )
+        self.assertEqual(
+            support["dataset_evaluator_binding"]["evaluator_reference_version"],
+            "drivaerml-evaluator-v3-candidate",
+        )
+
+        metrics = {item["id"]: item for item in specification["metrics"]}
+        self.assertEqual(len(metrics), 36)
+        self.assertTrue(
+            REMOVED_DRIVAERML_PHYSICAL_VOLUME_METRIC_IDS.isdisjoint(metrics)
+        )
+        for metric_id in (
+            "cd_r2",
+            "cl_r2",
+            "c_pitch_r2",
+            "velocity_profile_r2",
+            "cp_cut_r2",
+        ):
+            self.assertEqual(metrics[metric_id]["kind"], "r2")
+        self.assertEqual(
+            metrics["surface_pressure_rel_l2"]["weighting"],
+            "surface_face_area",
+        )
+        self.assertEqual(
+            metrics["surface_pressure_equal_entity_rel_l2"]["weighting"],
+            "surface_entities_equal",
+        )
+        for metric_id in (
+            "volume_velocity_rel_l2",
+            "volume_pressure_rel_l2",
+            "drivaerml_volume_velocity_equal_entity_mae",
+            "drivaerml_volume_velocity_equal_entity_rmse",
+            "drivaerml_volume_pressure_equal_entity_mae",
+            "drivaerml_volume_pressure_equal_entity_rmse",
+        ):
+            self.assertEqual(metrics[metric_id]["weighting"], "volume_cells_equal")
+
+        supports = {item["id"]: item for item in support["public_supports"]}
+        volume = supports["volume_native_cells"]
+        self.assertEqual(volume["weighting"], "one_per_native_cell")
+        self.assertFalse(volume["geometric_cell_volume_weights_required"])
+        self.assertNotIn("candidate_secondary_weight_status", volume)
+        all_case = volume["candidate_primary_validation_evidence"]
+        self.assertEqual(all_case["case_count"], 484)
+        self.assertTrue(all_case["equal_native_cell_weighting_exercised"])
+        self.assertTrue(all_case["complete_all_484_cases"])
+        self.assertEqual(
+            all_case["artifact_schema"],
+            "drivaerml-native-volume-equal-cell-primary-all-case-audit-v1",
+        )
+        self.assertTrue(all_case["legacy_unit_weight_vocabulary"])
+        self.assertEqual(
+            all_case["current_tool_aggregate_schema"],
+            "drivaerml-native-volume-equal-cell-all-case-audit-v2",
+        )
+
+        gates = support["activation_gates"]
+        self.assertEqual(
+            gates["volume_field_weighting"],
+            "complete_equal_native_cell_no_geometric_cell_volume_weights_required",
+        )
+        self.assertFalse(
+            any(
+                "volume" in decision and "weight" in decision
+                for decision in support["owner_decisions_required"]
+            )
         )
 
     def test_spec_gates_propagate_to_leaderboard_manifest(self) -> None:

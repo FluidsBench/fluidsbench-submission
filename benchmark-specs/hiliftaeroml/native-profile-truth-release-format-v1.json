@@ -1,0 +1,106 @@
+{
+  "schema": "hiliftaeroml-native-profile-truth-release-format-contract-v1",
+  "schema_version": 1,
+  "dataset_id": "hiliftaeroml",
+  "release_id": "hiliftaeroml-native-profile-truth-v1-candidate",
+  "format": "fluidsbench-hiliftaeroml-native-profile-truth-v1-candidate",
+  "status": "candidate_owner_review_required",
+  "prediction_contract": {
+    "contract_id": "hiliftaeroml-native-profile-predictions-v1-candidate",
+    "contract_file": "native-profile-format-v1.json",
+    "contract_sha256": "39a1e79edf951b3e4f5d1b5fa456cbd1fad524e93dac1bdca58534e01647ae25"
+  },
+  "scope": {
+    "unique_case_count": 1355,
+    "exact_case_set_count": 8,
+    "case_storage": "one truth artifact per unique physical case",
+    "case_set_storage": "thin indexes into one shared case universe",
+    "topology_payloads_duplicated_in_truth": false
+  },
+  "case_truth_artifact": {
+    "container": "numpy_npz",
+    "allow_pickle": false,
+    "member_order": [
+      "truth_cp",
+      "reference_velocity_nd"
+    ],
+    "zip_timestamp": "1980-01-01T00:00:00",
+    "compression": "deflate_level_9",
+    "arrays": {
+      "truth_cp": {
+        "dtype": "float64",
+        "shape": [
+          "native_cp_cut_vertex_count"
+        ],
+        "validity": "finite_everywhere",
+        "alignment": "exact disconnected Cp graph vertex order"
+      },
+      "reference_velocity_nd": {
+        "dtype": "float64",
+        "shape": [
+          4005,
+          3
+        ],
+        "validity": "finite on valid_mask rows and NaN on invalid rows",
+        "station_order": [
+          "B.2",
+          "B.3",
+          "C.1",
+          "C.2",
+          "C.3"
+        ],
+        "rows_per_station": 801
+      }
+    }
+  },
+  "case_record_bindings": {
+    "truth_authority": {
+      "kind": "benchmark_truth_only_prerequisite_replay",
+      "prediction_bearing_evaluator_outputs_used_as_source": false,
+      "surface_read": "unique cut_support_node_ids from native PROJ(AVG(P))",
+      "volume_read": "unique support_raw_point_ids from native avg(u), after exact validity raw-to-compact validation",
+      "model_inference": false,
+      "full_field_scan": false
+    },
+    "source_hashes": [
+      "Cp stencil record and payload SHA-256",
+      "velocity stencil record and payload SHA-256",
+      "training-validity record and payload SHA-256",
+      "frozen native volume VTU SHA-256 and source stats",
+      "surface geometry/normal identities and source stats",
+      "all five freestream memmap SHA-256 values",
+      "selected raw pressure and velocity array identities"
+    ],
+    "surface_cp": {
+      "topology_identity": "all branch, graph, offset, vertex, segment, row, component, side, patch, and plane-piece arrays",
+      "geometry_identity": "cut_xyz_in plus segment_lengths_in",
+      "code_catalog_identity": "exact component/plane-piece/row/side/topology-patch catalogs",
+      "truth_identity": "exact truth_cp dtype, shape, and values"
+    },
+    "volume_velocity": {
+      "profile_alignment_identity": "requested_xyz_in, valid_mask, station_names, station_row_offsets, and line_length_weights_in",
+      "station_identities": "per-station coordinate, validity, weight, truth, and invalid-gap identities",
+      "gap_encoding": "ordered half-open invalid runs relative to each 801-row station",
+      "truth_identity": "exact reference_velocity_nd dtype, shape, valid values, and invalid NaNs"
+    }
+  },
+  "release_tree": [
+    "cases/<case_id>.npz",
+    "case-records/<case_id>.json",
+    "chunks/chunk-NNN.json",
+    "case-sets/<case_set_id>.json",
+    "index.json",
+    "provenance.json",
+    "manifest.json",
+    "release-receipt.json"
+  ],
+  "privacy_and_activation": {
+    "benchmark_owned_hidden_truth": true,
+    "participant_visible": false,
+    "participant_profile_artifacts_remain_prediction_only": true,
+    "owner_approval_complete": false,
+    "published": false,
+    "submissions_opened": false,
+    "generation_or_validation_changes_activation": false
+  }
+}

@@ -83,7 +83,173 @@
       "index_sha256": "2516d506bfd407aa206126bc7fd7c6db1f3cdf650c30412a7d89178b597f4f51"
     },
     "note": "Illustrative dummy result for frontend and submission-pipeline testing. It is not a published benchmark result. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Transolver prototype row (Transformer). Physics-attention transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 6800000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype vki-ls59 field predictor.",
+            "description": "Aggregate placeholder for the named Transolver architecture. Physics-attention transformer family. No unverified internal split is invented.",
+            "parameter_count": 6800000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Transolver",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.mach",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mach number on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.nut",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Turbulent kinematic viscosity on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "blade-curve-native.M_iso",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Isentropic Mach number on every official blade-curve vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.q",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case flow-rate scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.power",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case power scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.pr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case pressure-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.tr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case temperature-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.eth_is",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case isentropic-efficiency scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.angle_out",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case outlet-flow-angle scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 6.8,
+    "result_revision": {
+      "series_id": "vkils59-prototype-train",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "vkils59-prototype-train",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 98.227,
@@ -190,7 +356,173 @@
       "index_sha256": "152453f0ed5c9805b98bae02cc22ecd64ba454e40e81dc46e04e5a854e8732b9"
     },
     "note": "Illustrative dummy result for frontend and submission-pipeline testing. It is not a published benchmark result. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Transolver prototype row (Transformer). Physics-attention transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 7850000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype vki-ls59 field predictor.",
+            "description": "Aggregate placeholder for the named Transolver architecture. Physics-attention transformer family. No unverified internal split is invented.",
+            "parameter_count": 7850000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Transolver",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.mach",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mach number on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.nut",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Turbulent kinematic viscosity on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "blade-curve-native.M_iso",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Isentropic Mach number on every official blade-curve vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.q",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case flow-rate scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.power",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case power scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.pr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case pressure-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.tr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case temperature-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.eth_is",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case isentropic-efficiency scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.angle_out",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case outlet-flow-angle scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 7.85,
+    "result_revision": {
+      "series_id": "vkils59-prototype-train-125",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "vkils59-prototype-train-125",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 95.41975,
@@ -297,7 +629,173 @@
       "index_sha256": "04360298b9d1cc846c629673832accff8b68f6c92b31d3e6fa6e918dcc9697f2"
     },
     "note": "Illustrative dummy result for frontend and submission-pipeline testing. It is not a published benchmark result. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Transolver prototype row (Transformer). Physics-attention transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 8900000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype vki-ls59 field predictor.",
+            "description": "Aggregate placeholder for the named Transolver architecture. Physics-attention transformer family. No unverified internal split is invented.",
+            "parameter_count": 8900000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Transolver",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.mach",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mach number on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.nut",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Turbulent kinematic viscosity on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "blade-curve-native.M_iso",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Isentropic Mach number on every official blade-curve vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.q",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case flow-rate scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.power",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case power scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.pr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case pressure-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.tr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case temperature-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.eth_is",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case isentropic-efficiency scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.angle_out",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case outlet-flow-angle scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 8.9,
+    "result_revision": {
+      "series_id": "vkils59-prototype-train-16",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "vkils59-prototype-train-16",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 92.61250000000001,
@@ -404,7 +902,173 @@
       "index_sha256": "e8a2405004407e302f03009f710ebe431d737d1c1309733fa8bc1e33a76e6499"
     },
     "note": "Illustrative dummy result for frontend and submission-pipeline testing. It is not a published benchmark result. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Transolver prototype row (Transformer). Physics-attention transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 7500000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype vki-ls59 field predictor.",
+            "description": "Aggregate placeholder for the named Transolver architecture. Physics-attention transformer family. No unverified internal split is invented.",
+            "parameter_count": 7500000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Transolver",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.mach",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mach number on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.nut",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Turbulent kinematic viscosity on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "blade-curve-native.M_iso",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Isentropic Mach number on every official blade-curve vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.q",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case flow-rate scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.power",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case power scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.pr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case pressure-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.tr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case temperature-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.eth_is",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case isentropic-efficiency scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.angle_out",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case outlet-flow-angle scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 7.5,
+    "result_revision": {
+      "series_id": "vkils59-prototype-train-250",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "vkils59-prototype-train-250",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 96.3555,
@@ -511,7 +1175,173 @@
       "index_sha256": "cf5bc1c6e9d72584f463c8448e10b91d1a15a5e65705e68f5e458bb7f48da30e"
     },
     "note": "Illustrative dummy result for frontend and submission-pipeline testing. It is not a published benchmark result. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Transolver prototype row (Transformer). Physics-attention transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 8550000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype vki-ls59 field predictor.",
+            "description": "Aggregate placeholder for the named Transolver architecture. Physics-attention transformer family. No unverified internal split is invented.",
+            "parameter_count": 8550000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Transolver",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.mach",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mach number on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.nut",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Turbulent kinematic viscosity on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "blade-curve-native.M_iso",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Isentropic Mach number on every official blade-curve vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.q",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case flow-rate scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.power",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case power scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.pr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case pressure-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.tr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case temperature-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.eth_is",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case isentropic-efficiency scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.angle_out",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case outlet-flow-angle scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 8.55,
+    "result_revision": {
+      "series_id": "vkils59-prototype-train-32",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "vkils59-prototype-train-32",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 93.54824999999998,
@@ -618,7 +1448,173 @@
       "index_sha256": "0dad83fe100eb1c5d6fc9c36170c325ec26340951fb45d66ad6a57d70ef82283"
     },
     "note": "Illustrative dummy result for frontend and submission-pipeline testing. It is not a published benchmark result. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Transolver prototype row (Transformer). Physics-attention transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 7150000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype vki-ls59 field predictor.",
+            "description": "Aggregate placeholder for the named Transolver architecture. Physics-attention transformer family. No unverified internal split is invented.",
+            "parameter_count": 7150000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Transolver",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.mach",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mach number on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.nut",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Turbulent kinematic viscosity on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "blade-curve-native.M_iso",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Isentropic Mach number on every official blade-curve vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.q",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case flow-rate scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.power",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case power scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.pr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case pressure-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.tr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case temperature-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.eth_is",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case isentropic-efficiency scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.angle_out",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case outlet-flow-angle scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 7.15,
+    "result_revision": {
+      "series_id": "vkils59-prototype-train-500",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "vkils59-prototype-train-500",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 97.29137499999999,
@@ -725,7 +1721,173 @@
       "index_sha256": "276165871bc61fb5d435fd96852dc6ae1ace17d1b1c6f87e50f602c2d8342e7e"
     },
     "note": "Illustrative dummy result for frontend and submission-pipeline testing. It is not a published benchmark result. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Transolver prototype row (Transformer). Physics-attention transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 8200000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype vki-ls59 field predictor.",
+            "description": "Aggregate placeholder for the named Transolver architecture. Physics-attention transformer family. No unverified internal split is invented.",
+            "parameter_count": 8200000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Transolver",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.mach",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mach number on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.nut",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Turbulent kinematic viscosity on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "blade-curve-native.M_iso",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Isentropic Mach number on every official blade-curve vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.q",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case flow-rate scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.power",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case power scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.pr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case pressure-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.tr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case temperature-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.eth_is",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case isentropic-efficiency scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.angle_out",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case outlet-flow-angle scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 8.2,
+    "result_revision": {
+      "series_id": "vkils59-prototype-train-64",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "vkils59-prototype-train-64",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 94.484,
@@ -832,7 +1994,173 @@
       "index_sha256": "fac226363a07f1265ebf227f0a7d79fb8537101d05f944d9d49ff230081f047c"
     },
     "note": "Illustrative dummy result for frontend and submission-pipeline testing. It is not a published benchmark result. Prototype dual-weight values are illustrative policy fixtures, not recomputations from public fields.",
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "prototype_fixture",
+      "record_note": "Leaderboard interface fixture only. The model name, broad family, and nominal parameter count mirror the prototype row; component breakdown, hyperparameters, training run, checkpoint, and timing were not submitted or independently verified. This record must not be cited as the authors' methodology.",
+      "architecture": {
+        "description": "Transolver prototype row (Transformer). Physics-attention transformer family. The repository does not contain a verified layer-by-layer configuration, so the nominal parameter count is represented as one aggregate component.",
+        "total_parameter_count": 9250000,
+        "parameter_count_basis": "rounded_from_reported_millions",
+        "submitter_trainable_parameter_count": 0,
+        "components": [
+          {
+            "id": "prototype-surrogate",
+            "family": "Transformer",
+            "role": "Prototype vki-ls59 field predictor.",
+            "description": "Aggregate placeholder for the named Transolver architecture. Physics-attention transformer family. No unverified internal split is invented.",
+            "parameter_count": 9250000
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "reported-model-variant",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "reported_model_variant",
+            "value": "Transolver",
+            "description": "Only the named prototype model variant is recorded; exact depth, width, attention, neighborhood, and optimizer settings were not encoded in this dummy submission."
+          }
+        ],
+        "input_features": [
+          {
+            "id": "native-geometry",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "name": "native_geometry_coordinates",
+            "domain": "mesh",
+            "component_count": 2,
+            "description": "2D geometry or mesh coordinates associated with the dataset's official supports. Exact feature engineering was not recorded for this prototype row."
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.mach",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Mach number on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.nut",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Turbulent kinematic viscosity on every official two-dimensional flow-domain vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "blade-curve-native.M_iso",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "direct_model_output",
+            "description": "Prototype declaration for Isentropic Mach number on every official blade-curve vertex. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.q",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case flow-rate scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.power",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case power scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.pr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case pressure-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.tr",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case temperature-ratio scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.eth_is",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case isentropic-efficiency scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          },
+          {
+            "field_id": "case.angle_out",
+            "domain": "case",
+            "component_count": 1,
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "production": "derived_from_model_output",
+            "description": "Prototype declaration for Per-case outlet-flow-angle scalar, whether predicted directly or derived from submitted fields. The fixture does not retain executable predictions proving whether the named architecture produced this quantity directly."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "Not recorded for this prototype fixture; no normalization statistics are asserted.",
+        "preprocessing": "Not recorded for this prototype fixture; no remeshing or feature construction procedure is asserted.",
+        "sampling": "Not recorded for this prototype fixture; the leaderboard's dummy coverage must not be interpreted as the named model's sampling policy."
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "prototype-training-not-recorded",
+            "status": "prototype_not_recorded",
+            "component_ids": [
+              "prototype-surrogate"
+            ],
+            "description": "No executable training run, optimizer configuration, random seed, or training-compute receipt accompanies this dummy row."
+          }
+        ]
+      },
+      "checkpoints": [],
+      "inference_compute": {
+        "status": "not_measured",
+        "reason": "The prototype leaderboard row was not produced by a retained model checkpoint, so end-to-end inference time and hardware are unavailable."
+      }
+    },
     "parameter_count": 9.25,
+    "result_revision": {
+      "series_id": "vkils59-prototype-train-8",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": null,
+      "is_latest": true,
+      "latest_submission_id": "vkils59-prototype-train-8",
+      "version_count": 1
+    },
     "ranking": {
       "metric_id": "overall_score",
       "value": 91.67675,

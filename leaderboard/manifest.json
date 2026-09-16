@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-09-04T21:24:12Z",
+  "generated_at": "2026-09-16T15:32:29Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -19,22 +19,22 @@
     "rounding": "decimal_half_up"
   },
   "data_release": {
-    "id": "prototype-dev-2026-07-15-abf839beb336",
+    "id": "prototype-dev-2026-09-12-ff7bc182fdcd",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-09-04T21:24:12Z",
+    "generated_at": "2026-09-16T15:32:29Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
-    "feed_sha256": "abf839beb336e15d0912896100dcb67c077437fe417d46d53a79d25448647264",
+    "feed_sha256": "ff7bc182fdcde1276ae061245f5099a036ff45daf9ebcc11e8fac2e3d73ed03d",
     "canonical_url": "https://fluidsbench.org/",
     "archive_url": null,
     "release_view_url": null,
     "asset_base_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/dev/",
     "reproducibility_contract_version": "open-reproducibility-2.0",
     "profile_ground_truth": {
-      "release_id": "prototype-profile-ground-truth-2026-07-31",
+      "release_id": "prototype-profile-ground-truth-2026-09-04",
       "manifest_url": "https://fluidsbench.org/assets/data/profile-ground-truth/manifest.json",
-      "manifest_sha256": "f4fa1a2fdf85c877c6bee16b773c99a41a50922fe9c96e2cc0d91b8eed62ac97"
+      "manifest_sha256": "fa57d0eeebbda2bb900930efbdc138599c42556e31d977206702fda2f796e861"
     },
     "license": {
       "spdx_id": "Apache-2.0",
@@ -51,9 +51,16 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "a2b0868428c4d9c2a5225624e18b58261a93de2e5ea71ffd24a63c3b2f6cd264",
-      "record_count": 72,
+      "index_sha256": "bf4d03c744aa7009b2c77643c950a6cc51a4f5a6a2b72ffcb36511787b3d274b",
+      "record_count": 78,
       "eligible_record_count": 0
+    },
+    "revision_history": {
+      "schema_version": "1.0",
+      "file": "leaderboard/revisions.json",
+      "sha256": "ce7ac2e9b63cd51942d9bbed4660b63245eaaff02a97d20efe0dbea168a5f5aa",
+      "record_count": 78,
+      "series_count": 78
     }
   },
   "all_file": "leaderboard/all.json",
@@ -124,6 +131,50 @@
           "rmse"
         ],
         "weighting": "equal_native_entity"
+      },
+      {
+        "id": "drivaerml_surface_pmeantrim_native_area",
+        "label": "Surface pMeanTrim",
+        "unit": "m^2/s^2",
+        "digits": 3,
+        "statistics": [
+          "mae",
+          "rmse"
+        ],
+        "weighting": "native_surface_polygon_area"
+      },
+      {
+        "id": "drivaerml_surface_wallshearstressmeantrim_native_area",
+        "label": "Surface wallShearStressMeanTrim",
+        "unit": "m^2/s^2",
+        "digits": 3,
+        "statistics": [
+          "mae",
+          "rmse"
+        ],
+        "weighting": "native_surface_polygon_area"
+      },
+      {
+        "id": "drivaerml_volume_umeantrim_equal_cell",
+        "label": "Volume UMeanTrim",
+        "unit": "m/s",
+        "digits": 3,
+        "statistics": [
+          "mae",
+          "rmse"
+        ],
+        "weighting": "equal_native_volume_cell"
+      },
+      {
+        "id": "drivaerml_volume_pmeantrim_equal_cell",
+        "label": "Volume pMeanTrim",
+        "unit": "m^2/s^2",
+        "digits": 3,
+        "statistics": [
+          "mae",
+          "rmse"
+        ],
+        "weighting": "equal_native_volume_cell"
       }
     ],
     "coefficient_errors": [
@@ -147,6 +198,33 @@
         "unit": "",
         "digits": 4,
         "statistic": "mae"
+      },
+      {
+        "id": "drivaerml_cd_equal_case_rmse",
+        "label": "Field-integrated C_D",
+        "unit": "",
+        "digits": 5,
+        "statistic": "rmse",
+        "aggregation": "all_test_cases",
+        "weighting": "cases_equal"
+      },
+      {
+        "id": "drivaerml_cl_equal_case_rmse",
+        "label": "Field-integrated C_L",
+        "unit": "",
+        "digits": 5,
+        "statistic": "rmse",
+        "aggregation": "all_test_cases",
+        "weighting": "cases_equal"
+      },
+      {
+        "id": "drivaerml_cmpitch_equal_case_rmse",
+        "label": "Field-integrated C_M pitch",
+        "unit": "",
+        "digits": 5,
+        "statistic": "rmse",
+        "aggregation": "all_test_cases",
+        "weighting": "cases_equal"
       }
     ]
   },
@@ -573,7 +651,8 @@
           }
         ],
         "tolerance": 1e-06
-      }
+      },
+      "revision_count": 10
     },
     {
       "name": "AirfRANS",
@@ -653,6 +732,10 @@
         },
         "surface_wall_shear_rel_l1": {
           "description": "Length-weighted relative L1 error for surface wall shear. Lower is better."
+        },
+        "velocity_profile_r2": {
+          "label": "Balanced velocity profile score",
+          "description": "Equal mean of eight bounded R2 values calculated separately for four chord stations and two Cartesian velocity components across the complete split. Higher is better."
         }
       },
       "ranking": {
@@ -666,7 +749,7 @@
         {
           "id": "velocity_profiles",
           "title": "Velocity profiles",
-          "description": "Required Cartesian velocity components normalized by freestream speed on four extrados-normal sampling lines.",
+          "description": "Required Cartesian velocity components normalized by freestream speed on four extrados-normal sampling lines. The overall profile score gives every station and both components equal weight.",
           "data_key": "velocity_profiles",
           "profile_definition_id": "airfrans-boundary-layer-v1",
           "sample_count": 1001,
@@ -881,26 +964,38 @@
       "profile_definition": {
         "id": "airfrans-boundary-layer-v1",
         "file": "velocity-profiles-v1.json",
-        "sha256": "a3022f5085bd03c784753f16957b7a81a00dadcc24a433a2fb79afd1de9f0ab7",
+        "sha256": "2d662d89a133dd9329ee6540325883825907f5a1ff771af3904e1dc477a2753c",
         "status": "owner_review_required"
-      }
+      },
+      "revision_count": 5
     },
     {
       "name": "DrivAerML",
       "slug": "drivaerml",
       "file": "leaderboard/datasets/drivaerml.json",
-      "submission_count": 10,
-      "updated_at": "2026-07-08",
+      "contract_base_path": "benchmark-specs/drivaerml/",
+      "contract_base_path_scope": "repository_relative_contract_artifact_fields_only; upstream_dataset_paths_resolve_within_source_release",
+      "submission_count": 1,
+      "updated_at": "2026-09-09",
+      "submission_population": {
+        "feed_row_count": 1,
+        "prototype_ineligible_fixture_count": 1,
+        "eligible_submission_count": 0,
+        "scientific_result_count": 0,
+        "submission_count_semantics": "all_current_feed_rows_are_structural_prototype_fixtures_not_eligible_submissions",
+        "updated_at_semantics": "latest_submitted_at_date_among_prototype_fixture_rows_not_a_contract_or_scientific_evidence_update"
+      },
       "metrics": {
         "dimensional_fields": [
-          "surface_pressure",
-          "surface_wall_shear",
-          "volume_velocity",
-          "volume_pressure"
+          "drivaerml_surface_pmeantrim_native_area",
+          "drivaerml_surface_wallshearstressmeantrim_native_area",
+          "drivaerml_volume_umeantrim_equal_cell",
+          "drivaerml_volume_pmeantrim_equal_cell"
         ],
         "coefficient_errors": [
-          "c_drag",
-          "c_lift"
+          "drivaerml_cd_equal_case_rmse",
+          "drivaerml_cl_equal_case_rmse",
+          "drivaerml_cmpitch_equal_case_rmse"
         ]
       },
       "splits": [
@@ -969,65 +1064,61 @@
           "description": "Image-derived low-speed wake and rear-separation out-of-distribution split."
         }
       ],
-      "submission_format": "legacy_external_aero",
+      "submission_format": "drivaerml_native_candidate_v3",
       "metric_ids": [
         "overall_score",
         "field_score",
         "force_score",
         "diagnostic_score",
+        "cd_r2",
+        "cl_r2",
+        "c_pitch_r2",
+        "velocity_profile_r2",
+        "cp_cut_r2",
         "surface_pressure_rel_l2",
         "surface_pressure_equal_entity_rel_l2",
         "surface_wall_shear_rel_l2",
         "surface_wall_shear_equal_entity_rel_l2",
         "volume_velocity_rel_l2",
-        "volume_velocity_physical_rel_l2",
         "volume_pressure_rel_l2",
-        "volume_pressure_physical_rel_l2",
-        "surface_pressure_rel_l1",
-        "surface_wall_shear_rel_l1",
-        "volume_velocity_rel_l1",
-        "volume_pressure_rel_l1",
-        "velocity_profile_r2",
-        "cp_cut_r2",
-        "surface_pressure_mae",
-        "surface_wall_shear_mae",
-        "volume_velocity_mae",
-        "volume_pressure_mae",
-        "surface_pressure_rmse",
-        "surface_wall_shear_rmse",
-        "volume_velocity_rmse",
-        "volume_pressure_rmse",
-        "cd_r2",
-        "cl_r2",
-        "c_drag_mae",
-        "c_lift_mae"
+        "drivaerml_surface_pressure_area_mae",
+        "drivaerml_surface_pressure_area_rmse",
+        "drivaerml_surface_pressure_equal_entity_mae",
+        "drivaerml_surface_pressure_equal_entity_rmse",
+        "drivaerml_surface_wall_shear_area_mae",
+        "drivaerml_surface_wall_shear_area_rmse",
+        "drivaerml_surface_wall_shear_equal_entity_mae",
+        "drivaerml_surface_wall_shear_equal_entity_rmse",
+        "drivaerml_volume_velocity_equal_entity_mae",
+        "drivaerml_volume_velocity_equal_entity_rmse",
+        "drivaerml_volume_pressure_equal_entity_mae",
+        "drivaerml_volume_pressure_equal_entity_rmse",
+        "field_integrated_cd_rmse",
+        "field_integrated_cl_rmse",
+        "field_integrated_cmpitch_rmse",
+        "field_integrated_clf_rmse",
+        "field_integrated_clr_rmse",
+        "field_integrated_lift_closure_max_abs",
+        "velocity_profile_uinf_rmse",
+        "velocity_profile_experimental_subset_uinf_rmse",
+        "cp_cut_rmse"
       ],
       "metric_definition_overrides": {
         "surface_pressure_rel_l2": {
-          "label": "Surface pressure rel. L2 (area-weighted)",
-          "description": "Area-weighted relative L2 error for surface pressure; each scored point, face, or polygon is weighted by the corresponding benchmark-supplied area. Lower is better."
-        },
-        "surface_pressure_rel_l1": {
-          "description": "Area-weighted relative L1 error for surface pressure. Lower is better."
-        },
-        "surface_pressure_mae": {
-          "description": "Area-weighted mean absolute error for surface pressure. Lower is better."
-        },
-        "surface_pressure_rmse": {
-          "description": "Area-weighted root-mean-square error for surface pressure. Lower is better."
+          "label": "Surface p rel. L2 (area-weighted)",
+          "description": "Per-case area-weighted relative L2 of native CellData pMeanTrim, then equal-case mean. Kinematic pressure is in m^2/s^2."
         },
         "surface_wall_shear_rel_l2": {
-          "label": "Surface wall shear rel. L2 (area-weighted)",
-          "description": "Area-weighted relative L2 error for surface wall shear; each scored point, face, or polygon is weighted by the corresponding benchmark-supplied area. Lower is better."
+          "label": "Surface WSS rel. L2 (area-weighted)",
+          "description": "Per-case area-weighted relative L2 of the native three-component wallShearStressMeanTrim vector, then equal-case mean."
         },
-        "surface_wall_shear_rel_l1": {
-          "description": "Area-weighted relative L1 error for surface wall shear. Lower is better."
+        "volume_velocity_rel_l2": {
+          "label": "Volume velocity rel. L2 (equal-cell)",
+          "description": "Per-case equal-native-cell relative L2 of the three-component UMeanTrim vector, then equal-case mean."
         },
-        "surface_wall_shear_mae": {
-          "description": "Area-weighted mean absolute error for surface wall shear. Lower is better."
-        },
-        "surface_wall_shear_rmse": {
-          "description": "Area-weighted root-mean-square error for surface wall shear. Lower is better."
+        "volume_pressure_rel_l2": {
+          "label": "Volume p rel. L2 (equal-cell)",
+          "description": "Per-case equal-native-cell relative L2 of CellData pMeanTrim, then equal-case mean."
         }
       },
       "ranking": {
@@ -1040,13 +1131,15 @@
       "diagnostic_panels": [
         {
           "id": "pressure_profiles",
-          "title": "Pressure-coefficient profiles",
-          "description": "Reference and submitted pressure-coefficient traces at the selected station.",
+          "title": "Continuous pressure-coefficient cuts",
+          "description": "Four continuous native-surface Cp cuts; the 209 discrete AutoCFD taps are excluded.",
           "data_key": "cp_cuts",
+          "profile_definition_id": "drivaerml-diagnostics-v9-candidate",
+          "coordinate_unit": "m",
           "x_keys": [
-            "x",
-            "x_over_c",
-            "x_over_l"
+            "arc_length_m",
+            "distance",
+            "x"
           ],
           "quantities": [
             {
@@ -1063,37 +1156,38 @@
             {
               "id": "upperbody_centerline",
               "label": "Upper-body centreline (y = 0 m)",
-              "x_label": "x/L along upper-body centreline",
-              "description": "Upper-body pressure-probe trace used in the DrivAerML validation study (Figure 17a).",
-              "basis": "published_validation_trace",
-              "source_url": "https://arxiv.org/abs/2408.11969"
+              "x_label": "Arc length along continuous native-surface cut, m",
+              "description": "Continuous native-surface Cp cut on published owner-approved all-case support; immutable production release binding is pending.",
+              "basis": "candidate_fluidsbench_v9_continuous_cp_cut",
+              "source_url": "https://github.com/neilashton/fluidsbench-submission"
             },
             {
               "id": "underbody_centerline",
               "label": "Underbody centreline (y = 0 m)",
-              "x_label": "x/L along underbody centreline",
-              "description": "Underbody pressure-probe trace used in the DrivAerML validation study (Figure 17b).",
-              "basis": "published_validation_trace",
-              "source_url": "https://arxiv.org/abs/2408.11969"
+              "x_label": "Arc length along continuous native-surface cut, m",
+              "description": "Continuous native-surface Cp cut on published owner-approved all-case support; immutable production release binding is pending.",
+              "basis": "candidate_fluidsbench_v9_continuous_cp_cut",
+              "source_url": "https://github.com/neilashton/fluidsbench-submission"
             },
             {
               "id": "sidewall_z_0_15",
               "label": "Sidewall (z = 0.15 m)",
-              "x_label": "x/L along sidewall trace",
-              "description": "Sidewall pressure-probe trace used in the DrivAerML supplementary validation (Figure 22a).",
-              "basis": "published_validation_trace",
-              "source_url": "https://arxiv.org/abs/2408.11969"
+              "x_label": "Arc length along continuous native-surface cut, m",
+              "description": "Continuous native-surface Cp cut on published owner-approved all-case support; immutable production release binding is pending.",
+              "basis": "candidate_fluidsbench_v9_continuous_cp_cut",
+              "source_url": "https://github.com/neilashton/fluidsbench-submission"
             },
             {
               "id": "front_left_wheelhouse_y_neg_0_6",
               "label": "Front-left wheelhouse (y = -0.6 m)",
-              "x_label": "s/L along wheelhouse trace",
-              "description": "Front-left wheelhouse pressure-probe trace used in the DrivAerML supplementary validation (Figure 22b).",
-              "basis": "published_validation_trace",
-              "source_url": "https://arxiv.org/abs/2408.11969"
+              "x_label": "Arc length along continuous native-surface cut, m",
+              "description": "Continuous native-surface Cp cut on published owner-approved all-case support; immutable production release binding is pending.",
+              "basis": "candidate_fluidsbench_v9_continuous_cp_cut",
+              "source_url": "https://github.com/neilashton/fluidsbench-submission"
             }
           ],
           "required": true,
+          "allow_unlisted_stations": false,
           "required_series_fields": [
             "case_id",
             "station_id"
@@ -1102,62 +1196,160 @@
         },
         {
           "id": "velocity_profiles",
-          "title": "Velocity profiles",
-          "description": "Reference and submitted normalized velocity traces at the selected station.",
+          "title": "AutoCFD5 velocity profiles",
+          "description": "Sixteen fixed lines scored on the pinned 10 mm grid using equal-line global R2 with normalized trapezoidal arc-length support.",
           "data_key": "velocity_profiles",
+          "profile_definition_id": "drivaerml-diagnostics-v9-candidate",
+          "coordinate_unit": "m",
           "x_keys": [
-            "x",
-            "offset",
-            "distance"
+            "distance_m",
+            "distance",
+            "x"
           ],
           "quantities": [
             {
               "id": "velocity_ratio",
-              "label": "Velocity",
-              "y_label": "Normalized velocity",
+              "label": "|U|/Uinf",
+              "y_label": "Velocity magnitude / freestream",
               "y_keys": [
-                "u_over_u_inf",
-                "velocity_ratio"
+                "velocity_ratio",
+                "u_over_u_inf"
               ],
               "unit": ""
             }
           ],
           "stations": [
             {
-              "id": "prototype_0_25l",
-              "label": "0.25L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 0.25 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
+              "id": "autocfd5_v1",
+              "label": "AutoCFD5 V1",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 201 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
             },
             {
-              "id": "prototype_0_50l",
-              "label": "0.50L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 0.50 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
+              "id": "autocfd5_v2",
+              "label": "AutoCFD5 V2",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 201 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
             },
             {
-              "id": "prototype_1_00l",
-              "label": "1.00L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 1.00 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
+              "id": "autocfd5_v3",
+              "label": "AutoCFD5 V3",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 201 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
             },
             {
-              "id": "wake_x_1_00l",
-              "label": "Wake at 1.00L",
-              "x_label": "Profile coordinate",
-              "description": "Vehicle wake profile at x/L = 1.00.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.org/datasets/"
+              "id": "autocfd5_v4",
+              "label": "AutoCFD5 V4",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 201 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
+            },
+            {
+              "id": "autocfd5_v5",
+              "label": "AutoCFD5 V5",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 201 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
+            },
+            {
+              "id": "autocfd5_v6",
+              "label": "AutoCFD5 V6",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 201 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
+            },
+            {
+              "id": "autocfd5_u1",
+              "label": "AutoCFD5 U1",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 301 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
+            },
+            {
+              "id": "autocfd5_u2",
+              "label": "AutoCFD5 U2",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 301 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
+            },
+            {
+              "id": "autocfd5_u3",
+              "label": "AutoCFD5 U3",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 301 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
+            },
+            {
+              "id": "autocfd5_u4",
+              "label": "AutoCFD5 U4",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 301 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
+            },
+            {
+              "id": "autocfd5_u5",
+              "label": "AutoCFD5 U5",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 301 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
+            },
+            {
+              "id": "autocfd5_u6",
+              "label": "AutoCFD5 U6",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 301 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
+            },
+            {
+              "id": "autocfd5_l1",
+              "label": "AutoCFD5 L1",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 651 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
+            },
+            {
+              "id": "autocfd5_r1",
+              "label": "AutoCFD5 R1",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 31 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
+            },
+            {
+              "id": "autocfd5_r2",
+              "label": "AutoCFD5 R2",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 31 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
+            },
+            {
+              "id": "autocfd5_r3",
+              "label": "AutoCFD5 R3",
+              "x_label": "Distance along line, m",
+              "description": "Pinned 10 mm AutoCFD5 line with 31 samples.",
+              "basis": "pinned_autocfd5_v9_velocity_line",
+              "source_url": "https://autocfd5.s3.eu-west-1.amazonaws.com/"
             }
           ],
-          "required": false,
-          "allow_unlisted_stations": true,
+          "required": true,
+          "allow_unlisted_stations": false,
           "required_series_fields": [
             "case_id",
             "station_id"
@@ -1167,81 +1359,421 @@
       "scoring_support": {
         "status": "owner_review_required",
         "submissions_open": false,
-        "closed_reason": "Submissions are currently closed.",
+        "prediction_scopes": {
+          "surface_and_volume": {
+            "surface_predictions_required": true,
+            "volume_predictions_required": true
+          },
+          "surface_only": {
+            "surface_predictions_required": true,
+            "volume_predictions_forbidden": true,
+            "unavailable_component_metric_ids": [
+              "volume_velocity_rel_l2",
+              "volume_pressure_rel_l2",
+              "velocity_profile_r2"
+            ],
+            "unavailable_component_score": 0.0,
+            "component_weight_renormalization": false,
+            "maximum_overall_score": 60.0
+          }
+        },
+        "closed_reason": "The participant contract, all-case native evidence and profile truth, scientific review, and bounded scoring equation are complete, but ranking remains closed until the production evaluator/scoring-support/truth release identities are frozen, the three-model sensitivity gate passes, and an independent full schema-v3 submission dry run is approved.",
+        "scientific_approval": {
+          "status": "approved",
+          "approved_by": "neilashton",
+          "approved_at": "2026-08-28",
+          "approval_record": {
+            "file": "evidence/owner-scientific-approval-2026-08-28.json",
+            "sha256": "448f2b852df7066fc311eed75ea94caa756ae6f63573d12a50798804c08929b3",
+            "schema": "drivaerml-owner-scientific-approval-v1"
+          },
+          "activation_effect": "scientific_review_complete_release_gates_unchanged"
+        },
+        "owner_approved_successor_profile": {
+          "id": "drivaerml-diagnostics-v10-candidate",
+          "file": "drivaerml-diagnostics-v10.json",
+          "sha256": "9136feac7ac276d91f7cbcfb6c558beffc97cfaf0f0174626fee67a1f2a52bd0",
+          "status": "scientifically_approved_pending_immutable_release_binding",
+          "published_native_v3_truth_index_sha256": "e7cf14f161fc7dbf22794e6f66db4e157329be960d2a4368140e08cf0608a5ae"
+        },
+        "candidate_evidence_index_file": "evidence/README.md",
+        "candidate_evidence_manifest_file": "evidence/manifest.json",
+        "dataset_evaluator_binding": {
+          "status": "pending_frozen_release",
+          "repository_url": "https://github.com/neilashton/fluidsbench-submission",
+          "evaluator_reference_version": "drivaerml-evaluator-v3-candidate",
+          "evaluator_code_revision": null,
+          "activation_rule": "set status=frozen and publish the exact immutable evaluator Git revision only after the production evaluator is scientifically approved; participant evaluation evidence must match the frozen reference version, and optional maintainer recomputation receipts must match both values exactly"
+        },
+        "source_release": {
+          "provider": "Hugging Face Hub",
+          "repository": "neashton/drivaerml",
+          "revision": "7a5c0948ce27be709b1116a3a190f806e7a8f79f",
+          "public_case_count": 484,
+          "native_source_pin": {
+            "file": "proposal/native-source-pin.json",
+            "sha256": "4fc9077f8f23f4994c98f4d0e7a17aef7b998de4c996638e3a8a616b6d923fdd"
+          },
+          "owner_split_manifest": {
+            "file": "proposal/owner-published-splits.json",
+            "sha256": "032a2e9f88926d9218a1943b51e650135cc78683cad6b0a38f3cf4f9dfba647d"
+          },
+          "proposal_contract": {
+            "file": "proposal/contract-proposal.json",
+            "sha256": "3f76cb41f8d0a7565baf2df8f23085a8cdd4c6b9147606624595935f5ea0556b"
+          }
+        },
+        "case_file_binding": {
+          "case_id_pattern": "^run_([1-9][0-9]*)$",
+          "case_id_variable": "<case_id>",
+          "run_number_variable": "<run_number>",
+          "example": {
+            "case_id": "run_11",
+            "run_number": 11
+          }
+        },
         "coverage_contract": {
-          "dimensionality": "3D surface and 3D flow domain",
-          "rule": "complete_original_public_release_entities",
+          "dimensionality": "3D native surface and 3D native finite-volume domain",
+          "rule": "every_required_native_CellData_tuple_exactly_once",
           "inference_may_be_chunked": true,
           "chunk_metrics_must_use_additive_sufficient_statistics": true,
           "complete_case_and_entity_coverage_required": true,
           "full_prediction_artifact_required": false,
-          "case_aggregation": "calculate_each_case_then_macro_average_cases_equally",
-          "public_ground_truth": "Ground-truth fields are in the public dataset release."
+          "case_aggregation": "calculate_each_complete_case_then_macro_average_cases_equally",
+          "vector_error": "componentwise_difference_then_euclidean_norm_not_difference_of_magnitudes"
         },
         "public_supports": [
           {
-            "id": "surface-native",
-            "public_file": "run_<case>/boundary_<case>.vtp",
+            "id": "surface_native_cells",
+            "public_file": "<case_id>/boundary_<run_number>.vtp",
             "format": "VTK PolyData",
-            "domain": "three_dimensional_vehicle_surface",
             "association": "CellData",
-            "entities": "all_native_polygons",
+            "entities": "all_native_polygons_in_raw_VTK_cell_order",
+            "stable_id": [
+              "case_id",
+              "zero_based_raw_vtk_cell_id"
+            ],
             "arrays": [
-              "CpMeanTrim",
               "pMeanTrim",
-              "pPrime2MeanTrim",
               "wallShearStressMeanTrim"
             ],
-            "physical_weight": "polygon_area",
-            "verification": "confirmed_from_public_file"
+            "array_components": {
+              "pMeanTrim": 1,
+              "wallShearStressMeanTrim": 3
+            },
+            "array_units": {
+              "pMeanTrim": "m^2/s^2",
+              "wallShearStressMeanTrim": "m^2/s^2"
+            },
+            "physical_weight_file": "<case_id>/boundary_cell_area_<run_number>.npy",
+            "physical_weight_dtype": "little_endian_float32",
+            "physical_weight_association": "one_positive_finite_area_per_native_polygon_in_identical_order",
+            "physical_weight_manifest": {
+              "path": "surface_cell_areas/manifest.json",
+              "sha256": "1401c7e80bd86f3aa2d640289db9b088ce1e0825327e18eeb1ab2852de04323e"
+            },
+            "physical_weight_release": {
+              "status": "public_complete",
+              "dataset_revision": "7a5c0948ce27be709b1116a3a190f806e7a8f79f",
+              "case_count": 484,
+              "payload_file_count": 484,
+              "native_polygon_count": 4159517910,
+              "payload_bytes": 16638133592
+            }
           },
           {
-            "id": "flow-domain-native",
-            "public_file": "run_<case>/volume_<case>.vtu reconstructed from .00.part and .01.part",
+            "id": "volume_native_cells",
+            "logical_public_file": "<case_id>/volume_<run_number>.vtu",
+            "transport_parts": "resolve the exact ordered .00.part, .01.part, and optional .02.part list from proposal/native-source-pin.json",
+            "transport_assembly": "byte_concatenate_pinned_parts_in_part_index_order_with_no_delimiter_or_transformation",
+            "part_count_policy": "474 cases have two parts and 10 pinned cases have three; never assume exactly two",
             "format": "VTK UnstructuredGrid",
-            "domain": "three_dimensional_flow_domain",
             "association": "CellData",
-            "entities": "all_native_volume_cells_after_reconstruction",
+            "entities": "all_native_finite_volume_cells_in_raw_VTK_cell_order",
+            "stable_id": [
+              "case_id",
+              "zero_based_raw_vtk_cell_id"
+            ],
             "arrays": [
               "UMeanTrim",
               "pMeanTrim"
             ],
-            "available_cell_arrays": [
-              "CpMeanTrim",
-              "CptMeanTrim",
-              "magUMeanNormTrim",
-              "microDragMeanTrim",
-              "nutMeanTrim",
-              "pMeanTrim",
-              "pPrime2MeanTrim",
-              "UMeanTrim",
-              "UPrime2MeanTrim",
-              "turbulenceProperties:RMeanTrim"
+            "array_components": {
+              "UMeanTrim": 3,
+              "pMeanTrim": 1
+            },
+            "array_units": {
+              "UMeanTrim": "m/s",
+              "pMeanTrim": "m^2/s^2"
+            },
+            "weighting": "one_per_native_cell",
+            "geometric_cell_volume_weights_required": false,
+            "candidate_primary_validation_evidence": {
+              "file": "evidence/native-volume-equal-cell-primary-all484.json",
+              "sha256": "bda42a125ffb4d6484756e77ac7e495974f39d4bce3e663154322e9e560827c7",
+              "provenance_file": "evidence/native-volume-equal-cell-primary-all484-provenance.json",
+              "provenance_sha256": "b5ffe2234bb1597cf041ff5d97458f3d0d6e81db7a30591a7e26f51ebc032fde",
+              "artifact_schema": "drivaerml-native-volume-equal-cell-primary-all-case-audit-v1",
+              "legacy_unit_weight_vocabulary": true,
+              "current_tool_aggregate_schema": "drivaerml-native-volume-equal-cell-all-case-audit-v2",
+              "normalization_status": "bound_historical_equal_cell_evidence_current_v2_tools_require_regeneration_or_explicit_normalization",
+              "status": "all_484_equal_cell_primary_audit_passed_not_scoring_support",
+              "case_count": 484,
+              "verified_segment_count": 978,
+              "native_cell_count": 68949662110,
+              "equal_native_cell_weighting_exercised": true,
+              "complete_all_484_cases": true,
+              "owner_scientific_approval": true
+            },
+            "candidate_primary_pilot_evidence": {
+              "file": "evidence/native-volume-run1-run44-equal-cell-primary-pilot.json",
+              "sha256": "d009b6ac708fa320d21492b4cc44fc846b61e99b445836b5dedc704a934592d7",
+              "status": "superseded_scope_pilot_retained_for_two_part_three_part_implementation_reference"
+            }
+          },
+          {
+            "id": "field_integrated_force_truth",
+            "authoritative_public_file": "force_mom_constref_all.csv",
+            "sha256": "4e9e003da38ccdcacad359451079888361eae221d3c8dad7fd5682250d257865",
+            "prototype_r2_truth_statistics": {
+              "file": "force-r2-truth-statistics.json",
+              "sha256": "6deb7f61ef472eb1d6891927147bf9aafe7125ed6da4f96f0dcc05e0ba178b55",
+              "scope": "prototype_fixture_calibration_only; official_evaluation_uses_casewise_authoritative_truth"
+            },
+            "per_case_mirror": "<case_id>/force_mom_constref_<run_number>.csv",
+            "per_case_mirror_policy": "accepted_as_a_convenience_only_after_exact_row_replay_against_the_authoritative_aggregate",
+            "exact_header": [
+              "run",
+              "cd",
+              "cl",
+              "clf",
+              "clr",
+              "cs"
             ],
-            "physical_weight": "cell_volume",
-            "verification": "confirmed_from_reconstructed_public_file"
+            "ranked_targets": {
+              "Cd": "cd",
+              "Cl": "cl",
+              "CmPitch": "casewise_(clf-clr)/2"
+            },
+            "report_only_targets": {
+              "Clf": "clf",
+              "Clr": "clr"
+            }
+          }
+        ],
+        "scored_field_bindings": [
+          {
+            "target_id": "surface_pressure",
+            "support_id": "surface_native_cells",
+            "array": "pMeanTrim",
+            "components": 1,
+            "primary_metric": "surface_pressure_rel_l2",
+            "primary_weighting": "surface_face_area",
+            "secondary_metric": "surface_pressure_equal_entity_rel_l2",
+            "secondary_weighting": "surface_entities_equal"
+          },
+          {
+            "target_id": "surface_wall_shear",
+            "support_id": "surface_native_cells",
+            "array": "wallShearStressMeanTrim",
+            "components": 3,
+            "primary_metric": "surface_wall_shear_rel_l2",
+            "primary_weighting": "surface_face_area",
+            "secondary_metric": "surface_wall_shear_equal_entity_rel_l2",
+            "secondary_weighting": "surface_entities_equal"
+          },
+          {
+            "target_id": "volume_velocity",
+            "support_id": "volume_native_cells",
+            "array": "UMeanTrim",
+            "components": 3,
+            "primary_metric": "volume_velocity_rel_l2",
+            "primary_weighting": "volume_cells_equal"
+          },
+          {
+            "target_id": "volume_pressure",
+            "support_id": "volume_native_cells",
+            "array": "pMeanTrim",
+            "components": 1,
+            "primary_metric": "volume_pressure_rel_l2",
+            "primary_weighting": "volume_cells_equal"
           }
         ],
         "relative_l2_policy": {
-          "surface_or_curve_primary": "physical_measure_weighted",
-          "surface_or_curve_secondary": "equal_native_entity",
-          "flow_domain_primary": "equal_native_entity",
-          "flow_domain_secondary": "physical_measure_weighted",
-          "point_or_vertex_physical_weights": "deterministic_mass_lumped_dual_measure_from_the_exact_public_mesh",
-          "vector_rule": "one_entity_weight_multiplies_the_squared_vector_magnitude",
-          "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
+          "surface_primary": "surface_face_area",
+          "surface_secondary": "equal_native_polygon",
+          "volume": "equal_native_cell_only",
+          "chunk_rule": "sum_case_numerators_denominators_counts_and_weights_across_chunks_then_apply_one_nonlinear_reduction",
+          "forbidden_chunk_rule": "average_chunk_local_metric_values"
+        },
+        "force_integration": {
+          "source_fields": [
+            "surface pMeanTrim",
+            "surface wallShearStressMeanTrim"
+          ],
+          "freestream_velocity_m_per_s": 38.889,
+          "density_kg_per_m3": 1.0,
+          "reference_area_m2": 2.17,
+          "reference_length_m": 2.78618,
+          "centre_of_rotation_m": [
+            1.40009,
+            0.0,
+            -0.3176
+          ],
+          "drag_axis": "+x",
+          "lift_axis": "+z",
+          "pitch_axis": "+y",
+          "body_force_equation": "rho_inf*sum_f(pMeanTrim_f*A_f-wallShearStressMeanTrim_f*norm(A_f))",
+          "body_moment_equation": "rho_inf*sum_f(cross(C_f-CoR,pMeanTrim_f*A_f-wallShearStressMeanTrim_f*norm(A_f)))",
+          "face_area_and_centre_convention": "OpenFOAM_v2212_primitiveMeshTools_makeFaceCentresAndAreas",
+          "ranked_reduction": "separate_equal_case_R2_for_Cd_Cl_and_CmPitch_with_RMSE_reported_as_diagnostics",
+          "dependent_axle_loads": {
+            "Clf": "Cl/2+CmPitch",
+            "Clr": "Cl/2-CmPitch",
+            "composite_weight": 0.0
+          },
+          "participant_json": {
+            "file": "metrics/cases.json",
+            "case_property": "force_coefficients",
+            "required_prediction_keys": [
+              "cd",
+              "cl",
+              "cm_pitch",
+              "clf",
+              "clr"
+            ],
+            "ranked_keys": [
+              "cd",
+              "cl",
+              "cm_pitch"
+            ],
+            "report_only_keys": [
+              "clf",
+              "clr"
+            ],
+            "generation": "participant_runs_the_frozen_reference_evaluator_locally"
+          },
+          "candidate_validation_evidence": {
+            "file": "evidence/force-replay-all484.json",
+            "sha256": "631cd02c3a4215b254489652c1d93dfd781ecdb9478ff1ab11f24294743e8a17",
+            "status": "all_484_cases_passed_candidate_evaluator",
+            "owner_scientific_approval": true
+          }
+        },
+        "profile_definition": {
+          "file": "drivaerml-diagnostics-v9.json",
+          "sha256": "df22bc807b62f925c32659d681ac44064e6acf46449038b8431b1e9139aba1e8",
+          "status": "candidate_velocity_and_continuous_cp_cut_support_pending_all_case_validation",
+          "velocity_validity_policy": {
+            "id": "drivaerml-autocfd5-velocity-validity-v1",
+            "status": "candidate_policy_defined_owner_mask_pending",
+            "authority": "dataset_owner",
+            "participant_may_modify": false,
+            "mask_scope": {
+              "case_count": 484,
+              "line_count": 16,
+              "master_spacing_m": 0.001,
+              "master_samples_per_case": 37416,
+              "master_row_count": 18109344,
+              "ranked_spacing_m": 0.01,
+              "ranked_samples_per_case": 3756,
+              "ranked_row_count": 1817904,
+              "row_key": [
+                "case_id",
+                "profile_id",
+                "master_sample_index"
+              ],
+              "study_grid_derivation": {
+                "1_mm": 1,
+                "2_mm": 2,
+                "5_mm": 5,
+                "10_mm": 10
+              }
+            },
+            "mask_binding": {
+              "status": "pending_immutable_owner_release_no_exclusions_approved",
+              "file": null,
+              "sha256": null
+            },
+            "allowed_owner_exclusion_reasons": [
+              "inside_morphed_solid",
+              "outside_released_fluid_domain"
+            ],
+            "mapping_failures_are_not_automatic_exclusions": [
+              "no_native_cell_within_closure_tolerance",
+              "native_cell_closure_evaluation_failed_for_broad_phase_cells:<sorted_raw_ids>",
+              "ambiguous_polyhedron_solid_angle_classification"
+            ],
+            "included_sample_rule": "every_non_excluded_sample_must_select_one_deterministic_raw_vtk_cell_id",
+            "unresolved_sample_rule": "an_unmapped_non_excluded_sample_makes_its_line_and_case_ranked_velocity_component_unavailable",
+            "excluded_sample_rule": "retain_the_row_explicitly_but_give_the_point_and_its_adjacent_edges_zero_metric_support",
+            "arc_rule": "a_trapezoidal_edge_contributes_only_when_both_adjacent_endpoints_are_owner_included_and_mapped",
+            "line_minimum_support": "at_least_one_positive_length_owner_included_mapped_adjacent_edge",
+            "case_availability": "all_16_required_line_metrics_must_be_available",
+            "forbidden_operations": [
+              "silent_omission",
+              "snapping",
+              "interpolation",
+              "extrapolation",
+              "gap_bridging",
+              "participant_defined_mask"
+            ],
+            "polyhedron_classification": {
+              "status": "candidate_selected_all_case_replay_and_owner_approval_pending",
+              "spatial_boundary_test_precedes_winding": true,
+              "spatial_boundary_tolerance_m": 1e-06,
+              "absolute_solid_angle_target_inside_steradian": 12.566370614359172,
+              "absolute_solid_angle_target_outside_steradian": 0.0,
+              "absolute_tolerance_steradian": 0.001,
+              "intermediate_or_nonfinite_action": "retain_explicit_unresolved_invalid_row_no_cell_assignment"
+            },
+            "activation_requirement": "publish_and_hash_the_complete_owner_mask_and_all_case_assignments_with_zero_unresolved_non_excluded_samples"
+          },
+          "cp_cut_support": {
+            "status": "pending_immutable_owner_release",
+            "cut_count": 4,
+            "metric_id": "cp_cut_r2",
+            "discrete_cp_probe_support_accepted": false
+          }
+        },
+        "participant_process": [
+          "select one official split and use only its train list for fitting and training statistics",
+          "load every required boundary VTP CellData tuple and its same-order public area array",
+          "choose either surface_and_volume or surface_only before evaluation; every submission must predict every native surface CellData tuple exactly once",
+          "for surface_and_volume, reconstruct each logical volume VTU from the exact per-case part list; process native cells in bounded-memory chunks without resampling, retain raw IDs, and reduce additive statistics only after each complete case",
+          "for surface_only, do not provide or manufacture volume-field or velocity-profile data; their fixed score contributions are zero and all published component weights remain unchanged",
+          "derive field-integrated forces and continuous Cp cuts from complete surface predictions, and derive velocity diagnostics only for surface_and_volume predictions, using the frozen reference evaluator",
+          "record the repository-wide schema-v3 FluidsBench methodology disclosure and DrivAerML output-field contract with named architecture components, exact total and submitter-trainable parameter counts, scoped inputs and outputs, data handling, every submitter or upstream training stage, compute for every submitter-performed stage, every raw loaded checkpoint-file SHA-256 and selection rule, and complete-split inference compute; checkpoint publication remains optional",
+          "submit participant-authored scalar metrics, per-case force coefficients and evidence, and complete velocity-profile and continuous-Cp-cut JSON chunks through the current FluidsBench schema; sharing revision-pinned prediction artifacts and maintainer native-evaluator recomputation are optional audits and do not affect approval, rank, citation, or promotion eligibility"
+        ],
+        "activation_gates": {
+          "official_splits": "complete",
+          "pinned_native_files": "complete",
+          "surface_area_weights": "complete_public_all_484_pinned_order_count_hash_and_value_audit_passed",
+          "volume_field_weighting": "complete_equal_native_cell_no_geometric_cell_volume_weights_required",
+          "force_evaluator": "all_484_candidate_replay_passed_owner_scientifically_approved_release_binding_pending",
+          "velocity_profiles": "all_484_fixed_and_relative_native_truth_and_support_published_owner_scientifically_approved_release_binding_pending",
+          "cp_cuts": "all_484_four_cut_native_truth_and_support_published_owner_scientifically_approved_release_binding_pending",
+          "bounded_score_definition": "complete_fixed_field_error_caps_and_bounded_force_profile_R2",
+          "composite_sensitivity_and_bootstrap": "pending_frozen_evaluator_and_at_least_three_genuine_model_checkpoint_predictions",
+          "schema_v3_participant_result_binding": "candidate_fail_closed_participant_authored_reductions_case_metrics_and_profile_hash_bindings_implemented_tests_pass_scientifically_approved_frozen_release_identity_pending",
+          "independent_participant_dry_run": "pending",
+          "owner_evaluator_approval": "scientific_method_approved_final_immutable_release_binding_pending"
         },
         "owner_decisions_required": [
-          "pin_exact_public_release_files_revisions_and_hashes",
-          "confirm_array_names_entity_associations_masks_and_order",
-          "publish_authoritative_physical_weights_and_stable_entity_ids",
-          "approve_public_ground_truth_case_set_and_split_bindings",
-          "approve_loader_evaluator_and_immutable_scoring_support_manifest"
+          "provide_at_least_three_genuine_trained_model_checkpoint_predictions_for_sensitivity_and_method_ordering",
+          "review_fixed_field_error_caps_and_bounded_R2_sensitivity_with_genuine_model_predictions_and_publish_bootstrap_indexes",
+          "approve_immutable_evaluator_and_scoring_support_release_before_opening_submissions"
         ]
       },
       "overall_score_composite": {
         "metric_id": "overall_score",
         "operation": "weighted_component_scores",
+        "status": "active",
+        "score_range": [
+          0.0,
+          100.0
+        ],
         "components": [
           {
             "metric_id": "surface_pressure_rel_l2",
@@ -1274,7 +1806,12 @@
           },
           {
             "metric_id": "cl_r2",
-            "weight": 0.1,
+            "weight": 0.05,
+            "transform": "bounded_quality"
+          },
+          {
+            "metric_id": "c_pitch_r2",
+            "weight": 0.05,
             "transform": "bounded_quality"
           },
           {
@@ -1288,6 +1825,16 @@
             "transform": "bounded_quality"
           }
         ],
+        "surface_only_policy": {
+          "unavailable_component_metric_ids": [
+            "volume_velocity_rel_l2",
+            "volume_pressure_rel_l2",
+            "velocity_profile_r2"
+          ],
+          "unavailable_component_score": 0.0,
+          "component_weight_renormalization": false,
+          "maximum_overall_score": 60.0
+        },
         "tolerance": 1e-06
       },
       "component_score_groups": {
@@ -1306,7 +1853,8 @@
             "metric_id": "force_score",
             "component_metric_ids": [
               "cd_r2",
-              "cl_r2"
+              "cl_r2",
+              "c_pitch_r2"
             ]
           },
           {
@@ -1318,7 +1866,15 @@
           }
         ],
         "tolerance": 1e-06
-      }
+      },
+      "profile_definition": {
+        "id": "drivaerml-diagnostics-v9-candidate",
+        "file": "drivaerml-diagnostics-v9.json",
+        "sha256": "df22bc807b62f925c32659d681ac44064e6acf46449038b8431b1e9139aba1e8",
+        "status": "candidate_velocity_and_continuous_cp_cut_support_pending_all_case_validation",
+        "velocity_validity_policy_id": "drivaerml-autocfd5-velocity-validity-v1"
+      },
+      "revision_count": 1
     },
     {
       "name": "DrivAerNet++",
@@ -1538,7 +2094,7 @@
               "splits_path": "train_val_test_splits/{train,val,test}_design_ids.txt",
               "splits_url": "https://github.com/Mohamedelrefaie/DrivAerNet/tree/main/train_val_test_splits",
               "benchmark_repository": "https://github.com/Mohamedelrefaie/CarBench",
-              "benchmark_evaluation_status": "CarBench is the reference surface-pressure benchmark for this dataset. Its evaluation code and models are not yet public (the repository currently publishes the benchmark description only); the official split files will also be mirrored there after the CarBench release. CarBench reports equal-point-weighted relative L2, which corresponds to this dataset's surface_pressure_equal_entity_rel_l2 diagnostic rather than the area-weighted primary metric, so published CarBench values must be recalculated before use as leaderboard rows."
+              "benchmark_evaluation_status": "CarBench is the reference surface-pressure benchmark for this dataset. Its evaluation code and models are not yet public (the repository currently publishes the benchmark description only); the official split files will also be mirrored there after the CarBench release. CarBench reports equal-point (unweighted) relative L2 under three evaluation protocols, compared in Elrefaie et al. (journal revision) on a stratified 61-geometry subset of the held-out test split. 'Subsampled' scores a 10,000-point prediction on those 10,000 points, which is a downsampled support this contract does not accept. 'Interpolated' upscales that same 10,000-point prediction to every native node by radial-basis interpolation; its apparent degradation is dominated by interpolation error rather than by resolution, so interpolated values must not be read as a full-resolution result. 'Patchwise' predicts every native node directly (ceil(N/1e4) disjoint 10,000-point passes, or a single geometry encoding with chunked queries for models such as AB-UPT and TripNet that decode arbitrary query points), and is the only protocol whose support matches this contract; its relative L2 tracks the subsampled values closely and preserves the model ordering. Patchwise equal-point values correspond in definition to this dataset's surface_pressure_equal_entity_rel_l2 diagnostic, not to the area-weighted primary metric. No published CarBench value is yet usable as an official leaderboard row: the protocol comparison covers 61 geometries rather than the 1,154-case official_test split, and no published value is area-weighted. Official rows require a patchwise run over official_test with both metric views computed by the reference evaluator from the native support. AB-UPT is evaluated from an author-provided checkpoint rather than a CarBench-trained model."
             }
           },
           {
@@ -1582,14 +2138,15 @@
           }
         ],
         "tolerance": 1e-06
-      }
+      },
+      "revision_count": 12
     },
     {
       "name": "HiLiftAeroML",
       "slug": "hiliftaeroml",
       "file": "leaderboard/datasets/hiliftaeroml.json",
-      "submission_count": 8,
-      "updated_at": "2026-07-08",
+      "submission_count": 23,
+      "updated_at": "2026-09-12",
       "metrics": {
         "dimensional_fields": [
           "surface_pressure",
@@ -1731,7 +2288,7 @@
           "description": "Flow-regime extrapolation from pre-stall training cases to post-stall test cases."
         }
       ],
-      "submission_format": "legacy_external_aero",
+      "submission_format": "hiliftaeroml_native_candidate_v3",
       "metric_ids": [
         "overall_score",
         "field_score",
@@ -1742,9 +2299,7 @@
         "surface_wall_shear_rel_l2",
         "surface_wall_shear_equal_entity_rel_l2",
         "volume_velocity_rel_l2",
-        "volume_velocity_physical_rel_l2",
         "volume_pressure_rel_l2",
-        "volume_pressure_physical_rel_l2",
         "surface_pressure_rel_l1",
         "surface_wall_shear_rel_l1",
         "volume_velocity_rel_l1",
@@ -1991,83 +2546,6 @@
           ],
           "stations": [
             {
-              "id": "hlpw5_a_1",
-              "label": "HLPW-5 A.1",
-              "x_label": "z - z_surface (in)",
-              "x_in": 1034.95,
-              "y_in": 137.9135,
-              "surface_z_in": 191.75,
-              "description": "HLPW-5 velocity-profile station A.1 at the published full-scale x/y location.",
-              "basis": "published_validation_trace",
-              "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
-            },
-            {
-              "id": "hlpw5_a_2",
-              "label": "HLPW-5 A.2",
-              "x_label": "z - z_surface (in)",
-              "x_in": 1071.2212,
-              "y_in": 160.9808,
-              "surface_z_in": 195.4808,
-              "description": "HLPW-5 velocity-profile station A.2 at the published full-scale x/y location.",
-              "basis": "published_validation_trace",
-              "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
-            },
-            {
-              "id": "hlpw5_a_3",
-              "label": "HLPW-5 A.3",
-              "x_label": "z - z_surface (in)",
-              "x_in": 1365.5096,
-              "y_in": 227.1058,
-              "surface_z_in": 183.1173,
-              "description": "HLPW-5 velocity-profile station A.3 at the published full-scale x/y location.",
-              "basis": "published_validation_trace",
-              "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
-            },
-            {
-              "id": "hlpw5_a_4",
-              "label": "HLPW-5 A.4",
-              "x_label": "z - z_surface (in)",
-              "x_in": 1385.4231,
-              "y_in": 128.3423,
-              "surface_z_in": 156.9615,
-              "description": "HLPW-5 velocity-profile station A.4 at the published full-scale x/y location.",
-              "basis": "published_validation_trace",
-              "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
-            },
-            {
-              "id": "hlpw5_a_5",
-              "label": "HLPW-5 A.5",
-              "x_label": "z - z_surface (in)",
-              "x_in": 1421.5757,
-              "y_in": 129.1298,
-              "surface_z_in": 148.0621,
-              "description": "HLPW-5 velocity-profile station A.5 at the published full-scale x/y location.",
-              "basis": "published_validation_trace",
-              "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
-            },
-            {
-              "id": "hlpw5_a_6",
-              "label": "HLPW-5 A.6",
-              "x_label": "z - z_surface (in)",
-              "x_in": 1444.4584,
-              "y_in": 225.9062,
-              "surface_z_in": 167.196,
-              "description": "HLPW-5 velocity-profile station A.6 at the published full-scale x/y location.",
-              "basis": "published_validation_trace",
-              "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
-            },
-            {
-              "id": "hlpw5_b_1",
-              "label": "HLPW-5 B.1",
-              "x_label": "z - z_surface (in)",
-              "x_in": 1163.5769,
-              "y_in": 379.9615,
-              "surface_z_in": 190.8654,
-              "description": "HLPW-5 velocity-profile station B.1 at the published full-scale x/y location.",
-              "basis": "published_validation_trace",
-              "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
-            },
-            {
               "id": "hlpw5_b_2",
               "label": "HLPW-5 B.2",
               "x_label": "z - z_surface (in)",
@@ -2086,17 +2564,6 @@
               "y_in": 360.8769,
               "surface_z_in": 205.5577,
               "description": "HLPW-5 velocity-profile station B.3 at the published full-scale x/y location.",
-              "basis": "published_validation_trace",
-              "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
-            },
-            {
-              "id": "hlpw5_b_4",
-              "label": "HLPW-5 B.4",
-              "x_label": "z - z_surface (in)",
-              "x_in": 1493.6878,
-              "y_in": 361.0165,
-              "surface_z_in": 173.5348,
-              "description": "HLPW-5 velocity-profile station B.4 at the published full-scale x/y location.",
               "basis": "published_validation_trace",
               "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
             },
@@ -2132,39 +2599,6 @@
               "description": "HLPW-5 velocity-profile station C.3 at the published full-scale x/y location.",
               "basis": "published_validation_trace",
               "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
-            },
-            {
-              "id": "hlpw5_d_1",
-              "label": "HLPW-5 D.1",
-              "x_label": "z - z_surface (in)",
-              "x_in": 1799.3942,
-              "y_in": 1152.4692,
-              "surface_z_in": 268.0192,
-              "description": "HLPW-5 velocity-profile station D.1 at the published full-scale x/y location.",
-              "basis": "published_validation_trace",
-              "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
-            },
-            {
-              "id": "hlpw5_d_2",
-              "label": "HLPW-5 D.2",
-              "x_label": "z - z_surface (in)",
-              "x_in": 1821.0673,
-              "y_in": 1152.2827,
-              "surface_z_in": 270.1462,
-              "description": "HLPW-5 velocity-profile station D.2 at the published full-scale x/y location.",
-              "basis": "published_validation_trace",
-              "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
-            },
-            {
-              "id": "hlpw5_d_3",
-              "label": "HLPW-5 D.3",
-              "x_label": "z - z_surface (in)",
-              "x_in": 1842.7404,
-              "y_in": 1152.2058,
-              "surface_z_in": 271.0212,
-              "description": "HLPW-5 velocity-profile station D.3 at the published full-scale x/y location.",
-              "basis": "published_validation_trace",
-              "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
             }
           ],
           "required": true,
@@ -2178,7 +2612,21 @@
       "scoring_support": {
         "status": "owner_review_required",
         "submissions_open": false,
-        "closed_reason": "Submissions are currently closed.",
+        "closed_reason": "Closed owner-review candidate: immutable public source-content pins, public profile-truth publication, and owner scientific approval remain pending. The immutable evaluator revision is frozen only for closed candidate dry runs and has no activation effect.",
+        "candidate_manifest": {
+          "status": "candidate",
+          "release_id": "hiliftaeroml-native-all-splits-support-v1-candidate",
+          "manifest_file": "scoring-support/hiliftaeroml-native-all-splits-support-v1-candidate/manifest.json",
+          "manifest_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/hiliftaeroml/scoring-support/hiliftaeroml-native-all-splits-support-v1-candidate/manifest.json",
+          "manifest_sha256": "98a9a8d015e42c80f5993e30da94201011bebf67ff44d5574a7ef68a8b5dfbee"
+        },
+        "dataset_evaluator_binding": {
+          "status": "frozen",
+          "repository_url": "https://github.com/neilashton/fluidsbench-submission",
+          "evaluator_reference_version": "hiliftaeroml-evaluator-v0.1-candidate",
+          "evaluator_code_revision": "68899f780d96b70f2badb5658971c87af0b17172",
+          "activation_rule": "This frozen revision may be used only for closed maintainer-local candidate dry runs; it does not publish profile truth, record owner approval, open submissions, or activate a public or private leaderboard."
+        },
         "coverage_contract": {
           "dimensionality": "3D surface and 3D flow domain",
           "rule": "complete_original_public_release_entities",
@@ -2206,26 +2654,55 @@
             "format": "tar-gzipped VTK UnstructuredGrid",
             "domain": "three_dimensional_flow_domain",
             "association": "PointData",
-            "entities": "all_native_volume_points",
-            "physical_weight": "mass_lumped_dual_cell_volume",
-            "verification": "confirmed_in_public_release_documentation"
+            "entities": "retained_native_volume_points_with_raw_float32_avg(P)_not_equal_to_zero",
+            "verification": "confirmed_in_public_release_documentation",
+            "primary_weight": "one_per_retained_valid_native_point"
           }
         ],
         "relative_l2_policy": {
           "surface_or_curve_primary": "physical_measure_weighted",
           "surface_or_curve_secondary": "equal_native_entity",
-          "flow_domain_primary": "equal_native_entity",
-          "flow_domain_secondary": "physical_measure_weighted",
-          "point_or_vertex_physical_weights": "deterministic_mass_lumped_dual_measure_from_the_exact_public_mesh",
+          "flow_domain_primary": "equal_valid_native_entity",
+          "flow_domain_secondary": "not_part_of_closed_candidate",
+          "point_or_vertex_physical_weights": "surface_only_deterministic_mass_lumped_dual_area_from_the_exact_public_mesh",
           "vector_rule": "one_entity_weight_multiplies_the_squared_vector_magnitude",
           "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
         },
+        "field_metric_value_bases": {
+          "relative_l1_l2": {
+            "surface_pressure": "(P-p_inf)/q_inf",
+            "surface_wall_shear": "tau_wall/q_inf",
+            "volume_pressure": "(P-p_inf)/q_inf",
+            "volume_velocity": "U/|U_inf|",
+            "aggregation": "form each complete-case ratio from additive sufficient statistics, then macro-average all cases in the selected split equally"
+          },
+          "dimensional_mae_rmse": {
+            "surface_pressure": "inverse-scale each case by q_inf into Pa",
+            "surface_wall_shear": "inverse-scale each case by q_inf into Pa",
+            "volume_pressure": "inverse-scale each case by q_inf into Pa",
+            "volume_velocity": "inverse-scale each case by |U_inf| into m/s",
+            "aggregation": "derive each dimensional complete-case value before macro-averaging all cases in the selected split equally"
+          },
+          "vector_reduction": {
+            "relative_l1": "component-flattened absolute numerator and denominator",
+            "relative_l2": "one nodal weight multiplies the squared three-component vector error and truth magnitude",
+            "mae_rmse": "current native-evaluator per-component convention over 3*N weighted scalar components"
+          }
+        },
+        "candidate_migration_notes": [
+          "The closed schema-v3 candidate removes the legacy diagnostic volume_velocity_physical_rel_l2 and volume_pressure_physical_rel_l2 requirements. The native Table-5 evaluator has never published or consumed volume dual-volume support; its frozen primary contract is equal valid native nodes. This candidate migration is not an activated public scoring change because submissions remain closed and unapproved.",
+          "Relative field metrics are bound to the frozen Table-5 nondimensional targets, while the existing paper-compatible MAE/RMSE metrics remain dimensional. A candidate aggregate must emit and audit both bases from the same per-case inference stream.",
+          "The closed candidate replaces the stale prototype 16-station velocity panel with the five frozen Table-5 stations B.2, B.3, C.1, C.2, and C.3. Velocity profiles use physical polyline arc length and within-station centering; Cp retains exact rows A-J with physical connected-cut arc length and independently centered connected graphs. This is not an activated public profile-contract change while submissions remain closed."
+        ],
         "owner_decisions_required": [
-          "pin_exact_public_release_files_revisions_and_hashes",
-          "confirm_array_names_entity_associations_masks_and_order",
-          "publish_authoritative_physical_weights_and_stable_entity_ids",
-          "approve_public_ground_truth_case_set_and_split_bindings",
-          "approve_loader_evaluator_and_immutable_scoring_support_manifest"
+          "pin_exact_public_release_archive_and_extracted_member_content_sha256_for_all_1355_unique_evaluation_cases",
+          "confirm_public_source_array_names_associations_retained_volume_mask_and_raw_point_order",
+          "publish_and_approve_authoritative_surface_dual_area_support",
+          "approve_all_exact_split_bindings_and_candidate_scoring_support_release",
+          "exercise_and_audit_same_stream_nondimensional_relative_and_dimensional_absolute_field_aggregation",
+          "freeze_lossless_cp_connected_graph_and_five_station_velocity_profile_serialization_and_public_truth_release",
+          "owner_approve_the_frozen_dataset_evaluator_git_revision_without_public_activation",
+          "approve_the_zero_weight_regional_contract_and_complete_split_aggregator"
         ]
       },
       "overall_score_composite": {
@@ -2307,6 +2784,28 @@
           }
         ],
         "tolerance": 1e-06
+      },
+      "revision_count": 23,
+      "profile_definition": {
+        "status": "candidate_owner_review_required",
+        "contract_id": "hiliftaeroml-native-profile-predictions-v1-candidate",
+        "file": "native-profile-format-v1.json",
+        "format": "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate",
+        "sha256": "39a1e79edf951b3e4f5d1b5fa456cbd1fad524e93dac1bdca58534e01647ae25",
+        "profile_ground_truth": {
+          "status": "not_published",
+          "release_id": null,
+          "manifest_sha256": null
+        },
+        "candidate_dry_run_profile_ground_truth": {
+          "status": "complete_candidate_not_published",
+          "usage": "maintainer_local_candidate_dry_run_only",
+          "release_id": "hiliftaeroml-native-profile-truth-v1-candidate",
+          "manifest_sha256": "3e20b857e12055e16f1d248d125b8df62a3669c604411dc67322fe98d9ab4477",
+          "binding_file": "candidate-profile-truth-binding.json",
+          "binding_sha256": "11deb05bb29d98149c72712aef571b9be4de543cd69d5d6a1ef68b5bd53f7b93"
+        },
+        "activation_rule": "Publish and owner-approve one complete profile ground-truth release bound to this exact contract SHA-256 before accepting native profile chunks."
       }
     },
     {
@@ -2656,7 +3155,8 @@
           }
         ],
         "tolerance": 1e-06
-      }
+      },
+      "revision_count": 10
     },
     {
       "name": "VKI-LS59",
@@ -3017,7 +3517,8 @@
           }
         ],
         "tolerance": 1e-06
-      }
+      },
+      "revision_count": 8
     },
     {
       "name": "Rotor37",
@@ -3378,7 +3879,8 @@
           }
         ],
         "tolerance": 1e-06
-      }
+      },
+      "revision_count": 8
     },
     {
       "name": "BlendedNet",
@@ -3671,7 +4173,8 @@
           }
         ],
         "tolerance": 1e-06
-      }
+      },
+      "revision_count": 1
     }
   ],
   "metric_definitions": [
@@ -5920,6 +6423,342 @@
       "comparison_group": "relative-l1",
       "comparison_group_label": "Relative L1",
       "column_group_label": "Relative"
+    },
+    {
+      "id": "drivaerml_surface_pressure_area_mae",
+      "label": "DrivAerML surface pressure area mae",
+      "description": "DrivAerML candidate contract metric using surface_face_area. Lower is better.",
+      "group": "absolute-mae",
+      "group_label": "Absolute MAE",
+      "column_group": "absolute",
+      "unit": "m^2/s^2",
+      "digits": 3,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2}{\\sum_i w_i}",
+      "comparison_group": "absolute-mae",
+      "comparison_group_label": "Absolute MAE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "drivaerml_surface_pressure_area_rmse",
+      "label": "DrivAerML surface pressure area rmse",
+      "description": "DrivAerML candidate contract metric using surface_face_area. Lower is better.",
+      "group": "absolute-rmse",
+      "group_label": "Absolute RMSE",
+      "column_group": "absolute",
+      "unit": "m^2/s^2",
+      "digits": 3,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}{\\sum_i w_i}}",
+      "comparison_group": "absolute-rmse",
+      "comparison_group_label": "Absolute RMSE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "drivaerml_surface_pressure_equal_entity_mae",
+      "label": "DrivAerML surface pressure equal entity mae",
+      "description": "DrivAerML candidate contract metric using surface_entities_equal. Lower is better.",
+      "group": "absolute-mae",
+      "group_label": "Absolute MAE",
+      "column_group": "absolute",
+      "unit": "m^2/s^2",
+      "digits": 3,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2}{\\sum_i w_i}",
+      "comparison_group": "absolute-mae",
+      "comparison_group_label": "Absolute MAE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "drivaerml_surface_pressure_equal_entity_rmse",
+      "label": "DrivAerML surface pressure equal entity rmse",
+      "description": "DrivAerML candidate contract metric using surface_entities_equal. Lower is better.",
+      "group": "absolute-rmse",
+      "group_label": "Absolute RMSE",
+      "column_group": "absolute",
+      "unit": "m^2/s^2",
+      "digits": 3,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}{\\sum_i w_i}}",
+      "comparison_group": "absolute-rmse",
+      "comparison_group_label": "Absolute RMSE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "drivaerml_surface_wall_shear_area_mae",
+      "label": "DrivAerML surface wall shear area mae",
+      "description": "DrivAerML candidate contract metric using surface_face_area. Lower is better.",
+      "group": "absolute-mae",
+      "group_label": "Absolute MAE",
+      "column_group": "absolute",
+      "unit": "m^2/s^2",
+      "digits": 3,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2}{\\sum_i w_i}",
+      "comparison_group": "absolute-mae",
+      "comparison_group_label": "Absolute MAE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "drivaerml_surface_wall_shear_area_rmse",
+      "label": "DrivAerML surface wall shear area rmse",
+      "description": "DrivAerML candidate contract metric using surface_face_area. Lower is better.",
+      "group": "absolute-rmse",
+      "group_label": "Absolute RMSE",
+      "column_group": "absolute",
+      "unit": "m^2/s^2",
+      "digits": 3,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}{\\sum_i w_i}}",
+      "comparison_group": "absolute-rmse",
+      "comparison_group_label": "Absolute RMSE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "drivaerml_surface_wall_shear_equal_entity_mae",
+      "label": "DrivAerML surface wall shear equal entity mae",
+      "description": "DrivAerML candidate contract metric using surface_entities_equal. Lower is better.",
+      "group": "absolute-mae",
+      "group_label": "Absolute MAE",
+      "column_group": "absolute",
+      "unit": "m^2/s^2",
+      "digits": 3,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2}{\\sum_i w_i}",
+      "comparison_group": "absolute-mae",
+      "comparison_group_label": "Absolute MAE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "drivaerml_surface_wall_shear_equal_entity_rmse",
+      "label": "DrivAerML surface wall shear equal entity rmse",
+      "description": "DrivAerML candidate contract metric using surface_entities_equal. Lower is better.",
+      "group": "absolute-rmse",
+      "group_label": "Absolute RMSE",
+      "column_group": "absolute",
+      "unit": "m^2/s^2",
+      "digits": 3,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}{\\sum_i w_i}}",
+      "comparison_group": "absolute-rmse",
+      "comparison_group_label": "Absolute RMSE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "drivaerml_volume_velocity_equal_entity_mae",
+      "label": "DrivAerML volume velocity equal entity mae",
+      "description": "DrivAerML candidate contract metric using volume_cells_equal. Lower is better.",
+      "group": "absolute-mae",
+      "group_label": "Absolute MAE",
+      "column_group": "absolute",
+      "unit": "m/s",
+      "digits": 3,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2}{\\sum_i w_i}",
+      "comparison_group": "absolute-mae",
+      "comparison_group_label": "Absolute MAE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "drivaerml_volume_velocity_equal_entity_rmse",
+      "label": "DrivAerML volume velocity equal entity rmse",
+      "description": "DrivAerML candidate contract metric using volume_cells_equal. Lower is better.",
+      "group": "absolute-rmse",
+      "group_label": "Absolute RMSE",
+      "column_group": "absolute",
+      "unit": "m/s",
+      "digits": 3,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}{\\sum_i w_i}}",
+      "comparison_group": "absolute-rmse",
+      "comparison_group_label": "Absolute RMSE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "drivaerml_volume_pressure_equal_entity_mae",
+      "label": "DrivAerML volume pressure equal entity mae",
+      "description": "DrivAerML candidate contract metric using volume_cells_equal. Lower is better.",
+      "group": "absolute-mae",
+      "group_label": "Absolute MAE",
+      "column_group": "absolute",
+      "unit": "m^2/s^2",
+      "digits": 3,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2}{\\sum_i w_i}",
+      "comparison_group": "absolute-mae",
+      "comparison_group_label": "Absolute MAE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "drivaerml_volume_pressure_equal_entity_rmse",
+      "label": "DrivAerML volume pressure equal entity rmse",
+      "description": "DrivAerML candidate contract metric using volume_cells_equal. Lower is better.",
+      "group": "absolute-rmse",
+      "group_label": "Absolute RMSE",
+      "column_group": "absolute",
+      "unit": "m^2/s^2",
+      "digits": 3,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}{\\sum_i w_i}}",
+      "comparison_group": "absolute-rmse",
+      "comparison_group_label": "Absolute RMSE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "field_integrated_cd_rmse",
+      "label": "Field-integrated C_D RMSE",
+      "description": "DrivAerML candidate contract metric using cases_equal. Lower is better.",
+      "group": "force-errors",
+      "group_label": "Integral force / moment errors",
+      "column_group": "integral",
+      "unit": "",
+      "digits": 5,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{N}\\sum_c(\\hat{y}_c-y_c)^2}",
+      "comparison_group": "force-errors",
+      "comparison_group_label": "Integral force / moment errors",
+      "column_group_label": "Integral forces / moments"
+    },
+    {
+      "id": "field_integrated_cl_rmse",
+      "label": "Field-integrated C_L RMSE",
+      "description": "DrivAerML candidate contract metric using cases_equal. Lower is better.",
+      "group": "force-errors",
+      "group_label": "Integral force / moment errors",
+      "column_group": "integral",
+      "unit": "",
+      "digits": 5,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{N}\\sum_c(\\hat{y}_c-y_c)^2}",
+      "comparison_group": "force-errors",
+      "comparison_group_label": "Integral force / moment errors",
+      "column_group_label": "Integral forces / moments"
+    },
+    {
+      "id": "field_integrated_cmpitch_rmse",
+      "label": "Field-integrated C_M,pitch RMSE",
+      "description": "DrivAerML candidate contract metric using cases_equal. Lower is better.",
+      "group": "force-errors",
+      "group_label": "Integral force / moment errors",
+      "column_group": "integral",
+      "unit": "",
+      "digits": 5,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{N}\\sum_c(\\hat{y}_c-y_c)^2}",
+      "comparison_group": "force-errors",
+      "comparison_group_label": "Integral force / moment errors",
+      "column_group_label": "Integral forces / moments"
+    },
+    {
+      "id": "field_integrated_clf_rmse",
+      "label": "Field-integrated C_Lf RMSE",
+      "description": "DrivAerML candidate contract metric using cases_equal. Lower is better.",
+      "group": "force-errors",
+      "group_label": "Integral force / moment errors",
+      "column_group": "integral",
+      "unit": "",
+      "digits": 5,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{N}\\sum_c(\\hat{y}_c-y_c)^2}",
+      "comparison_group": "force-errors",
+      "comparison_group_label": "Integral force / moment errors",
+      "column_group_label": "Integral forces / moments"
+    },
+    {
+      "id": "field_integrated_clr_rmse",
+      "label": "Field-integrated C_Lr RMSE",
+      "description": "DrivAerML candidate contract metric using cases_equal. Lower is better.",
+      "group": "force-errors",
+      "group_label": "Integral force / moment errors",
+      "column_group": "integral",
+      "unit": "",
+      "digits": 5,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{N}\\sum_c(\\hat{y}_c-y_c)^2}",
+      "comparison_group": "force-errors",
+      "comparison_group_label": "Integral force / moment errors",
+      "column_group_label": "Integral forces / moments"
+    },
+    {
+      "id": "field_integrated_lift_closure_max_abs",
+      "label": "Lift closure max. error",
+      "description": "DrivAerML candidate contract metric using maximum_case_residual. Lower is better.",
+      "group": "force-errors",
+      "group_label": "Integral force / moment errors",
+      "column_group": "integral",
+      "unit": "",
+      "digits": 5,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\max_c\\lvert\\hat{C}_{L,c}-(\\hat{C}_{Lf,c}+\\hat{C}_{Lr,c})\\rvert",
+      "comparison_group": "force-errors",
+      "comparison_group_label": "Integral force / moment errors",
+      "column_group_label": "Integral forces / moments"
+    },
+    {
+      "id": "velocity_profile_uinf_rmse",
+      "label": "AutoCFD5 velocity-profile RMSE",
+      "description": "DrivAerML candidate contract metric using trapezoidal_arc_length_within_line. Lower is better.",
+      "group": "profile-errors",
+      "group_label": "Profile errors",
+      "column_group": "diagnostics",
+      "unit": "",
+      "digits": 5,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{N}\\sum_c\\frac{1}{16}\\sum_l\\sqrt{\\frac{\\int_{A_{cl}}(\\hat{U}/U_\\infty-U/U_\\infty)^2\\,ds}{\\int_{A_{cl}} ds}}",
+      "comparison_group": "profile-errors",
+      "comparison_group_label": "Profile errors",
+      "column_group_label": "Diagnostics"
+    },
+    {
+      "id": "velocity_profile_experimental_subset_uinf_rmse",
+      "label": "Experimental-line velocity RMSE",
+      "description": "DrivAerML candidate contract metric using trapezoidal_arc_length_within_line. Lower is better.",
+      "group": "profile-errors",
+      "group_label": "Profile errors",
+      "column_group": "diagnostics",
+      "unit": "",
+      "digits": 5,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{N}\\sum_c\\frac{1}{11}\\sum_{l\\in E}\\sqrt{\\frac{\\int_{A_{cl}}(\\hat{U}/U_\\infty-U/U_\\infty)^2\\,ds}{\\int_{A_{cl}} ds}}",
+      "comparison_group": "profile-errors",
+      "comparison_group_label": "Profile errors",
+      "column_group_label": "Diagnostics"
+    },
+    {
+      "id": "cp_cut_rmse",
+      "label": "Continuous native-surface Cp-cut RMSE",
+      "description": "DrivAerML candidate contract metric using trapezoidal_arc_length_within_cut. Lower is better.",
+      "group": "profile-errors",
+      "group_label": "Profile errors",
+      "column_group": "diagnostics",
+      "unit": "",
+      "digits": 5,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{N}\\sum_c\\frac{1}{4}\\sum_q\\sqrt{\\frac{\\sum_{s\\in\\Gamma_{cq}}\\Delta s_s(\\hat{C}_{p,s}-C_{p,s})^2}{\\sum_{s\\in\\Gamma_{cq}}\\Delta s_s}}",
+      "comparison_group": "profile-errors",
+      "comparison_group_label": "Profile errors",
+      "column_group_label": "Diagnostics"
     }
   ],
   "submission_schema_version": "1.0"

@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/hiliftaeroml/hf-archive-metadata-snapshot-v1.schema.json",
+  "title": "Immutable HiLiftAeroML Hugging Face archive metadata snapshot v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "schema_version",
+    "repository",
+    "archive_count",
+    "archive_count_by_domain",
+    "archive_total_size_bytes_by_domain",
+    "archives"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://fluidsbench.org/schemas/hiliftaeroml/hf-archive-metadata-snapshot-v1.schema.json"
+    },
+    "schema_id": {"const": "hiliftaeroml-hf-archive-metadata-snapshot-v1"},
+    "schema_version": {"const": "1.0"},
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "revision", "revision_url"],
+      "properties": {
+        "id": {"const": "nvidia/HiLiftAeroML"},
+        "type": {"const": "dataset"},
+        "revision": {"const": "1c266d3869bc2968ff97d2107c9c3919be03ed32"},
+        "revision_url": {
+          "const": "https://huggingface.co/datasets/nvidia/HiLiftAeroML/tree/1c266d3869bc2968ff97d2107c9c3919be03ed32"
+        }
+      }
+    },
+    "archive_count": {"const": 3600},
+    "archive_count_by_domain": {
+      "const": {"surface": 1800, "volume": 1800}
+    },
+    "archive_total_size_bytes_by_domain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface", "volume"],
+      "properties": {
+        "surface": {"type": "integer", "minimum": 1},
+        "volume": {"type": "integer", "minimum": 1}
+      }
+    },
+    "archives": {
+      "type": "array",
+      "minItems": 3600,
+      "maxItems": 3600,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id",
+          "geometry_id",
+          "aoa_degrees",
+          "domain",
+          "repository_path",
+          "size_bytes",
+          "lfs_sha256",
+          "git_blob_oid"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "pattern": "^geo_LHC[0-9]{3}_AoA_(4|6|8|10|12|14|16|18|20|22)$"
+          },
+          "geometry_id": {"type": "integer", "minimum": 1, "maximum": 180},
+          "aoa_degrees": {"enum": [4, 6, 8, 10, 12, 14, 16, 18, 20, 22]},
+          "domain": {"enum": ["surface", "volume"]},
+          "repository_path": {"type": "string", "pattern": "\\.vtu\\.tgz$"},
+          "size_bytes": {"type": "integer", "minimum": 1},
+          "lfs_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "git_blob_oid": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "xet_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    }
+  }
+}

@@ -2,6 +2,12 @@
   "$schema": "https://fluidsbench.org/schemas/v3/submission.schema.json",
   "schema_version": "3.0",
   "submission_id": "synthetic-open-model-v1",
+  "result_revision": {
+    "series_id": "synthetic-open-model",
+    "version": 1,
+    "supersedes": null,
+    "change_summary": "Initial published result."
+  },
   "model": "Synthetic Open Model",
   "model_type": "Coordinate network",
   "model_types": [
@@ -19,6 +25,125 @@
   "case_set_id": "standard",
   "split_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "parameter_count_millions": 0.001,
+  "methodology": {
+    "format": "fluidsbench-method-v1",
+    "record_kind": "format_example",
+    "record_note": "Schema-valid fictional method metadata used only to demonstrate the FluidsBench record.",
+    "architecture": {
+      "description": "A fictional coordinate network with one scalar output head.",
+      "total_parameter_count": 1000,
+      "parameter_count_basis": "exact",
+      "submitter_trainable_parameter_count": 1000,
+      "components": [
+        {
+          "id": "coordinate-network",
+          "family": "Coordinate MLP",
+          "role": "Predict the synthetic scalar field.",
+          "description": "A single fictional coordinate-conditioned predictor used as a format fixture.",
+          "parameter_count": 1000
+        }
+      ],
+      "key_hyperparameters": [
+        {
+          "id": "hidden-width",
+          "component_ids": ["coordinate-network"],
+          "name": "hidden_width",
+          "value": 16,
+          "description": "Illustrative hidden width for the fictional network."
+        }
+      ],
+      "input_features": [
+        {
+          "id": "coordinates",
+          "component_ids": ["coordinate-network"],
+          "name": "coordinates",
+          "domain": "mesh",
+          "component_count": 2,
+          "description": "Two-dimensional coordinates from the synthetic support."
+        }
+      ],
+      "predicted_fields": [
+        {
+          "field_id": "synthetic-support.pressure",
+          "domain": "domain",
+          "component_count": 1,
+          "component_ids": ["coordinate-network"],
+          "production": "direct_model_output",
+          "description": "Direct scalar prediction for the synthetic support quantity."
+        }
+      ]
+    },
+    "data_handling": {
+      "normalization": "Fictional training-set mean and standard deviation.",
+      "preprocessing": "Read the canonical coordinates without remeshing.",
+      "sampling": "Use every synthetic support entity during training and inference."
+    },
+    "training": {
+      "stages": [
+        {
+          "id": "fixture-training",
+          "status": "performed_by_submitter",
+          "component_ids": ["coordinate-network"],
+          "description": "Fictional end-to-end training stage for the format fixture.",
+          "procedure": {
+            "kind": "gradient_based",
+            "loss": {
+              "description": "Mean-squared error on the synthetic scalar field.",
+              "weighting": "All training entities weighted equally."
+            },
+            "optimizers": [
+              {
+                "name": "Adam",
+                "learning_rate": 0.001,
+                "schedule": "Constant for the fictional run."
+              }
+            ],
+            "batch": {
+              "value": 2,
+              "unit": "cases",
+              "gradient_accumulation_steps": 1
+            },
+            "duration": {
+              "epochs": 10,
+              "optimizer_steps": 10
+            }
+          },
+          "run_count": 1,
+          "stochastic": true,
+          "random_seeds": [42],
+          "compute": {
+            "hardware": "Fictional single CPU",
+            "max_concurrent_device_count": 1,
+            "campaign_wall_time_hours": 0.01,
+            "aggregate_device_hours": 0.01,
+            "measurement_notes": "Illustrative timing used only by the schema fixture."
+          }
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "coordinate-network-checkpoint",
+        "component_ids": ["coordinate-network"],
+        "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Fictional raw checkpoint bytes for the format fixture.",
+        "role": "Loaded coordinate-network weights.",
+        "selection_rule": "Fictional final training epoch selected before evaluation."
+      }
+    ],
+    "inference_compute": {
+      "status": "measured",
+      "hardware": "Fictional single CPU",
+      "max_concurrent_device_count": 1,
+      "case_count": 2,
+      "campaign_wall_time_seconds": 0.02,
+      "aggregate_device_time_seconds": 0.02,
+      "includes_preprocessing": true,
+      "includes_mapping": true,
+      "measurement_notes": "Illustrative end-to-end timing for both synthetic cases."
+    }
+  },
   "submitter_name": "Example Researcher",
   "institution": "Example University",
   "paper_url": "",
