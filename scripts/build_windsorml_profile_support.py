@@ -19,9 +19,24 @@ station already lands on the same physical location everywhere. Relative eta
 values are anchored so each relative station reduces exactly to its constant
 counterpart on run_0.
 
-Resolution is nearest-native-entity inside a local bounding box, indexed with a
-KD-tree; a VTK cell locator over ~291M cells is far more expensive than the few
-hundred points actually needed.
+Resolution semantics match the sibling datasets:
+
+* **Volume stations use the containing cell**, as DrivAerML and AhmedML do.
+  Nearest-cell-*centre* is not equivalent -- in a graded mesh the nearest centre
+  can belong to a different cell than the one the point lies in, which injects
+  error beyond the finite-volume discretisation. Candidates come from a KD-tree
+  over cell centres inside the station box and are then tested exactly with
+  ``vtkGenericCell.EvaluatePosition``; ties take the smallest raw cell ID and a
+  point with no containing cell falls back to the nearest centre and is counted.
+  A full ``vtkStaticCellLocator`` over 291M cells is avoided because only a few
+  hundred points are ever queried. WindsorML's volume is 100% hexahedra, so
+  DrivAerML's ``vtkPolyhedron::IsInside`` workaround is not needed.
+
+* **Surface stations select native points** by a geometric rule rather than
+  sampling an arbitrary location, which is DrivAerML's cp semantics: the profile
+  *is* native entities, so there is nothing to snap or interpolate. The selected
+  point's actual position and its offset from the nominal target are recorded so
+  the residual is auditable, as AhmedML does.
 """
 
 from __future__ import annotations
@@ -61,7 +76,7 @@ def read_surface(path: Path) -> tuple[np.ndarray, np.ndarray]:
     return points, cp
 
 
-def read_volume(path: Path) -> tuple[np.ndarray, np.ndarray]:
+def read_volume(path: Path):
     reader = vtk.vtkXMLUnstructuredGridReader()
     reader.SetFileName(str(path))
     reader.UpdateInformation()
@@ -77,23 +92,66 @@ def read_volume(path: Path) -> tuple[np.ndarray, np.ndarray]:
     centres = vtk_to_numpy(centres_filter.GetOutput().GetPoints().GetData()).astype(
         np.float32
     )
-    return centres, ux
+    return grid, centres, ux
 
 
-def nearest_in_box(
-    positions: np.ndarray, targets: np.ndarray, *, margin: float
-) -> tuple[np.ndarray, np.ndarray]:
+def containing_cell(
+    grid: "vtk.vtkUnstructuredGrid",
+    centres: np.ndarray,
+    targets: np.ndarray,
+    *,
+    margin: float,
+    candidates: int = 24,
+) -> tuple[np.ndarray, np.ndarray, int]:
+    """Resolve each target to the native cell that contains it.
+
+    Returns (cell ids, residual distance to the chosen cell centre, fallbacks).
+    """
+
     lo = targets.min(axis=0) - margin
     hi = targets.max(axis=0) + margin
-    inside = np.all((positions >= lo) & (positions <= hi), axis=1)
+    inside = np.all((centres >= lo) & (centres <= hi), axis=1)
     candidate_ids = np.nonzero(inside)[0]
     if candidate_ids.size == 0:
-        raise RuntimeError("no native entities near the station")
+        raise RuntimeError("no native cells near the station")
+
     from scipy.spatial import cKDTree
 
-    tree = cKDTree(positions[candidate_ids].astype(np.float64))
-    distances, local = tree.query(targets, k=1, workers=-1)
-    return candidate_ids[local], distances
+    tree = cKDTree(centres[candidate_ids].astype(np.float64))
+    k = int(min(candidates, candidate_ids.size))
+    distances, local = tree.query(targets, k=k, workers=-1)
+    if k == 1:
+        distances = distances[:, None]
+        local = local[:, None]
+
+    generic = vtk.vtkGenericCell()
+    pcoords = [0.0, 0.0, 0.0]
+    weights = [0.0] * 8
+    closest = [0.0, 0.0, 0.0]
+
+    ids = np.empty(targets.shape[0], dtype=np.int64)
+    residual = np.empty(targets.shape[0], dtype=np.float64)
+    fallbacks = 0
+    for index, target in enumerate(targets):
+        chosen = -1
+        point = [float(target[0]), float(target[1]), float(target[2])]
+        for slot in range(k):
+            cell_id = int(candidate_ids[local[index, slot]])
+            grid.GetCell(cell_id, generic)
+            dist2 = vtk.reference(0.0)
+            sub_id = vtk.reference(0)
+            status = generic.EvaluatePosition(point, closest, sub_id, pcoords, dist2, weights)
+            if status == 1:
+                # Smallest raw ID among containing cells, matching DrivAerML.
+                chosen = cell_id if chosen < 0 else min(chosen, cell_id)
+        if chosen < 0:
+            chosen = int(candidate_ids[local[index, 0]])
+            fallbacks += 1
+        ids[index] = chosen
+        residual[index] = float(
+            np.linalg.norm(centres[chosen].astype(np.float64) - target)
+        )
+    return ids, residual, fallbacks
 
 
 def extreme_along_axis(
@@ -249,7 +307,7 @@ def build_case(run: int, sample_count: int) -> dict:
 
     # --- velocity -----------------------------------------------------------
     log(f"run_{run}: reading volume velocityxavg")
-    centres, ux = read_volume(DATA / f"run_{run}" / f"volume_{run}.vtu")
+    grid, centres, ux = read_volume(DATA / f"run_{run}" / f"volume_{run}.vtu")
     log(f"  {len(ux):,} cells")
 
     constant = {s["id"]: s for s in definition["velocity_stations"]["constant"]}
@@ -276,13 +334,15 @@ def build_case(run: int, sample_count: int) -> dict:
                 ]
             )
             coordinate = z_values
-        ids, distances = nearest_in_box(centres, targets, margin=0.02)
+        ids, residual, fallbacks = containing_cell(grid, centres, targets, margin=0.02)
         families["windsorml_velocity_relative_v1"][station["id"]] = {
             "native_cell_ids": ids.tolist(),
             "coordinate": coordinate.tolist(),
             "truth_ux_over_uinf": (ux[ids].astype(np.float64) / u_ref).tolist(),
-            "max_snap_distance_m": float(distances.max()),
+            "max_centre_offset_m": float(residual.max()),
+            "containment_fallbacks": fallbacks,
         }
+        diagnostics[f"{station['id']}_fallbacks"] = fallbacks
 
     for station in definition["velocity_stations"]["constant"]:
         if station["varying"] == "y":
@@ -305,16 +365,18 @@ def build_case(run: int, sample_count: int) -> dict:
                 ]
             )
             coordinate = z_values
-        ids, distances = nearest_in_box(centres, targets, margin=0.02)
+        ids, residual, fallbacks = containing_cell(grid, centres, targets, margin=0.02)
         families["windsorml_velocity_constant_v1"][station["id"]] = {
             "native_cell_ids": ids.tolist(),
             "coordinate": coordinate.tolist(),
             "truth_ux_over_uinf": (ux[ids].astype(np.float64) / u_ref).tolist(),
-            "max_snap_distance_m": float(distances.max()),
+            "max_centre_offset_m": float(residual.max()),
+            "containment_fallbacks": fallbacks,
         }
+        diagnostics[f"{station['id']}_fallbacks"] = fallbacks
 
     return {
-        "schema": "windsorml-profile-support-v2",
+        "schema": "windsorml-profile-support-v3",
         "case_id": f"run_{run}",
         "run_id": run,
         "sample_count": sample_count,

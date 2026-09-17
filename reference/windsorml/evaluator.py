@@ -546,7 +546,7 @@ VELOCITY_FAMILIES = (
     "windsorml_velocity_constant_v1",
     "windsorml_velocity_relative_v1",
 )
-PROFILE_SUPPORT_SCHEMA = "windsorml-profile-support-v2"
+PROFILE_SUPPORT_SCHEMA = "windsorml-profile-support-v3"
 
 
 def _load_profile_support(

@@ -52,7 +52,7 @@ def profile_block(index: int, profile_error: float) -> dict:
             }
         ]
     return {
-        "support_schema": "windsorml-profile-support-v2",
+        "support_schema": "windsorml-profile-support-v3",
         "sample_count": 8,
         "body_height_m": 0.34342,
         "participant_profile_payload_accepted": False,

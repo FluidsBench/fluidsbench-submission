@@ -44,5 +44,5 @@ srun --container-image="$IMAGE" \
      --container-workdir="$REPO" \
      python3 "$REPO/scripts/build_windsorml_profile_support.py" \
         --runs "$RUNS" \
-        --out-dir "$WORK/profile_support_v2" \
+        --out-dir "$WORK/profile_support_v3" \
         --skip-existing

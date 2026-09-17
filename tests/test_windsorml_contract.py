@@ -313,6 +313,23 @@ class WindsorMLProfileDefinitionTests(unittest.TestCase):
                 continue
             self.assertLess(0.194, self.MIN_BODY_HEIGHT, station["id"])
 
+    def test_sampling_semantics_match_the_sibling_datasets(self) -> None:
+        """Volume uses containing cell; surface selects native points."""
+
+        semantics = self.definition["sampling_semantics"]
+        self.assertEqual(semantics["volume"]["rule"], "containing_cell")
+        self.assertEqual(semantics["volume"]["order"], "zeroth_order_piecewise_constant")
+        self.assertEqual(semantics["surface"]["rule"], "native_point_selection")
+        self.assertEqual(semantics["surface"]["order"], "exact_native_values")
+
+    def test_quantisation_floor_is_documented_as_inherent(self) -> None:
+        """It is shared with DrivAerML and AhmedML, not a WindsorML defect."""
+
+        note = self.definition["sampling"]["resolution_evidence"]["residual_noise_note"]
+        self.assertIn("DrivAerML", note)
+        self.assertIn("AhmedML", note)
+        self.assertIn("invent information", note)
+
     def test_sample_count_is_frozen_with_sweep_evidence(self) -> None:
         sampling = self.definition["sampling"]
         self.assertEqual(sampling["resolution_status"], "frozen_after_stratified_sweep")

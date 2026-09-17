@@ -415,7 +415,7 @@ class WindsorMLEvaluatorTests(unittest.TestCase):
             "truth_ux_over_uinf": (ux[cell_ids] / u_ref).tolist(),
         }
         return {
-            "schema": "windsorml-profile-support-v2",
+            "schema": "windsorml-profile-support-v3",
             "case_id": case_id,
             "run_id": 0,
             "sample_count": 3,
