@@ -1,0 +1,125 @@
+{
+  "_comment": "Copy this file outside the repo and replace every __REPLACE_WITH_...__ / __UNRESOLVED_...__ token with a real value. scripts/assemble_airfrans_schema_v3_candidate.py --list-blockers reports every remaining token as a blocker. Fields already filled in below are derived from pinned repo facts (splits, methodology-contract.json, the Layer 1-3 outputs), not placeholders.",
+  "split_id": "full",
+  "case_set_id": "standard",
+  "submission_id": "__REPLACE_WITH_SUBMISSION_ID__",
+  "result_revision": {
+    "series_id": "__REPLACE_WITH_RESULT_SERIES_ID__",
+    "version": 1,
+    "supersedes": null,
+    "change_summary": "__REPLACE_WITH_CHANGE_SUMMARY__"
+  },
+  "participant": {
+    "model": "__REPLACE_WITH_MODEL_DISPLAY_NAME__",
+    "model_type": "__REPLACE_WITH_MODEL_TYPE__",
+    "model_types": ["__REPLACE_WITH_MODEL_TYPE__"],
+    "training_regime": "__REPLACE_WITH_TRAINING_REGIME__",
+    "target_data_used": "__REPLACE_WITH_TARGET_DATA_USED__",
+    "external_pretraining": "__REPLACE_WITH_BOOLEAN__",
+    "pretraining_data": [],
+    "methodology": {
+      "record_kind": "submitter_reported",
+      "record_note": "__REPLACE_WITH_RECORD_NOTE__",
+      "architecture": {
+        "description": "__REPLACE_WITH_ARCHITECTURE_DESCRIPTION__",
+        "total_parameter_count": "__REPLACE_WITH_INTEGER__",
+        "parameter_count_basis": "__REPLACE_WITH_exact_OR_rounded_from_reported_millions__",
+        "submitter_trainable_parameter_count": "__REPLACE_WITH_INTEGER__",
+        "components": "__REPLACE_WITH_ARRAY_OF_[{id,family,role,description,parameter_count}]__",
+        "key_hyperparameters": "__REPLACE_WITH_ARRAY_OF_[{id,component_ids,name,value,description}]__",
+        "input_features": "__REPLACE_WITH_ARRAY_OF_[{id,component_ids,name,domain,component_count,description}]__",
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.velocity",
+            "domain": "domain",
+            "component_count": 2,
+            "component_ids": "__REPLACE_WITH_COMPONENT_IDS__",
+            "production": "direct_model_output",
+            "description": "Cartesian velocity (Ux, Uy) on every native 2D flow-domain point."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.pressure",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": "__REPLACE_WITH_COMPONENT_IDS__",
+            "production": "direct_model_output",
+            "description": "Kinematic pressure on every native 2D flow-domain point."
+          },
+          {
+            "field_id": "airfoil-curve-native.pressure",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": "__REPLACE_WITH_COMPONENT_IDS__",
+            "production": "derived_from_model_output",
+            "description": "Airfoil-curve pressure, selected from the domain pressure prediction at the native surface points and reorganized onto the airfoil's native point order (methodology-contract.json explicitly allows this: 'may be derived by selecting the corresponding output')."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "__REPLACE_WITH_NORMALIZATION_DESCRIPTION__",
+        "preprocessing": "__REPLACE_WITH_PREPROCESSING_DESCRIPTION__",
+        "sampling": "__REPLACE_WITH_SAMPLING_DESCRIPTION__"
+      },
+      "training": {
+        "stages": "__REPLACE_WITH_ARRAY_OF_TRAINING_STAGES__"
+      },
+      "checkpoints": "__REPLACE_WITH_ARRAY_OF_[{id,component_ids,sha256,digest_scope:'raw_loaded_file',bytes_description,role,selection_rule}]__",
+      "inference_compute": {
+        "status": "measured",
+        "hardware": "__REPLACE_WITH_HARDWARE_DESCRIPTION__",
+        "max_concurrent_device_count": "__REPLACE_WITH_INTEGER__",
+        "case_count": 200,
+        "campaign_wall_time_seconds": "__REPLACE_WITH_NUMBER__",
+        "aggregate_device_time_seconds": "__REPLACE_WITH_NUMBER__",
+        "includes_preprocessing": "__REPLACE_WITH_BOOLEAN__",
+        "includes_mapping": "__REPLACE_WITH_BOOLEAN__",
+        "measurement_notes": "__REPLACE_WITH_MEASUREMENT_NOTES__"
+      }
+    },
+    "submitter_name": "__REPLACE_WITH_SUBMITTER_NAME__",
+    "institution": "__REPLACE_WITH_INSTITUTION__",
+    "paper_url": "__REPLACE_WITH_PAPER_URL_OR_EMPTY_STRING__",
+    "code_url": "__REPLACE_WITH_CODE_URL_OR_UNRESOLVED_TOKEN__"
+  },
+  "reproducibility": {
+    "contract_version": "open-reproducibility-3.0",
+    "access": "public",
+    "public_test_data_use": "evaluation_only",
+    "result_data_license_spdx": "__REPLACE_WITH_SPDX_LICENSE_ID__",
+    "code": {
+      "repository_url": "__REPLACE_WITH_CODE_REPOSITORY_URL_OR_UNRESOLVED_TOKEN__",
+      "commit": "__REPLACE_WITH_COMMIT_OR_UNRESOLVED_TOKEN__",
+      "license_spdx": "__REPLACE_WITH_SPDX_LICENSE_ID_OR_UNRESOLVED_TOKEN__"
+    },
+    "model_artifact": "__UNRESOLVED_AIRFRANS_MODEL_ARTIFACT_OPTIONAL__",
+    "environment": "__UNRESOLVED_AIRFRANS_ENVIRONMENT_OPTIONAL__"
+  },
+  "spatial_discretization": {
+    "training": {
+      "domain_input": "__REPLACE_WITH_REPRESENTATION__used,representation,entity_counts,native_comparison,sampling,domain,connectivity__",
+      "domain_supervision": "__REPLACE_WITH_REPRESENTATION_OR_SAME_AS_INPUT__",
+      "curve_input": "__REPLACE_WITH_REPRESENTATION_OR_used_false__",
+      "curve_supervision": "__REPLACE_WITH_REPRESENTATION_OR_used_false__"
+    },
+    "inference": {
+      "geometry_dependency": "__REPLACE_WITH_ENUM__cad_only_surface_geometry_participant_volume_mesh_native_cfd_mesh_other__",
+      "note": "Inference representation itself (native mesh, full coverage, identity mapping, zero unmapped/extrapolated) is already known from Layers 1-2 and will be filled in automatically -- only the TRAINING representation above needs your input."
+    }
+  },
+  "release_bindings": {
+    "scoring_support": {
+      "status": "candidate",
+      "release_id": "airfrans-native-ground-truth-v1-candidate",
+      "manifest_path": "__RESOLVED_LOCALLY__airfrans-scoring-support/airfrans-native-ground-truth-v1-candidate/manifest.json",
+      "manifest_url": "__UNRESOLVED_AIRFRANS_SCORING_SUPPORT_NOT_YET_PUBLISHED__"
+    },
+    "profile_ground_truth": {
+      "release_id": "airfrans-boundary-layer-v1",
+      "manifest_sha256_source": "benchmark-specs/airfrans/submission-spec.json#profile_definition.sha256"
+    },
+    "evaluator": {
+      "reference_version": "prototype-1",
+      "code_revision": "__RESOLVED_AT_ASSEMBLY_TIME__git_rev_parse_HEAD"
+    }
+  }
+}
