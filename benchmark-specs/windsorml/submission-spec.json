@@ -7,7 +7,15 @@
   "scoring_support": {
     "status": "owner_review_required",
     "submissions_open": false,
-    "closed_reason": "Candidate support is under owner review.",
+    "closed_reason": "Every contract input is frozen and every support artefact is generated and hash-pinned; opening submissions is a release decision for the dataset owner.",
+    "profile_support": {
+      "status": "generated_and_hash_pinned",
+      "manifest_file": "profile-support/windsorml-profile-support-v3-manifest.json",
+      "manifest_sha256": "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376",
+      "support_schema": "windsorml-profile-support-v3",
+      "case_count": 233,
+      "note": "One support file per scored test case, each pinning the native entity IDs the profile series are read at. Every case reports exactly 8 containment fallbacks: the eight vertical stations each begin at y = 0 on the ground plane, outside the fluid mesh."
+    },
     "public_source": {
       "repository_id": "neashton/windsorml",
       "revision": "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
@@ -135,7 +143,9 @@
       },
       "rationale": "Identical to AhmedML and HiLiftAeroML component for component, and to DrivAerML apart from its force group, which splits three ways (cd 0.15, cl 0.05, c_pitch 0.05) because it scores pitching moment. WindsorML publishes cmy, so a c_pitch_r2 term is supported by the data, but it would need surface moment integration and a pinned moment reference point that the dataset does not publish. Not adopted."
     },
-    "owner_decisions_required": []
+    "owner_decisions_required": [
+      "approve_release_and_open_submissions"
+    ]
   },
   "evaluation_reference_version": "windsorml-evaluator-v0.1-candidate",
   "default_field_reduction": "per_geometry_then_macro_average",
@@ -403,7 +413,7 @@
       "id": "pressure_profiles",
       "required": true,
       "scored_in_this_version": true,
-      "status": "stations_and_resolution_frozen",
+      "status": "stations_resolution_and_support_frozen",
       "definition_file": "profile-definition-v2.json",
       "allow_unlisted_stations": false,
       "minimum_points": 2,
@@ -429,7 +439,7 @@
       "id": "velocity_profiles",
       "required": true,
       "scored_in_this_version": true,
-      "status": "stations_and_resolution_frozen",
+      "status": "stations_resolution_and_support_frozen",
       "definition_file": "profile-definition-v2.json",
       "allow_unlisted_stations": false,
       "minimum_points": 2,

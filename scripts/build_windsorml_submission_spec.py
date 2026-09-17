@@ -40,6 +40,9 @@ EVALUATION_REFERENCE_VERSION = "windsorml-evaluator-v0.1-candidate"
 # sits at the local cell size.
 PROFILE_SAMPLE_COUNT = 128
 PROFILE_DEFINITION_FILE = "profile-definition-v2.json"
+PROFILE_SUPPORT_MANIFEST_SHA256 = (
+    "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376"
+)
 
 # Field 0.50, force 0.25, diagnostics 0.25 -- the prototype's split, restored in
 # full now that the profile diagnostics are computed from real frozen stations
@@ -126,9 +129,32 @@ def main() -> int:
         "dataset_version": DATASET_VERSION,
         "status": "candidate_native_support",
         "scoring_support": {
+            # validate_scoring_supports.py enforces a closed vocabulary here
+            # (official / owner_review_required / prototype / retired). Support
+            # completeness is stated in profile_support.status and
+            # closed_reason rather than by inventing a new status value.
             "status": "owner_review_required",
             "submissions_open": False,
-            "closed_reason": "Candidate support is under owner review.",
+            "closed_reason": (
+                "Every contract input is frozen and every support artefact is "
+                "generated and hash-pinned; opening submissions is a release "
+                "decision for the dataset owner."
+            ),
+            "profile_support": {
+                "status": "generated_and_hash_pinned",
+                "manifest_file": (
+                    "profile-support/windsorml-profile-support-v3-manifest.json"
+                ),
+                "manifest_sha256": PROFILE_SUPPORT_MANIFEST_SHA256,
+                "support_schema": "windsorml-profile-support-v3",
+                "case_count": 233,
+                "note": (
+                    "One support file per scored test case, each pinning the native "
+                    "entity IDs the profile series are read at. Every case reports "
+                    "exactly 8 containment fallbacks: the eight vertical stations "
+                    "each begin at y = 0 on the ground plane, outside the fluid mesh."
+                ),
+            },
             "public_source": {
                 "repository_id": "neashton/windsorml",
                 "revision": "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
@@ -271,7 +297,11 @@ def main() -> int:
                     "does not publish. Not adopted."
                 ),
             },
-            "owner_decisions_required": [],
+            # The validator requires a non-empty list while the status is
+            # owner_review_required, and that is the honest state: both
+            # technical decisions are approved and recorded above, so what
+            # remains is the release decision itself.
+            "owner_decisions_required": ["approve_release_and_open_submissions"],
         },
         "evaluation_reference_version": EVALUATION_REFERENCE_VERSION,
         "default_field_reduction": "per_geometry_then_macro_average",
@@ -388,7 +418,7 @@ def main() -> int:
                 "id": "pressure_profiles",
                 "required": True,
                 "scored_in_this_version": True,
-                "status": "stations_and_resolution_frozen",
+                "status": "stations_resolution_and_support_frozen",
                 "definition_file": PROFILE_DEFINITION_FILE,
                 "allow_unlisted_stations": False,
                 "minimum_points": 2,
@@ -416,7 +446,7 @@ def main() -> int:
                 "id": "velocity_profiles",
                 "required": True,
                 "scored_in_this_version": True,
-                "status": "stations_and_resolution_frozen",
+                "status": "stations_resolution_and_support_frozen",
                 "definition_file": PROFILE_DEFINITION_FILE,
                 "allow_unlisted_stations": False,
                 "minimum_points": 2,

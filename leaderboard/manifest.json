@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-09-17T09:07:13Z",
+  "generated_at": "2026-09-17T20:34:50Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -19,13 +19,13 @@
     "rounding": "decimal_half_up"
   },
   "data_release": {
-    "id": "prototype-dev-2026-09-16-b1cafe65dc8c",
+    "id": "prototype-dev-2026-09-16-78152d169239",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-09-17T09:07:13Z",
+    "generated_at": "2026-09-17T20:34:50Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
-    "feed_sha256": "b1cafe65dc8ca6a7154bfa857983a178786d6a7e06065364eb4cdb638b7a4f85",
+    "feed_sha256": "78152d169239fb6e7c62acb47dc0bd40f46fb6c1c9669478d4c9c017829a21a0",
     "canonical_url": "https://fluidsbench.org/",
     "archive_url": null,
     "release_view_url": null,
@@ -51,16 +51,16 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "354e618006f9a1615e23bc5052e16fd71aee610dfb1fe894ae233a3ee2488a2b",
-      "record_count": 68,
+      "index_sha256": "a2607894425194b53fac3d44513c95c46508875f1a6e0a009b5865af1b854791",
+      "record_count": 58,
       "eligible_record_count": 0
     },
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "f3ec75e99610d7612dc26b49fad77aa690691958b8c65d76f1c62ebd53d52c00",
-      "record_count": 69,
-      "series_count": 69
+      "sha256": "21e88f1f9af72c50f179ca127b54ba2b0e5e5ac383571fc57c2c87cbebe044f4",
+      "record_count": 59,
+      "series_count": 59
     }
   },
   "all_file": "leaderboard/all.json",
@@ -2832,8 +2832,8 @@
       "name": "WindsorML",
       "slug": "windsorml",
       "file": "leaderboard/datasets/windsorml.json",
-      "submission_count": 10,
-      "updated_at": "2026-07-08",
+      "submission_count": 0,
+      "updated_at": null,
       "metrics": {
         "dimensional_fields": [
           "surface_pressure",
@@ -2858,27 +2858,19 @@
         "overall_score",
         "field_score",
         "force_score",
-        "diagnostic_score",
         "surface_pressure_rel_l2",
         "surface_pressure_equal_entity_rel_l2",
         "surface_wall_shear_rel_l2",
         "surface_wall_shear_equal_entity_rel_l2",
         "volume_velocity_rel_l2",
-        "volume_velocity_physical_rel_l2",
         "volume_pressure_rel_l2",
-        "volume_pressure_physical_rel_l2",
-        "surface_pressure_rel_l1",
-        "surface_wall_shear_rel_l1",
-        "volume_velocity_rel_l1",
-        "volume_pressure_rel_l1",
-        "velocity_profile_r2",
-        "cp_cut_r2",
-        "volume_velocity_mae",
-        "volume_pressure_mae",
-        "volume_velocity_rmse",
-        "volume_pressure_rmse",
+        "diagnostic_score",
         "cd_r2",
         "cl_r2",
+        "velocity_profile_r2",
+        "cp_cut_r2",
+        "velocity_profile_relative_r2",
+        "cp_cut_relative_r2",
         "c_drag_mae",
         "c_lift_mae"
       ],
@@ -2887,15 +2879,9 @@
           "label": "Surface pressure rel. L2 (area-weighted)",
           "description": "Area-weighted relative L2 error for surface pressure; each scored surface point is weighted by its benchmark-supplied represented area. Lower is better."
         },
-        "surface_pressure_rel_l1": {
-          "description": "Area-weighted relative L1 error for surface pressure. Lower is better."
-        },
         "surface_wall_shear_rel_l2": {
           "label": "Surface wall shear rel. L2 (area-weighted)",
           "description": "Area-weighted relative L2 error for surface wall shear; each scored surface point is weighted by its benchmark-supplied represented area. Lower is better."
-        },
-        "surface_wall_shear_rel_l1": {
-          "description": "Area-weighted relative L1 error for surface wall shear. Lower is better."
         }
       },
       "ranking": {
@@ -3019,7 +3005,22 @@
       "scoring_support": {
         "status": "owner_review_required",
         "submissions_open": false,
-        "closed_reason": "Submissions are currently closed.",
+        "closed_reason": "Every contract input is frozen and every support artefact is generated and hash-pinned; opening submissions is a release decision for the dataset owner.",
+        "profile_support": {
+          "status": "generated_and_hash_pinned",
+          "manifest_file": "profile-support/windsorml-profile-support-v3-manifest.json",
+          "manifest_sha256": "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376",
+          "support_schema": "windsorml-profile-support-v3",
+          "case_count": 233,
+          "note": "One support file per scored test case, each pinning the native entity IDs the profile series are read at. Every case reports exactly 8 containment fallbacks: the eight vertical stations each begin at y = 0 on the ground plane, outside the fluid mesh."
+        },
+        "public_source": {
+          "repository_id": "neashton/windsorml",
+          "revision": "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
+          "identity_file": "public-source-identity/windsorml-public-source-identity-v1.json",
+          "published_case_count": 350,
+          "note": "The aggregate tables and the official split manifest enumerate 355 design variants, but run_350..run_354 have no per-run payload in the public release and are therefore unscoreable."
+        },
         "coverage_contract": {
           "dimensionality": "3D surface and 3D flow domain",
           "rule": "complete_original_public_release_entities",
@@ -3032,7 +3033,7 @@
         },
         "public_supports": [
           {
-            "id": "surface-native",
+            "id": "windsorml_surface_native_points",
             "public_file": "run_<case>/boundary_<case>.vtu",
             "format": "VTK UnstructuredGrid boundary mesh",
             "domain": "three_dimensional_body_surface",
@@ -3042,16 +3043,25 @@
               "cpavg",
               "cfxavg",
               "cfyavg",
+              "cfzavg"
+            ],
+            "available_point_arrays": [
+              "cpavg",
+              "cfxavg",
+              "cfyavg",
               "cfzavg",
               "cpvar",
-              "yplusavg"
+              "yplusavg",
+              "Normals"
             ],
-            "units_note": "cpavg and the cfxavg/cfyavg/cfzavg skin-friction components are dimensionless coefficients",
-            "physical_weight": "mass_lumped_dual_polygon_area",
+            "units_note": "cpavg and the cfxavg/cfyavg/cfzavg skin-friction components are dimensionless coefficients.",
+            "physical_weight": "published_barycentric_dual_area",
+            "physical_weight_file": "run_<case>/boundary_dual_area_<case>.npy",
+            "physical_weight_note": "The published per-point dual areas are canonical. The dataset README warns that recomputing polygon areas with VTK can drift for non-planar quads, so they must not be regenerated.",
             "verification": "confirmed_from_public_file"
           },
           {
-            "id": "flow-domain-native",
+            "id": "windsorml_volume_native_cells",
             "public_file": "run_<case>/volume_<case>.vtu",
             "format": "VTK UnstructuredGrid",
             "domain": "three_dimensional_flow_domain",
@@ -3075,25 +3085,64 @@
               "reynoldsstresszz",
               "pressureavg"
             ],
-            "physical_weight": "cell_volume",
+            "physical_weight": "equal_native_entity",
+            "physical_weight_note": "v1 scores the volume with equal-cell weighting. WindsorML publishes no cell-volume sidecar and generating one for ~291M cells x 350 cases costs roughly 400 GB and 1,000 CPU-hours, so the cell-volume-weighted variants are deferred.",
             "verification": "confirmed_from_public_file"
           }
         ],
+        "force_convention": {
+          "reference_area_m2": 0.112,
+          "reference_area_source": "constant_reference_area_force_mom_csv",
+          "axes": {
+            "drag": "+x",
+            "lift": "+y",
+            "side": "+z"
+          },
+          "axes_note": "The vertical axis is +y. The body sits on a ground plane at y=0 spanning y in [0, 0.343] and is laterally symmetric about z=0. Mapping lift to +z collapses cl from about 0.49 to about -0.01.",
+          "truth_source": "native_field_integration",
+          "audit_reference": "published_force_mom_csv",
+          "audit_note": "Truth and prediction are integrated identically so a perfect prediction scores R^2 = 1; the published CSV bounds the truth integration rather than defining it."
+        },
         "relative_l2_policy": {
           "surface_or_curve_primary": "physical_measure_weighted",
           "surface_or_curve_secondary": "equal_native_entity",
           "flow_domain_primary": "equal_native_entity",
-          "flow_domain_secondary": "physical_measure_weighted",
-          "point_or_vertex_physical_weights": "deterministic_mass_lumped_dual_measure_from_the_exact_public_mesh",
+          "point_or_vertex_physical_weights": "published_barycentric_dual_area",
           "vector_rule": "one_entity_weight_multiplies_the_squared_vector_magnitude",
+          "vector_assembly_note": "Vector components are published as independent scalar arrays. Relative L2 recombines exactly from per-component squared sums; Euclidean MAE and RMSE do not, and are reported per component.",
           "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
         },
+        "scored_case_set": {
+          "status": "owner_approved",
+          "approved_on": "2026-09-17",
+          "rule": "official_split_manifest_intersected_with_published_runs",
+          "official_unique_test_cases": 235,
+          "scored_unique_test_cases": 233,
+          "excluded_case_ids": [
+            "run_352",
+            "run_354"
+          ],
+          "excluded_reason": "The official manifest assigns 355 identifiers, but run_350 through run_354 have no per-run payload in the public release. run_352 (high_drag) and run_354 (baseline and low_drag test sets) are therefore unscoreable.",
+          "comparability_note": "Scores on these case sets are not comparable to any evaluation run against the unreduced official manifest."
+        },
+        "placement_mode_policy": {
+          "rule": "at_most_one_placement_mode_per_diagnostic_kind_may_have_nonzero_weight",
+          "ranked_mode": "constant",
+          "report_only_mode": "relative",
+          "definition_file": "profile-definition-v2.json"
+        },
+        "component_weights": {
+          "status": "owner_approved",
+          "approved_on": "2026-09-17",
+          "split": {
+            "field_score": 0.5,
+            "force_score": 0.25,
+            "diagnostic_score": 0.25
+          },
+          "rationale": "Identical to AhmedML and HiLiftAeroML component for component, and to DrivAerML apart from its force group, which splits three ways (cd 0.15, cl 0.05, c_pitch 0.05) because it scores pitching moment. WindsorML publishes cmy, so a c_pitch_r2 term is supported by the data, but it would need surface moment integration and a pinned moment reference point that the dataset does not publish. Not adopted."
+        },
         "owner_decisions_required": [
-          "pin_exact_public_release_files_revisions_and_hashes",
-          "confirm_array_names_entity_associations_masks_and_order",
-          "publish_authoritative_physical_weights_and_stable_entity_ids",
-          "approve_public_ground_truth_case_set_and_split_bindings",
-          "approve_loader_evaluator_and_immutable_scoring_support_manifest"
+          "approve_release_and_open_submissions"
         ]
       },
       "overall_score_composite": {
@@ -3176,7 +3225,7 @@
         ],
         "tolerance": 1e-06
       },
-      "revision_count": 10
+      "revision_count": 0
     },
     {
       "name": "VKI-LS59",
@@ -4401,7 +4450,7 @@
       "digits": 2,
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
       "comparison_group": "relative-l2",
       "comparison_group_label": "Relative L2",
       "column_group_label": "Relative"
@@ -4465,7 +4514,7 @@
       "digits": 2,
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
       "comparison_group": "relative-l2",
       "comparison_group_label": "Relative L2",
       "column_group_label": "Relative"
@@ -6023,7 +6072,7 @@
       "digits": 2,
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
       "comparison_group": "relative-l2",
       "comparison_group_label": "Relative L2",
       "column_group_label": "Relative"
@@ -6039,7 +6088,7 @@
       "digits": 2,
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
       "comparison_group": "relative-l2",
       "comparison_group_label": "Relative L2",
       "column_group_label": "Relative"

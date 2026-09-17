@@ -7,8 +7,8 @@
   "supersedes": "windsorml-profile-definition-v1",
   "placement_modes": {
     "rationale": "Follows the DrivAerML relative-diagnostics contract: every diagnostic kind is published in a constant-placement family and a geometry-following relative family, linked by source_family_id. The constant family is scored; the relative family is report-only at zero weight until it is reviewed.",
-    "why_windsorml_only_needs_a_vertical_relative_frame": "Streamwise and lateral extents are identical in all 350 published runs (nose x = -0.56075, base x = 0.48325, half width 0.1945), so a constant x or z station is already the same physical location in every case. Only body HEIGHT varies, from 0.31574 m to 0.47340 m. The relative frame therefore rescales the vertical coordinate alone, which is a much smaller change than DrivAerML's, where wheelhouses and body length also move.",
-    "why_both_are_needed": "A constant station at y = 0.194 m is 61% of the shortest published body's height but 41% of the tallest, so it samples a different part of the roof shear layer per case and the metric partly measures geometry rather than flow prediction. A relative station at fixed y/h samples the same position in the shear layer for every case, but is no longer a fixed physical probe location. Neither alone is sufficient, which is why both are published.",
+    "why_windsorml_only_needs_a_vertical_relative_frame": "Streamwise and lateral extents are identical in all 350 published runs (nose x = -0.56075, base x = 0.48325, half width 0.1945), so a constant x or z station is already the same physical location in every case. Only body HEIGHT varies, from 0.29957 m to 0.48888 m across the scored cases. The relative frame therefore rescales the vertical coordinate alone, which is a much smaller change than DrivAerML's, where wheelhouses and body length also move.",
+    "why_both_are_needed": "A constant station at y = 0.194 m is 65% of the shortest scored body's height but 40% of the tallest, so it samples a different part of the roof shear layer per case and the metric partly measures geometry rather than flow prediction. A relative station at fixed y/h samples the same position in the shear layer for every case, but is no longer a fixed physical probe location. Neither alone is sufficient, which is why both are published.",
     "ranked_family_selection_rule": "at_most_one_placement_mode_per_diagnostic_kind_may_have_nonzero_weight"
   },
   "relative_frame": {
@@ -46,9 +46,10 @@
     "half_width_m": 0.1945,
     "ground_plane_y_m": 0.0,
     "body_height_range_m": [
-      0.31574,
-      0.4734
-    ]
+      0.29957,
+      0.48888
+    ],
+    "body_height_range_source": "measured over all 233 scored cases during profile-support generation; shortest run_8, tallest run_264"
   },
   "sampling": {
     "sample_count": 128,

@@ -43,7 +43,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
+import tempfile
 import time
 
 import numpy as np
@@ -410,7 +412,15 @@ def main() -> int:
             continue
         started = time.time()
         payload = build_case(run, args.sample_count)
-        out.write_text(json.dumps(payload) + "\n")
+        # Atomic publish. Several fleets may run with --skip-existing at once
+        # and can pick the same case in the gap between the check and the
+        # write; duplicated work is harmless but a torn file would not be.
+        handle, temporary = tempfile.mkstemp(
+            dir=str(args.out_dir), prefix=f".{out.name}.", suffix=".partial"
+        )
+        with os.fdopen(handle, "w") as stream:
+            stream.write(json.dumps(payload) + "\n")
+        os.replace(temporary, out)
         log(f"run_{run}: wrote {out.name} in {time.time() - started:.0f}s")
     return 0
 

@@ -204,8 +204,9 @@ class WindsorMLProfileDefinitionTests(unittest.TestCase):
     BASE_X = 0.48325
     NOSE_X = -0.56075
     BODY_LENGTH = 1.044
-    MAX_BODY_HEIGHT = 0.47340
-    MIN_BODY_HEIGHT = 0.31574
+    # Measured over all 233 scored cases, not the 8-run sample used at design time.
+    MAX_BODY_HEIGHT = 0.48888
+    MIN_BODY_HEIGHT = 0.29957
     REFERENCE_H = 0.34342
 
     def setUp(self) -> None:
@@ -398,9 +399,51 @@ class WindsorMLScoredCaseSetApprovalTests(unittest.TestCase):
         for group, value in declared.items():
             self.assertAlmostEqual(actual[group], value, places=9, msg=group)
 
-    def test_no_owner_decisions_remain_open(self) -> None:
+    def test_profile_support_is_generated_and_hash_pinned(self) -> None:
+        """Every scored case must have support, pinned by a verified manifest."""
+
         spec = load(SPEC_DIR / "submission-spec.json")
-        self.assertEqual(spec["scoring_support"]["owner_decisions_required"], [])
+        support = spec["scoring_support"]["profile_support"]
+        self.assertEqual(support["status"], "generated_and_hash_pinned")
+        manifest_path = SPEC_DIR / support["manifest_file"]
+        self.assertTrue(manifest_path.is_file())
+        digest = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+        self.assertEqual(digest, support["manifest_sha256"])
+
+        manifest = load(manifest_path)
+        self.assertEqual(manifest["case_count"], support["case_count"])
+        self.assertEqual(len(manifest["cases"]), 233)
+        self.assertEqual(
+            manifest["profile_definition_sha256"],
+            hashlib.sha256((SPEC_DIR / "profile-definition-v2.json").read_bytes()).hexdigest(),
+        )
+
+    def test_pinned_support_covers_exactly_the_scored_case_set(self) -> None:
+        spec = load(SPEC_DIR / "submission-spec.json")
+        manifest = load(SPEC_DIR / spec["scoring_support"]["profile_support"]["manifest_file"])
+        pinned = {case["case_id"] for case in manifest["cases"]}
+        scored: set[str] = set()
+        for family in FAMILIES:
+            scored |= set(load(SPLIT_DIR / f"{family}.json")["case_ids"])
+        self.assertEqual(pinned, scored)
+
+    def test_only_the_release_decision_remains_open(self) -> None:
+        """Both technical decisions are approved; only releasing is outstanding.
+
+        The repository validator requires a non-empty decision list while the
+        status is owner_review_required, so this asserts what the list contains
+        rather than that it is empty.
+        """
+
+        spec = load(SPEC_DIR / "submission-spec.json")
+        decisions = spec["scoring_support"]["owner_decisions_required"]
+        self.assertEqual(decisions, ["approve_release_and_open_submissions"])
+        for settled in (
+            "approve_scored_case_set_reduction_from_235_to_233_test_cases",
+            "approve_component_weights_after_profiles_are_scored",
+            "approve_velocity_and_pressure_profile_stations_and_resolution",
+        ):
+            self.assertNotIn(settled, decisions)
 
     def test_excluded_ids_are_contract_unpublished_cases(self) -> None:
         spec = load(SPEC_DIR / "submission-spec.json")

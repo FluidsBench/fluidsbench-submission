@@ -216,13 +216,31 @@ is the intended fix -- the constant line spans y in [0, 0.5] and overshoots the
 
 ## Deliberately deferred
 
-- **Profile scoring activates once per-case support is complete.** The stations,
-  resolution, and both families are frozen and the evaluator computes the series,
-  but the generation campaign over the 233 scored cases is still running. Each
-  case costs about 10.6 minutes and 83 GB, dominated by base64 VTU parsing.
+- **Nothing. Profile support is complete.** All 233 scored cases are generated,
+  validated and hash-pinned by
+  `profile-support/windsorml-profile-support-v3-manifest.json`. Every case
+  reports exactly 8 containment fallbacks, which is the expected pattern: the
+  eight vertical stations each begin at y = 0 on the ground plane, outside the
+  fluid mesh, while the two lateral stations report none.
 - **Cell-volume-weighted volume metrics are removed, not stubbed.** At ~291M
   cells × 350 cases the sidecars cost roughly 400 GB and 1,000 CPU-hours. The
   primary volume metric was already equal-cell weighted.
+
+## Release state
+
+Every technical decision is settled and recorded in the spec: the scored case
+set, the component weights, the stations and resolution, and the sampling
+semantics. `scoring_support.status` remains `owner_review_required` and
+`submissions_open` remains false, because the repository validator holds those
+to a closed vocabulary and requires a non-empty decision list; the single
+remaining entry is `approve_release_and_open_submissions`, which is a release
+decision rather than a technical one.
+
+Measured body height across all 233 scored cases is **0.29957 m to 0.48888 m**,
+wider than the 0.31574-0.47340 m taken from an eight-run sample during design.
+The constant horizontal cut at y = 0.194 m still lies inside every body, and the
+spread it motivates is slightly larger than first documented: 65% of the
+shortest body's height against 40% of the tallest.
 
 ## Owner decisions required
 
