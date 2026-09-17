@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-09-17T20:34:50Z",
+  "generated_at": "2026-09-17T22:58:10Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -19,13 +19,13 @@
     "rounding": "decimal_half_up"
   },
   "data_release": {
-    "id": "prototype-dev-2026-09-16-78152d169239",
+    "id": "prototype-dev-2026-09-16-7702b02f0140",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-09-17T20:34:50Z",
+    "generated_at": "2026-09-17T22:58:10Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
-    "feed_sha256": "78152d169239fb6e7c62acb47dc0bd40f46fb6c1c9669478d4c9c017829a21a0",
+    "feed_sha256": "7702b02f01408b26e16d0d687ade3cebce4c4267a395dd803fa3f0d645dea572",
     "canonical_url": "https://fluidsbench.org/",
     "archive_url": null,
     "release_view_url": null,
@@ -34,7 +34,7 @@
     "profile_ground_truth": {
       "release_id": "prototype-profile-ground-truth-2026-09-04",
       "manifest_url": "https://fluidsbench.org/assets/data/profile-ground-truth/manifest.json",
-      "manifest_sha256": "51d2e2ac4a4c0cbb9ff01e06b12551206d648e5bcb1d56955b8172c551607057"
+      "manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
     },
     "license": {
       "spdx_id": "Apache-2.0",
@@ -51,14 +51,14 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "a2607894425194b53fac3d44513c95c46508875f1a6e0a009b5865af1b854791",
+      "index_sha256": "e2f886d8e7caf88e19bc6d7ab6ca6f49da201a76ff758209e40a209efc0433e9",
       "record_count": 58,
       "eligible_record_count": 0
     },
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "21e88f1f9af72c50f179ca127b54ba2b0e5e5ac383571fc57c2c87cbebe044f4",
+      "sha256": "8afdc335cc8d9d8e18bf8a9cd5a94c3ba65d1aae1dcf67f8bc5fa957ee01b9ba",
       "record_count": 59,
       "series_count": 59
     }
@@ -2848,12 +2848,63 @@
       },
       "splits": [
         {
-          "id": "default",
-          "name": "Default",
-          "description": "Default prototype benchmark split."
+          "id": "full",
+          "name": "Full",
+          "case_set_id": "baseline-test",
+          "case_count": 35,
+          "description": "280 training / 35 validation / 35 test cases with published fields; official test assignment: 36."
+        },
+        {
+          "id": "medium",
+          "name": "Medium",
+          "case_set_id": "baseline-test",
+          "case_count": 35,
+          "description": "93 training / 35 validation / 35 test cases with published fields; official test assignment: 36."
+        },
+        {
+          "id": "scarce",
+          "name": "Scarce",
+          "case_set_id": "baseline-test",
+          "case_count": 35,
+          "description": "47 training / 35 validation / 35 test cases with published fields; official test assignment: 36."
+        },
+        {
+          "id": "super_scarce",
+          "name": "Super scarce",
+          "case_set_id": "baseline-test",
+          "case_count": 35,
+          "description": "8 training / 35 validation / 35 test cases with published fields; official test assignment: 36."
+        },
+        {
+          "id": "geometry",
+          "name": "Geometry OOD",
+          "case_set_id": "geometry-test",
+          "case_count": 71,
+          "description": "243 training / 36 validation / 71 test cases with published fields; official test assignment: 71."
+        },
+        {
+          "id": "high_drag",
+          "name": "High drag",
+          "case_set_id": "high_drag-test",
+          "case_count": 70,
+          "description": "244 training / 36 validation / 70 test cases with published fields; official test assignment: 71."
+        },
+        {
+          "id": "low_drag",
+          "name": "Low drag",
+          "case_set_id": "low_drag-test",
+          "case_count": 70,
+          "description": "244 training / 36 validation / 70 test cases with published fields; official test assignment: 71."
+        },
+        {
+          "id": "image_wake",
+          "name": "Image wake",
+          "case_set_id": "image_wake-test",
+          "case_count": 71,
+          "description": "244 training / 35 validation / 71 test cases with published fields; official test assignment: 71."
         }
       ],
-      "submission_format": "legacy_external_aero",
+      "submission_format": "windsorml_native_candidate",
       "metric_ids": [
         "overall_score",
         "field_score",
@@ -2915,20 +2966,22 @@
           ],
           "stations": [
             {
-              "id": "symmetry_plane_z_0",
-              "label": "Symmetry-plane trace (z = 0 m)",
-              "x_label": "x/L along z = 0 m surface trace",
-              "description": "Mean surface-pressure cut used in the WindsorML supplementary validation (Figure 18).",
-              "basis": "published_validation_trace",
-              "source_url": "https://arxiv.org/abs/2407.19320"
+              "id": "cp_centreline_upper",
+              "label": "Upper centreline, nose to base",
+              "x_label": "Streamwise x, m",
+              "description": "for each sampled x, the largest-y boundary point with |z| < 0.004 m"
             },
             {
-              "id": "horizontal_cut_y_0_2595",
-              "label": "Horizontal trace (y = 0.2595 m)",
-              "x_label": "x/L along y = 0.2595 m surface trace",
-              "description": "Mean surface-pressure cut used in the WindsorML supplementary validation (Figure 19).",
-              "basis": "published_validation_trace",
-              "source_url": "https://arxiv.org/abs/2407.19320"
+              "id": "cp_base_vertical",
+              "label": "Base vertical centreline",
+              "x_label": "Height y, m",
+              "description": "for each sampled y, the boundary point nearest (base_x, y, 0) with |z| < 0.004 m and x > base_x - 0.01"
+            },
+            {
+              "id": "cp_side_horizontal_y_0p194",
+              "label": "Side surface, horizontal cut at y = 194 mm",
+              "x_label": "Streamwise x, m",
+              "description": "for each sampled x, the largest-z boundary point with |y - 0.194| < 0.004 m"
             }
           ],
           "required": true,
@@ -2936,7 +2989,62 @@
             "case_id",
             "station_id"
           ],
-          "reverse_y": true
+          "reverse_y": true,
+          "allow_unlisted_stations": false,
+          "families": [
+            {
+              "id": "windsorml_cp_constant_v1",
+              "placement_mode": "constant",
+              "label": "Fixed locations",
+              "description": "128 pinned native CFD samples per station. Included in the candidate score.",
+              "stations": [
+                {
+                  "id": "cp_centreline_upper",
+                  "label": "Upper centreline, nose to base",
+                  "x_label": "Streamwise x, m",
+                  "description": "for each sampled x, the largest-y boundary point with |z| < 0.004 m"
+                },
+                {
+                  "id": "cp_base_vertical",
+                  "label": "Base vertical centreline",
+                  "x_label": "Height y, m",
+                  "description": "for each sampled y, the boundary point nearest (base_x, y, 0) with |z| < 0.004 m and x > base_x - 0.01"
+                },
+                {
+                  "id": "cp_side_horizontal_y_0p194",
+                  "label": "Side surface, horizontal cut at y = 194 mm",
+                  "x_label": "Streamwise x, m",
+                  "description": "for each sampled x, the largest-z boundary point with |y - 0.194| < 0.004 m"
+                }
+              ]
+            },
+            {
+              "id": "windsorml_cp_relative_v1",
+              "placement_mode": "relative",
+              "label": "Geometry-relative locations — report only",
+              "description": "128 pinned native CFD samples per station. Body-height-relative diagnostics carry zero score weight.",
+              "stations": [
+                {
+                  "id": "cp_centreline_upper_relative",
+                  "label": "Upper centreline, nose to base",
+                  "x_label": "Normalized streamwise position, x/L",
+                  "description": "identical selection, parameterised by x/L rather than x"
+                },
+                {
+                  "id": "cp_base_vertical_relative",
+                  "label": "Base vertical centreline",
+                  "x_label": "Height / body height, y/h",
+                  "description": "for each sampled eta, the boundary point nearest (base_x, eta * h_case, 0)"
+                },
+                {
+                  "id": "cp_side_horizontal_relative",
+                  "label": "Side surface, horizontal cut at y/h = 0.56491",
+                  "x_label": "Streamwise x, m",
+                  "description": "for each sampled x, the largest-z boundary point with |y - eta * h_case| < 0.004 m, eta = 0.56491"
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "velocity_profiles",
@@ -2950,55 +3058,130 @@
           ],
           "quantities": [
             {
-              "id": "velocity_ratio",
-              "label": "Velocity",
-              "y_label": "Normalized velocity",
+              "id": "ux_over_uinf",
+              "label": "Streamwise velocity",
+              "y_label": "Streamwise velocity, u_x / U_inf",
               "y_keys": [
-                "u_over_u_inf",
-                "velocity_ratio"
+                "ux_over_uinf"
               ],
               "unit": ""
             }
           ],
           "stations": [
             {
-              "id": "prototype_0_25l",
-              "label": "0.25L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 0.25 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
+              "id": "wake_vertical_x_0p05l",
+              "label": "Vertical wake, 0.05L behind base",
+              "x_label": "Height y, m",
+              "description": "Native volume samples at x = 0.53545 m."
             },
             {
-              "id": "prototype_0_50l",
-              "label": "0.50L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 0.50 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
+              "id": "wake_vertical_x_0p10l",
+              "label": "Vertical wake, 0.1L behind base",
+              "x_label": "Height y, m",
+              "description": "Native volume samples at x = 0.58765 m."
             },
             {
-              "id": "prototype_1_00l",
-              "label": "1.00L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 1.00 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
+              "id": "wake_vertical_x_0p25l",
+              "label": "Vertical wake, 0.25L behind base",
+              "x_label": "Height y, m",
+              "description": "Native volume samples at x = 0.74425 m."
             },
             {
-              "id": "wake_x_0_80l",
-              "label": "Wake at 0.80L",
-              "x_label": "Profile coordinate",
-              "description": "Windsor body wake profile at x/L = 0.80.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.org/datasets/"
+              "id": "wake_vertical_x_0p50l",
+              "label": "Vertical wake, 0.5L behind base",
+              "x_label": "Height y, m",
+              "description": "Native volume samples at x = 1.00525 m."
+            },
+            {
+              "id": "wake_lateral_x_0p10l_y_0p194",
+              "label": "Lateral wake, 0.1L behind base",
+              "x_label": "Lateral z, m",
+              "description": "Native volume samples at x = 0.58765 m."
             }
           ],
-          "required": false,
-          "allow_unlisted_stations": true,
+          "required": true,
+          "allow_unlisted_stations": false,
           "required_series_fields": [
             "case_id",
             "station_id"
+          ],
+          "families": [
+            {
+              "id": "windsorml_velocity_constant_v1",
+              "placement_mode": "constant",
+              "label": "Fixed locations",
+              "description": "128 pinned native CFD samples per station. Included in the candidate score.",
+              "stations": [
+                {
+                  "id": "wake_vertical_x_0p05l",
+                  "label": "Vertical wake, 0.05L behind base",
+                  "x_label": "Height y, m",
+                  "description": "Native volume samples at x = 0.53545 m."
+                },
+                {
+                  "id": "wake_vertical_x_0p10l",
+                  "label": "Vertical wake, 0.1L behind base",
+                  "x_label": "Height y, m",
+                  "description": "Native volume samples at x = 0.58765 m."
+                },
+                {
+                  "id": "wake_vertical_x_0p25l",
+                  "label": "Vertical wake, 0.25L behind base",
+                  "x_label": "Height y, m",
+                  "description": "Native volume samples at x = 0.74425 m."
+                },
+                {
+                  "id": "wake_vertical_x_0p50l",
+                  "label": "Vertical wake, 0.5L behind base",
+                  "x_label": "Height y, m",
+                  "description": "Native volume samples at x = 1.00525 m."
+                },
+                {
+                  "id": "wake_lateral_x_0p10l_y_0p194",
+                  "label": "Lateral wake, 0.1L behind base",
+                  "x_label": "Lateral z, m",
+                  "description": "Native volume samples at x = 0.58765 m."
+                }
+              ]
+            },
+            {
+              "id": "windsorml_velocity_relative_v1",
+              "placement_mode": "relative",
+              "label": "Geometry-relative locations — report only",
+              "description": "128 pinned native CFD samples per station. Body-height-relative diagnostics carry zero score weight.",
+              "stations": [
+                {
+                  "id": "wake_vertical_x_0p05l_relative",
+                  "label": "Vertical wake, 0.05L behind base",
+                  "x_label": "Height / body height, y/h",
+                  "description": "Native volume samples at x = 0.53545 m."
+                },
+                {
+                  "id": "wake_vertical_x_0p10l_relative",
+                  "label": "Vertical wake, 0.1L behind base",
+                  "x_label": "Height / body height, y/h",
+                  "description": "Native volume samples at x = 0.58765 m."
+                },
+                {
+                  "id": "wake_vertical_x_0p25l_relative",
+                  "label": "Vertical wake, 0.25L behind base",
+                  "x_label": "Height / body height, y/h",
+                  "description": "Native volume samples at x = 0.74425 m."
+                },
+                {
+                  "id": "wake_vertical_x_0p50l_relative",
+                  "label": "Vertical wake, 0.5L behind base",
+                  "x_label": "Height / body height, y/h",
+                  "description": "Native volume samples at x = 1.00525 m."
+                },
+                {
+                  "id": "wake_lateral_x_0p10l_relative",
+                  "label": "Lateral wake, 0.1L behind base, y/h = 0.56491",
+                  "x_label": "Lateral z, m",
+                  "description": "Native volume samples at x = 0.58765 m."
+                }
+              ]
+            }
           ]
         }
       ],
@@ -6828,6 +7011,38 @@
       "comparison_group": "profile-errors",
       "comparison_group_label": "Profile errors",
       "column_group_label": "Diagnostics"
+    },
+    {
+      "id": "cp_cut_relative_r2",
+      "label": "Geometry-relative Cp cuts R2",
+      "description": "Body-height-relative WindsorML diagnostic, reported separately with zero score weight. Higher is better.",
+      "group": "r2-metrics",
+      "group_label": "R2",
+      "column_group": "relative",
+      "unit": "",
+      "digits": 3,
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "comparison_group": "r2",
+      "comparison_group_label": "R2",
+      "column_group_label": "Relative"
+    },
+    {
+      "id": "velocity_profile_relative_r2",
+      "label": "Geometry-relative velocity profiles R2",
+      "description": "Body-height-relative WindsorML diagnostic, reported separately with zero score weight. Higher is better.",
+      "group": "r2-metrics",
+      "group_label": "R2",
+      "column_group": "relative",
+      "unit": "",
+      "digits": 3,
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "comparison_group": "r2",
+      "comparison_group_label": "R2",
+      "column_group_label": "Relative"
     }
   ],
   "submission_schema_version": "1.0"

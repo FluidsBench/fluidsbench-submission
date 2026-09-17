@@ -36,6 +36,36 @@ class WindsorMLProfileSupportTests(unittest.TestCase):
                 self.assertEqual(support.sha256, entry["sha256"])
                 self.assertEqual(support.document["sample_count"], 128)
 
+    def test_public_feed_exposes_every_split_and_native_profile_family(self):
+        specification = json.loads(
+            (REPO_ROOT / "benchmark-specs/windsorml/submission-spec.json").read_text()
+        )
+        manifest = json.loads((REPO_ROOT / "leaderboard/manifest.json").read_text())
+        dataset = next(d for d in manifest["datasets"] if d["slug"] == "windsorml")
+        self.assertEqual(
+            [
+                (s["id"], s["name"], s["case_set_id"], s["case_count"])
+                for s in dataset["splits"]
+            ],
+            [
+                (s["id"], s["label"], s["case_set_id"], s["case_count"])
+                for s in specification["splits"]
+            ],
+        )
+        definitions = {metric["id"] for metric in manifest["metric_definitions"]}
+        self.assertTrue(set(dataset["metric_ids"]) <= definitions)
+        definition = json.loads(profiles.PROFILE_DEFINITION_PATH.read_text())
+        exposed = {
+            family["id"]: [s["id"] for s in family["stations"]]
+            for panel in dataset["diagnostic_panels"]
+            for family in panel["families"]
+        }
+        self.assertEqual(
+            exposed, {f["family_id"]: f["station_ids"] for f in definition["families"]}
+        )
+        self.assertEqual(dataset["submission_count"], 0)
+        self.assertEqual(json.loads((REPO_ROOT / dataset["file"]).read_text()), [])
+
     def test_exact_file_copy_and_decoded_document_are_accepted(self):
         path = self.root / "copy.json"
         path.write_bytes(self.support_path.read_bytes())
