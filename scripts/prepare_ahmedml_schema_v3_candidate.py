@@ -421,7 +421,7 @@ def update_submission_spec(
     support["owner_decisions_required"] = [
         "review_and_approve_profile_station_geometry",
         "review_and_approve_candidate_score_weights_and_caps",
-        "publish_the_generated_scoring_support_release",
+        "approve_the_hash_bound_cache_derivation_and_production_preinstallation",
         "approve_evaluator_implementation_and_open_submissions",
     ]
     for public_support in support["public_supports"]:

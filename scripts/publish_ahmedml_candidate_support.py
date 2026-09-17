@@ -758,8 +758,10 @@ def publish(
         "case_sets": case_sets,
         "notes": (
             "Closed owner-review candidate. Public source bytes are pinned exactly. Compact "
-            "per-case manifests bind all generated array hashes, while the approximately "
-            "40 GB large-array payload remains maintainer-local until owner review. The "
+            "per-case manifests bind all generated array hashes. The approximately 39 GiB "
+            "large-array payload is a deterministic evaluator cache derived from those "
+            "public bytes; it may remain preinstalled locally because a remote copy is not "
+            "canonical or required. The "
             "run_492 force CSV/native-field discrepancy is one checksum- and value-bound "
             "source exception; native surface-field integration remains force truth."
         ),

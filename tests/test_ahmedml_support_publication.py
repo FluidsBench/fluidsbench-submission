@@ -66,6 +66,87 @@ def test_candidate_manifest_binding_is_hash_exact_and_closed(tmp_path: Path) -> 
     )
 
 
+def test_derived_cache_contract_keeps_public_dataset_canonical() -> None:
+    dataset = ROOT / "benchmark-specs" / "ahmedml"
+    contract_path = dataset / "derived-cache-contract-v1.json"
+    contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    specification = json.loads(
+        (dataset / "submission-spec.json").read_text(encoding="utf-8")
+    )
+
+    assert contract["schema"] == "fluidsbench-ahmedml-derived-cache-contract-v1"
+    source = contract["canonical_source"]
+    assert source["kind"] == "huggingface_dataset_revision"
+    assert source["repository_id"] == "neashton/ahmedml"
+    assert source["revision"] == "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15"
+    public_roles = {
+        item["role"]: item for item in source["required_public_artifacts"]
+    }
+    assert public_roles["surface_scalar_polygon_area"] == {
+        "role": "surface_scalar_polygon_area",
+        "path_rule": "run_<N>/boundary_cell_area_<N>.npy",
+        "canonical": True,
+        "dtype": "<f4",
+        "association": "native_boundary_polygon_order",
+    }
+    assert sha256_file(dataset / source["source_identity_file"]) == source[
+        "source_identity_sha256"
+    ]
+
+    policy = contract["cache_policy"]
+    assert policy["classification"] == "deterministic_rebuildable_evaluator_cache"
+    assert policy["canonical_source_data"] is False
+    assert policy["remote_payload_required"] is False
+    assert policy["runtime_rebuild_during_submission_scoring"] is False
+    assert (
+        policy["production_requirement"]
+        == "preinstall_and_verify_before_accepting_submissions"
+    )
+
+    implementation = contract["derivation_implementation"]
+    assert len(implementation["git_revision_with_exact_builder"]) == 40
+    assert sha256_file(ROOT / implementation["builder_file"]) == implementation[
+        "builder_sha256"
+    ]
+    assert sha256_file(ROOT / implementation["requirements_file"]) == implementation[
+        "requirements_sha256"
+    ]
+    assert implementation["runtime"] == {
+        "python": "3.12.3",
+        "numpy": "2.5.2",
+        "vtk": "9.5.2",
+        "byte_order": "little_endian",
+    }
+
+    expected = contract["expected_outputs"]
+    assert expected["official_test_case_union_count"] == 316
+    assert sha256_file(dataset / expected["candidate_manifest_file"]) == expected[
+        "candidate_manifest_sha256"
+    ]
+    binding = specification["scoring_support"]["derived_cache_contract"]
+    assert binding == {
+        "status": "candidate",
+        "classification": "deterministic_rebuildable_evaluator_cache",
+        "contract_file": "derived-cache-contract-v1.json",
+        "contract_sha256": sha256_file(contract_path),
+        "remote_payload_required": False,
+        "production_installation_required": True,
+    }
+    public_supports = {
+        item["id"]: item for item in specification["scoring_support"]["public_supports"]
+    }
+    assert (
+        public_supports["surface-native"]["physical_weight_public_file"]
+        == "run_<case>/boundary_cell_area_<case>.npy"
+    )
+    assert public_supports["flow-domain-native"]["primary_ranked_weighting"] == (
+        "equal_native_cell"
+    )
+    assert "publish_the_generated_scoring_support_release" not in specification[
+        "scoring_support"
+    ]["owner_decisions_required"]
+
+
 def test_profile_panels_pin_exact_native_sampling_grids() -> None:
     specification = json.loads(
         (ROOT / "benchmark-specs" / "ahmedml" / "submission-spec.json").read_text(
