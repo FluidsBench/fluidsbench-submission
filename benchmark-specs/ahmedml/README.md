@@ -69,6 +69,15 @@ dataset-owned evaluator path intended for future real submissions.
   and publishes compact hash-bound metadata while keeping large arrays local.
 - `scripts/evaluate_ahmedml_candidate_case.py`: evaluates one complete case.
 - `scripts/score_ahmedml_candidate_dataset.py`: reduces one official split.
+- `scripts/assemble_ahmedml_schema_v3_candidate.py`: assembles a real
+  checkpoint-inference package for any official split, verifies checkpoint
+  bytes, and recomputes all evaluator-derived package products.
+- `examples/ahmedml-v3-candidate/`: genuine-inference configuration template
+  and complete packaging instructions.
+- `pre-release-reference-registry.json`: initially empty maintainer registry
+  for exact hash-bound, non-citable genuine-inference rows on the dev feed.
+- `scripts/register_ahmedml_pre_release.py`: proposes or atomically appends one
+  validated dev-only registry binding without creating approval.
 - `scripts/assemble_ahmedml_schema_v3_dev_fixture.py`: creates the non-ranked
   schema-v3 development package.
 

@@ -27,6 +27,15 @@ truth candidate is bound for an explicit maintainer-local dry run, while the
 public truth binding remains unpublished and inactive; the template still
 retains an unresolved evaluator-revision token until that revision is frozen.
 
+For the closed AhmedML candidate, use
+[`ahmedml-v3-candidate/`](ahmedml-v3-candidate/). Its genuine-inference
+assembler supports all eight official splits, verifies every declared local
+checkpoint, re-reduces complete evaluator case evidence, and creates the same
+schema-v3 metric, profile, discretization, and regional products exercised by
+the separate synthetic development fixture. An optional maintainer registry can
+show an exact immutable candidate only on the dev feed as a non-citable
+pre-release reference.
+
 A real dataset specification pins its original public field-bearing files and requires one mapped prediction for every official
 entity in every case. It also identifies whether fields are point-, node-, face-, or cell-associated and supplies the authoritative
 area, length, volume, or cell-area weights. The guidance distinguishes three-dimensional surfaces and flow domains, two-dimensional
@@ -50,9 +59,9 @@ velocity profiles. It is intentionally abridged and is not a complete benchmark 
 pinned extractor for AirfRANS extrados velocity profiles. It also demonstrates evaluating native point-ordered NumPy or PyTorch
 velocity predictions without serializing a predicted VTU mesh.
 
-For a historical v1 prototype directory that passes the dummy-data validator, inspect the AhmedML
-[`transolver`](../submissions/ahmedml/transolver/) submission. It includes all prototype case IDs, chunk checksums, required
-pressure stations, optional velocity stations, metadata, and scalar metrics. Do not use it as a real-submission template.
+Do not use removed historical AhmedML v1 dummy packages as submission
+templates; they predate the native-cell evaluator, moving-geometry profiles,
+regional diagnostics, and schema-v3 evidence contract.
 
 Participants may generate equivalent JSON with Python, MATLAB, Julia, C++, or another language. The schema and final values matter;
 the code does not need to follow the example implementation. Public code, a pinned model, a locked environment, and artifact

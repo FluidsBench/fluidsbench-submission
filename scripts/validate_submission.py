@@ -80,6 +80,12 @@ from reference.ahmedml.regional_aggregate import (
 from reference.ahmedml.contract import (
     REGION_DEFINITION_SHA256 as AHMEDML_REGION_DEFINITION_SHA256,
 )
+from reference.ahmedml.pre_release import (
+    AhmedMLPreReleaseError,
+    REGISTRY_SCHEMA as AHMEDML_PRE_RELEASE_REGISTRY_SCHEMA,
+    REGISTRY_STATUS as AHMEDML_PRE_RELEASE_REGISTRY_STATUS,
+    build_registry_entry as build_ahmedml_pre_release_registry_entry,
+)
 from reference.methodology import methodology_errors
 
 try:
@@ -547,6 +553,11 @@ AHMEDML_DEVELOPMENT_FIXTURE_ID = (
 AHMEDML_DEVELOPMENT_FIXTURE_PATH = (
     "submissions/ahmedml/"
     f"{AHMEDML_DEVELOPMENT_FIXTURE_ID}/submission.json"
+)
+AHMEDML_PRE_RELEASE_REGISTRY_PATH = (
+    Path("benchmark-specs")
+    / "ahmedml"
+    / "pre-release-reference-registry.json"
 )
 LEGACY_V1_SUBMISSION_ID = re.compile(r"^(?P<series>[a-z0-9][a-z0-9-]{2,69})-v1$")
 
@@ -1136,6 +1147,120 @@ def registered_ahmedml_development_fixture(
             "promotion": False,
         },
     }
+
+
+def _ahmedml_pre_release_registry(
+    *, root: Path | None = None
+) -> dict[str, Any] | None:
+    """Load the closed dev-only AhmedML registry, failing closed."""
+
+    effective_root = (root or ROOT).resolve()
+    try:
+        registry = load_submission_json(
+            effective_root / AHMEDML_PRE_RELEASE_REGISTRY_PATH
+        )
+    except (OSError, UnicodeError, ValueError):
+        return None
+    expected_activation = {
+        "owner_approval_complete": False,
+        "published": False,
+        "submissions_opened": False,
+        "registration_changes_activation": False,
+    }
+    entries = registry.get("entries") if isinstance(registry, dict) else None
+    if (
+        not isinstance(registry, dict)
+        or registry.get("schema") != AHMEDML_PRE_RELEASE_REGISTRY_SCHEMA
+        or registry.get("status") != AHMEDML_PRE_RELEASE_REGISTRY_STATUS
+        or registry.get("dataset_id") != "ahmedml"
+        or registry.get("activation") != expected_activation
+        or not isinstance(entries, list)
+        or not all(isinstance(entry, dict) for entry in entries)
+    ):
+        return None
+    paths = [entry.get("submission_path") for entry in entries]
+    identifiers = [entry.get("submission_id") for entry in entries]
+    if (
+        any(not isinstance(value, str) or not value for value in paths + identifiers)
+        or len(paths) != len(set(paths))
+        or len(identifiers) != len(set(identifiers))
+    ):
+        return None
+    return registry
+
+
+def _registered_ahmedml_pre_release_entry(
+    path: Path,
+    *,
+    root: Path | None = None,
+) -> dict[str, Any] | None:
+    effective_root = (root or ROOT).resolve()
+    try:
+        relative_path = path.resolve().relative_to(effective_root).as_posix()
+    except (OSError, ValueError):
+        return None
+    registry = _ahmedml_pre_release_registry(root=effective_root)
+    if registry is None:
+        return None
+    return next(
+        (
+            entry
+            for entry in registry["entries"]
+            if entry.get("submission_path") == relative_path
+        ),
+        None,
+    )
+
+
+def is_registered_ahmedml_pre_release_path(
+    path: Path,
+    *,
+    root: Path | None = None,
+) -> bool:
+    """Return whether the maintainer registry names this exact dev path."""
+
+    return _registered_ahmedml_pre_release_entry(path, root=root) is not None
+
+
+def registered_ahmedml_pre_release_reference(
+    path: Path,
+    submission: dict[str, Any],
+    manifest: dict[str, Any],
+    *,
+    root: Path | None = None,
+) -> dict[str, Any] | None:
+    """Recognize one hash-bound genuine-inference AhmedML dev reference.
+
+    The registry is deliberately outside the participant package.  An entry is
+    effective only in the prototype feed and only while every package byte,
+    artifact hash, checkpoint declaration, scope value, and inference
+    attestation recomputes to the exact reviewed entry.
+    """
+
+    effective_root = (root or ROOT).resolve()
+    expected = _registered_ahmedml_pre_release_entry(path, root=effective_root)
+    if (
+        expected is None
+        or manifest.get("data_release", {}).get("status")
+        != "prototype_dummy_data"
+    ):
+        return None
+    try:
+        retained_submission = load_submission_json(path)
+        observed = build_ahmedml_pre_release_registry_entry(
+            path,
+            repository_root=effective_root,
+        )
+    except (
+        AhmedMLPreReleaseError,
+        OSError,
+        json.JSONDecodeError,
+        ValueError,
+    ):
+        return None
+    if retained_submission != submission or observed != expected:
+        return None
+    return deepcopy(expected)
 
 
 def validate_registered_hiliftaeroml_preview_archive(
@@ -7214,6 +7339,34 @@ def validate_submission_file(
         and not contributor_stage
         and not candidate_dry_run
     )
+    configured_ahmedml_pre_release_path = (
+        is_registered_ahmedml_pre_release_path(path)
+    )
+    ahmedml_pre_release_binding = registered_ahmedml_pre_release_reference(
+        path,
+        submission,
+        manifest,
+    )
+    if (
+        configured_ahmedml_pre_release_path
+        and ahmedml_pre_release_binding is None
+        and not candidate_dry_run
+    ):
+        add(
+            "registered AhmedML pre-release reference does not match its "
+            "maintainer lifecycle, package tree, artifacts, checkpoint "
+            "declarations, or inference attestation"
+        )
+    if contributor_stage and ahmedml_pre_release_binding is not None:
+        add(
+            "the maintainer-registered AhmedML pre-release reference is "
+            "unavailable in contributor-stage validation"
+        )
+    registered_ahmedml_pre_release = (
+        ahmedml_pre_release_binding is not None
+        and not contributor_stage
+        and not candidate_dry_run
+    )
     development_fixture_binding = registered_ahmedml_development_fixture(
         path,
         submission,
@@ -7227,18 +7380,19 @@ def validate_submission_file(
     candidate_contract_validation = (
         candidate_dry_run
         or registered_preview
+        or registered_ahmedml_pre_release
         or registered_development_fixture
     )
-    if registered_preview:
+    if registered_preview or registered_ahmedml_pre_release:
         if "approval" in submission:
-            add("registered HiLiftAeroML previews must not contain approval metadata")
+            add("registered pre-release references must not contain approval metadata")
         for filename in (
             "maintainer-validation.json",
             "prediction-artifact-checks.json",
             "maintainer-replay.json",
         ):
             if (path.parent / filename).exists():
-                add(f"registered HiLiftAeroML previews must not contain {filename}")
+                add(f"registered pre-release references must not contain {filename}")
     dataset = next((item for item in manifest["datasets"] if item["slug"] == submission["dataset_id"]), None)
     if dataset is None:
         add(f"unknown dataset_id {submission['dataset_id']!r}")

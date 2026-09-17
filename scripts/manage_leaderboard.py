@@ -22,6 +22,7 @@ if __package__:
         manifest_with_benchmark_contract,
         normalized_result_revision,
         registered_ahmedml_development_fixture,
+        registered_ahmedml_pre_release_reference,
         registered_hiliftaeroml_preview,
         schema_errors,
         sha256_file,
@@ -35,6 +36,7 @@ else:
         manifest_with_benchmark_contract,
         normalized_result_revision,
         registered_ahmedml_development_fixture,
+        registered_ahmedml_pre_release_reference,
         registered_hiliftaeroml_preview,
         schema_errors,
         sha256_file,
@@ -302,6 +304,12 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
             manifest,
             root=ROOT,
         )
+        ahmedml_pre_release = registered_ahmedml_pre_release_reference(
+            path,
+            submission,
+            manifest,
+            root=ROOT,
+        )
         development_fixture = registered_ahmedml_development_fixture(
             path,
             submission,
@@ -310,6 +318,7 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
         )
         if (
             registered_preview is None
+            and ahmedml_pre_release is None
             and development_fixture is None
             and submission.get("approval", {}).get("status")
             != allowed_approval_status
@@ -319,6 +328,8 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
         row.pop("$schema", None)
         if registered_preview is not None:
             row["record_type"] = registered_preview["record_type"]
+        elif ahmedml_pre_release is not None:
+            row["record_type"] = ahmedml_pre_release["record_type"]
         elif development_fixture is not None:
             row["record_type"] = development_fixture["record_type"]
         row["parameter_count"] = row.get("parameter_count_millions")
@@ -526,6 +537,13 @@ def claim_eligibility(release_status: str, row: dict[str, Any]) -> dict[str, Any
                     "Genuine HiLiftAeroML pre-release reference data retained to "
                     "exercise the evaluator and leaderboard before submissions "
                     "open; it is not an official benchmark result or ranking claim."
+                )
+            elif row.get("dataset_id") == "ahmedml":
+                reason = (
+                    "Genuine AhmedML pre-release model-inference data retained "
+                    "to exercise the evaluator and dev leaderboard while "
+                    "submissions remain closed; it is not an official benchmark "
+                    "result or ranking claim."
                 )
             else:
                 reason = (
