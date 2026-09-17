@@ -373,6 +373,35 @@ class WindsorMLScoredCaseSetApprovalTests(unittest.TestCase):
             spec["scoring_support"]["owner_decisions_required"],
         )
 
+    def test_component_weights_are_recorded_as_owner_approved(self) -> None:
+        spec = load(SPEC_DIR / "submission-spec.json")
+        record = spec["scoring_support"]["component_weights"]
+        self.assertEqual(record["status"], "owner_approved")
+        self.assertEqual(
+            record["split"],
+            {"field_score": 0.50, "force_score": 0.25, "diagnostic_score": 0.25},
+        )
+
+    def test_group_weights_match_the_approved_split(self) -> None:
+        """The declared split must equal what the components actually sum to."""
+
+        spec = load(SPEC_DIR / "submission-spec.json")
+        weights = {
+            component["metric_id"]: component["weight"]
+            for component in spec["overall_score_composite"]["components"]
+        }
+        actual = {
+            group["metric_id"]: sum(weights[m] for m in group["component_metric_ids"])
+            for group in spec["component_score_groups"]["groups"]
+        }
+        declared = spec["scoring_support"]["component_weights"]["split"]
+        for group, value in declared.items():
+            self.assertAlmostEqual(actual[group], value, places=9, msg=group)
+
+    def test_no_owner_decisions_remain_open(self) -> None:
+        spec = load(SPEC_DIR / "submission-spec.json")
+        self.assertEqual(spec["scoring_support"]["owner_decisions_required"], [])
+
     def test_excluded_ids_are_contract_unpublished_cases(self) -> None:
         spec = load(SPEC_DIR / "submission-spec.json")
         for case_id in spec["scoring_support"]["scored_case_set"]["excluded_case_ids"]:

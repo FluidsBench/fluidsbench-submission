@@ -125,9 +125,17 @@
       "report_only_mode": "relative",
       "definition_file": "profile-definition-v2.json"
     },
-    "owner_decisions_required": [
-      "approve_component_weights_after_profiles_are_scored"
-    ]
+    "component_weights": {
+      "status": "owner_approved",
+      "approved_on": "2026-09-17",
+      "split": {
+        "field_score": 0.5,
+        "force_score": 0.25,
+        "diagnostic_score": 0.25
+      },
+      "rationale": "Identical to AhmedML and HiLiftAeroML component for component, and to DrivAerML apart from its force group, which splits three ways (cd 0.15, cl 0.05, c_pitch 0.05) because it scores pitching moment. WindsorML publishes cmy, so a c_pitch_r2 term is supported by the data, but it would need surface moment integration and a pinned moment reference point that the dataset does not publish. Not adopted."
+    },
+    "owner_decisions_required": []
   },
   "evaluation_reference_version": "windsorml-evaluator-v0.1-candidate",
   "default_field_reduction": "per_geometry_then_macro_average",

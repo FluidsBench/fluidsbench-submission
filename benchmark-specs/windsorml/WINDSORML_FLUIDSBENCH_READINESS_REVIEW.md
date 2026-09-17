@@ -229,9 +229,13 @@ is the intended fix -- the constant line spans y in [0, 0.5] and overshoots the
 1. Approve the 235 → 233 scored-case reduction.
 2. Review the relative placement families and decide whether either should ever
    take the ranked weight in place of the constant family.
-3. Decide whether to replace nearest-cell snapping with interpolation. The
-   sweep showed the profile metric carries a 1-2% quantisation floor that no
-   sample count removes.
+3. ~~Approve component weights.~~ Approved 2026-09-17, unchanged at field 0.50 /
+   force 0.25 / diagnostic 0.25. That is identical to AhmedML and HiLiftAeroML
+   component for component, and to DrivAerML apart from its force group, which
+   splits three ways (cd 0.15, cl 0.05, c_pitch 0.05) because it scores pitching
+   moment. WindsorML publishes `cmy`, so a `c_pitch_r2` term is supported by the
+   data, but it would need surface moment integration and a moment reference
+   point the dataset does not publish. Not adopted.
 4. Decide whether `geo_parameters_all.csv` or the per-run CSVs are authoritative —
    the aggregate omits `ratio_length_front_rear`, which the splits README
    documents and works around, but participants need to be told which to use.
