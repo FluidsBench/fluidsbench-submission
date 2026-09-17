@@ -41,8 +41,8 @@ if str(ROOT) not in os.sys.path:
 from reference.ahmedml.contract import (  # noqa: E402
     FORCE_ABSOLUTE_TOLERANCE,
     PROFILE_DEFINITION_SHA256,
-    REGION_DEFINITION_SHA256,
     SOURCE_IDENTITY_SHA256,
+    VOLUME_REGION_DEFINITION_SHA256,
     AhmedMLContractError,
     AhmedMLSourceCase,
     classify_force_replay,
@@ -610,7 +610,7 @@ def build_case_support(
         "source": _source_summary(case),
         "definitions": {
             "profile_definition_sha256": PROFILE_DEFINITION_SHA256,
-            "regional_definition_sha256": REGION_DEFINITION_SHA256,
+            "regional_definition_sha256": VOLUME_REGION_DEFINITION_SHA256,
             "profile_sample_count": PROFILE_SAMPLE_COUNT,
             "surface_station_ids": list(SURFACE_STATIONS),
             "volume_station_ids": list(VOLUME_STATIONS),

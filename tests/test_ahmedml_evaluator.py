@@ -21,6 +21,7 @@ from reference.ahmedml.contract import (  # noqa: E402
     DATASET_VERSION,
     PROFILE_DEFINITION_SHA256,
     REGION_DEFINITION_SHA256,
+    VOLUME_REGION_DEFINITION_SHA256,
     REPOSITORY_ID,
     REPOSITORY_REVISION,
     SOURCE_IDENTITY_SHA256,
@@ -36,7 +37,7 @@ from reference.ahmedml.support import (  # noqa: E402
     VOLUME_STATIONS,
     load_case_support,
 )
-from reference.drivaerml.prediction_chunks import (  # noqa: E402
+from reference.ahmedml.prediction_chunks import (  # noqa: E402
     AHMEDML_CANDIDATE_FORMAT,
     CANDIDATE_ARTIFACT_ROLE,
     PredictionChunkError,
@@ -85,7 +86,7 @@ def write_surface(path: Path) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     ):
         points.InsertNextPoint(*point)
     polys = vtk.vtkCellArray()
-    for ids in ((0, 2, 1), (0, 1, 3), (0, 3, 2)):
+    for ids in ((0, 2, 1), (0, 1, 3), (0, 3, 2), (0, 1, 2)):
         triangle = vtk.vtkTriangle()
         for index, point_id in enumerate(ids):
             triangle.GetPointIds().SetId(index, point_id)
@@ -93,9 +94,14 @@ def write_surface(path: Path) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     data = vtk.vtkPolyData()
     data.SetPoints(points)
     data.SetPolys(polys)
-    pressure = np.asarray((0.2, -0.3, 0.4), dtype=np.float32)
+    pressure = np.asarray((0.2, -0.3, 0.4, -0.1), dtype=np.float32)
     shear = np.asarray(
-        ((0.01, 0.02, 0.03), (0.03, 0.01, 0.02), (0.02, 0.03, 0.01)),
+        (
+            (0.01, 0.02, 0.03),
+            (0.03, 0.01, 0.02),
+            (0.02, 0.03, 0.01),
+            (0.04, 0.02, 0.01),
+        ),
         dtype=np.float32,
     )
     data.GetCellData().AddArray(vtk_array("pMean", pressure))
@@ -109,7 +115,12 @@ def write_surface(path: Path) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     assert writer.Write() == 1
     strip_vtk_information_keys(path)
     area_vectors = np.asarray(
-        ((0.0, 0.0, -0.5), (0.0, -0.5, 0.0), (-0.5, 0.0, 0.0)),
+        (
+            (0.0, 0.0, -0.5),
+            (0.0, -0.5, 0.0),
+            (-0.5, 0.0, 0.0),
+            (0.0, 0.0, 0.5),
+        ),
         dtype=np.float64,
     )
     areas = np.linalg.norm(area_vectors, axis=1).astype(np.float32)
@@ -182,9 +193,12 @@ def prediction_manifest(
 ) -> Path:
     root.mkdir()
     chunk = root / "chunk-00000.npz"
+    row_count = next(iter(fields.values())).shape[0]
+    if any(values.shape[0] != row_count for values in fields.values()):
+        raise AssertionError("prediction fields must share one row count")
     np.savez(
         chunk,
-        raw_cell_id=np.arange(3, dtype=np.int64),
+        raw_cell_id=np.arange(row_count, dtype=np.int64),
         **fields,
     )
     document = {
@@ -194,7 +208,7 @@ def prediction_manifest(
         "case_id": "run_1",
         "support_id": support_id,
         "association": "CellData",
-        "total_row_count": 3,
+        "total_row_count": row_count,
         "field_components": {
             name: 1 if values.ndim == 1 else values.shape[1]
             for name, values in fields.items()
@@ -204,9 +218,9 @@ def prediction_manifest(
                 "chunk_index": 0,
                 "file": chunk.name,
                 "sha256": sha256(chunk),
-                "row_count": 3,
+                "row_count": row_count,
                 "raw_cell_id_start": 0,
-                "raw_cell_id_stop": 3,
+                "raw_cell_id_stop": row_count,
             }
         ],
     }
@@ -237,7 +251,7 @@ def make_fixture(root: Path) -> tuple[
     case = AhmedMLSourceCase(
         case_id="run_1",
         run_id=1,
-        surface_entity_count=3,
+        surface_entity_count=4,
         volume_entity_count=3,
         boundary=file_identity(boundary, "run_1/boundary_1.vtp"),
         surface_cell_area=file_identity(area_path, "run_1/boundary_cell_area_1.npy"),
@@ -267,7 +281,7 @@ def make_fixture(root: Path) -> tuple[
         support_root / "volume_region_code.npy", np.arange(3, dtype=np.uint8)
     )
     surface_ids = np.vstack(
-        [np.arange(128, dtype=np.int64) % 3 for _ in SURFACE_STATIONS]
+        [np.arange(128, dtype=np.int64) % 4 for _ in SURFACE_STATIONS]
     )
     volume_ids = np.vstack(
         [np.arange(128, dtype=np.int64) % 3 for _ in VOLUME_STATIONS]
@@ -325,12 +339,12 @@ def make_fixture(root: Path) -> tuple[
         },
         "definitions": {
             "profile_definition_sha256": PROFILE_DEFINITION_SHA256,
-            "regional_definition_sha256": REGION_DEFINITION_SHA256,
+            "regional_definition_sha256": VOLUME_REGION_DEFINITION_SHA256,
             "profile_sample_count": 128,
             "surface_station_ids": list(SURFACE_STATIONS),
             "volume_station_ids": list(VOLUME_STATIONS),
         },
-        "entity_counts": {"surface": 3, "volume": 3},
+        "entity_counts": {"surface": 4, "volume": 3},
         "geometry_parameters_mm_or_degrees": {"body-length": 1000.0},
         "artifacts": {
             "surface_area_vector": area_vector_artifact,
@@ -382,7 +396,7 @@ def test_perfect_native_predictions_produce_zero_error_and_exact_profiles() -> N
             case_support=support,
             surface_prediction_manifest=surface,
             volume_prediction_manifest=volume,
-            maximum_prediction_chunk_rows=3,
+            maximum_prediction_chunk_rows=4,
             encoded_chunk_bytes=7,
             hash_chunk_bytes=11,
             validation_block_rows=2,
@@ -399,6 +413,16 @@ def test_perfect_native_predictions_produce_zero_error_and_exact_profiles() -> N
             assert series["prediction"] == pytest.approx(series["truth"])
         diagnostics = result["report_only_regional_diagnostics"]
         assert diagnostics["ranking_effect"] == "none"
+        assert diagnostics["contract_sha256"] == REGION_DEFINITION_SHA256
+        assert set(diagnostics["surface_pressure"]) == {
+            "streamwise_facing",
+            "lateral_facing",
+            "upward_facing",
+            "downward_facing",
+        }
+        assert set(diagnostics["surface_wall_shear"]) == set(
+            diagnostics["surface_pressure"]
+        )
         assert set(diagnostics["volume_velocity"]) == {
             "near_body",
             "wake",

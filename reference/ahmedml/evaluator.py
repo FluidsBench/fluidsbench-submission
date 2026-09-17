@@ -16,7 +16,7 @@ from reference.drivaerml.accumulators import (
     FinalizedFieldStatistics,
     StreamingFieldAccumulator,
 )
-from reference.drivaerml.prediction_chunks import (
+from reference.ahmedml.prediction_chunks import (
     DEFAULT_HASH_CHUNK_BYTES,
     DEFAULT_VALIDATION_BLOCK_ROWS,
     PredictionChunk,
@@ -38,6 +38,7 @@ from reference.drivaerml.source import (
 from .contract import (
     PROFILE_DEFINITION_SHA256,
     REGION_DEFINITION_SHA256,
+    VOLUME_REGION_DEFINITION_SHA256,
     AhmedMLSourceCase,
     AhmedMLSourceIdentity,
     SourceFileIdentity,
@@ -52,7 +53,8 @@ from .support import (
 )
 
 
-EVIDENCE_SCHEMA = "ahmedml-candidate-case-evaluation-v1"
+EVIDENCE_SCHEMA = "ahmedml-candidate-case-evaluation-v2"
+EVIDENCE_SCHEMA_VERSION = 2
 EVIDENCE_STATUS = "non_ranked_development_evidence_not_official_submission"
 SURFACE_SUPPORT_ID = "ahmedml_surface_native_cells"
 VOLUME_SUPPORT_ID = "ahmedml_volume_native_cells"
@@ -61,7 +63,13 @@ DEFAULT_ENCODED_CHUNK_BYTES = 8 * 1024 * 1024
 Q_REF = 0.5
 A_REF = 0.112032
 FORCE_DENOMINATOR = Q_REF * A_REF
-REGION_IDS = ("near_body", "wake", "farfield")
+SURFACE_REGION_IDS = (
+    "streamwise_facing",
+    "lateral_facing",
+    "upward_facing",
+    "downward_facing",
+)
+VOLUME_REGION_IDS = ("near_body", "wake", "farfield")
 _VTK_DTYPES = {
     ("LittleEndian", "Float32"): np.dtype("<f4"),
     ("LittleEndian", "Float64"): np.dtype("<f8"),
@@ -72,6 +80,38 @@ _VTK_DTYPES = {
 
 class AhmedMLCandidateEvaluatorError(ValueError):
     """Raised when native AhmedML evidence cannot be produced exactly."""
+
+
+def surface_region_codes(area_vectors: np.ndarray) -> np.ndarray:
+    """Assign deterministic coarse regions from each face's outward normal.
+
+    The regions deliberately describe normal orientation rather than semantic
+    body patches.  Ties use the fixed streamwise, lateral, then vertical
+    precedence frozen by the AhmedML regional-diagnostics v2 contract.
+    """
+
+    vectors = np.asarray(area_vectors)
+    if vectors.ndim != 2 or vectors.shape[1] != 3:
+        raise AhmedMLCandidateEvaluatorError(
+            "surface area vectors must have shape (entity_count, 3)"
+        )
+    if np.any(~np.isfinite(vectors)):
+        raise AhmedMLCandidateEvaluatorError("surface area vectors must be finite")
+    magnitudes = np.linalg.norm(vectors.astype(np.float64), axis=1)
+    if np.any(magnitudes <= 0.0):
+        raise AhmedMLCandidateEvaluatorError("surface area vectors must be non-zero")
+    absolute = np.abs(vectors)
+    codes = np.empty(vectors.shape[0], dtype=np.uint8)
+    streamwise = (absolute[:, 0] >= absolute[:, 1]) & (
+        absolute[:, 0] >= absolute[:, 2]
+    )
+    lateral = (~streamwise) & (absolute[:, 1] >= absolute[:, 2])
+    vertical = ~(streamwise | lateral)
+    codes[streamwise] = 0
+    codes[lateral] = 1
+    codes[vertical & (vectors[:, 2] >= 0.0)] = 2
+    codes[vertical & (vectors[:, 2] < 0.0)] = 3
+    return codes
 
 
 @dataclass(frozen=True)
@@ -214,22 +254,35 @@ def _validate_manifest(
 
 
 class _RegionalSums:
-    """Three-region additive scalar/vector statistics."""
+    """Additive scalar/vector statistics over one frozen regional support."""
 
-    def __init__(self, components: int) -> None:
+    def __init__(
+        self,
+        components: int,
+        region_ids: tuple[str, ...],
+        domain: str,
+    ) -> None:
         self.components = components
-        self.count = np.zeros(3, dtype=np.int64)
-        self.weight = np.zeros(3, dtype=np.float64)
-        self.uniform_absolute_error = np.zeros(3, dtype=np.float64)
-        self.uniform_squared_error = np.zeros(3, dtype=np.float64)
-        self.uniform_squared_truth = np.zeros(3, dtype=np.float64)
-        self.physical_absolute_error = np.zeros(3, dtype=np.float64)
-        self.physical_squared_error = np.zeros(3, dtype=np.float64)
-        self.physical_squared_truth = np.zeros(3, dtype=np.float64)
+        self.region_ids = region_ids
+        self.domain = domain
+        region_count = len(region_ids)
+        if region_count < 1 or len(set(region_ids)) != region_count:
+            raise AhmedMLCandidateEvaluatorError("regional support IDs must be unique")
+        self.count = np.zeros(region_count, dtype=np.int64)
+        self.weight = np.zeros(region_count, dtype=np.float64)
+        self.uniform_absolute_error = np.zeros(region_count, dtype=np.float64)
+        self.uniform_squared_error = np.zeros(region_count, dtype=np.float64)
+        self.uniform_squared_truth = np.zeros(region_count, dtype=np.float64)
+        self.physical_absolute_error = np.zeros(region_count, dtype=np.float64)
+        self.physical_squared_error = np.zeros(region_count, dtype=np.float64)
+        self.physical_squared_truth = np.zeros(region_count, dtype=np.float64)
 
-    @staticmethod
-    def _bins(codes: np.ndarray, values: np.ndarray | None = None) -> np.ndarray:
-        return np.bincount(codes, weights=values, minlength=3).astype(
+    def _bins(
+        self, codes: np.ndarray, values: np.ndarray | None = None
+    ) -> np.ndarray:
+        return np.bincount(
+            codes, weights=values, minlength=len(self.region_ids)
+        ).astype(
             np.float64, copy=False
         )
 
@@ -243,8 +296,10 @@ class _RegionalSums:
         normalized = np.asarray(codes)
         if normalized.dtype != np.uint8 or normalized.ndim != 1:
             raise AhmedMLCandidateEvaluatorError("region codes must be one-dimensional uint8")
-        if np.any(normalized > 2):
-            raise AhmedMLCandidateEvaluatorError("region codes must lie in [0, 2]")
+        if np.any(normalized >= len(self.region_ids)):
+            raise AhmedMLCandidateEvaluatorError(
+                f"{self.domain} region code lies outside its frozen support"
+            )
         truth_2d = truth[:, None] if truth.ndim == 1 else truth
         pred_2d = prediction[:, None] if prediction.ndim == 1 else prediction
         if truth_2d.shape != pred_2d.shape or truth_2d.shape[1] != self.components:
@@ -293,7 +348,9 @@ class _RegionalSums:
         expected_physical: object,
     ) -> Mapping[str, object]:
         if np.any(self.count <= 0) or np.any(self.weight <= 0.0):
-            raise AhmedMLCandidateEvaluatorError("every AhmedML volume region must be non-empty")
+            raise AhmedMLCandidateEvaluatorError(
+                f"every AhmedML {self.domain} region must be non-empty"
+            )
         if int(np.sum(self.count)) != int(getattr(expected_uniform, "entity_count")):
             raise AhmedMLCandidateEvaluatorError("regional counts do not reconstruct the field")
         checks = (
@@ -308,7 +365,7 @@ class _RegionalSums:
                     "regional sufficient statistics do not reconstruct the whole field"
                 )
         regions: dict[str, object] = {}
-        for code, region_id in enumerate(REGION_IDS):
+        for code, region_id in enumerate(self.region_ids):
             regions[region_id] = {
                 "code": code,
                 "entity_count": int(self.count[code]),
@@ -341,6 +398,8 @@ class _FieldSink:
         field_name: str,
         weights: np.ndarray,
         region_codes: np.ndarray | None,
+        region_ids: tuple[str, ...] | None,
+        region_domain: str | None,
         sample_ids: np.ndarray | None,
         sample_component: int | None,
         sample_scale: float,
@@ -367,8 +426,20 @@ class _FieldSink:
             expected_entity_count=manifest.total_row_count,
             component_count=self.components,
         )
+        if (region_codes is None) != (region_ids is None) or (
+            region_codes is None
+        ) != (region_domain is None):
+            raise AhmedMLCandidateEvaluatorError(
+                "regional codes, IDs, and domain must be supplied together"
+            )
         self.regional = (
-            _RegionalSums(self.components) if region_codes is not None else None
+            None
+            if region_codes is None
+            else _RegionalSums(
+                self.components,
+                region_ids or (),
+                region_domain or "unknown",
+            )
         )
         self.iterator = iter_prediction_chunks(
             manifest,
@@ -545,6 +616,8 @@ def _evaluate_field(
     field_name: str,
     weights: np.ndarray,
     region_codes: np.ndarray | None,
+    region_ids: tuple[str, ...] | None,
+    region_domain: str | None,
     sample_ids: np.ndarray | None,
     sample_component: int | None,
     sample_scale: float,
@@ -561,6 +634,8 @@ def _evaluate_field(
         field_name=field_name,
         weights=weights,
         region_codes=region_codes,
+        region_ids=region_ids,
+        region_domain=region_domain,
         sample_ids=sample_ids,
         sample_component=sample_component,
         sample_scale=sample_scale,
@@ -848,6 +923,7 @@ def evaluate_candidate_case(
             )
             volume_pressure_array = _required_array(volume_index, "pMean", 1)
             volume_velocity_array = _required_array(volume_index, "UMean", 3)
+            surface_codes = surface_region_codes(area_vectors)
 
             surface_pressure = _evaluate_field(
                 stream=boundary.handle,
@@ -857,7 +933,9 @@ def evaluate_candidate_case(
                 field_id="surface_pressure",
                 field_name="pMean",
                 weights=surface_areas,
-                region_codes=None,
+                region_codes=surface_codes,
+                region_ids=SURFACE_REGION_IDS,
+                region_domain="surface",
                 sample_ids=profile_support["surface_raw_cell_id"],
                 sample_component=None,
                 sample_scale=2.0,
@@ -875,7 +953,9 @@ def evaluate_candidate_case(
                 field_id="surface_wall_shear",
                 field_name="wallShearStressMean",
                 weights=surface_areas,
-                region_codes=None,
+                region_codes=surface_codes,
+                region_ids=SURFACE_REGION_IDS,
+                region_domain="surface",
                 sample_ids=None,
                 sample_component=None,
                 sample_scale=1.0,
@@ -894,6 +974,8 @@ def evaluate_candidate_case(
                 field_name="pMean",
                 weights=cell_volumes,
                 region_codes=region_codes,
+                region_ids=VOLUME_REGION_IDS,
+                region_domain="volume",
                 sample_ids=None,
                 sample_component=None,
                 sample_scale=1.0,
@@ -912,6 +994,8 @@ def evaluate_candidate_case(
                 field_name="UMean",
                 weights=cell_volumes,
                 region_codes=region_codes,
+                region_ids=VOLUME_REGION_IDS,
+                region_domain="volume",
                 sample_ids=profile_support["volume_raw_cell_id"],
                 sample_component=0,
                 sample_scale=1.0,
@@ -940,7 +1024,7 @@ def evaluate_candidate_case(
     force = _force_result(surface_pressure, surface_shear)
     evidence: dict[str, object] = {
         "schema": EVIDENCE_SCHEMA,
-        "schema_version": 1,
+        "schema_version": EVIDENCE_SCHEMA_VERSION,
         "status": EVIDENCE_STATUS,
         "official_submission": False,
         "leaderboard_eligible": False,
@@ -957,6 +1041,7 @@ def evaluate_candidate_case(
             "case_support_sha256": case_support.manifest_sha256,
             "profile_definition_sha256": PROFILE_DEFINITION_SHA256,
             "regional_definition_sha256": REGION_DEFINITION_SHA256,
+            "volume_region_definition_sha256": VOLUME_REGION_DEFINITION_SHA256,
         },
         "prediction_inputs": {
             "surface": {
@@ -981,8 +1066,11 @@ def evaluate_candidate_case(
         "force_coefficients": force,
         "profiles": profiles,
         "report_only_regional_diagnostics": {
-            "definition_sha256": REGION_DEFINITION_SHA256,
+            "contract_sha256": REGION_DEFINITION_SHA256,
+            "definition_id": "ahmedml-native-regions-v2-candidate",
             "ranking_effect": "none",
+            "surface_pressure": dict(surface_pressure.regional_diagnostics or {}),
+            "surface_wall_shear": dict(surface_shear.regional_diagnostics or {}),
             "volume_pressure": dict(volume_pressure.regional_diagnostics or {}),
             "volume_velocity": dict(volume_velocity.regional_diagnostics or {}),
         },
@@ -1002,8 +1090,12 @@ __all__ = [
     "DEFAULT_ENCODED_CHUNK_BYTES",
     "DEFAULT_MAX_PREDICTION_CHUNK_ROWS",
     "EVIDENCE_SCHEMA",
+    "EVIDENCE_SCHEMA_VERSION",
     "EVIDENCE_STATUS",
+    "SURFACE_REGION_IDS",
     "SURFACE_SUPPORT_ID",
+    "VOLUME_REGION_IDS",
     "VOLUME_SUPPORT_ID",
     "evaluate_candidate_case",
+    "surface_region_codes",
 ]

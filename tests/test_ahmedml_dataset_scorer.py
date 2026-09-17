@@ -15,7 +15,11 @@ from reference.ahmedml.dataset_scorer import (
     AhmedMLDatasetScorerError,
     score_candidate_dataset,
 )
-from reference.ahmedml.evaluator import EVIDENCE_SCHEMA, EVIDENCE_STATUS
+from reference.ahmedml.evaluator import (
+    EVIDENCE_SCHEMA,
+    EVIDENCE_SCHEMA_VERSION,
+    EVIDENCE_STATUS,
+)
 from reference.ahmedml.support import SURFACE_STATIONS, VOLUME_STATIONS
 
 
@@ -60,7 +64,7 @@ def _case_evidence(case_id: str, case_index: int) -> dict[str, object]:
     value = 0.1 + 0.002 * case_index
     return {
         "schema": EVIDENCE_SCHEMA,
-        "schema_version": 1,
+        "schema_version": EVIDENCE_SCHEMA_VERSION,
         "status": EVIDENCE_STATUS,
         "official_submission": False,
         "leaderboard_eligible": False,

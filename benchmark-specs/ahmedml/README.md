@@ -13,6 +13,7 @@ participant-side resampling:
 - drag and lift reconstructed from the complete surface prediction;
 - three evaluator-owned surface Cp cuts with exactly 128 samples each;
 - four evaluator-owned wake-velocity profiles with exactly 128 samples each;
+- zero-weight dominant-normal surface diagnostics for pressure and wall shear;
 - zero-weight near-body, wake, and farfield volume diagnostics.
 
 Surface relative L2 is polygon-area weighted, with equal-polygon values
@@ -20,6 +21,13 @@ reported secondarily. Volume relative L2 uses equal native cells as the primary
 metric, with cell-volume-weighted values reported secondarily. Profiles are
 derived from the same complete fields used for spatial scoring; a submission
 cannot supply its own profile values.
+
+The profile geometry follows each case rather than remaining at fixed physical
+coordinates. Cp targets use the case body/slant dimensions and actual surface
+bounds; wake targets use that case's `L`, `H`, and `W`. The common body frame
+keeps the rear plane at `x=0`, symmetry plane at `y=0`, and ground at `z=0`.
+Each resulting native-cell mapping is frozen in evaluator support, so runtime
+scoring never repeats a nearest-neighbour search.
 
 The pinned `run_492` force CSV is the sole source-audit exception: its Cd/Cl
 values differ from integration of the pinned complete native surface fields by
@@ -46,7 +54,11 @@ dataset-owned evaluator path intended for future real submissions.
 
 - `submission-spec.json`: score, split, and lifecycle contract.
 - `profile-definition-v1.json`: frozen 3-Cp/4-velocity 128-point profile rules.
-- `regional-diagnostics-v1.json`: mutually exclusive volume-region rules.
+- `regional-diagnostics-v2.json`: evaluator-owned surface and volume regional
+  rules. It retains `regional-diagnostics-v1.json` unchanged as the legacy
+  volume partition bound by existing large per-case support.
+- `reference/ahmedml/prediction_chunks.py`: AhmedML-owned interface to the
+  shared bounded native-order prediction transport.
 - `public-source-identity/`: pinned public file identities and entity counts.
 - `reference/ahmedml/`: support loading, field evaluation, dataset reduction,
   and regional aggregation.

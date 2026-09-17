@@ -134,7 +134,7 @@
       },
       "data_handling": {
         "normalization": "No training normalization is claimed. The fixture transform acts on native SI-valued CellData; Cp=2*pMean and Ux/Uinf=Ux because Uinf=1 m/s.",
-        "preprocessing": "The evaluator validates immutable public source hashes, complete native entity order, surface areas, cell volumes, frozen profile mappings, and three-region assignments.",
+        "preprocessing": "The evaluator validates immutable public source hashes, complete native entity order, surface areas, cell volumes, frozen profile mappings, evaluator-owned dominant-normal surface regions, and the retained three-zone volume partition.",
         "sampling": "No field subsampling. All surface and volume native cells are transformed and scored; evaluator-owned Cp and velocity diagnostics each contain exactly 128 points per station."
       },
       "training": {
@@ -192,7 +192,7 @@
       "reference_version": "ahmedml-evaluator-v0.1-candidate",
       "command": "python scripts/assemble_ahmedml_schema_v3_dev_fixture.py --dataset-evidence <full-evidence.json> --case-evidence-directory <case-evidence> --prediction-directory <synthetic-native-fields> --support-release <candidate-support> --profile-ground-truth-manifest <dashboard-manifest> --checkpoint <model_best.pt> --output submissions/ahmedml/ahmedml-geotransolver-calibrated-dev-fixture-v1",
       "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "f60810f86942ff6199c56b584205b2d7334dc9d9e607022f06fb2fe9eddbdc1c"
+      "evidence_sha256": "5d712facd666f9783180fe02327706cf5f43a01841758fda3e39bb2e46d4ea9a"
     },
     "scoring_support": {
       "status": "candidate",
@@ -558,11 +558,11 @@
       "index_sha256": "d5b5d20eb4ebaf97c84eb4dcc86e1df9cf3ce42a249a8fc29aea23767064f52c"
     },
     "regional_diagnostics": {
-      "format": "ahmedml-regional-diagnostics-aggregate-v1",
+      "format": "ahmedml-regional-diagnostics-aggregate-v2",
       "file": "submissions/ahmedml/ahmedml-geotransolver-calibrated-dev-fixture-v1/regional-diagnostics.json",
-      "sha256": "1ff7f0d87079db260184621733cd9bf08573d351082f05929e040f5df509cd17",
-      "contract_sha256": "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
-      "definition_id": "ahmedml-native-regions-v1-candidate",
+      "sha256": "a12d57a4708eb7c12db9adc24f172e6803da8deb1b8c3dc2629efc770bec06af",
+      "contract_sha256": "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
+      "definition_id": "ahmedml-native-regions-v2-candidate",
       "case_count": 50,
       "role": "report_only",
       "weight": 0.0,

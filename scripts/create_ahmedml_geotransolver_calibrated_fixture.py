@@ -41,7 +41,7 @@ from reference.ahmedml.contract import (  # noqa: E402
     load_source_identity,
     sha256_file,
 )
-from reference.drivaerml.prediction_chunks import (  # noqa: E402
+from reference.ahmedml.prediction_chunks import (  # noqa: E402
     AHMEDML_CANDIDATE_FORMAT,
     CANDIDATE_ARTIFACT_ROLE,
 )

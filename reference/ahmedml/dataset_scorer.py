@@ -24,7 +24,7 @@ from .contract import (
     REPOSITORY_REVISION,
     SOURCE_IDENTITY_SHA256,
 )
-from .evaluator import EVIDENCE_SCHEMA, EVIDENCE_STATUS
+from .evaluator import EVIDENCE_SCHEMA, EVIDENCE_SCHEMA_VERSION, EVIDENCE_STATUS
 from .support import (
     SURFACE_COORDINATE_INTERVALS,
     SURFACE_STATIONS,
@@ -293,7 +293,7 @@ def score_candidate_dataset(
         document, digest = _read_json(path, f"{case_id} evidence")
         if (
             document.get("schema") != EVIDENCE_SCHEMA
-            or document.get("schema_version") != 1
+            or document.get("schema_version") != EVIDENCE_SCHEMA_VERSION
             or document.get("status") != EVIDENCE_STATUS
             or document.get("official_submission") is not False
             or document.get("leaderboard_eligible") is not False

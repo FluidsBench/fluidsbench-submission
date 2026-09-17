@@ -1,9 +1,9 @@
 {
-  "schema": "ahmedml-regional-diagnostics-aggregate-v1",
-  "schema_version": 1,
+  "schema": "ahmedml-regional-diagnostics-aggregate-v2",
+  "schema_version": 2,
   "status": "complete_report_only",
-  "definition_id": "ahmedml-native-regions-v1-candidate",
-  "contract_sha256": "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
+  "definition_id": "ahmedml-native-regions-v2-candidate",
+  "contract_sha256": "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
   "dataset_id": "ahmedml",
   "split_id": "full",
   "prediction_scope": "surface_and_volume",
@@ -73,13 +73,788 @@
     "regional_values_consumed_by_official_score": false
   },
   "supports": {
+    "ahmedml-surface-four-normal-regions-v1": {
+      "definition_sha256": "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
+      "definition": {
+        "definition_id": "ahmedml-surface-four-dominant-normal-regions-v1",
+        "support_id": "ahmedml-surface-native-cells-v1",
+        "guide": "ahmed_surface",
+        "coordinate_frame": "native AhmedML body frame",
+        "region_source": "evaluator-owned outward oriented surface area vectors already used for force integration",
+        "partition_properties": "mutually_exclusive_and_exhaustive",
+        "regions_in_code_order": [
+          {
+            "region_id": "streamwise_facing",
+            "code": 0,
+            "predicate": "abs(nx) >= abs(ny) and abs(nx) >= abs(nz)"
+          },
+          {
+            "region_id": "lateral_facing",
+            "code": 1,
+            "predicate": "not streamwise_facing and abs(ny) >= abs(nz)"
+          },
+          {
+            "region_id": "upward_facing",
+            "code": 2,
+            "predicate": "neither higher-precedence region and nz >= 0"
+          },
+          {
+            "region_id": "downward_facing",
+            "code": 3,
+            "predicate": "all remaining native surface polygons"
+          }
+        ],
+        "scoring_role": "report_only_zero_weight",
+        "scoring_weight": 0.0,
+        "semantic_limit": "Frozen dominant-normal orientation bins; not CFD patches or semantic front, base, roof, side, slant, or underbody labels."
+      },
+      "fields": {
+        "surface_pressure": {
+          "case_count": 50,
+          "entity_count": 54215168,
+          "physical_weight": 74.96684360773315,
+          "primary_weighting": "physical",
+          "quantity": "pMean",
+          "unit": "m2 s-2",
+          "regions": [
+            {
+              "region_id": "streamwise_facing",
+              "code": 0,
+              "entity_count": 12674139,
+              "entity_fraction": 0.23377478051898687,
+              "physical_weight": 9.074277143667144,
+              "physical_weight_fraction": 0.1210438736243004,
+              "equal_entity": {
+                "pooled": {
+                  "absolute_error": 84375.70087941727,
+                  "squared_error": 885.8858954191722,
+                  "squared_truth": 720324.7676948492,
+                  "total_weight": 12674139.0,
+                  "relative_l2_percent": 3.506910800988536,
+                  "mae": 0.006657312254459043,
+                  "rmse": 0.008360450130124722,
+                  "fraction_of_support_squared_error": 0.28903241048488487
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 3.506910800973407,
+                  "mae": 0.006647267636479999,
+                  "rmse": 0.008366517492106512
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 3.5069107783293787,
+                    "median": 3.5069108013928987,
+                    "p90": 3.5069108115360224,
+                    "maximum": 3.5069108210340456,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 0.00574084517803657,
+                    "median": 0.0065145274446752315,
+                    "p90": 0.007188672898024763,
+                    "maximum": 0.008809420921578163,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.007433232630586922,
+                    "median": 0.00824324376263098,
+                    "p90": 0.009168769326760196,
+                    "maximum": 0.010502816032278494,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              },
+              "physical": {
+                "pooled": {
+                  "absolute_error": 0.05957822225809531,
+                  "squared_error": 0.0006152318155371529,
+                  "squared_truth": 0.5002525911469905,
+                  "total_weight": 9.074277143667144,
+                  "relative_l2_percent": 3.5069108008352834,
+                  "mae": 0.006565616336687976,
+                  "rmse": 0.008234047603087592,
+                  "fraction_of_support_squared_error": 0.15280697420691589
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 3.5069108008400485,
+                  "mae": 0.006561124100142928,
+                  "rmse": 0.008251022263401747
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 3.5069107786164233,
+                    "median": 3.5069108007566596,
+                    "p90": 3.50691081168996,
+                    "maximum": 3.506910821808823,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 0.00569205533800892,
+                    "median": 0.006385438721890973,
+                    "p90": 0.007108749559690525,
+                    "maximum": 0.008699413332289909,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.007222617461177825,
+                    "median": 0.008169812044002264,
+                    "p90": 0.009081276227537868,
+                    "maximum": 0.010398860452552953,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              }
+            },
+            {
+              "region_id": "lateral_facing",
+              "code": 1,
+              "entity_count": 20069547,
+              "entity_fraction": 0.37018324834850647,
+              "physical_weight": 26.697235727506317,
+              "physical_weight_fraction": 0.35612057868143165,
+              "equal_entity": {
+                "pooled": {
+                  "absolute_error": 92100.68158965789,
+                  "squared_error": 902.9265498398094,
+                  "squared_truth": 734180.7346430507,
+                  "total_weight": 20069547.0,
+                  "relative_l2_percent": 3.5069108003148353,
+                  "mae": 0.00458907625516699,
+                  "rmse": 0.006707449733399038,
+                  "fraction_of_support_squared_error": 0.29459215745557815
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 3.506910800866151,
+                  "mae": 0.004646343863368042,
+                  "rmse": 0.00672710495677092
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 3.5069107818812206,
+                    "median": 3.5069108003502505,
+                    "p90": 3.5069108149199084,
+                    "maximum": 3.5069108225953127,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 0.003596590715558322,
+                    "median": 0.0044995496280522095,
+                    "p90": 0.005539306992486654,
+                    "maximum": 0.006059281906001471,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.005416902965356479,
+                    "median": 0.00652727173806765,
+                    "p90": 0.007594236848429576,
+                    "maximum": 0.008435694808893173,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              },
+              "physical": {
+                "pooled": {
+                  "absolute_error": 0.12205970624432062,
+                  "squared_error": 0.0011989287959206212,
+                  "squared_truth": 0.9748638185411486,
+                  "total_weight": 26.697235727506317,
+                  "relative_l2_percent": 3.5069108001847322,
+                  "mae": 0.004571997921064232,
+                  "rmse": 0.00670136923466643,
+                  "fraction_of_support_squared_error": 0.2977815466747552
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 3.506910800720037,
+                  "mae": 0.004629898568015109,
+                  "rmse": 0.006723197861539329
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 3.5069107827261705,
+                    "median": 3.506910800279126,
+                    "p90": 3.506910813689161,
+                    "maximum": 3.506910823570127,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 0.0035887911632900608,
+                    "median": 0.004486435071909775,
+                    "p90": 0.005536830095413392,
+                    "maximum": 0.006017145228916486,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.0054270132477466536,
+                    "median": 0.0065422120510523225,
+                    "p90": 0.007621439543710236,
+                    "maximum": 0.008397124174983507,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              }
+            },
+            {
+              "region_id": "upward_facing",
+              "code": 2,
+              "entity_count": 10595637,
+              "entity_fraction": 0.19543676411737762,
+              "physical_weight": 19.796980324261632,
+              "physical_weight_fraction": 0.26407648196915,
+              "equal_entity": {
+                "pooled": {
+                  "absolute_error": 57055.05350671466,
+                  "squared_error": 519.5556696191317,
+                  "squared_truth": 422457.1347312119,
+                  "total_weight": 10595637.0,
+                  "relative_l2_percent": 3.506910800732558,
+                  "mae": 0.0053847686086938105,
+                  "rmse": 0.007002490182080974,
+                  "fraction_of_support_squared_error": 0.16951215540016168
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 3.506910800166633,
+                  "mae": 0.005366750393210718,
+                  "rmse": 0.006946554961119872
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 3.5069107730648468,
+                    "median": 3.5069108002534417,
+                    "p90": 3.506910815597482,
+                    "maximum": 3.5069108288201924,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 0.003633948069426878,
+                    "median": 0.005338805130881783,
+                    "p90": 0.006435695047657571,
+                    "maximum": 0.007165631756032646,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.005527464227168107,
+                    "median": 0.006867508137828717,
+                    "p90": 0.007930316448486109,
+                    "maximum": 0.008729545877502083,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              },
+              "physical": {
+                "pooled": {
+                  "absolute_error": 0.10571210416826671,
+                  "squared_error": 0.0009596635621876551,
+                  "squared_truth": 0.7803143001659577,
+                  "total_weight": 19.796980324261632,
+                  "relative_l2_percent": 3.5069108009558896,
+                  "mae": 0.00533980952836096,
+                  "rmse": 0.006962416935372084,
+                  "fraction_of_support_squared_error": 0.23835452180978842
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 3.5069108002563776,
+                  "mae": 0.005323388674741646,
+                  "rmse": 0.006907301350855174
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 3.5069107692504367,
+                    "median": 3.50691079962571,
+                    "p90": 3.5069108163877902,
+                    "maximum": 3.5069108295846148,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 0.0035617034842746545,
+                    "median": 0.005304407860424468,
+                    "p90": 0.006387683305842828,
+                    "maximum": 0.007101162711825652,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.005506241583506955,
+                    "median": 0.006822347063557627,
+                    "p90": 0.007887210886307122,
+                    "maximum": 0.00867734581322789,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              }
+            },
+            {
+              "region_id": "downward_facing",
+              "code": 3,
+              "entity_count": 10875845,
+              "entity_fraction": 0.20060520701512904,
+              "physical_weight": 19.39835041229808,
+              "physical_weight_fraction": 0.2587590657251182,
+              "equal_entity": {
+                "pooled": {
+                  "absolute_error": 64128.86070141051,
+                  "squared_error": 756.6372730401397,
+                  "squared_truth": 615231.1164913737,
+                  "total_weight": 10875845.0,
+                  "relative_l2_percent": 3.506910799087828,
+                  "mae": 0.005896448570332742,
+                  "rmse": 0.008340889370821869,
+                  "fraction_of_support_squared_error": 0.24686327665937535
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 3.506910799076662,
+                  "mae": 0.005896240739168327,
+                  "rmse": 0.008277252617496116
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 3.506910764928322,
+                    "median": 3.5069107983030268,
+                    "p90": 3.5069108174188597,
+                    "maximum": 3.5069108324927067,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 0.0037800198928322907,
+                    "median": 0.0059386206245224255,
+                    "p90": 0.007002134101635237,
+                    "maximum": 0.0090371082744367,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.0058513215060837925,
+                    "median": 0.008436329265797298,
+                    "p90": 0.009448750717309787,
+                    "maximum": 0.011363263149527654,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              },
+              "physical": {
+                "pooled": {
+                  "absolute_error": 0.10921812816657119,
+                  "squared_error": 0.0012523782868788373,
+                  "squared_truth": 1.0183242607666774,
+                  "total_weight": 19.39835041229808,
+                  "relative_l2_percent": 3.5069107990170663,
+                  "mae": 0.005630279165249514,
+                  "rmse": 0.008034990444596591,
+                  "fraction_of_support_squared_error": 0.31105695730854044
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 3.5069107989910906,
+                  "mae": 0.005641420121288139,
+                  "rmse": 0.007977617787708752
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 3.50691077009071,
+                    "median": 3.5069108013476695,
+                    "p90": 3.5069108139818828,
+                    "maximum": 3.506910838086794,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 0.003619935225011205,
+                    "median": 0.005697273373730929,
+                    "p90": 0.006660738181270227,
+                    "maximum": 0.008833067943364602,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.005644226050869469,
+                    "median": 0.008112488968911393,
+                    "p90": 0.009115334570290482,
+                    "maximum": 0.011194136305811163,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              }
+            }
+          ],
+          "validation": {
+            "all_case_reports_reconstructed_global_sums": true,
+            "regions_mutually_exclusive_exhaustive": true,
+            "macro_is_equal_case_mean": true,
+            "pooled_is_report_only_not_official_case_reduction": true
+          }
+        },
+        "surface_wall_shear": {
+          "case_count": 50,
+          "entity_count": 54215168,
+          "physical_weight": 74.96684360773315,
+          "primary_weighting": "physical",
+          "quantity": "wallShearStressMean",
+          "unit": "m2 s-2",
+          "regions": [
+            {
+              "region_id": "streamwise_facing",
+              "code": 0,
+              "entity_count": 12674139,
+              "entity_fraction": 0.23377478051898687,
+              "physical_weight": 9.074277143667144,
+              "physical_weight_fraction": 0.1210438736243004,
+              "equal_entity": {
+                "pooled": {
+                  "absolute_error": 734.7894543522858,
+                  "squared_error": 0.113784885111109,
+                  "squared_truth": 37.98957750282077,
+                  "total_weight": 12674139.0,
+                  "relative_l2_percent": 5.472806029139832,
+                  "mae": 5.797549280091419e-05,
+                  "rmse": 9.475083692998682e-05,
+                  "fraction_of_support_squared_error": 0.14922008644805737
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 5.472806005287376,
+                  "mae": 5.902002225780312e-05,
+                  "rmse": 9.505777080886921e-05
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 5.472804551926288,
+                    "median": 5.472806055095784,
+                    "p90": 5.472806494151145,
+                    "maximum": 5.472806968995919,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 4.690802079322257e-05,
+                    "median": 5.6498148214158e-05,
+                    "p90": 7.288981488709313e-05,
+                    "maximum": 9.01302491712054e-05,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 7.820392216018316e-05,
+                    "median": 9.501333148682672e-05,
+                    "p90": 0.00010579980008811692,
+                    "maximum": 0.0001259261275696634,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              },
+              "physical": {
+                "pooled": {
+                  "absolute_error": 0.000566593104658714,
+                  "squared_error": 9.173908692861108e-08,
+                  "squared_truth": 3.062910460676464e-05,
+                  "total_weight": 9.074277143667144,
+                  "relative_l2_percent": 5.472806032418393,
+                  "mae": 6.243947541916705e-05,
+                  "rmse": 0.00010054747921593868,
+                  "fraction_of_support_squared_error": 0.08419813693175837
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 5.472806006350677,
+                  "mae": 6.395650505074425e-05,
+                  "rmse": 0.00010118287032979842
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 5.472804509086712,
+                    "median": 5.472806078962735,
+                    "p90": 5.472806481548446,
+                    "maximum": 5.4728069400390265,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 4.909791608112698e-05,
+                    "median": 6.223320702827153e-05,
+                    "p90": 7.95068852508099e-05,
+                    "maximum": 9.694711895277366e-05,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 8.184662346731108e-05,
+                    "median": 0.00010061784854847265,
+                    "p90": 0.00011360283192802784,
+                    "maximum": 0.00013322359959063137,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              }
+            },
+            {
+              "region_id": "lateral_facing",
+              "code": 1,
+              "entity_count": 20069547,
+              "entity_fraction": 0.37018324834850647,
+              "physical_weight": 26.697235727506317,
+              "physical_weight_fraction": 0.35612057868143165,
+              "equal_entity": {
+                "pooled": {
+                  "absolute_error": 2072.7803305588172,
+                  "squared_error": 0.2897340971993082,
+                  "squared_truth": 96.73407628610715,
+                  "total_weight": 20069547.0,
+                  "relative_l2_percent": 5.472806074938237,
+                  "mae": 0.00010327987625026202,
+                  "rmse": 0.00012015200407190115,
+                  "fraction_of_support_squared_error": 0.3799638852630841
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 5.47280607190386,
+                  "mae": 0.00010424544098928459,
+                  "rmse": 0.00012091528648242148
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 5.472805261622369,
+                    "median": 5.472806083682426,
+                    "p90": 5.472806491379286,
+                    "maximum": 5.472806784320738,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 9.24578837014416e-05,
+                    "median": 0.00010302459608385432,
+                    "p90": 0.00011351183620709512,
+                    "maximum": 0.00011730280580203108,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.00011014542627764588,
+                    "median": 0.00012023889656585245,
+                    "p90": 0.00012992337775838956,
+                    "maximum": 0.00013417163228550348,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              },
+              "physical": {
+                "pooled": {
+                  "absolute_error": 0.0027424189838301054,
+                  "squared_error": 3.8023902018884643e-07,
+                  "squared_truth": 0.0001269511277258868,
+                  "total_weight": 26.697235727506317,
+                  "relative_l2_percent": 5.47280607537037,
+                  "mae": 0.00010272295648214153,
+                  "rmse": 0.00011934251696873629,
+                  "fraction_of_support_squared_error": 0.3489833849509716
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 5.472806072816045,
+                  "mae": 0.00010368947923230722,
+                  "rmse": 0.00012011473759264292
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 5.47280526943297,
+                    "median": 5.472806077004566,
+                    "p90": 5.472806492026496,
+                    "maximum": 5.472806779654991,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 9.177356281963771e-05,
+                    "median": 0.00010247016341021914,
+                    "p90": 0.00011273079114689478,
+                    "maximum": 0.00011652551233413571,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.00010940311674080528,
+                    "median": 0.00011933378789400993,
+                    "p90": 0.000129095884953996,
+                    "maximum": 0.00013306524180459601,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              }
+            },
+            {
+              "region_id": "upward_facing",
+              "code": 2,
+              "entity_count": 10595637,
+              "entity_fraction": 0.19543676411737762,
+              "physical_weight": 19.796980324261632,
+              "physical_weight_fraction": 0.26407648196915,
+              "equal_entity": {
+                "pooled": {
+                  "absolute_error": 1177.8944985766211,
+                  "squared_error": 0.1720435611151444,
+                  "squared_truth": 57.440511130141516,
+                  "total_weight": 10595637.0,
+                  "relative_l2_percent": 5.47280612927794,
+                  "mae": 0.0001111678796259839,
+                  "rmse": 0.00012742530333320962,
+                  "fraction_of_support_squared_error": 0.22562183929231788
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 5.472806123846397,
+                  "mae": 0.00011157966195255719,
+                  "rmse": 0.0001275548776867537
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 5.472805506840871,
+                    "median": 5.4728061663965315,
+                    "p90": 5.4728065091982225,
+                    "maximum": 5.4728068576155104,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 9.650536293071293e-05,
+                    "median": 0.00011115022791589391,
+                    "p90": 0.00012323637823809664,
+                    "maximum": 0.00012676153143724512,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.00011485087761550696,
+                    "median": 0.00012765856158827055,
+                    "p90": 0.00013828953884859152,
+                    "maximum": 0.0001434501091386355,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              },
+              "physical": {
+                "pooled": {
+                  "absolute_error": 0.0021467703148844446,
+                  "squared_error": 3.0335269509623163e-07,
+                  "squared_truth": 0.00010128094189869517,
+                  "total_weight": 19.796980324261632,
+                  "relative_l2_percent": 5.472806120120228,
+                  "mae": 0.00010843928112882603,
+                  "rmse": 0.00012378683333718636,
+                  "fraction_of_support_squared_error": 0.27841711330968827
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 5.472806115374499,
+                  "mae": 0.0001088540371576799,
+                  "rmse": 0.00012392161193477077
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 5.472805522499808,
+                    "median": 5.472806113843729,
+                    "p90": 5.472806501016635,
+                    "maximum": 5.47280684574453,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 9.390168944469118e-05,
+                    "median": 0.00010862524454380808,
+                    "p90": 0.00011998785068382681,
+                    "maximum": 0.0001238551968496597,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.0001108121965551932,
+                    "median": 0.00012422669358929983,
+                    "p90": 0.00013472225026410693,
+                    "maximum": 0.00013918815079292122,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              }
+            },
+            {
+              "region_id": "downward_facing",
+              "code": 3,
+              "entity_count": 10875845,
+              "entity_fraction": 0.20060520701512904,
+              "physical_weight": 19.39835041229808,
+              "physical_weight_fraction": 0.2587590657251182,
+              "equal_entity": {
+                "pooled": {
+                  "absolute_error": 1181.8662099713356,
+                  "squared_error": 0.1869680770798544,
+                  "squared_truth": 62.42338749419599,
+                  "total_weight": 10875845.0,
+                  "relative_l2_percent": 5.472806137205817,
+                  "mae": 0.00010866890894191078,
+                  "rmse": 0.00013111495371341992,
+                  "fraction_of_support_squared_error": 0.2451941889965407
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 5.472806137354286,
+                  "mae": 0.00011016978815142598,
+                  "rmse": 0.0001317353042596779
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 5.4728054512996085,
+                    "median": 5.47280614865689,
+                    "p90": 5.472806536139469,
+                    "maximum": 5.472806711234641,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 7.186771569312772e-05,
+                    "median": 0.00011361516281505,
+                    "p90": 0.0001245192243147083,
+                    "maximum": 0.000130358676512375,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.00010866529705481352,
+                    "median": 0.0001325510481075861,
+                    "p90": 0.00014530338026963235,
+                    "maximum": 0.00015041165146781522,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              },
+              "physical": {
+                "pooled": {
+                  "absolute_error": 0.00210252513856177,
+                  "squared_error": 3.142311557066455e-07,
+                  "squared_truth": 0.00010491295388529733,
+                  "total_weight": 19.39835041229808,
+                  "relative_l2_percent": 5.472806129773584,
+                  "mae": 0.00010838680062346027,
+                  "rmse": 0.00012727474080396586,
+                  "fraction_of_support_squared_error": 0.2884013648075818
+                },
+                "macro_case_mean": {
+                  "relative_l2_percent": 5.472806132032193,
+                  "mae": 0.00010890303890542178,
+                  "rmse": 0.00012750529341685253
+                },
+                "case_distribution": {
+                  "relative_l2_percent": {
+                    "minimum": 5.472805575387943,
+                    "median": 5.4728061674316795,
+                    "p90": 5.472806452092881,
+                    "maximum": 5.472806716861402,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "mae": {
+                    "minimum": 8.2357372233409e-05,
+                    "median": 0.00011027208619567834,
+                    "p90": 0.00012028234789852754,
+                    "maximum": 0.00012576929388285286,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  },
+                  "rmse": {
+                    "minimum": 0.00011212654934441339,
+                    "median": 0.00012608659359682393,
+                    "p90": 0.00013880008045803649,
+                    "maximum": 0.00014937016050449196,
+                    "method": "linear_order_statistics_over_complete_cases"
+                  }
+                }
+              }
+            }
+          ],
+          "validation": {
+            "all_case_reports_reconstructed_global_sums": true,
+            "regions_mutually_exclusive_exhaustive": true,
+            "macro_is_equal_case_mean": true,
+            "pooled_is_report_only_not_official_case_reduction": true
+          }
+        }
+      }
+    },
     "ahmedml-volume-three-geometric-regions-v1": {
       "definition_sha256": "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
       "definition": {
-        "definition_id": "ahmedml-native-regions-v1-candidate",
+        "definition_id": "ahmedml-volume-three-geometric-regions-v1",
         "support_id": "ahmedml-volume-native-cells-v1",
         "guide": "ahmed_volume",
         "coordinate_frame": "native AhmedML body frame in metres",
+        "region_source": "frozen evaluator-owned geometric predicates",
         "partition_properties": "mutually_exclusive_and_exhaustive",
         "regions_in_code_order": [
           {
@@ -100,7 +875,7 @@
         ],
         "scoring_role": "report_only_zero_weight",
         "scoring_weight": 0.0,
-        "semantic_limit": "Geometric diagnostic zones only; the wake box is not a streamline- or topology-derived wake label."
+        "semantic_limit": "Geometric diagnostic zones only; the wake box is not a streamline-, vortex-, or topology-derived wake label."
       },
       "fields": {
         "volume_pressure": {
@@ -378,7 +1153,7 @@
           ],
           "validation": {
             "all_case_reports_reconstructed_global_sums": true,
-            "three_regions_mutually_exclusive_exhaustive": true,
+            "regions_mutually_exclusive_exhaustive": true,
             "macro_is_equal_case_mean": true,
             "pooled_is_report_only_not_official_case_reduction": true
           }
@@ -658,7 +1433,7 @@
           ],
           "validation": {
             "all_case_reports_reconstructed_global_sums": true,
-            "three_regions_mutually_exclusive_exhaustive": true,
+            "regions_mutually_exclusive_exhaustive": true,
             "macro_is_equal_case_mean": true,
             "pooled_is_report_only_not_official_case_reduction": true
           }

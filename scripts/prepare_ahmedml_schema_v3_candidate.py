@@ -28,7 +28,8 @@ REPOSITORY_ID = "neashton/ahmedml"
 DATASET_VERSION = "ahmedml-native-v1-candidate"
 EVALUATOR_VERSION = "ahmedml-evaluator-v0.1-candidate"
 PROFILE_DEFINITION_ID = "ahmedml-native-profiles-v1-candidate"
-REGION_DEFINITION_ID = "ahmedml-native-regions-v1-candidate"
+REGION_DEFINITION_ID = "ahmedml-native-regions-v2-candidate"
+VOLUME_REGION_DEFINITION_ID = "ahmedml-native-regions-v1-candidate"
 PROFILE_SAMPLE_COUNT = 128
 
 SPLITS = (
@@ -239,7 +240,7 @@ def profile_definition() -> dict[str, Any]:
 def regional_definition() -> dict[str, Any]:
     return {
         "schema": "ahmedml-native-region-definition-v1",
-        "definition_id": REGION_DEFINITION_ID,
+        "definition_id": VOLUME_REGION_DEFINITION_ID,
         "status": "candidate_report_only",
         "dataset_id": "ahmedml",
         "dataset_revision": REVISION,
@@ -445,9 +446,9 @@ def update_submission_spec(
     spec["regional_diagnostics"] = {
         "status": "candidate_report_only",
         "required_for_new_submissions": True,
-        "format": "ahmedml-regional-diagnostics-aggregate-v1",
+        "format": "ahmedml-regional-diagnostics-aggregate-v2",
         "definition_id": REGION_DEFINITION_ID,
-        "contract_file": "regional-diagnostics-v1.json",
+        "contract_file": "regional-diagnostics-v2.json",
         "contract_sha256": region_sha256,
         "role": "report_only",
         "weight": 0.0,
@@ -653,8 +654,12 @@ def main() -> int:
     manifest = json.loads(manifest_path.read_text())
 
     profile_sha = write_json(DATASET_DIR / "profile-definition-v1.json", profile_definition())
-    region_sha = write_json(
+    volume_region_sha = write_json(
         DATASET_DIR / "regional-diagnostics-v1.json", regional_definition()
+    )
+    regional_v2_path = DATASET_DIR / "regional-diagnostics-v2.json"
+    region_sha = write_json(
+        regional_v2_path, json.loads(regional_v2_path.read_text(encoding="utf-8"))
     )
     split_records = build_splits(dataset_root, manifest)
     source_document = build_source_identity(dataset_root)
@@ -673,6 +678,7 @@ def main() -> int:
                 "source_identity_sha256": source_sha,
                 "profile_definition_sha256": profile_sha,
                 "regional_definition_sha256": region_sha,
+                "legacy_volume_region_definition_sha256": volume_region_sha,
                 "split_count": len(split_records),
                 "source_case_count": source_document["case_count"],
             },

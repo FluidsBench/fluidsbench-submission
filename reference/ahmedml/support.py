@@ -17,8 +17,8 @@ from reference.drivaerml.retained_file import RetainedFileError, RetainedVerifie
 
 from .contract import (
     PROFILE_DEFINITION_SHA256,
-    REGION_DEFINITION_SHA256,
     SOURCE_IDENTITY_SHA256,
+    VOLUME_REGION_DEFINITION_SHA256,
     AhmedMLSourceCase,
     AhmedMLSourceIdentity,
     read_json,
@@ -259,7 +259,8 @@ def load_case_support(
     definitions = _mapping(document.get("definitions"), "definitions")
     if (
         definitions.get("profile_definition_sha256") != PROFILE_DEFINITION_SHA256
-        or definitions.get("regional_definition_sha256") != REGION_DEFINITION_SHA256
+        or definitions.get("regional_definition_sha256")
+        != VOLUME_REGION_DEFINITION_SHA256
         or definitions.get("profile_sample_count") != PROFILE_SAMPLE_COUNT
         or definitions.get("surface_station_ids") != list(SURFACE_STATIONS)
         or definitions.get("volume_station_ids") != list(VOLUME_STATIONS)

@@ -30,7 +30,6 @@ if str(ROOT) not in os.sys.path:
 from reference.ahmedml.contract import (  # noqa: E402
     FORCE_ABSOLUTE_TOLERANCE,
     PROFILE_DEFINITION_SHA256,
-    REGION_DEFINITION_SHA256,
     REPOSITORY_REVISION,
     SOURCE_IDENTITY_SHA256,
     AhmedMLContractError,

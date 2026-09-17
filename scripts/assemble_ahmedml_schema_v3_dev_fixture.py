@@ -562,7 +562,7 @@ def _methodology(checkpoint_size: int) -> dict[str, Any]:
         },
         "data_handling": {
             "normalization": "No training normalization is claimed. The fixture transform acts on native SI-valued CellData; Cp=2*pMean and Ux/Uinf=Ux because Uinf=1 m/s.",
-            "preprocessing": "The evaluator validates immutable public source hashes, complete native entity order, surface areas, cell volumes, frozen profile mappings, and three-region assignments.",
+            "preprocessing": "The evaluator validates immutable public source hashes, complete native entity order, surface areas, cell volumes, frozen profile mappings, evaluator-owned dominant-normal surface regions, and the retained three-zone volume partition.",
             "sampling": "No field subsampling. All surface and volume native cells are transformed and scored; evaluator-owned Cp and velocity diagnostics each contain exactly 128 points per station.",
         },
         "training": {
