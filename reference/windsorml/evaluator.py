@@ -26,6 +26,7 @@ Three structural differences from :mod:`reference.ahmedml.evaluator`:
 from __future__ import annotations
 
 import contextlib
+import json
 import math
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -105,6 +106,8 @@ class _ScalarResult:
     statistics: FinalizedFieldStatistics
     truth_force_xyz: np.ndarray | None
     prediction_force_xyz: np.ndarray | None
+    sampled_truth: np.ndarray | None
+    sampled_prediction: np.ndarray | None
     chunk_sha256: tuple[str, ...]
 
 
@@ -264,6 +267,7 @@ class _ScalarSink:
         force_vectors: np.ndarray | None,
         hash_chunk_bytes: int,
         validation_block_rows: int,
+        sample_ids: np.ndarray | None = None,
     ) -> None:
         if array.number_of_components != 1:
             raise WindsorMLCandidateEvaluatorError(
@@ -299,6 +303,37 @@ class _ScalarSink:
         self.prediction_force = (
             np.zeros(3, dtype=np.float64) if force_vectors is not None else None
         )
+        # Profile samples are captured during the same single pass: the frozen
+        # support names native entity IDs, and both truth and prediction are
+        # read at those IDs so a profile can never be a second prediction path.
+        self.sample_ids = None if sample_ids is None else np.asarray(sample_ids).reshape(-1)
+        self.sample_truth = (
+            None
+            if sample_ids is None
+            else np.full(self.sample_ids.shape, np.nan, dtype=np.float64)
+        )
+        self.sample_prediction = (
+            None
+            if sample_ids is None
+            else np.full(self.sample_ids.shape, np.nan, dtype=np.float64)
+        )
+
+    def _capture_samples(
+        self,
+        start: int,
+        stop: int,
+        truth: np.ndarray,
+        prediction: np.ndarray,
+    ) -> None:
+        if self.sample_ids is None:
+            return
+        positions = np.nonzero((self.sample_ids >= start) & (self.sample_ids < stop))[0]
+        if not len(positions):
+            return
+        local = self.sample_ids[positions] - start
+        assert self.sample_truth is not None and self.sample_prediction is not None
+        self.sample_truth[positions] = np.asarray(truth, dtype=np.float64)[local]
+        self.sample_prediction[positions] = np.asarray(prediction, dtype=np.float64)[local]
 
     def _accumulate_force(
         self,
@@ -336,6 +371,7 @@ class _ScalarSink:
         weights = np.asarray(self.weights[start:stop])
         self.accumulator.add_chunk(chunk.raw_cell_id, truth, prediction, weights)
         self._accumulate_force(start, stop, truth, prediction)
+        self._capture_samples(start, stop, truth, prediction)
         self.chunk_sha256.append(descriptor.sha256)
         self.cursor = stop
         self.current = next(self.iterator, None)
@@ -362,6 +398,13 @@ class _ScalarSink:
             raise WindsorMLCandidateEvaluatorError(
                 f"prediction coverage differs from native truth {self.field_name!r}"
             )
+        if self.sample_truth is not None and (
+            np.any(~np.isfinite(self.sample_truth))
+            or np.any(~np.isfinite(self.sample_prediction))
+        ):
+            raise WindsorMLCandidateEvaluatorError(
+                f"profile samples for {self.field_name!r} were not covered"
+            )
         return self.accumulator.finalize()
 
 
@@ -377,6 +420,7 @@ def _evaluate_scalar(
     hash_chunk_bytes: int,
     validation_block_rows: int,
     encoded_chunk_bytes: int,
+    sample_ids: np.ndarray | None = None,
 ) -> _ScalarResult:
     sink = _ScalarSink(
         vtk_index=vtk_index,
@@ -387,6 +431,7 @@ def _evaluate_scalar(
         force_vectors=force_vectors,
         hash_chunk_bytes=hash_chunk_bytes,
         validation_block_rows=validation_block_rows,
+        sample_ids=sample_ids,
     )
     try:
         payload = stream_inline_binary_payload(
@@ -412,6 +457,8 @@ def _evaluate_scalar(
         statistics=statistics,
         truth_force_xyz=sink.truth_force,
         prediction_force_xyz=sink.prediction_force,
+        sampled_truth=sink.sample_truth,
+        sampled_prediction=sink.sample_prediction,
         chunk_sha256=tuple(sink.chunk_sha256),
     )
 
@@ -494,6 +541,103 @@ def _scalar_evidence(result: _ScalarResult) -> dict[str, object]:
     }
 
 
+CP_FAMILIES = ("windsorml_cp_constant_v1", "windsorml_cp_relative_v1")
+VELOCITY_FAMILIES = (
+    "windsorml_velocity_constant_v1",
+    "windsorml_velocity_relative_v1",
+)
+PROFILE_SUPPORT_SCHEMA = "windsorml-profile-support-v2"
+
+
+def _load_profile_support(
+    value: Mapping[str, object] | str | Path, *, case_id: str
+) -> Mapping[str, object]:
+    if isinstance(value, (str, Path)):
+        document = json.loads(Path(value).read_text())
+    else:
+        document = dict(value)
+    if document.get("schema") != PROFILE_SUPPORT_SCHEMA:
+        raise WindsorMLCandidateEvaluatorError("profile support schema is unexpected")
+    if document.get("case_id") != case_id:
+        raise WindsorMLCandidateEvaluatorError(
+            f"profile support binds {document.get('case_id')!r}, not {case_id!r}"
+        )
+    families = document.get("families")
+    if not isinstance(families, Mapping):
+        raise WindsorMLCandidateEvaluatorError("profile support has no families")
+    missing = [f for f in (*CP_FAMILIES, *VELOCITY_FAMILIES) if f not in families]
+    if missing:
+        raise WindsorMLCandidateEvaluatorError(
+            f"profile support is missing families {missing}"
+        )
+    return document
+
+
+def _gather_sample_ids(
+    support: Mapping[str, object],
+    families: tuple[str, ...],
+    id_key: str,
+    *,
+    entity_count: int,
+) -> tuple[np.ndarray, dict[tuple[str, str], slice]]:
+    """Flatten every station's native IDs into one capture vector."""
+
+    ids: list[int] = []
+    slices: dict[tuple[str, str], slice] = {}
+    for family in families:
+        for station, payload in support["families"][family].items():
+            values = payload[id_key]
+            start = len(ids)
+            ids.extend(int(v) for v in values)
+            slices[(family, station)] = slice(start, len(ids))
+    array = np.asarray(ids, dtype=np.int64)
+    if array.size and (array.min() < 0 or array.max() >= entity_count):
+        raise WindsorMLCandidateEvaluatorError(
+            "profile support references a native ID outside the case"
+        )
+    return array, slices
+
+
+def _profile_series(
+    support: Mapping[str, object],
+    families: tuple[str, ...],
+    slices: dict[tuple[str, str], slice],
+    sampled_truth: np.ndarray,
+    sampled_prediction: np.ndarray,
+    *,
+    truth_key: str,
+    scale: float,
+    quantity_id: str,
+) -> dict[str, object]:
+    out: dict[str, object] = {}
+    for family in families:
+        stations = []
+        for station, payload in support["families"][family].items():
+            window = slices[(family, station)]
+            truth = sampled_truth[window] / scale
+            prediction = sampled_prediction[window] / scale
+            declared = np.asarray(payload[truth_key], dtype=np.float64)
+            # The support's stored truth must agree with the truth streamed from
+            # the pinned source, or the support is stale.
+            if not np.allclose(truth, declared, rtol=0.0, atol=1e-5):
+                raise WindsorMLCandidateEvaluatorError(
+                    f"{family}/{station} support truth disagrees with the native field"
+                )
+            stations.append(
+                {
+                    "station_id": station,
+                    "quantity_id": quantity_id,
+                    "sample_count": int(truth.shape[0]),
+                    "source": "evaluator_derived_from_complete_native_fields",
+                    "coordinate": list(payload["coordinate"]),
+                    "truth": truth.tolist(),
+                    "prediction": prediction.tolist(),
+                }
+            )
+        out[family] = stations
+    return out
+
+
 def _coefficients(force_xyz: np.ndarray) -> dict[str, float]:
     """Convert an integrated force vector into WindsorML coefficients.
 
@@ -515,6 +659,7 @@ def evaluate_candidate_case(
     dataset_root: str | Path,
     surface_manifest: PredictionChunkManifest | str | Path,
     volume_manifest: PredictionChunkManifest | str | Path | None = None,
+    profile_support: Mapping[str, object] | str | Path | None = None,
     hash_chunk_bytes: int = DEFAULT_HASH_CHUNK_BYTES,
     validation_block_rows: int = DEFAULT_VALIDATION_BLOCK_ROWS,
     encoded_chunk_bytes: int = DEFAULT_ENCODED_CHUNK_BYTES,
@@ -555,6 +700,21 @@ def evaluate_candidate_case(
     if not np.all(np.isfinite(dual_area)) or np.any(dual_area <= 0.0):
         raise WindsorMLCandidateEvaluatorError(
             "surface dual-area weights must be finite and positive"
+        )
+
+    support = (
+        None
+        if profile_support is None
+        else _load_profile_support(profile_support, case_id=case.case_id)
+    )
+    cp_sample_ids: np.ndarray | None = None
+    cp_slices: dict[tuple[str, str], slice] = {}
+    if support is not None:
+        cp_sample_ids, cp_slices = _gather_sample_ids(
+            support,
+            CP_FAMILIES,
+            "native_point_ids",
+            entity_count=case.surface_entity_count,
         )
 
     surface_results: dict[str, _ScalarResult] = {}
@@ -601,6 +761,7 @@ def evaluate_candidate_case(
                 hash_chunk_bytes=hash_chunk_bytes,
                 validation_block_rows=validation_block_rows,
                 encoded_chunk_bytes=encoded_chunk_bytes,
+                sample_ids=cp_sample_ids if field == SURFACE_PRESSURE_FIELD else None,
             )
 
     truth_force = np.zeros(3, dtype=np.float64)
@@ -687,6 +848,15 @@ def evaluate_candidate_case(
         # v1 scores the volume with equal-cell weighting by decision, so the
         # physical weights are unit and no cell-volume sidecar is required.
         volume_weights = np.ones(case.volume_entity_count, dtype=np.float64)
+        velocity_sample_ids: np.ndarray | None = None
+        velocity_slices: dict[tuple[str, str], slice] = {}
+        if support is not None:
+            velocity_sample_ids, velocity_slices = _gather_sample_ids(
+                support,
+                VELOCITY_FAMILIES,
+                "native_cell_ids",
+                entity_count=case.volume_entity_count,
+            )
         volume_results: dict[str, _ScalarResult] = {}
         with _open_verified_source(case.volume, dataset_root, label="volume") as retained:
             volume_index = _index_source(
@@ -708,6 +878,11 @@ def evaluate_candidate_case(
                     hash_chunk_bytes=hash_chunk_bytes,
                     validation_block_rows=validation_block_rows,
                     encoded_chunk_bytes=encoded_chunk_bytes,
+                    sample_ids=(
+                        velocity_sample_ids
+                        if field == VOLUME_VELOCITY_FIELDS[0]
+                        else None
+                    ),
                 )
         evidence["volume"] = {
             "support_id": WINDSORML_VOLUME_SUPPORT_ID,
@@ -727,6 +902,45 @@ def evaluate_candidate_case(
                 .statistics.uniform.relative_l2_percent(),
             },
         }
+
+    if support is not None:
+        profiles: dict[str, object] = {
+            "support_schema": PROFILE_SUPPORT_SCHEMA,
+            "sample_count": support["sample_count"],
+            "body_height_m": support["body_height_m"],
+            "participant_profile_payload_accepted": False,
+            "families": {},
+        }
+        cp_result = surface_results[SURFACE_PRESSURE_FIELD]
+        assert cp_result.sampled_truth is not None
+        profiles["families"].update(
+            _profile_series(
+                support,
+                CP_FAMILIES,
+                cp_slices,
+                cp_result.sampled_truth,
+                cp_result.sampled_prediction,
+                truth_key="truth_cp",
+                scale=1.0,
+                quantity_id="cp",
+            )
+        )
+        if volume_manifest is not None:
+            velocity_result = volume_results[VOLUME_VELOCITY_FIELDS[0]]
+            assert velocity_result.sampled_truth is not None
+            profiles["families"].update(
+                _profile_series(
+                    support,
+                    VELOCITY_FAMILIES,
+                    velocity_slices,
+                    velocity_result.sampled_truth,
+                    velocity_result.sampled_prediction,
+                    truth_key="truth_ux_over_uinf",
+                    scale=float(support["reference_velocity_m_s"]),
+                    quantity_id="ux_over_uinf",
+                )
+            )
+        evidence["profiles"] = profiles
 
     return CandidateCaseEvaluation(value=MappingProxyType(evidence))
 

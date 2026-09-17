@@ -119,6 +119,12 @@
       "excluded_reason": "The official manifest assigns 355 identifiers, but run_350 through run_354 have no per-run payload in the public release. run_352 (high_drag) and run_354 (baseline and low_drag test sets) are therefore unscoreable.",
       "comparability_note": "Scores on these case sets are not comparable to any evaluation run against the unreduced official manifest."
     },
+    "placement_mode_policy": {
+      "rule": "at_most_one_placement_mode_per_diagnostic_kind_may_have_nonzero_weight",
+      "ranked_mode": "constant",
+      "report_only_mode": "relative",
+      "definition_file": "profile-definition-v2.json"
+    },
     "owner_decisions_required": [
       "approve_component_weights_after_profiles_are_scored"
     ]
@@ -138,36 +144,46 @@
     "components": [
       {
         "metric_id": "surface_pressure_rel_l2",
-        "weight": 0.19999999999999998,
+        "weight": 0.15,
         "transform": "bounded_error",
         "cap": 15.0
       },
       {
         "metric_id": "surface_wall_shear_rel_l2",
-        "weight": 0.13333333333333333,
+        "weight": 0.1,
         "transform": "bounded_error",
         "cap": 20.0
       },
       {
         "metric_id": "volume_velocity_rel_l2",
-        "weight": 0.19999999999999998,
+        "weight": 0.15,
         "transform": "bounded_error",
         "cap": 12.0
       },
       {
         "metric_id": "volume_pressure_rel_l2",
-        "weight": 0.13333333333333333,
+        "weight": 0.1,
         "transform": "bounded_error",
         "cap": 15.0
       },
       {
         "metric_id": "cd_r2",
-        "weight": 0.19999999999999998,
+        "weight": 0.15,
         "transform": "bounded_quality"
       },
       {
         "metric_id": "cl_r2",
-        "weight": 0.13333333333333333,
+        "weight": 0.1,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "velocity_profile_r2",
+        "weight": 0.15,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "cp_cut_r2",
+        "weight": 0.1,
         "transform": "bounded_quality"
       }
     ],
@@ -190,6 +206,13 @@
         "component_metric_ids": [
           "cd_r2",
           "cl_r2"
+        ]
+      },
+      {
+        "metric_id": "diagnostic_score",
+        "component_metric_ids": [
+          "velocity_profile_r2",
+          "cp_cut_r2"
         ]
       }
     ],
@@ -278,6 +301,15 @@
       "weighting": "volume_cells_equal"
     },
     {
+      "id": "diagnostic_score",
+      "unit": "",
+      "direction": "higher",
+      "kind": "score",
+      "equation": "\\frac{\\sum_{j\\in D}\\alpha_j S_j}{\\sum_{j\\in D}\\alpha_j}",
+      "aggregation": "derived_score_equation",
+      "weighting": "dataset_declared_component_weights"
+    },
+    {
       "id": "cd_r2",
       "unit": "",
       "direction": "higher",
@@ -294,6 +326,50 @@
       "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
       "aggregation": "all_test_cases",
       "weighting": "cases_equal"
+    },
+    {
+      "id": "velocity_profile_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "flatten_all_required_profile_samples",
+      "weighting": "samples_equal",
+      "profile_family_id": "windsorml_velocity_constant_v1",
+      "scoring_role": "ranked_candidate"
+    },
+    {
+      "id": "cp_cut_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "flatten_all_required_profile_samples",
+      "weighting": "samples_equal",
+      "profile_family_id": "windsorml_cp_constant_v1",
+      "scoring_role": "ranked_candidate"
+    },
+    {
+      "id": "velocity_profile_relative_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "flatten_all_required_profile_samples",
+      "weighting": "samples_equal",
+      "profile_family_id": "windsorml_velocity_relative_v1",
+      "scoring_role": "report_only"
+    },
+    {
+      "id": "cp_cut_relative_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "flatten_all_required_profile_samples",
+      "weighting": "samples_equal",
+      "profile_family_id": "windsorml_cp_relative_v1",
+      "scoring_role": "report_only"
     },
     {
       "id": "c_drag_mae",
@@ -318,33 +394,44 @@
     {
       "id": "pressure_profiles",
       "required": true,
-      "scored_in_this_version": false,
-      "status": "stations_frozen_pending_per_case_support",
-      "definition_file": "profile-definition-v1.json",
+      "scored_in_this_version": true,
+      "status": "stations_and_resolution_frozen",
+      "definition_file": "profile-definition-v2.json",
       "allow_unlisted_stations": false,
       "minimum_points": 2,
       "sample_count": 128,
       "coordinate_order": "strictly_increasing",
+      "families": {
+        "constant": "windsorml_cp_constant_v1",
+        "relative": "windsorml_cp_relative_v1"
+      },
+      "ranked_family_id": "windsorml_cp_constant_v1",
       "station_ids": [
-        "surface_symmetry_centreline",
-        "surface_horizontal_cut_y_0p194"
+        "cp_centreline_upper",
+        "cp_base_vertical",
+        "cp_side_horizontal_y_0p194"
       ],
       "quantity_ids": [
         "cp"
       ],
       "source": "evaluator_derived_from_the_submitted_native_surface_field",
-      "note": "Stations are aligned with AutoCFD Case 1, the same 1/4-scale Windsor body. Scoring activates once the per-case profile support is generated and hash-pinned."
+      "note": "Stations are aligned with AutoCFD Case 1, the same 1/4-scale Windsor body. Published in a constant family (scored) and a body-height-relative family (report only, zero weight)."
     },
     {
       "id": "velocity_profiles",
       "required": true,
-      "scored_in_this_version": false,
-      "status": "stations_frozen_pending_per_case_support",
-      "definition_file": "profile-definition-v1.json",
+      "scored_in_this_version": true,
+      "status": "stations_and_resolution_frozen",
+      "definition_file": "profile-definition-v2.json",
       "allow_unlisted_stations": false,
       "minimum_points": 2,
       "sample_count": 128,
       "coordinate_order": "strictly_increasing",
+      "families": {
+        "constant": "windsorml_velocity_constant_v1",
+        "relative": "windsorml_velocity_relative_v1"
+      },
+      "ranked_family_id": "windsorml_velocity_constant_v1",
       "station_ids": [
         "wake_vertical_x_0p05l",
         "wake_vertical_x_0p10l",
@@ -356,7 +443,7 @@
         "ux_over_uinf"
       ],
       "source": "evaluator_derived_from_the_submitted_native_volume_field",
-      "note": "The prototype's four fabricated stations were removed. These five are sited from the measured wake of run_0: two inside the recirculation (Ux reaches -11.5 and -7.8 m/s), one just past closure, one in the recovering wake, plus a spanwise cut."
+      "note": "The prototype's four fabricated stations were removed. These five are sited from the measured wake of run_0: two inside the recirculation (ux/uinf reaches -0.251 and -0.154), one just past closure, one in the recovering wake, plus a spanwise cut. The relative family rescales the vertical coordinate by each case's body height, which varies from 0.316 m to 0.473 m."
     }
   ],
   "splits": [

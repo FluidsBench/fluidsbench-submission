@@ -1,0 +1,205 @@
+{
+  "schema_version": "2.0",
+  "id": "windsorml-profile-definition-v2",
+  "dataset_id": "windsorml",
+  "dataset_version": "windsorml-native-v1-candidate",
+  "status": "candidate_stations_and_resolution_frozen_pending_per_case_support",
+  "supersedes": "windsorml-profile-definition-v1",
+  "placement_modes": {
+    "rationale": "Follows the DrivAerML relative-diagnostics contract: every diagnostic kind is published in a constant-placement family and a geometry-following relative family, linked by source_family_id. The constant family is scored; the relative family is report-only at zero weight until it is reviewed.",
+    "why_windsorml_only_needs_a_vertical_relative_frame": "Streamwise and lateral extents are identical in all 350 published runs (nose x = -0.56075, base x = 0.48325, half width 0.1945), so a constant x or z station is already the same physical location in every case. Only body HEIGHT varies, from 0.31574 m to 0.47340 m. The relative frame therefore rescales the vertical coordinate alone, which is a much smaller change than DrivAerML's, where wheelhouses and body length also move.",
+    "why_both_are_needed": "A constant station at y = 0.194 m is 61% of the shortest published body's height but 41% of the tallest, so it samples a different part of the roof shear layer per case and the metric partly measures geometry rather than flow prediction. A relative station at fixed y/h samples the same position in the shear layer for every case, but is no longer a fixed physical probe location. Neither alone is sufficient, which is why both are published.",
+    "ranked_family_selection_rule": "at_most_one_placement_mode_per_diagnostic_kind_may_have_nonzero_weight"
+  },
+  "relative_frame": {
+    "vertical_normalisation": "eta = y / h_case",
+    "h_case_definition": "the maximum y of that case's native boundary mesh, i.e. the body top above the ground plane at y = 0",
+    "h_case_source": "measured per case during profile-support generation and recorded in the per-case support file",
+    "reference_case": "run_0",
+    "reference_h_m": 0.34342,
+    "anchoring": "Relative eta values are chosen so that each relative station reduces exactly to its constant counterpart on the reference case run_0. That makes the two families directly comparable there and gives the relative family a verifiable equivalence check.",
+    "horizontal_cut_eta": 0.56491,
+    "vertical_span_eta": [0.0, 1.74713]
+  },
+  "provenance": {
+    "aligned_with": "AutoCFD Case 1 (Windsor Squareback body)",
+    "why": "AutoCFD Case 1 is the same 1/4-scale Windsor body and shares this dataset's reference area of 0.112 m^2. Measured geometry matches the published meshes exactly: length 1044 mm, width 389 mm.",
+    "axis_note": "AutoCFD reports 2D PIV on planes y = 0 mm and z = 194 mm. Under its SAE convention (x rearward, y lateral, z up) those are the symmetry plane and a horizontal plane 194 mm above the ground, mapping to z = 0 and y = 0.194 m in WindsorML's mirrored frame.",
+    "axis_caveat": "The AutoCFD public case page does not state its coordinate origin, so the mapping is inferred from plane semantics. It is not load-bearing: y = 0.194 m lies inside the body for every published variant.",
+    "measured_from": "run_0 volume field, 291,324,855 cells",
+    "measured_facts": {
+      "free_stream_ux_m_s": 42.1,
+      "recirculation_present_at_x_over_l": [0.05, 0.10],
+      "recirculation_closed_by_x_over_l": 0.25
+    }
+  },
+  "geometry_invariants": {
+    "nose_x_m": -0.56075,
+    "base_x_m": 0.48325,
+    "body_length_m": 1.044,
+    "half_width_m": 0.1945,
+    "ground_plane_y_m": 0.0,
+    "body_height_range_m": [0.31574, 0.47340]
+  },
+  "sampling": {
+    "sample_count": 128,
+    "spacing": "uniform_in_the_station_coordinate",
+    "resolution_status": "frozen_after_stratified_sweep",
+    "resolution_evidence": {
+      "method": "run_0 velocity profiles regenerated at 64/96/128/160 samples, resampled onto the 64-sample grid, compared as max |delta ux/uinf|",
+      "max_delta_vs_64_samples": {
+        "wake_vertical_x_0p05l": {"96": 0.01199, "128": 0.01553, "160": 0.00986},
+        "wake_vertical_x_0p10l": {"96": 0.00860, "128": 0.01255, "160": 0.01061},
+        "wake_vertical_x_0p25l": {"96": 0.00984, "128": 0.00579, "160": 0.00666},
+        "wake_vertical_x_0p50l": {"96": 0.00778, "128": 0.00168, "160": 0.00498},
+        "wake_lateral_x_0p10l_y_0p194": {"96": 0.01882, "128": 0.01255, "160": 0.01828}
+      },
+      "max_snap_distance_mm": {
+        "wake_vertical_x_0p05l": 3.47,
+        "wake_vertical_x_0p10l": 3.05,
+        "wake_vertical_x_0p25l": 3.08,
+        "wake_vertical_x_0p50l": 6.99,
+        "wake_lateral_x_0p10l_y_0p194": 7.68
+      },
+      "interpretation": "Differences between sample counts are at most about 2% of U_inf and are NOT monotonic. That is nearest-cell snapping jitter, not unresolved structure: 128 samples over a 0.6 m line is 4.7 mm spacing against a 3.05-7.68 mm snap distance, so sampling already sits at the local cell size and higher counts resample the same cells.",
+      "residual_noise_note": "Values are snapped to the nearest native entity rather than interpolated, so the profile metric carries a quantisation floor of roughly 1-2% of U_inf that no sample count removes. Interpolation would remove it and is the change to make if the metric must discriminate below that level."
+    }
+  },
+  "families": [
+    {
+      "family_id": "windsorml_velocity_constant_v1",
+      "panel_id": "velocity_profiles",
+      "placement_mode": "constant",
+      "scoring_role": "ranked_candidate",
+      "composite_weight_policy": "carries_the_velocity_profile_weight",
+      "quantity_id": "ux_over_uinf",
+      "source": "evaluator_derived_from_the_submitted_native_volume_field",
+      "station_ids": [
+        "wake_vertical_x_0p05l",
+        "wake_vertical_x_0p10l",
+        "wake_vertical_x_0p25l",
+        "wake_vertical_x_0p50l",
+        "wake_lateral_x_0p10l_y_0p194"
+      ]
+    },
+    {
+      "family_id": "windsorml_velocity_relative_v1",
+      "panel_id": "velocity_profiles",
+      "placement_mode": "relative",
+      "source_family_id": "windsorml_velocity_constant_v1",
+      "scoring_role": "report_only",
+      "composite_weight": 0.0,
+      "quantity_id": "ux_over_uinf",
+      "source": "evaluator_derived_from_the_submitted_native_volume_field",
+      "station_ids": [
+        "wake_vertical_x_0p05l_relative",
+        "wake_vertical_x_0p10l_relative",
+        "wake_vertical_x_0p25l_relative",
+        "wake_vertical_x_0p50l_relative",
+        "wake_lateral_x_0p10l_relative"
+      ]
+    },
+    {
+      "family_id": "windsorml_cp_constant_v1",
+      "panel_id": "pressure_profiles",
+      "placement_mode": "constant",
+      "scoring_role": "ranked_candidate",
+      "composite_weight_policy": "carries_the_pressure_profile_weight",
+      "quantity_id": "cp",
+      "source": "evaluator_derived_from_the_submitted_native_surface_field",
+      "station_ids": [
+        "cp_centreline_upper",
+        "cp_base_vertical",
+        "cp_side_horizontal_y_0p194"
+      ]
+    },
+    {
+      "family_id": "windsorml_cp_relative_v1",
+      "panel_id": "pressure_profiles",
+      "placement_mode": "relative",
+      "source_family_id": "windsorml_cp_constant_v1",
+      "scoring_role": "report_only",
+      "composite_weight": 0.0,
+      "quantity_id": "cp",
+      "source": "evaluator_derived_from_the_submitted_native_surface_field",
+      "station_ids": [
+        "cp_centreline_upper_relative",
+        "cp_base_vertical_relative",
+        "cp_side_horizontal_relative"
+      ]
+    }
+  ],
+  "velocity_stations": {
+    "quantity_id": "ux_over_uinf",
+    "reference_velocity_m_s": 42.1,
+    "reference_velocity_source": "measured far-field velocityxavg at x > base + 1.5 m, y > 1.5 * body height, |z| < 0.05 m",
+    "constant": [
+      {"id": "wake_vertical_x_0p05l", "x_over_l": 0.05, "x_m": 0.53545, "z_m": 0.0, "varying": "y", "interval_m": [0.0, 0.6]},
+      {"id": "wake_vertical_x_0p10l", "x_over_l": 0.10, "x_m": 0.58765, "z_m": 0.0, "varying": "y", "interval_m": [0.0, 0.6]},
+      {"id": "wake_vertical_x_0p25l", "x_over_l": 0.25, "x_m": 0.74425, "z_m": 0.0, "varying": "y", "interval_m": [0.0, 0.6]},
+      {"id": "wake_vertical_x_0p50l", "x_over_l": 0.50, "x_m": 1.00525, "z_m": 0.0, "varying": "y", "interval_m": [0.0, 0.6]},
+      {"id": "wake_lateral_x_0p10l_y_0p194", "x_over_l": 0.10, "x_m": 0.58765, "y_m": 0.194, "varying": "z", "interval_m": [-0.35, 0.35]}
+    ],
+    "relative": [
+      {"id": "wake_vertical_x_0p05l_relative", "source_station_id": "wake_vertical_x_0p05l", "x_m": 0.53545, "z_m": 0.0, "varying": "eta", "interval_eta": [0.0, 1.74713]},
+      {"id": "wake_vertical_x_0p10l_relative", "source_station_id": "wake_vertical_x_0p10l", "x_m": 0.58765, "z_m": 0.0, "varying": "eta", "interval_eta": [0.0, 1.74713]},
+      {"id": "wake_vertical_x_0p25l_relative", "source_station_id": "wake_vertical_x_0p25l", "x_m": 0.74425, "z_m": 0.0, "varying": "eta", "interval_eta": [0.0, 1.74713]},
+      {"id": "wake_vertical_x_0p50l_relative", "source_station_id": "wake_vertical_x_0p50l", "x_m": 1.00525, "z_m": 0.0, "varying": "eta", "interval_eta": [0.0, 1.74713]},
+      {"id": "wake_lateral_x_0p10l_relative", "source_station_id": "wake_lateral_x_0p10l_y_0p194", "x_m": 0.58765, "eta": 0.56491, "varying": "z", "interval_m": [-0.35, 0.35]}
+    ]
+  },
+  "pressure_stations": {
+    "quantity_id": "cp",
+    "selection_note": "Surface stations resolve to the nearest native boundary POINT, because WindsorML publishes cpavg on points. Each station is a well-defined curve on the closed body, not an arbitrary plane intersection.",
+    "constant": [
+      {
+        "id": "cp_centreline_upper",
+        "label": "Upper centreline, nose to base",
+        "rule": "for each sampled x, the largest-y boundary point with |z| < 0.004 m",
+        "varying": "x",
+        "interval_m": [-0.56075, 0.48325],
+        "note": "Follows the body surface by construction, so it is identical in the relative family apart from its parameterisation."
+      },
+      {
+        "id": "cp_base_vertical",
+        "label": "Base vertical centreline",
+        "rule": "for each sampled y, the boundary point nearest (base_x, y, 0) with |z| < 0.004 m and x > base_x - 0.01",
+        "varying": "y",
+        "interval_m": [0.0, 0.5],
+        "note": "The canonical Windsor base-pressure line. The constant interval overshoots short bodies, which is exactly what the relative counterpart fixes."
+      },
+      {
+        "id": "cp_side_horizontal_y_0p194",
+        "label": "Side surface, horizontal cut at y = 194 mm",
+        "rule": "for each sampled x, the largest-z boundary point with |y - 0.194| < 0.004 m",
+        "varying": "x",
+        "interval_m": [-0.56075, 0.48325]
+      }
+    ],
+    "relative": [
+      {
+        "id": "cp_centreline_upper_relative",
+        "source_station_id": "cp_centreline_upper",
+        "rule": "identical selection, parameterised by x/L rather than x",
+        "varying": "x_over_l",
+        "interval": [0.0, 1.0]
+      },
+      {
+        "id": "cp_base_vertical_relative",
+        "source_station_id": "cp_base_vertical",
+        "rule": "for each sampled eta, the boundary point nearest (base_x, eta * h_case, 0)",
+        "varying": "eta",
+        "interval_eta": [0.0, 1.0],
+        "note": "Spans exactly the base from ground to body top in every case, instead of a fixed 0.5 m that over- or under-runs it."
+      },
+      {
+        "id": "cp_side_horizontal_relative",
+        "source_station_id": "cp_side_horizontal_y_0p194",
+        "rule": "for each sampled x, the largest-z boundary point with |y - eta * h_case| < 0.004 m, eta = 0.56491",
+        "varying": "x",
+        "interval_m": [-0.56075, 0.48325],
+        "note": "eta = 0.56491 reproduces y = 0.194 m exactly on run_0 (h = 0.34342 m)."
+      }
+    ]
+  }
+}

@@ -38,6 +38,18 @@ VOLUME_METRICS = (
     "volume_pressure_rel_l2",
 )
 
+# Profile R^2 is pooled over every sample of every station in a family, then
+# reduced once. The constant-placement families carry the ranked weight; the
+# relative families are reported at zero weight so a reviewer can compare them
+# without either being counted twice.
+PROFILE_FAMILY_METRICS = {
+    "windsorml_velocity_constant_v1": "velocity_profile_r2",
+    "windsorml_cp_constant_v1": "cp_cut_r2",
+    "windsorml_velocity_relative_v1": "velocity_profile_relative_r2",
+    "windsorml_cp_relative_v1": "cp_cut_relative_r2",
+}
+RANKED_PROFILE_METRICS = ("velocity_profile_r2", "cp_cut_r2")
+
 
 class WindsorMLDatasetScorerError(ValueError):
     """Raised when a WindsorML split cannot be scored exactly."""
@@ -128,12 +140,20 @@ def score_candidate_dataset(
     if len(case_ids) != split_entry["case_count"]:
         raise WindsorMLDatasetScorerError(f"{split_id} case count differs from the spec")
 
+    scored_profile_families = {
+        family
+        for family, metric in PROFILE_FAMILY_METRICS.items()
+        if metric in {m["id"] for m in specification.get("metrics", [])}
+    }
+
     root = Path(case_evidence_directory).expanduser().resolve()
     per_case: dict[str, Mapping[str, float]] = {}
     cd_truth: list[float] = []
     cd_prediction: list[float] = []
     cl_truth: list[float] = []
     cl_prediction: list[float] = []
+    profile_truth: dict[str, list[float]] = {f: [] for f in PROFILE_FAMILY_METRICS}
+    profile_prediction: dict[str, list[float]] = {f: [] for f in PROFILE_FAMILY_METRICS}
 
     for case_id in case_ids:
         path = root / f"{case_id}.json"
@@ -176,6 +196,45 @@ def score_candidate_dataset(
         cl_truth.append(_finite(truth.get("cl"), f"{case_id}.truth.cl"))
         cl_prediction.append(_finite(prediction.get("cl"), f"{case_id}.prediction.cl"))
 
+        if scored_profile_families:
+            profiles = evidence.get("profiles")
+            if profiles is None:
+                raise WindsorMLDatasetScorerError(
+                    f"{case_id} has no profile evidence but the spec scores profiles"
+                )
+            if _mapping(profiles, f"{case_id}.profiles").get(
+                "participant_profile_payload_accepted"
+            ) is not False:
+                raise WindsorMLDatasetScorerError(
+                    f"{case_id} profiles must be evaluator-derived, never submitted"
+                )
+            families = _mapping(profiles.get("families"), f"{case_id}.profiles.families")
+            for family in PROFILE_FAMILY_METRICS:
+                if family not in families:
+                    raise WindsorMLDatasetScorerError(
+                        f"{case_id} profile family {family!r} is missing"
+                    )
+                for station in families[family]:
+                    item = _mapping(station, f"{case_id}.{family}")
+                    truth_values = item.get("truth")
+                    prediction_values = item.get("prediction")
+                    if not isinstance(truth_values, list) or not isinstance(
+                        prediction_values, list
+                    ):
+                        raise WindsorMLDatasetScorerError(
+                            f"{case_id} {family} series are malformed"
+                        )
+                    if len(truth_values) != len(prediction_values):
+                        raise WindsorMLDatasetScorerError(
+                            f"{case_id} {family} truth and prediction differ in length"
+                        )
+                    profile_truth[family].extend(
+                        _finite(v, "profile truth") for v in truth_values
+                    )
+                    profile_prediction[family].extend(
+                        _finite(v, "profile prediction") for v in prediction_values
+                    )
+
     metric_values: dict[str, float] = {}
     for name in (*SURFACE_METRICS, *VOLUME_METRICS):
         metric_values[name] = float(
@@ -185,6 +244,13 @@ def score_candidate_dataset(
     metric_values["cl_r2"] = _r2(cl_truth, cl_prediction, "cl")
     metric_values["c_drag_mae"] = _mae(cd_truth, cd_prediction)
     metric_values["c_lift_mae"] = _mae(cl_truth, cl_prediction)
+
+    for family, metric_id in PROFILE_FAMILY_METRICS.items():
+        if not profile_truth[family]:
+            continue
+        metric_values[metric_id] = _r2(
+            profile_truth[family], profile_prediction[family], metric_id
+        )
 
     composite = specification["overall_score_composite"]
     overall = composite_overall_score(metric_values, composite)

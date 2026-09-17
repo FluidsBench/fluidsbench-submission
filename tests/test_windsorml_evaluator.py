@@ -396,6 +396,137 @@ class WindsorMLEvaluatorTests(unittest.TestCase):
         for name, value in evidence["surface"]["metrics"].items():
             self.assertAlmostEqual(value, 0.0, places=9, msg=name)
 
+    def _profile_support(self, *, case_id: str = CASE_ID) -> dict:
+        """Minimal two-family support over the synthetic case's native entities."""
+
+        cp = np.asarray(SURFACE_CP, dtype=np.float64)
+        ux = np.asarray(VOLUME_UX, dtype=np.float64)
+        u_ref = 42.1
+        point_ids = [0, 2, 3]
+        cell_ids = [0, 2]
+        cp_station = {
+            "native_point_ids": point_ids,
+            "coordinate": [0.0, 0.5, 1.0],
+            "truth_cp": cp[point_ids].tolist(),
+        }
+        velocity_station = {
+            "native_cell_ids": cell_ids,
+            "coordinate": [0.0, 1.0],
+            "truth_ux_over_uinf": (ux[cell_ids] / u_ref).tolist(),
+        }
+        return {
+            "schema": "windsorml-profile-support-v2",
+            "case_id": case_id,
+            "run_id": 0,
+            "sample_count": 3,
+            "reference_velocity_m_s": u_ref,
+            "body_height_m": 0.34342,
+            "families": {
+                "windsorml_cp_constant_v1": {"cp_centreline_upper": cp_station},
+                "windsorml_cp_relative_v1": {
+                    "cp_centreline_upper_relative": dict(cp_station)
+                },
+                "windsorml_velocity_constant_v1": {
+                    "wake_vertical_x_0p05l": velocity_station
+                },
+                "windsorml_velocity_relative_v1": {
+                    "wake_vertical_x_0p05l_relative": dict(velocity_station)
+                },
+            },
+        }
+
+    def test_profiles_are_derived_from_the_same_submitted_fields(self) -> None:
+        from reference.windsorml.evaluator import evaluate_candidate_case
+
+        case, dataset = build_case(self.root)
+        surface = prediction_manifest(
+            self.root / "surface-profiles",
+            support_id=WINDSORML_SURFACE_SUPPORT_ID,
+            association="PointData",
+            fields=surface_fields(),
+        )
+        volume = prediction_manifest(
+            self.root / "volume-profiles",
+            support_id=WINDSORML_VOLUME_SUPPORT_ID,
+            association="CellData",
+            fields=volume_fields(),
+        )
+        evidence = evaluate_candidate_case(
+            case=case,
+            dataset_root=dataset,
+            surface_manifest=surface,
+            volume_manifest=volume,
+            profile_support=self._profile_support(),
+        ).to_json()
+
+        profiles = evidence["profiles"]
+        self.assertIs(profiles["participant_profile_payload_accepted"], False)
+        self.assertEqual(
+            set(profiles["families"]),
+            {
+                "windsorml_cp_constant_v1",
+                "windsorml_cp_relative_v1",
+                "windsorml_velocity_constant_v1",
+                "windsorml_velocity_relative_v1",
+            },
+        )
+        for family, stations in profiles["families"].items():
+            for station in stations:
+                # A perfect prediction must reproduce the truth series exactly.
+                for truth, prediction in zip(
+                    station["truth"], station["prediction"], strict=True
+                ):
+                    self.assertAlmostEqual(truth, prediction, places=6, msg=family)
+
+    def test_stale_profile_support_truth_is_rejected(self) -> None:
+        """Support whose stored truth no longer matches the pinned source fails."""
+
+        from reference.windsorml.evaluator import (
+            WindsorMLCandidateEvaluatorError,
+            evaluate_candidate_case,
+        )
+
+        case, dataset = build_case(self.root)
+        support = self._profile_support()
+        support["families"]["windsorml_cp_constant_v1"]["cp_centreline_upper"][
+            "truth_cp"
+        ] = [9.9, 9.9, 9.9]
+        surface = prediction_manifest(
+            self.root / "surface-stale",
+            support_id=WINDSORML_SURFACE_SUPPORT_ID,
+            association="PointData",
+            fields=surface_fields(),
+        )
+        with self.assertRaises(WindsorMLCandidateEvaluatorError) as caught:
+            evaluate_candidate_case(
+                case=case,
+                dataset_root=dataset,
+                surface_manifest=surface,
+                profile_support=support,
+            )
+        self.assertIn("disagrees with the native field", str(caught.exception))
+
+    def test_profile_support_for_another_case_is_rejected(self) -> None:
+        from reference.windsorml.evaluator import (
+            WindsorMLCandidateEvaluatorError,
+            evaluate_candidate_case,
+        )
+
+        case, dataset = build_case(self.root)
+        surface = prediction_manifest(
+            self.root / "surface-wrongcase",
+            support_id=WINDSORML_SURFACE_SUPPORT_ID,
+            association="PointData",
+            fields=surface_fields(),
+        )
+        with self.assertRaises(WindsorMLCandidateEvaluatorError):
+            evaluate_candidate_case(
+                case=case,
+                dataset_root=dataset,
+                surface_manifest=surface,
+                profile_support=self._profile_support(case_id="run_7"),
+            )
+
     def test_surface_manifest_must_declare_point_data(self) -> None:
         path = prediction_manifest(
             self.root / "bad-association",

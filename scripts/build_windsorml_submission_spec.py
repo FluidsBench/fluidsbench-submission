@@ -4,7 +4,7 @@
 Replaces the prototype spec, whose splits were a single fabricated identifier
 (``windsorml_default_test_0001``) and whose status was ``prototype_dummy_data``.
 
-Four decisions are baked in here:
+Five decisions are baked in here:
 
 * **Scored case sets are the official manifest intersected with the published
   runs** (233 unique test cases). ``splits/*.json`` record both counts.
@@ -14,9 +14,13 @@ Four decisions are baked in here:
 * **Volume metrics are equal-cell weighted for v1.** The physical
   (cell-volume-weighted) variants are removed rather than left unimplemented,
   because generating the sidecars costs roughly 400 GB and 1,000 CPU-hours.
-* **Profile panels are declared but not scored in v1.** The prototype's four
-  velocity stations were fabricated placeholders, so the component weights are
-  renormalised over the field and force metrics that v1 can actually compute.
+* **Profile stations are real and scored.** The prototype's four fabricated
+  velocity stations are replaced by stations sited from the measured wake and
+  aligned with AutoCFD Case 1; see ``profile-definition-v2.json``.
+* **Every diagnostic kind is published in two placement families**, following
+  the DrivAerML relative-diagnostics contract: a ``constant`` family at fixed
+  absolute coordinates, which carries the weight, and a geometry-following
+  ``relative`` family reported at zero weight.
 """
 
 from __future__ import annotations
@@ -31,13 +35,16 @@ SPEC_DIR = REPO_ROOT / "benchmark-specs" / "windsorml"
 DATASET_VERSION = "windsorml-native-v1-candidate"
 EVALUATION_REFERENCE_VERSION = "windsorml-evaluator-v0.1-candidate"
 
-# Candidate resolution; the stratified 64/96/128/160 sweep is still outstanding,
-# so this is recorded as a candidate rather than frozen.
+# Frozen after the stratified 64/96/128/160 sweep. See
+# profile-definition-v2.json for why higher counts add nothing: sampling already
+# sits at the local cell size.
 PROFILE_SAMPLE_COUNT = 128
+PROFILE_DEFINITION_FILE = "profile-definition-v2.json"
 
-# Prototype weights were field 0.50, force 0.25, diagnostics 0.25. Dropping the
-# unscored diagnostics and renormalising over the remaining 0.75 preserves the
-# field:force ratio exactly.
+# Field 0.50, force 0.25, diagnostics 0.25 -- the prototype's split, restored in
+# full now that the profile diagnostics are computed from real frozen stations
+# instead of fabricated placeholders. Only the constant-placement families carry
+# weight; the relative families are reported at zero.
 SCORED_COMPONENTS = (
     ("surface_pressure_rel_l2", 0.15, "bounded_error", 15.0),
     ("surface_wall_shear_rel_l2", 0.10, "bounded_error", 20.0),
@@ -45,6 +52,8 @@ SCORED_COMPONENTS = (
     ("volume_pressure_rel_l2", 0.10, "bounded_error", 15.0),
     ("cd_r2", 0.15, "bounded_quality", None),
     ("cl_r2", 0.10, "bounded_quality", None),
+    ("velocity_profile_r2", 0.15, "bounded_quality", None),
+    ("cp_cut_r2", 0.10, "bounded_quality", None),
 )
 
 
@@ -57,6 +66,22 @@ def rel_l2(metric_id: str, weighting: str, aggregation: str = "per_geometry_then
         "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
         "aggregation": aggregation,
         "weighting": weighting,
+    }
+
+
+def profile_r2(metric_id: str, family_id: str, *, ranked: bool) -> dict:
+    """A profile R2, pooled over every sample of every station in one family."""
+
+    return {
+        "id": metric_id,
+        "unit": "",
+        "direction": "higher",
+        "kind": "r2",
+        "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+        "aggregation": "flatten_all_required_profile_samples",
+        "weighting": "samples_equal",
+        "profile_family_id": family_id,
+        "scoring_role": "ranked_candidate" if ranked else "report_only",
     }
 
 
@@ -226,6 +251,12 @@ def main() -> int:
                     "run against the unreduced official manifest."
                 ),
             },
+            "placement_mode_policy": {
+                "rule": "at_most_one_placement_mode_per_diagnostic_kind_may_have_nonzero_weight",
+                "ranked_mode": "constant",
+                "report_only_mode": "relative",
+                "definition_file": PROFILE_DEFINITION_FILE,
+            },
             "owner_decisions_required": [
                 "approve_component_weights_after_profiles_are_scored",
             ],
@@ -260,6 +291,10 @@ def main() -> int:
                 {
                     "metric_id": "force_score",
                     "component_metric_ids": ["cd_r2", "cl_r2"],
+                },
+                {
+                    "metric_id": "diagnostic_score",
+                    "component_metric_ids": ["velocity_profile_r2", "cp_cut_r2"],
                 },
             ],
             "tolerance": 1e-06,
@@ -298,8 +333,25 @@ def main() -> int:
             rel_l2("surface_wall_shear_equal_entity_rel_l2", "surface_entities_equal"),
             rel_l2("volume_velocity_rel_l2", "volume_cells_equal"),
             rel_l2("volume_pressure_rel_l2", "volume_cells_equal"),
+            {
+                "id": "diagnostic_score",
+                "unit": "",
+                "direction": "higher",
+                "kind": "score",
+                "equation": "\\frac{\\sum_{j\\in D}\\alpha_j S_j}{\\sum_{j\\in D}\\alpha_j}",
+                "aggregation": "derived_score_equation",
+                "weighting": "dataset_declared_component_weights",
+            },
             r2("cd_r2"),
             r2("cl_r2"),
+            profile_r2("velocity_profile_r2", "windsorml_velocity_constant_v1", ranked=True),
+            profile_r2("cp_cut_r2", "windsorml_cp_constant_v1", ranked=True),
+            profile_r2(
+                "velocity_profile_relative_r2",
+                "windsorml_velocity_relative_v1",
+                ranked=False,
+            ),
+            profile_r2("cp_cut_relative_r2", "windsorml_cp_relative_v1", ranked=False),
             {
                 "id": "c_drag_mae",
                 "unit": "",
@@ -323,35 +375,46 @@ def main() -> int:
             {
                 "id": "pressure_profiles",
                 "required": True,
-                "scored_in_this_version": False,
-                "status": "stations_frozen_pending_per_case_support",
-                "definition_file": "profile-definition-v1.json",
+                "scored_in_this_version": True,
+                "status": "stations_and_resolution_frozen",
+                "definition_file": PROFILE_DEFINITION_FILE,
                 "allow_unlisted_stations": False,
                 "minimum_points": 2,
                 "sample_count": PROFILE_SAMPLE_COUNT,
                 "coordinate_order": "strictly_increasing",
+                "families": {
+                    "constant": "windsorml_cp_constant_v1",
+                    "relative": "windsorml_cp_relative_v1",
+                },
+                "ranked_family_id": "windsorml_cp_constant_v1",
                 "station_ids": [
-                    "surface_symmetry_centreline",
-                    "surface_horizontal_cut_y_0p194",
+                    "cp_centreline_upper",
+                    "cp_base_vertical",
+                    "cp_side_horizontal_y_0p194",
                 ],
                 "quantity_ids": ["cp"],
                 "source": "evaluator_derived_from_the_submitted_native_surface_field",
                 "note": (
                     "Stations are aligned with AutoCFD Case 1, the same 1/4-scale "
-                    "Windsor body. Scoring activates once the per-case profile "
-                    "support is generated and hash-pinned."
+                    "Windsor body. Published in a constant family (scored) and a "
+                    "body-height-relative family (report only, zero weight)."
                 ),
             },
             {
                 "id": "velocity_profiles",
                 "required": True,
-                "scored_in_this_version": False,
-                "status": "stations_frozen_pending_per_case_support",
-                "definition_file": "profile-definition-v1.json",
+                "scored_in_this_version": True,
+                "status": "stations_and_resolution_frozen",
+                "definition_file": PROFILE_DEFINITION_FILE,
                 "allow_unlisted_stations": False,
                 "minimum_points": 2,
                 "sample_count": PROFILE_SAMPLE_COUNT,
                 "coordinate_order": "strictly_increasing",
+                "families": {
+                    "constant": "windsorml_velocity_constant_v1",
+                    "relative": "windsorml_velocity_relative_v1",
+                },
+                "ranked_family_id": "windsorml_velocity_constant_v1",
                 "station_ids": [
                     "wake_vertical_x_0p05l",
                     "wake_vertical_x_0p10l",
@@ -364,8 +427,10 @@ def main() -> int:
                 "note": (
                     "The prototype's four fabricated stations were removed. These five "
                     "are sited from the measured wake of run_0: two inside the "
-                    "recirculation (Ux reaches -11.5 and -7.8 m/s), one just past "
-                    "closure, one in the recovering wake, plus a spanwise cut."
+                    "recirculation (ux/uinf reaches -0.251 and -0.154), one just past "
+                    "closure, one in the recovering wake, plus a spanwise cut. The "
+                    "relative family rescales the vertical coordinate by each case's "
+                    "body height, which varies from 0.316 m to 0.473 m."
                 ),
             },
         ],

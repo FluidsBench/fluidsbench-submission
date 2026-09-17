@@ -181,13 +181,45 @@ tracked fixture** that `tests/test_validator.py::test_complete_example_is_valid`
 then validates, so that test passes or fails depending on execution order. It is
 unrelated to WindsorML but worth fixing.
 
+## Profile diagnostics: two placement families
+
+Following the DrivAerML relative-diagnostics contract, every diagnostic kind is
+published twice:
+
+| | placement | scoring role | weight |
+|---|---|---|---|
+| `windsorml_velocity_constant_v1` | fixed absolute coordinates | ranked | 0.15 |
+| `windsorml_velocity_relative_v1` | vertical rescaled by body height | report only | 0.0 |
+| `windsorml_cp_constant_v1` | fixed absolute coordinates | ranked | 0.10 |
+| `windsorml_cp_relative_v1` | vertical rescaled by body height | report only | 0.0 |
+
+WindsorML needs a far smaller relative frame than DrivAerML. Streamwise and
+lateral extents are identical in all 350 published runs, so a constant x or z
+station is already the same physical location everywhere; **only body height
+varies, from 0.316 m to 0.473 m**, so only the vertical coordinate is rescaled
+as `eta = y / h_case`.
+
+Both are needed. A constant cut at y = 0.194 m is 61% of the shortest body's
+height but 41% of the tallest, so it samples a different part of the roof shear
+layer per case and the metric partly measures geometry. A relative cut at fixed
+`eta` samples the same position in the shear layer everywhere, but is no longer
+a fixed physical probe. Publishing both, with only one weighted, follows the
+DrivAerML rule that at most one placement mode per diagnostic kind may carry
+nonzero weight.
+
+Relative `eta` values are anchored so each relative station reduces exactly to
+its constant counterpart on run_0 (`eta_cut = 0.56491`, `h = 0.34342 m`). That
+was verified on real data: the two families produce identical series for all
+five velocity stations and the side cut. Only `cp_base_vertical` differs, which
+is the intended fix -- the constant line spans y in [0, 0.5] and overshoots the
+0.343 m body, while the relative one spans exactly the base.
+
 ## Deliberately deferred
 
-- **Profile panels are declared but unscored.** The two pressure stations are
-  consistent with the confirmed y-up frame and are retained for review; the four
-  velocity stations were fabricated placeholders and have been removed. Component
-  weights are renormalised over the field and force metrics v1 can actually
-  compute, preserving the original field:force ratio.
+- **Profile scoring activates once per-case support is complete.** The stations,
+  resolution, and both families are frozen and the evaluator computes the series,
+  but the generation campaign over the 233 scored cases is still running. Each
+  case costs about 10.6 minutes and 83 GB, dominated by base64 VTU parsing.
 - **Cell-volume-weighted volume metrics are removed, not stubbed.** At ~291M
   cells × 350 cases the sidecars cost roughly 400 GB and 1,000 CPU-hours. The
   primary volume metric was already equal-cell weighted.
@@ -195,9 +227,11 @@ unrelated to WindsorML but worth fixing.
 ## Owner decisions required
 
 1. Approve the 235 → 233 scored-case reduction.
-2. Choose and validate real velocity-profile stations, with a stratified
-   resolution sweep (64/96/128/160) rather than copying HiLiftAeroML's 128.
-3. Approve component weights once profiles are scored.
+2. Review the relative placement families and decide whether either should ever
+   take the ranked weight in place of the constant family.
+3. Decide whether to replace nearest-cell snapping with interpolation. The
+   sweep showed the profile metric carries a 1-2% quantisation floor that no
+   sample count removes.
 4. Decide whether `geo_parameters_all.csv` or the per-run CSVs are authoritative —
    the aggregate omits `ratio_length_front_rear`, which the splits README
    documents and works around, but participants need to be told which to use.

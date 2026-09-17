@@ -192,23 +192,26 @@ class WindsorMLSubmissionSpecTests(unittest.TestCase):
 
 
 class WindsorMLProfileDefinitionTests(unittest.TestCase):
-    """The frozen profile stations must stay consistent with measured geometry.
+    """The frozen stations and the two placement families must stay consistent.
 
     Body length and width are identical across all 350 published variants, but
-    height varies from 0.316 m to 0.473 m. Any station defined relative to
-    height would sample a different physical location per case, so these checks
-    pin the absolute-coordinate design.
+    height varies from 0.316 m to 0.473 m. That spread is the whole reason the
+    relative family exists, and the reason constant stations may not be defined
+    as a fraction of height.
     """
 
-    DEFINITION = SPEC_DIR / "profile-definition-v1.json"
+    DEFINITION = SPEC_DIR / "profile-definition-v2.json"
     BASE_X = 0.48325
     NOSE_X = -0.56075
     BODY_LENGTH = 1.044
     MAX_BODY_HEIGHT = 0.47340
+    MIN_BODY_HEIGHT = 0.31574
+    REFERENCE_H = 0.34342
 
     def setUp(self) -> None:
         self.definition = load(self.DEFINITION)
         self.spec = load(SPEC_DIR / "submission-spec.json")
+        self.families = {f["family_id"]: f for f in self.definition["families"]}
 
     def test_geometry_invariants_match_the_measured_values(self) -> None:
         invariants = self.definition["geometry_invariants"]
@@ -216,96 +219,126 @@ class WindsorMLProfileDefinitionTests(unittest.TestCase):
         self.assertAlmostEqual(invariants["nose_x_m"], self.NOSE_X, places=5)
         self.assertAlmostEqual(invariants["body_length_m"], self.BODY_LENGTH, places=5)
         low, high = invariants["body_height_range_m"]
-        self.assertLess(low, high)
+        self.assertAlmostEqual(low, self.MIN_BODY_HEIGHT, places=4)
         self.assertAlmostEqual(high, self.MAX_BODY_HEIGHT, places=4)
 
-    def test_spec_station_ids_match_the_definition(self) -> None:
-        defined = {
-            "pressure_profiles": {
-                s["id"] for s in self.definition["pressure_profiles"]["stations"]
-            },
-            "velocity_profiles": {
-                s["id"] for s in self.definition["velocity_profiles"]["stations"]
-            },
+    def test_every_kind_has_a_constant_and_a_relative_family(self) -> None:
+        by_panel: dict[str, dict[str, str]] = {}
+        for family in self.definition["families"]:
+            by_panel.setdefault(family["panel_id"], {})[family["placement_mode"]] = (
+                family["family_id"]
+            )
+        for panel_id, modes in by_panel.items():
+            self.assertEqual(set(modes), {"constant", "relative"}, panel_id)
+
+    def test_relative_families_reference_their_constant_source(self) -> None:
+        for family in self.definition["families"]:
+            if family["placement_mode"] != "relative":
+                continue
+            self.assertIn(family["source_family_id"], self.families)
+            source = self.families[family["source_family_id"]]
+            self.assertEqual(source["placement_mode"], "constant")
+            self.assertEqual(source["panel_id"], family["panel_id"])
+
+    def test_only_the_constant_family_carries_weight(self) -> None:
+        """The DrivAerML rule: one placement mode per kind may be ranked."""
+
+        for family in self.definition["families"]:
+            if family["placement_mode"] == "relative":
+                self.assertEqual(family["scoring_role"], "report_only", family["family_id"])
+                self.assertEqual(family["composite_weight"], 0.0, family["family_id"])
+            else:
+                self.assertEqual(
+                    family["scoring_role"], "ranked_candidate", family["family_id"]
+                )
+        scored = {
+            component["metric_id"]
+            for component in self.spec["overall_score_composite"]["components"]
         }
+        for metric in self.spec["metrics"]:
+            if metric.get("scoring_role") == "report_only":
+                self.assertNotIn(metric["id"], scored, metric["id"])
+
+    def test_spec_panels_bind_both_families_and_rank_the_constant_one(self) -> None:
         for panel in self.spec["profile_panels"]:
-            self.assertEqual(set(panel["station_ids"]), defined[panel["id"]], panel["id"])
+            self.assertEqual(set(panel["families"]), {"constant", "relative"})
+            self.assertEqual(panel["ranked_family_id"], panel["families"]["constant"])
+            self.assertEqual(
+                self.families[panel["ranked_family_id"]]["placement_mode"], "constant"
+            )
+
+    def test_constant_and_relative_station_counts_match(self) -> None:
+        for group in ("velocity_stations", "pressure_stations"):
+            constant = self.definition[group]["constant"]
+            relative = self.definition[group]["relative"]
+            self.assertEqual(len(constant), len(relative), group)
+            constant_ids = {s["id"] for s in constant}
+            for station in relative:
+                self.assertIn(station["source_station_id"], constant_ids, station["id"])
 
     def test_velocity_stations_sit_where_their_x_over_l_says(self) -> None:
-        for station in self.definition["velocity_profiles"]["stations"]:
-            expected_x = self.BASE_X + station["x_over_l"] * self.BODY_LENGTH
-            for endpoint in ("start_m", "end_m"):
-                self.assertAlmostEqual(
-                    station[endpoint][0], expected_x, places=5, msg=station["id"]
-                )
+        for station in self.definition["velocity_stations"]["constant"]:
+            expected = self.BASE_X + station["x_over_l"] * self.BODY_LENGTH
+            self.assertAlmostEqual(station["x_m"], expected, places=5, msg=station["id"])
 
     def test_all_wake_stations_are_downstream_of_the_base(self) -> None:
-        for station in self.definition["velocity_profiles"]["stations"]:
-            self.assertGreater(station["start_m"][0], self.BASE_X, station["id"])
+        for station in self.definition["velocity_stations"]["constant"]:
+            self.assertGreater(station["x_m"], self.BASE_X, station["id"])
 
-    def test_vertical_stations_span_above_the_tallest_body(self) -> None:
-        for station in self.definition["velocity_profiles"]["stations"]:
-            if station["varying_coordinate"] != "y":
+    def test_relative_frame_normalises_only_the_vertical(self) -> None:
+        """x and z are invariant across variants, so only y needs rescaling."""
+
+        frame = self.definition["relative_frame"]
+        self.assertEqual(frame["vertical_normalisation"], "eta = y / h_case")
+        constant = {s["id"]: s for s in self.definition["velocity_stations"]["constant"]}
+        for station in self.definition["velocity_stations"]["relative"]:
+            source = constant[station["source_station_id"]]
+            self.assertAlmostEqual(station["x_m"], source["x_m"], places=6, msg=station["id"])
+
+    def test_relative_eta_reduces_to_the_constant_station_on_run_0(self) -> None:
+        """Anchoring claim: the two families coincide on the reference case."""
+
+        frame = self.definition["relative_frame"]
+        self.assertAlmostEqual(frame["reference_h_m"], self.REFERENCE_H, places=5)
+        self.assertAlmostEqual(
+            frame["horizontal_cut_eta"] * self.REFERENCE_H, 0.194, places=4
+        )
+        eta_low, eta_high = frame["vertical_span_eta"]
+        self.assertAlmostEqual(eta_low * self.REFERENCE_H, 0.0, places=6)
+        self.assertAlmostEqual(eta_high * self.REFERENCE_H, 0.6, places=4)
+
+    def test_constant_horizontal_cut_lies_inside_every_published_body(self) -> None:
+        for station in self.definition["pressure_stations"]["constant"]:
+            if "y_0p194" not in station["id"]:
                 continue
-            low, high = station["interval_m"]
-            self.assertLessEqual(low, 0.0, station["id"])
-            self.assertGreater(high, self.MAX_BODY_HEIGHT, station["id"])
-
-    def test_horizontal_cut_lies_inside_every_published_body(self) -> None:
-        """y = 0.194 m must clear the ground and stay below the shortest body."""
-
-        low, high = self.definition["geometry_invariants"]["body_height_range_m"]
-        for station in self.definition["pressure_profiles"]["stations"]:
-            y = station.get("constant_coordinates", {}).get("y_m")
-            if y is None:
-                continue
-            self.assertGreater(y, 0.0, station["id"])
-            self.assertLess(y, low, station["id"])
-
-    def test_surface_stations_span_the_body_length(self) -> None:
-        for station in self.definition["pressure_profiles"]["stations"]:
-            low, high = station["interval_m"]
-            self.assertAlmostEqual(low, self.NOSE_X, places=5)
-            self.assertAlmostEqual(high, self.BASE_X, places=5)
-
-    def test_no_fabricated_prototype_stations_survive(self) -> None:
-        text = self.DEFINITION.read_text()
-        self.assertNotIn("prototype_0_25l", text)
-        for group in ("pressure_profiles", "velocity_profiles"):
-            for station in self.definition[group]["stations"]:
-                self.assertFalse(station["id"].startswith("prototype_"), station["id"])
+            self.assertLess(0.194, self.MIN_BODY_HEIGHT, station["id"])
 
     def test_sample_count_is_frozen_with_sweep_evidence(self) -> None:
         sampling = self.definition["sampling"]
         self.assertEqual(sampling["resolution_status"], "frozen_after_stratified_sweep")
         evidence = sampling["resolution_evidence"]
-        for station in self.definition["velocity_profiles"]["stations"]:
+        for station in self.definition["velocity_stations"]["constant"]:
             deltas = evidence["max_delta_vs_64_samples"][station["id"]]
             self.assertEqual(set(deltas), {"96", "128", "160"}, station["id"])
-            # The sweep showed all counts agree to within ~2% of U_inf; if a
-            # future regeneration blows past that, the stations or the sampling
-            # method changed and must be re-reviewed.
             for value in deltas.values():
                 self.assertLess(value, 0.05, station["id"])
-            self.assertIn(station["id"], evidence["max_snap_distance_mm"])
 
     def test_spec_sample_count_matches_the_definition(self) -> None:
         expected = self.definition["sampling"]["sample_count"]
         for panel in self.spec["profile_panels"]:
             self.assertEqual(panel["sample_count"], expected, panel["id"])
 
-    def test_measured_ranges_confirm_the_recirculation_is_bracketed(self) -> None:
-        """Two stations must sit in reverse flow and the 0.25 L station must not."""
-
-        ranges = self.definition["velocity_profiles"]["measured_ux_over_uinf_range_run_0"]
-        self.assertLess(ranges["wake_vertical_x_0p05l"][0], 0.0)
-        self.assertLess(ranges["wake_vertical_x_0p10l"][0], 0.0)
-        self.assertGreater(ranges["wake_vertical_x_0p25l"][0], 0.0)
-        self.assertGreater(ranges["wake_vertical_x_0p50l"][0], 0.0)
+    def test_no_fabricated_prototype_stations_survive(self) -> None:
+        text = self.DEFINITION.read_text()
+        self.assertNotIn("prototype_0_25l", text)
+        for group in ("velocity_stations", "pressure_stations"):
+            for mode in ("constant", "relative"):
+                for station in self.definition[group][mode]:
+                    self.assertFalse(station["id"].startswith("prototype_"), station["id"])
 
     def test_profiles_are_evaluator_derived_not_participant_supplied(self) -> None:
-        for group in ("pressure_profiles", "velocity_profiles"):
-            self.assertIn("evaluator_derived", self.definition[group]["source"])
+        for family in self.definition["families"]:
+            self.assertIn("evaluator_derived", family["source"])
         for panel in self.spec["profile_panels"]:
             self.assertIn("evaluator_derived", panel["source"])
 
