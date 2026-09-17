@@ -41,10 +41,7 @@ def main() -> int:
     parser.add_argument(
         "--support-dir",
         type=Path,
-        default=Path(
-            "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nashton"
-            "/windsorml/fluidsbench/profile_support_v3"
-        ),
+        default=SPEC_DIR / "profile-support",
     )
     parser.add_argument(
         "--out",
