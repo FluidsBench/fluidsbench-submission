@@ -191,6 +191,144 @@ class WindsorMLSubmissionSpecTests(unittest.TestCase):
             self.assertNotEqual(entry["case_id_status"], "prototype_generated")
 
 
+class WindsorMLProfileDefinitionTests(unittest.TestCase):
+    """The frozen profile stations must stay consistent with measured geometry.
+
+    Body length and width are identical across all 350 published variants, but
+    height varies from 0.316 m to 0.473 m. Any station defined relative to
+    height would sample a different physical location per case, so these checks
+    pin the absolute-coordinate design.
+    """
+
+    DEFINITION = SPEC_DIR / "profile-definition-v1.json"
+    BASE_X = 0.48325
+    NOSE_X = -0.56075
+    BODY_LENGTH = 1.044
+    MAX_BODY_HEIGHT = 0.47340
+
+    def setUp(self) -> None:
+        self.definition = load(self.DEFINITION)
+        self.spec = load(SPEC_DIR / "submission-spec.json")
+
+    def test_geometry_invariants_match_the_measured_values(self) -> None:
+        invariants = self.definition["geometry_invariants"]
+        self.assertAlmostEqual(invariants["base_x_m"], self.BASE_X, places=5)
+        self.assertAlmostEqual(invariants["nose_x_m"], self.NOSE_X, places=5)
+        self.assertAlmostEqual(invariants["body_length_m"], self.BODY_LENGTH, places=5)
+        low, high = invariants["body_height_range_m"]
+        self.assertLess(low, high)
+        self.assertAlmostEqual(high, self.MAX_BODY_HEIGHT, places=4)
+
+    def test_spec_station_ids_match_the_definition(self) -> None:
+        defined = {
+            "pressure_profiles": {
+                s["id"] for s in self.definition["pressure_profiles"]["stations"]
+            },
+            "velocity_profiles": {
+                s["id"] for s in self.definition["velocity_profiles"]["stations"]
+            },
+        }
+        for panel in self.spec["profile_panels"]:
+            self.assertEqual(set(panel["station_ids"]), defined[panel["id"]], panel["id"])
+
+    def test_velocity_stations_sit_where_their_x_over_l_says(self) -> None:
+        for station in self.definition["velocity_profiles"]["stations"]:
+            expected_x = self.BASE_X + station["x_over_l"] * self.BODY_LENGTH
+            for endpoint in ("start_m", "end_m"):
+                self.assertAlmostEqual(
+                    station[endpoint][0], expected_x, places=5, msg=station["id"]
+                )
+
+    def test_all_wake_stations_are_downstream_of_the_base(self) -> None:
+        for station in self.definition["velocity_profiles"]["stations"]:
+            self.assertGreater(station["start_m"][0], self.BASE_X, station["id"])
+
+    def test_vertical_stations_span_above_the_tallest_body(self) -> None:
+        for station in self.definition["velocity_profiles"]["stations"]:
+            if station["varying_coordinate"] != "y":
+                continue
+            low, high = station["interval_m"]
+            self.assertLessEqual(low, 0.0, station["id"])
+            self.assertGreater(high, self.MAX_BODY_HEIGHT, station["id"])
+
+    def test_horizontal_cut_lies_inside_every_published_body(self) -> None:
+        """y = 0.194 m must clear the ground and stay below the shortest body."""
+
+        low, high = self.definition["geometry_invariants"]["body_height_range_m"]
+        for station in self.definition["pressure_profiles"]["stations"]:
+            y = station.get("constant_coordinates", {}).get("y_m")
+            if y is None:
+                continue
+            self.assertGreater(y, 0.0, station["id"])
+            self.assertLess(y, low, station["id"])
+
+    def test_surface_stations_span_the_body_length(self) -> None:
+        for station in self.definition["pressure_profiles"]["stations"]:
+            low, high = station["interval_m"]
+            self.assertAlmostEqual(low, self.NOSE_X, places=5)
+            self.assertAlmostEqual(high, self.BASE_X, places=5)
+
+    def test_no_fabricated_prototype_stations_survive(self) -> None:
+        text = self.DEFINITION.read_text()
+        self.assertNotIn("prototype_0_25l", text)
+        for group in ("pressure_profiles", "velocity_profiles"):
+            for station in self.definition[group]["stations"]:
+                self.assertFalse(station["id"].startswith("prototype_"), station["id"])
+
+    def test_sample_count_is_frozen_with_sweep_evidence(self) -> None:
+        sampling = self.definition["sampling"]
+        self.assertEqual(sampling["resolution_status"], "frozen_after_stratified_sweep")
+        evidence = sampling["resolution_evidence"]
+        for station in self.definition["velocity_profiles"]["stations"]:
+            deltas = evidence["max_delta_vs_64_samples"][station["id"]]
+            self.assertEqual(set(deltas), {"96", "128", "160"}, station["id"])
+            # The sweep showed all counts agree to within ~2% of U_inf; if a
+            # future regeneration blows past that, the stations or the sampling
+            # method changed and must be re-reviewed.
+            for value in deltas.values():
+                self.assertLess(value, 0.05, station["id"])
+            self.assertIn(station["id"], evidence["max_snap_distance_mm"])
+
+    def test_spec_sample_count_matches_the_definition(self) -> None:
+        expected = self.definition["sampling"]["sample_count"]
+        for panel in self.spec["profile_panels"]:
+            self.assertEqual(panel["sample_count"], expected, panel["id"])
+
+    def test_measured_ranges_confirm_the_recirculation_is_bracketed(self) -> None:
+        """Two stations must sit in reverse flow and the 0.25 L station must not."""
+
+        ranges = self.definition["velocity_profiles"]["measured_ux_over_uinf_range_run_0"]
+        self.assertLess(ranges["wake_vertical_x_0p05l"][0], 0.0)
+        self.assertLess(ranges["wake_vertical_x_0p10l"][0], 0.0)
+        self.assertGreater(ranges["wake_vertical_x_0p25l"][0], 0.0)
+        self.assertGreater(ranges["wake_vertical_x_0p50l"][0], 0.0)
+
+    def test_profiles_are_evaluator_derived_not_participant_supplied(self) -> None:
+        for group in ("pressure_profiles", "velocity_profiles"):
+            self.assertIn("evaluator_derived", self.definition[group]["source"])
+        for panel in self.spec["profile_panels"]:
+            self.assertIn("evaluator_derived", panel["source"])
+
+
+class WindsorMLScoredCaseSetApprovalTests(unittest.TestCase):
+    def test_reduction_is_recorded_as_owner_approved(self) -> None:
+        spec = load(SPEC_DIR / "submission-spec.json")
+        record = spec["scoring_support"]["scored_case_set"]
+        self.assertEqual(record["status"], "owner_approved")
+        self.assertEqual(record["official_unique_test_cases"], 235)
+        self.assertEqual(record["scored_unique_test_cases"], 233)
+        self.assertEqual(sorted(record["excluded_case_ids"]), ["run_352", "run_354"])
+        self.assertNotIn(
+            "approve_scored_case_set_reduction_from_235_to_233_test_cases",
+            spec["scoring_support"]["owner_decisions_required"],
+        )
+
+    def test_excluded_ids_are_contract_unpublished_cases(self) -> None:
+        spec = load(SPEC_DIR / "submission-spec.json")
+        for case_id in spec["scoring_support"]["scored_case_set"]["excluded_case_ids"]:
+            self.assertIn(case_id, UNPUBLISHED_CASE_IDS)
+
+
 class WindsorMLMethodologyContractTests(unittest.TestCase):
     def test_required_predicted_fields_match_the_python_contract(self) -> None:
         document = load(SPEC_DIR / "methodology-contract.json")

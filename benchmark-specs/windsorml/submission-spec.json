@@ -106,9 +106,20 @@
       "vector_assembly_note": "Vector components are published as independent scalar arrays. Relative L2 recombines exactly from per-component squared sums; Euclidean MAE and RMSE do not, and are reported per component.",
       "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
     },
+    "scored_case_set": {
+      "status": "owner_approved",
+      "approved_on": "2026-09-17",
+      "rule": "official_split_manifest_intersected_with_published_runs",
+      "official_unique_test_cases": 235,
+      "scored_unique_test_cases": 233,
+      "excluded_case_ids": [
+        "run_352",
+        "run_354"
+      ],
+      "excluded_reason": "The official manifest assigns 355 identifiers, but run_350 through run_354 have no per-run payload in the public release. run_352 (high_drag) and run_354 (baseline and low_drag test sets) are therefore unscoreable.",
+      "comparability_note": "Scores on these case sets are not comparable to any evaluation run against the unreduced official manifest."
+    },
     "owner_decisions_required": [
-      "approve_velocity_and_pressure_profile_stations_and_resolution",
-      "approve_scored_case_set_reduction_from_235_to_233_test_cases",
       "approve_component_weights_after_profiles_are_scored"
     ]
   },
@@ -306,34 +317,46 @@
   "profile_panels": [
     {
       "id": "pressure_profiles",
-      "required": false,
+      "required": true,
       "scored_in_this_version": false,
-      "status": "owner_review_required",
+      "status": "stations_frozen_pending_per_case_support",
+      "definition_file": "profile-definition-v1.json",
       "allow_unlisted_stations": false,
       "minimum_points": 2,
+      "sample_count": 128,
       "coordinate_order": "strictly_increasing",
       "station_ids": [
-        "symmetry_plane_z_0",
-        "horizontal_cut_y_0_2595"
+        "surface_symmetry_centreline",
+        "surface_horizontal_cut_y_0p194"
       ],
       "quantity_ids": [
         "cp"
       ],
-      "note": "Consistent with the confirmed y-up / z-lateral frame, but the station geometry and sample resolution are not yet frozen."
+      "source": "evaluator_derived_from_the_submitted_native_surface_field",
+      "note": "Stations are aligned with AutoCFD Case 1, the same 1/4-scale Windsor body. Scoring activates once the per-case profile support is generated and hash-pinned."
     },
     {
       "id": "velocity_profiles",
-      "required": false,
+      "required": true,
       "scored_in_this_version": false,
-      "status": "owner_review_required",
+      "status": "stations_frozen_pending_per_case_support",
+      "definition_file": "profile-definition-v1.json",
       "allow_unlisted_stations": false,
       "minimum_points": 2,
+      "sample_count": 128,
       "coordinate_order": "strictly_increasing",
-      "station_ids": [],
-      "quantity_ids": [
-        "velocity_ratio"
+      "station_ids": [
+        "wake_vertical_x_0p05l",
+        "wake_vertical_x_0p10l",
+        "wake_vertical_x_0p25l",
+        "wake_vertical_x_0p50l",
+        "wake_lateral_x_0p10l_y_0p194"
       ],
-      "note": "The prototype's four stations (prototype_0_25l and similar) were fabricated placeholders and have been removed. Real wake stations must be chosen and validated with a resolution sweep before these are scored."
+      "quantity_ids": [
+        "ux_over_uinf"
+      ],
+      "source": "evaluator_derived_from_the_submitted_native_volume_field",
+      "note": "The prototype's four fabricated stations were removed. These five are sited from the measured wake of run_0: two inside the recirculation (Ux reaches -11.5 and -7.8 m/s), one just past closure, one in the recovering wake, plus a spanwise cut."
     }
   ],
   "splits": [
