@@ -11,7 +11,6 @@ AhmedML, or HiLiftAeroML about what ``bounded_error`` means.
 
 from __future__ import annotations
 
-import json
 import math
 from dataclasses import dataclass
 from pathlib import Path
@@ -23,6 +22,11 @@ import numpy as np
 from reference.scores import composite_component_group_scores, composite_overall_score
 
 from .contract import read_json
+from .profiles import (
+    PROFILE_MANIFEST_SHA256,
+    WindsorMLProfileError,
+    validate_profile_evidence,
+)
 
 
 DATASET_EVIDENCE_SCHEMA = "windsorml-candidate-dataset-evaluation-v1"
@@ -126,6 +130,14 @@ def score_candidate_dataset(
     specification = read_json(spec_path, label="WindsorML submission specification")
     if specification.get("dataset_id") != "windsorml":
         raise WindsorMLDatasetScorerError("specification is not the WindsorML spec")
+    scoring_support = _mapping(specification.get("scoring_support"), "scoring_support")
+    profile_support = _mapping(
+        scoring_support.get("profile_support"), "profile_support"
+    )
+    if profile_support.get("manifest_sha256") != PROFILE_MANIFEST_SHA256:
+        raise WindsorMLDatasetScorerError(
+            "profile support manifest differs from the frozen release"
+        )
 
     splits = {entry["id"]: entry for entry in specification.get("splits", [])}
     if split_id not in splits:
@@ -138,13 +150,9 @@ def score_candidate_dataset(
     )
     case_ids = list(split_document["case_ids"])
     if len(case_ids) != split_entry["case_count"]:
-        raise WindsorMLDatasetScorerError(f"{split_id} case count differs from the spec")
-
-    scored_profile_families = {
-        family
-        for family, metric in PROFILE_FAMILY_METRICS.items()
-        if metric in {m["id"] for m in specification.get("metrics", [])}
-    }
+        raise WindsorMLDatasetScorerError(
+            f"{split_id} case count differs from the spec"
+        )
 
     root = Path(case_evidence_directory).expanduser().resolve()
     per_case: dict[str, Mapping[str, float]] = {}
@@ -196,44 +204,15 @@ def score_candidate_dataset(
         cl_truth.append(_finite(truth.get("cl"), f"{case_id}.truth.cl"))
         cl_prediction.append(_finite(prediction.get("cl"), f"{case_id}.prediction.cl"))
 
-        if scored_profile_families:
-            profiles = evidence.get("profiles")
-            if profiles is None:
-                raise WindsorMLDatasetScorerError(
-                    f"{case_id} has no profile evidence but the spec scores profiles"
-                )
-            if _mapping(profiles, f"{case_id}.profiles").get(
-                "participant_profile_payload_accepted"
-            ) is not False:
-                raise WindsorMLDatasetScorerError(
-                    f"{case_id} profiles must be evaluator-derived, never submitted"
-                )
-            families = _mapping(profiles.get("families"), f"{case_id}.profiles.families")
-            for family in PROFILE_FAMILY_METRICS:
-                if family not in families:
-                    raise WindsorMLDatasetScorerError(
-                        f"{case_id} profile family {family!r} is missing"
-                    )
-                for station in families[family]:
-                    item = _mapping(station, f"{case_id}.{family}")
-                    truth_values = item.get("truth")
-                    prediction_values = item.get("prediction")
-                    if not isinstance(truth_values, list) or not isinstance(
-                        prediction_values, list
-                    ):
-                        raise WindsorMLDatasetScorerError(
-                            f"{case_id} {family} series are malformed"
-                        )
-                    if len(truth_values) != len(prediction_values):
-                        raise WindsorMLDatasetScorerError(
-                            f"{case_id} {family} truth and prediction differ in length"
-                        )
-                    profile_truth[family].extend(
-                        _finite(v, "profile truth") for v in truth_values
-                    )
-                    profile_prediction[family].extend(
-                        _finite(v, "profile prediction") for v in prediction_values
-                    )
+        try:
+            series = validate_profile_evidence(
+                evidence.get("profiles"), case_id=case_id
+            )
+        except WindsorMLProfileError as error:
+            raise WindsorMLDatasetScorerError(str(error)) from error
+        for family, (truth_values, prediction_values) in series.items():
+            profile_truth[family].extend(truth_values)
+            profile_prediction[family].extend(prediction_values)
 
     metric_values: dict[str, float] = {}
     for name in (*SURFACE_METRICS, *VOLUME_METRICS):
@@ -271,7 +250,9 @@ def score_candidate_dataset(
                 "split_id": split_id,
                 "case_count": len(case_ids),
                 "official_case_count": split_document.get("official_case_count"),
-                "excluded_case_ids": list(split_document.get("excluded_case_ids") or []),
+                "excluded_case_ids": list(
+                    split_document.get("excluded_case_ids") or []
+                ),
                 "metric_values": dict(metric_values),
                 "per_case": {c: dict(per_case[c]) for c in case_ids},
             }

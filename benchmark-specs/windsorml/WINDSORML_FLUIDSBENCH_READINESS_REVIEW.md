@@ -228,6 +228,22 @@ is the intended fix -- the constant line spans y in [0, 0.5] and overshoots the
 
 ## Release state
 
+### Runtime profile enforcement
+
+The case evaluator verifies the profile definition, support manifest, and case
+support bytes against immutable SHA-256 pins before reading prediction fields.
+An in-memory support document must exactly match the canonical pinned document.
+Case evidence records the definition, source, manifest and case-support hashes.
+
+The split scorer independently verifies those bindings and requires all three
+Cp and five velocity stations in both placement families, with exactly 128
+finite samples per station. It rejects missing, duplicate or unknown stations,
+changed coordinates, and truth that disagrees with the pinned support under the
+existing native-stream tolerance. Station serialization order does not change
+the score. Regenerate earlier case evidence with the evaluator to supply these
+bindings. The station definitions, sample locations and score formulas are
+unchanged.
+
 Every technical decision is settled and recorded in the spec: the scored case
 set, the component weights, the stations and resolution, and the sampling
 semantics. `scoring_support.status` remains `owner_review_required` and

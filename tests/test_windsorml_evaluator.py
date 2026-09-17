@@ -9,10 +9,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+from contextlib import contextmanager
 from pathlib import Path, PurePosixPath
 import re
 import sys
 import unittest
+from unittest.mock import patch
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
@@ -69,7 +71,9 @@ def sha256(path: Path) -> str:
 
 
 def file_identity(path: Path, relative: str) -> SourceFileIdentity:
-    return SourceFileIdentity(PurePosixPath(relative), sha256(path), path.stat().st_size)
+    return SourceFileIdentity(
+        PurePosixPath(relative), sha256(path), path.stat().st_size
+    )
 
 
 def vtk_array(name: str, values) -> object:
@@ -131,7 +135,9 @@ def _write_surface(path: Path, *, keep_information_keys: bool = False) -> None:
     data.SetCells(vtk.VTK_TETRA, cells)
     # WindsorML publishes its surface fields on POINTS, not cells.
     point_data = data.GetPointData()
-    point_data.AddArray(vtk_array("Normals", np.asarray(SURFACE_NORMALS, dtype=np.float32)))
+    point_data.AddArray(
+        vtk_array("Normals", np.asarray(SURFACE_NORMALS, dtype=np.float32))
+    )
     point_data.AddArray(vtk_array("cpavg", np.asarray(SURFACE_CP, dtype=np.float32)))
     point_data.AddArray(vtk_array("cfxavg", np.asarray(SURFACE_CFX, dtype=np.float32)))
     point_data.AddArray(vtk_array("cfyavg", np.asarray(SURFACE_CFY, dtype=np.float32)))
@@ -168,10 +174,18 @@ def write_volume(path: Path) -> None:
     data.SetPoints(points)
     data.SetCells(vtk.VTK_TETRA, cells)
     cell_data = data.GetCellData()
-    cell_data.AddArray(vtk_array("velocityxavg", np.asarray(VOLUME_UX, dtype=np.float32)))
-    cell_data.AddArray(vtk_array("velocityyavg", np.asarray(VOLUME_UY, dtype=np.float32)))
-    cell_data.AddArray(vtk_array("velocityzavg", np.asarray(VOLUME_UZ, dtype=np.float32)))
-    cell_data.AddArray(vtk_array("pressureavg", np.asarray(VOLUME_PRESSURE, dtype=np.float32)))
+    cell_data.AddArray(
+        vtk_array("velocityxavg", np.asarray(VOLUME_UX, dtype=np.float32))
+    )
+    cell_data.AddArray(
+        vtk_array("velocityyavg", np.asarray(VOLUME_UY, dtype=np.float32))
+    )
+    cell_data.AddArray(
+        vtk_array("velocityzavg", np.asarray(VOLUME_UZ, dtype=np.float32))
+    )
+    cell_data.AddArray(
+        vtk_array("pressureavg", np.asarray(VOLUME_PRESSURE, dtype=np.float32))
+    )
     writer = vtk.vtkXMLUnstructuredGridWriter()
     writer.SetFileName(str(path))
     writer.SetInputData(data)
@@ -269,7 +283,10 @@ def build_case(
     if published is None:
         integrated = expected_force_xyz() / FORCE_REFERENCE_AREA_M2
         published = WindsorMLForceTruth(
-            cd=float(integrated[0]), cl=float(integrated[1]), cs=float(integrated[2]), cmy=0.0
+            cd=float(integrated[0]),
+            cl=float(integrated[1]),
+            cs=float(integrated[2]),
+            cmy=0.0,
         )
     case = WindsorMLSourceCase(
         case_id=CASE_ID,
@@ -297,7 +314,9 @@ class WindsorMLEvaluatorTests(unittest.TestCase):
     def tearDown(self) -> None:
         self._temporary.cleanup()
 
-    def _evaluate(self, *, chunk_count: int = 1, scale: float = 1.0, case=None, dataset=None):
+    def _evaluate(
+        self, *, chunk_count: int = 1, scale: float = 1.0, case=None, dataset=None
+    ):
         from reference.windsorml.evaluator import evaluate_candidate_case
 
         if case is None:
@@ -364,9 +383,7 @@ class WindsorMLEvaluatorTests(unittest.TestCase):
     def test_metrics_are_invariant_to_prediction_chunking(self) -> None:
         single = self._evaluate(chunk_count=1, scale=0.9)
         split = self._evaluate(chunk_count=4, scale=0.9)
-        self.assertEqual(
-            single["surface"]["metrics"], split["surface"]["metrics"]
-        )
+        self.assertEqual(single["surface"]["metrics"], split["surface"]["metrics"])
         self.assertEqual(
             single["forces"]["prediction_integrated"],
             split["forces"]["prediction_integrated"],
@@ -374,7 +391,9 @@ class WindsorMLEvaluatorTests(unittest.TestCase):
 
     def test_imperfect_prediction_produces_positive_error(self) -> None:
         evidence = self._evaluate(scale=0.5)
-        self.assertGreater(evidence["surface"]["metrics"]["surface_pressure_rel_l2"], 0.0)
+        self.assertGreater(
+            evidence["surface"]["metrics"]["surface_pressure_rel_l2"], 0.0
+        )
         self.assertGreater(
             evidence["surface"]["metrics"]["surface_wall_shear_rel_l2"], 0.0
         )
@@ -397,43 +416,54 @@ class WindsorMLEvaluatorTests(unittest.TestCase):
             self.assertAlmostEqual(value, 0.0, places=9, msg=name)
 
     def _profile_support(self, *, case_id: str = CASE_ID) -> dict:
-        """Minimal two-family support over the synthetic case's native entities."""
+        """All frozen stations and 128 samples, mapped onto tiny native arrays."""
 
-        cp = np.asarray(SURFACE_CP, dtype=np.float64)
-        ux = np.asarray(VOLUME_UX, dtype=np.float64)
-        u_ref = 42.1
-        point_ids = [0, 2, 3]
-        cell_ids = [0, 2]
-        cp_station = {
-            "native_point_ids": point_ids,
-            "coordinate": [0.0, 0.5, 1.0],
-            "truth_cp": cp[point_ids].tolist(),
-        }
-        velocity_station = {
-            "native_cell_ids": cell_ids,
-            "coordinate": [0.0, 1.0],
-            "truth_ux_over_uinf": (ux[cell_ids] / u_ref).tolist(),
-        }
-        return {
-            "schema": "windsorml-profile-support-v3",
-            "case_id": case_id,
-            "run_id": 0,
-            "sample_count": 3,
-            "reference_velocity_m_s": u_ref,
-            "body_height_m": 0.34342,
-            "families": {
-                "windsorml_cp_constant_v1": {"cp_centreline_upper": cp_station},
-                "windsorml_cp_relative_v1": {
-                    "cp_centreline_upper_relative": dict(cp_station)
-                },
-                "windsorml_velocity_constant_v1": {
-                    "wake_vertical_x_0p05l": velocity_station
-                },
-                "windsorml_velocity_relative_v1": {
-                    "wake_vertical_x_0p05l_relative": dict(velocity_station)
-                },
-            },
-        }
+        from reference.windsorml.profiles import PROFILE_MANIFEST_PATH
+
+        support = json.loads((PROFILE_MANIFEST_PATH.parent / "run_0.json").read_text())
+        support["case_id"] = case_id
+        for family, stations in support["families"].items():
+            velocity = "velocity" in family
+            values = np.asarray(
+                VOLUME_UX if velocity else SURFACE_CP, dtype=np.float32
+            ).astype(np.float64)
+            ids = np.arange(128) % len(values)
+            for station in stations.values():
+                station["native_cell_ids" if velocity else "native_point_ids"] = (
+                    ids.tolist()
+                )
+                truth = (
+                    values[ids] / support["reference_velocity_m_s"]
+                    if velocity
+                    else values[ids]
+                )
+                station["truth_ux_over_uinf" if velocity else "truth_cp"] = (
+                    truth.tolist()
+                )
+        return support
+
+    @contextmanager
+    def _pinned_profile_support(self, support):
+        """Pin test-only support without adding a runtime bypass to the evaluator."""
+
+        from reference.windsorml import profiles
+
+        manifest = json.loads(profiles.PROFILE_MANIFEST_PATH.read_text())
+        directory = self.root / "profile-release"
+        directory.mkdir(exist_ok=True)
+        path = directory / "run_0.json"
+        path.write_text(json.dumps(support))
+        entry = next(
+            entry for entry in manifest["cases"] if entry["case_id"] == CASE_ID
+        )
+        entry.update(sha256=sha256(path), size_bytes=path.stat().st_size)
+        manifest_path = directory / "manifest.json"
+        manifest_path.write_text(json.dumps(manifest))
+        with (
+            patch.object(profiles, "PROFILE_MANIFEST_PATH", manifest_path),
+            patch.object(profiles, "PROFILE_MANIFEST_SHA256", sha256(manifest_path)),
+        ):
+            yield path
 
     def test_profiles_are_derived_from_the_same_submitted_fields(self) -> None:
         from reference.windsorml.evaluator import evaluate_candidate_case
@@ -451,15 +481,28 @@ class WindsorMLEvaluatorTests(unittest.TestCase):
             association="CellData",
             fields=volume_fields(),
         )
-        evidence = evaluate_candidate_case(
-            case=case,
-            dataset_root=dataset,
-            surface_manifest=surface,
-            volume_manifest=volume,
-            profile_support=self._profile_support(),
-        ).to_json()
+        support = self._profile_support()
+        with self._pinned_profile_support(support) as support_path:
+            evidence = evaluate_candidate_case(
+                case=case,
+                dataset_root=dataset,
+                surface_manifest=surface,
+                volume_manifest=volume,
+                profile_support=support_path,
+            ).to_json()
+            expected_hash = sha256(support_path)
+            from reference.windsorml.profiles import validate_profile_evidence
+
+            reduced = validate_profile_evidence(evidence["profiles"], case_id=CASE_ID)
+            self.assertEqual(len(reduced["windsorml_cp_constant_v1"][0]), 3 * 128)
+            self.assertEqual(len(reduced["windsorml_velocity_constant_v1"][0]), 5 * 128)
 
         profiles = evidence["profiles"]
+        self.assertEqual(profiles["case_support_sha256"], expected_hash)
+        self.assertEqual(profiles["sample_count"], 128)
+        self.assertEqual(
+            sum(len(stations) for stations in profiles["families"].values()), 16
+        )
         self.assertIs(profiles["participant_profile_payload_accepted"], False)
         self.assertEqual(
             set(profiles["families"]),
@@ -490,14 +533,17 @@ class WindsorMLEvaluatorTests(unittest.TestCase):
         support = self._profile_support()
         support["families"]["windsorml_cp_constant_v1"]["cp_centreline_upper"][
             "truth_cp"
-        ] = [9.9, 9.9, 9.9]
+        ] = [9.9] * 128
         surface = prediction_manifest(
             self.root / "surface-stale",
             support_id=WINDSORML_SURFACE_SUPPORT_ID,
             association="PointData",
             fields=surface_fields(),
         )
-        with self.assertRaises(WindsorMLCandidateEvaluatorError) as caught:
+        with (
+            self._pinned_profile_support(support),
+            self.assertRaises(WindsorMLCandidateEvaluatorError) as caught,
+        ):
             evaluate_candidate_case(
                 case=case,
                 dataset_root=dataset,

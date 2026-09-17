@@ -7,11 +7,9 @@ Three structural differences from :mod:`reference.ahmedml.evaluator`:
   ``boundary_dual_area_N.npy`` sidecar rather than an evaluator-generated array.
   Entity counts are therefore checked against ``NumberOfPoints``.
 
-* **No generated support artifacts are required for v1.** The surface weights
-  ship with the dataset, and the volume metric is equal-cell weighted by
-  decision, so there are no cell-volume sidecars to build. Only the profile
-  panels would need generated support, and those stay out of v1 while the
-  velocity stations are under owner review.
+* **Profile support is hash-pinned.** Surface weights ship with the dataset,
+  volume metrics are equal-cell weighted, and generated profile mappings are
+  verified against the immutable 233-case manifest before they are consumed.
 
 * **Vector metrics are assembled from separately streamed scalar components.**
   WindsorML stores ``cfxavg``/``cfyavg``/``cfzavg`` and
@@ -26,7 +24,6 @@ Three structural differences from :mod:`reference.ahmedml.evaluator`:
 from __future__ import annotations
 
 import contextlib
-import json
 import math
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -69,6 +66,14 @@ from .prediction_chunks import (
     PredictionChunkManifest,
     iter_prediction_chunks,
     load_prediction_chunk_manifest,
+)
+from .profiles import (
+    PROFILE_SERIES_SOURCE,
+    PROFILE_SUPPORT_SCHEMA as PROFILE_SUPPORT_SCHEMA,
+    PROFILE_TRUTH_ATOL,
+    ProfileSupport,
+    WindsorMLProfileError,
+    load_profile_support,
 )
 
 
@@ -306,7 +311,9 @@ class _ScalarSink:
         # Profile samples are captured during the same single pass: the frozen
         # support names native entity IDs, and both truth and prediction are
         # read at those IDs so a profile can never be a second prediction path.
-        self.sample_ids = None if sample_ids is None else np.asarray(sample_ids).reshape(-1)
+        self.sample_ids = (
+            None if sample_ids is None else np.asarray(sample_ids).reshape(-1)
+        )
         self.sample_truth = (
             None
             if sample_ids is None
@@ -333,7 +340,9 @@ class _ScalarSink:
         local = self.sample_ids[positions] - start
         assert self.sample_truth is not None and self.sample_prediction is not None
         self.sample_truth[positions] = np.asarray(truth, dtype=np.float64)[local]
-        self.sample_prediction[positions] = np.asarray(prediction, dtype=np.float64)[local]
+        self.sample_prediction[positions] = np.asarray(prediction, dtype=np.float64)[
+            local
+        ]
 
     def _accumulate_force(
         self,
@@ -546,31 +555,15 @@ VELOCITY_FAMILIES = (
     "windsorml_velocity_constant_v1",
     "windsorml_velocity_relative_v1",
 )
-PROFILE_SUPPORT_SCHEMA = "windsorml-profile-support-v3"
 
 
 def _load_profile_support(
     value: Mapping[str, object] | str | Path, *, case_id: str
-) -> Mapping[str, object]:
-    if isinstance(value, (str, Path)):
-        document = json.loads(Path(value).read_text())
-    else:
-        document = dict(value)
-    if document.get("schema") != PROFILE_SUPPORT_SCHEMA:
-        raise WindsorMLCandidateEvaluatorError("profile support schema is unexpected")
-    if document.get("case_id") != case_id:
-        raise WindsorMLCandidateEvaluatorError(
-            f"profile support binds {document.get('case_id')!r}, not {case_id!r}"
-        )
-    families = document.get("families")
-    if not isinstance(families, Mapping):
-        raise WindsorMLCandidateEvaluatorError("profile support has no families")
-    missing = [f for f in (*CP_FAMILIES, *VELOCITY_FAMILIES) if f not in families]
-    if missing:
-        raise WindsorMLCandidateEvaluatorError(
-            f"profile support is missing families {missing}"
-        )
-    return document
+) -> ProfileSupport:
+    try:
+        return load_profile_support(case_id=case_id, value=value)
+    except WindsorMLProfileError as error:
+        raise WindsorMLCandidateEvaluatorError(str(error)) from error
 
 
 def _gather_sample_ids(
@@ -619,7 +612,7 @@ def _profile_series(
             declared = np.asarray(payload[truth_key], dtype=np.float64)
             # The support's stored truth must agree with the truth streamed from
             # the pinned source, or the support is stale.
-            if not np.allclose(truth, declared, rtol=0.0, atol=1e-5):
+            if not np.allclose(truth, declared, rtol=0.0, atol=PROFILE_TRUTH_ATOL):
                 raise WindsorMLCandidateEvaluatorError(
                     f"{family}/{station} support truth disagrees with the native field"
                 )
@@ -628,7 +621,7 @@ def _profile_series(
                     "station_id": station,
                     "quantity_id": quantity_id,
                     "sample_count": int(truth.shape[0]),
-                    "source": "evaluator_derived_from_complete_native_fields",
+                    "source": PROFILE_SERIES_SOURCE,
                     "coordinate": list(payload["coordinate"]),
                     "truth": truth.tolist(),
                     "prediction": prediction.tolist(),
@@ -672,6 +665,13 @@ def evaluate_candidate_case(
     _positive_integer(encoded_chunk_bytes, "encoded_chunk_bytes")
     _positive_integer(maximum_prediction_chunk_rows, "maximum_prediction_chunk_rows")
 
+    pinned_support = (
+        None
+        if profile_support is None
+        else _load_profile_support(profile_support, case_id=case.case_id)
+    )
+    support = None if pinned_support is None else pinned_support.document
+
     surface = _manifest(surface_manifest)
     _validate_manifest(
         surface,
@@ -685,7 +685,9 @@ def evaluate_candidate_case(
     # The published per-point dual areas are the canonical surface weights; the
     # dataset README warns that recomputing polygon areas with VTK drifts.
     dual_area_path = case.surface_dual_area.resolve(dataset_root)
-    with RetainedVerifiedFile.open(dual_area_path, label="surface_dual_area") as retained:
+    with RetainedVerifiedFile.open(
+        dual_area_path, label="surface_dual_area"
+    ) as retained:
         if retained.snapshot.size_bytes != case.surface_dual_area.size_bytes:
             raise WindsorMLCandidateEvaluatorError("surface dual-area size differs")
         if retained.sha256() != case.surface_dual_area.sha256:
@@ -702,11 +704,6 @@ def evaluate_candidate_case(
             "surface dual-area weights must be finite and positive"
         )
 
-    support = (
-        None
-        if profile_support is None
-        else _load_profile_support(profile_support, case_id=case.case_id)
-    )
     cp_sample_ids: np.ndarray | None = None
     cp_slices: dict[tuple[str, str], slice] = {}
     if support is not None:
@@ -718,7 +715,9 @@ def evaluate_candidate_case(
         )
 
     surface_results: dict[str, _ScalarResult] = {}
-    with _open_verified_source(case.boundary, dataset_root, label="boundary") as retained:
+    with _open_verified_source(
+        case.boundary, dataset_root, label="boundary"
+    ) as retained:
         index = _index_source(
             retained.handle,
             expected_entities=case.surface_entity_count,
@@ -727,13 +726,18 @@ def evaluate_candidate_case(
         normals_array = _required_array(index, SURFACE_NORMALS_ARRAY, 3, "PointData")
         retained.handle.seek(0)
         normals = _read_inline_array(
-            retained.handle, index, normals_array, encoded_chunk_bytes=encoded_chunk_bytes
+            retained.handle,
+            index,
+            normals_array,
+            encoded_chunk_bytes=encoded_chunk_bytes,
         )
         if normals.shape != (case.surface_entity_count, 3):
             raise WindsorMLCandidateEvaluatorError("native Normals shape differs")
         norms = np.linalg.norm(normals, axis=1)
         if not np.allclose(norms, 1.0, atol=1e-5):
-            raise WindsorMLCandidateEvaluatorError("native Normals must be unit vectors")
+            raise WindsorMLCandidateEvaluatorError(
+                "native Normals must be unit vectors"
+            )
 
         # Pressure acts along -n; each shear component acts along its own axis.
         area_vectors = normals * dual_area[:, None]
@@ -748,7 +752,9 @@ def evaluate_candidate_case(
             array = _required_array(index, field, 1, "PointData")
             retained.handle.seek(0)
             force_vectors = (
-                -area_vectors if field == SURFACE_PRESSURE_FIELD else axis_vectors[field]
+                -area_vectors
+                if field == SURFACE_PRESSURE_FIELD
+                else axis_vectors[field]
             )
             surface_results[field] = _evaluate_scalar(
                 stream=retained.handle,
@@ -806,8 +812,9 @@ def evaluate_candidate_case(
             "metrics": {
                 # Surface primary weighting is physical (dual area) per the
                 # dataset's relative-L2 policy; equal-entity is the secondary.
-                "surface_pressure_rel_l2": surface_results[SURFACE_PRESSURE_FIELD]
-                .statistics.physical.relative_l2_percent(),
+                "surface_pressure_rel_l2": surface_results[
+                    SURFACE_PRESSURE_FIELD
+                ].statistics.physical.relative_l2_percent(),
                 "surface_pressure_equal_entity_rel_l2": surface_results[
                     SURFACE_PRESSURE_FIELD
                 ].statistics.uniform.relative_l2_percent(),
@@ -858,7 +865,9 @@ def evaluate_candidate_case(
                 entity_count=case.volume_entity_count,
             )
         volume_results: dict[str, _ScalarResult] = {}
-        with _open_verified_source(case.volume, dataset_root, label="volume") as retained:
+        with _open_verified_source(
+            case.volume, dataset_root, label="volume"
+        ) as retained:
             volume_index = _index_source(
                 retained.handle,
                 expected_entities=case.volume_entity_count,
@@ -898,16 +907,16 @@ def evaluate_candidate_case(
                     [volume_results[f].statistics for f in VOLUME_VELOCITY_FIELDS],
                     weighting="uniform",
                 ),
-                "volume_pressure_rel_l2": volume_results[VOLUME_PRESSURE_FIELD]
-                .statistics.uniform.relative_l2_percent(),
+                "volume_pressure_rel_l2": volume_results[
+                    VOLUME_PRESSURE_FIELD
+                ].statistics.uniform.relative_l2_percent(),
             },
         }
 
     if support is not None:
+        assert pinned_support is not None
         profiles: dict[str, object] = {
-            "support_schema": PROFILE_SUPPORT_SCHEMA,
-            "sample_count": support["sample_count"],
-            "body_height_m": support["body_height_m"],
+            **pinned_support.evidence_binding(),
             "participant_profile_payload_accepted": False,
             "families": {},
         }
