@@ -1,0 +1,196 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/discretization.schema.json",
+  "schema_version": "1.0",
+  "submission_id": "transolverpp-full-v1",
+  "dataset_id": "airfrans",
+  "split_id": "full",
+  "scoring_support_release_id": "airfrans-native-ground-truth-v1-candidate",
+  "scoring_support_manifest_sha256": "a2f5f2d63c50de09324837763676f8352454fcfb37fe995673b1c325abbbe4e1",
+  "training": {
+    "surface_input": {
+      "used": false
+    },
+    "surface_supervision": {
+      "used": false
+    },
+    "volume_input": {
+      "used": true,
+      "representation": "full_native_domain_points_with_broadcast_global_params",
+      "entity_counts": [
+        {
+          "entity": "domain_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 158012,
+            "median": 180423,
+            "maximum": 202823
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native",
+      "notes": "Entity counts below reuse the official 200-case Full evaluation split's own native point-count distribution as a representative proxy; per-case native point counts for the 800-case full_train training partition were not separately enumerated (same AirfRANS mesh-generation process, so the distribution is expected to be comparable)."
+    },
+    "volume_supervision": {
+      "used": true,
+      "representation": "full_native_domain_points_with_broadcast_global_params",
+      "entity_counts": [
+        {
+          "entity": "domain_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 158012,
+            "median": 180423,
+            "maximum": 202823
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native",
+      "notes": "Entity counts below reuse the official 200-case Full evaluation split's own native point-count distribution as a representative proxy; per-case native point counts for the 800-case full_train training partition were not separately enumerated (same AirfRANS mesh-generation process, so the distribution is expected to be comparable)."
+    }
+  },
+  "inference": {
+    "geometry_dependency": "native_cfd_mesh",
+    "surface_input": {
+      "used": true,
+      "case_record_id": "native-curve-points",
+      "representation": "native_airfoil_curve_points",
+      "entity_counts": [
+        {
+          "entity": "airfoil_curve_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 858,
+            "median": 1015.0,
+            "maximum": 1165
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native"
+    },
+    "volume_input": {
+      "used": true,
+      "case_record_id": "native-domain-points",
+      "representation": "native_2d_domain_points",
+      "entity_counts": [
+        {
+          "entity": "domain_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 158012,
+            "median": 180346.5,
+            "maximum": 202823
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native"
+    },
+    "direct_outputs": [
+      {
+        "id": "native-domain-velocity-pressure",
+        "domain": "volume",
+        "representation": {
+          "used": true,
+          "case_record_id": "native-domain-points",
+          "representation": "native_2d_domain_points",
+          "entity_counts": [
+            {
+              "entity": "domain_points",
+              "count": {
+                "kind": "per_case",
+                "minimum": 158012,
+                "median": 180346.5,
+                "maximum": 202823
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "not_applicable"
+          },
+          "sampling": {
+            "kind": "none"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "native"
+        },
+        "queries_per_forward_pass": {
+          "kind": "per_case",
+          "minimum": 158012,
+          "median": 180346.5,
+          "maximum": 202823
+        }
+      }
+    ],
+    "mappings": [
+      {
+        "support_id": "two-dimensional-domain-native",
+        "source_output_id": "native-domain-velocity-pressure",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "scripts/derive_airfrans_predicted_fields.py",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "airfoil-curve-native",
+        "source_output_id": "native-domain-velocity-pressure",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "airfrans-surface-subset-reorganize-v1",
+          "rule_version": "1"
+        },
+        "implementation": "scripts/derive_airfrans_predicted_fields.py",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      }
+    ]
+  },
+  "case_manifest": {
+    "format": "jsonl",
+    "file": "discretization/cases.jsonl",
+    "sha256": "c7945bcf210ceafcf1805fab1a22f0fdde9ddb555fd6eec27e702e9ea17fa6fa",
+    "case_count": 200
+  }
+}

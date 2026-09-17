@@ -1,0 +1,318 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/submission.schema.json",
+  "schema_version": "3.0",
+  "submission_id": "transolverpp-full-v1",
+  "result_revision": {
+    "series_id": "transolverpp-full",
+    "version": 1,
+    "supersedes": null,
+    "change_summary": "Initial dummy/candidate AirfRANS Full-split submission for transolverpp-full."
+  },
+  "model": "Transolver++",
+  "model_type": "physics_attention_transformer_neural_operator",
+  "model_types": [
+    "physics_attention_transformer_neural_operator"
+  ],
+  "training_regime": "from_scratch",
+  "target_data_used": "official_train",
+  "external_pretraining": false,
+  "pretraining_data": [],
+  "dataset": "AirfRANS",
+  "dataset_id": "airfrans",
+  "dataset_version": "prototype-1",
+  "split": "Full",
+  "split_id": "full",
+  "case_set_id": "standard",
+  "split_sha256": "b300910d8eb27c11652064ba1c72a669fe4539addd76222f03af072f2f169e9f",
+  "parameter_count_millions": 1.485584,
+  "methodology": {
+    "record_kind": "submitter_reported",
+    "record_note": "Adapted from the official Transolver++ reference implementation (https://github.com/thuml/Transolver_plus/blob/main/models/Transolver_plus.py). Submitter-reported DDP adaptation note: the original implementation uses sequence parallelism (dist_nn.all_reduce inside Physics_Attention_1D_Eidetic) to synchronize attention tokens across devices, assuming one large spatial graph partitioned across GPUs. This pipeline instead uses standard Distributed Data Parallelism: because AirfRANS meshes have highly variable node counts (preventing batch stacking), each GPU processes exactly one intact mesh per step, so the entire graph for a sample fits in one GPU's VRAM. Leaving the cross-GPU all_reduce active under this DDP setup would aggregate attention tokens across independent meshes on different GPUs, cross-contaminating physical/geometric features between unrelated samples. The submitter therefore bypassed the dist_nn.all_reduce synchronization in the forward pass; global synchronization is instead handled correctly and exclusively by the DDP backend during the backward pass (gradient reduction), preserving strict per-sample independence in the forward computation. find_unused_parameters=True was set in the DDP wrapper to handle the idle condition-embedding layer present in the original architecture without structural deletions.",
+    "architecture": {
+      "description": "Transolver++ (Physics_Attention_1D_Eidetic variant with Gumbel-softmax adaptive-temperature slice weighting): an input MLP embeds 8 per-node channels (6 broadcast global case parameters + 2D native coordinates) into a 256-wide hidden representation, followed by 5 Transolver++ blocks (LayerNorm -> physics attention with 8 heads / 32 slices -> LayerNorm -> MLP, residual throughout), with a final linear head on the last block producing all 3 output channels (Ux, Uy, p) in one forward pass. A per-case scalar 'condition' embedding exists in the architecture but is never populated (always None) in this deployment, so it is architecturally present but functionally inactive; it was kept only to satisfy DistributedDataParallel's find_unused_parameters requirement.",
+      "total_parameter_count": 1485584,
+      "parameter_count_basis": "exact",
+      "submitter_trainable_parameter_count": 1485584,
+      "components": [
+        {
+          "id": "input-preprocessing-mlp",
+          "family": "MLP",
+          "role": "Embeds the 8 input channels (6 broadcast global params + 2 coordinates) into the 256-wide hidden representation.",
+          "description": "Single-layer preprocessing MLP (8 -> 512 -> 256, GELU), no residual layers.",
+          "parameter_count": 135936
+        },
+        {
+          "id": "transolver-plus-attention-blocks",
+          "family": "Physics-attention transformer (Transolver++ / Physics_Attention_1D_Eidetic)",
+          "role": "5-layer adaptive-slicing physics-attention core; the final block's linear head produces the 3 output channels (Ux, Uy, p).",
+          "description": "5 stacked Transolver_plus_block modules (LayerNorm, 8-head/32-slice Gumbel-softmax adaptive physics attention, LayerNorm, MLP, residual connections throughout); the last block additionally applies a LayerNorm + Linear(256, 3) output head.",
+          "parameter_count": 1348368
+        },
+        {
+          "id": "unused-condition-embedding",
+          "family": "Linear",
+          "role": "Dead/inactive layer: a Linear(3, 256) condition embedding and a small learnable placeholder bias, present in the architecture but never exercised because the model is always called with condition=None in this deployment.",
+          "description": "Kept only so DistributedDataParallel's find_unused_parameters handling does not require structurally deleting this head from the reference implementation.",
+          "parameter_count": 1280
+        }
+      ],
+      "key_hyperparameters": [
+        {
+          "id": "n-layers",
+          "component_ids": [
+            "transolver-plus-attention-blocks"
+          ],
+          "name": "n_layers_transolver",
+          "value": 5,
+          "description": "Number of Transolver++ blocks."
+        },
+        {
+          "id": "n-hidden",
+          "component_ids": [
+            "transolver-plus-attention-blocks",
+            "input-preprocessing-mlp"
+          ],
+          "name": "n_hidden_transolver",
+          "value": 256,
+          "description": "Hidden width."
+        },
+        {
+          "id": "n-head",
+          "component_ids": [
+            "transolver-plus-attention-blocks"
+          ],
+          "name": "n_head_transolver",
+          "value": 8,
+          "description": "Attention heads per block."
+        },
+        {
+          "id": "slice-num",
+          "component_ids": [
+            "transolver-plus-attention-blocks"
+          ],
+          "name": "slice_num_transolver",
+          "value": 32,
+          "description": "Adaptive physics-attention slice count."
+        },
+        {
+          "id": "mlp-ratio",
+          "component_ids": [
+            "transolver-plus-attention-blocks"
+          ],
+          "name": "mlp_ratio",
+          "value": 1,
+          "description": "Block MLP hidden-width multiplier."
+        },
+        {
+          "id": "dropout",
+          "component_ids": [
+            "transolver-plus-attention-blocks"
+          ],
+          "name": "dropout",
+          "value": 0,
+          "description": "Dropout probability (disabled)."
+        }
+      ],
+      "input_features": [
+        {
+          "id": "global-case-params",
+          "component_ids": [
+            "input-preprocessing-mlp"
+          ],
+          "name": "global_case_parameters",
+          "domain": "global",
+          "component_count": 6,
+          "description": "Inlet velocity, angle of attack, and 4 NACA shape parameters, standardized and broadcast to every native mesh point."
+        },
+        {
+          "id": "native-coordinates",
+          "component_ids": [
+            "input-preprocessing-mlp"
+          ],
+          "name": "coordinates",
+          "domain": "mesh",
+          "component_count": 2,
+          "description": "Native 2D point coordinates (x, y), standardized."
+        }
+      ],
+      "predicted_fields": [
+        {
+          "field_id": "two-dimensional-domain-native.U",
+          "domain": "domain",
+          "component_count": 2,
+          "component_ids": [
+            "transolver-plus-attention-blocks"
+          ],
+          "production": "direct_model_output",
+          "description": "Cartesian velocity (Ux, Uy) on every native 2D flow-domain point."
+        },
+        {
+          "field_id": "two-dimensional-domain-native.p",
+          "domain": "domain",
+          "component_count": 1,
+          "component_ids": [
+            "transolver-plus-attention-blocks"
+          ],
+          "production": "direct_model_output",
+          "description": "Kinematic pressure on every native 2D flow-domain point."
+        },
+        {
+          "field_id": "airfoil-curve-native.p",
+          "domain": "curve",
+          "component_count": 1,
+          "component_ids": [
+            "transolver-plus-attention-blocks"
+          ],
+          "production": "derived_from_model_output",
+          "description": "Airfoil-curve pressure, selected from the domain pressure prediction at the native surface points and reorganized onto the airfoil's native point order (methodology-contract.json explicitly allows this: 'may be derived by selecting the corresponding output')."
+        }
+      ]
+    },
+    "data_handling": {
+      "normalization": "Fixed (not per-run-fitted) mean/std standardization hardcoded in the training script: global params mean=[62.078843, 4.505005, 2.662092, 4.36979, -0.177399, 12.383638] std=[17.895404, 5.439110, 1.780338, 2.223083, 0.847565, 4.266170]; coordinates mean=[0.496883, 0.009349] std=[0.680004, 0.314274]; targets (u, v, p) mean=[42.325618, 9.802131, -455.852231] std=[29.694971, 31.015622, 2959.004581]. Predictions are denormalized (pred * std + mean) before packing onto native points.",
+      "preprocessing": "Each case's complete native internal-mesh point cloud and (u, v, p) fields are read directly from a pre-processed AirfRANS pickle (X_original, fields); no remeshing, cropping, or geometric preprocessing.",
+      "sampling": "None: the complete native point set for every case is used for both training supervision and inference. Batch size is fixed at exactly 1 full mesh per GPU step (no subsampling), because AirfRANS meshes have highly variable node counts that prevent standard batch stacking."
+    },
+    "training": {
+      "stages": [
+        {
+          "id": "airfrans-full-from-scratch",
+          "status": "performed_by_submitter",
+          "component_ids": [
+            "input-preprocessing-mlp",
+            "transolver-plus-attention-blocks",
+            "unused-condition-embedding"
+          ],
+          "description": "Single from-scratch training run on the official AirfRANS Full-split training partition (800 cases), validated each epoch against the official 200-case Full-split test partition.",
+          "procedure": {
+            "kind": "gradient_based",
+            "loss": {
+              "description": "Mean squared error between predicted and normalized ground-truth (Ux, Uy, p), averaged over all native points in the mesh.",
+              "weighting": "Uniform per-point MSE; no field-wise or spatial weighting."
+            },
+            "optimizers": [
+              {
+                "name": "AdamW",
+                "learning_rate": 0.001,
+                "schedule": "Constant learning rate, no scheduler. AdamW weight_decay=1e-4."
+              }
+            ],
+            "batch": {
+              "value": 1,
+              "unit": "cases",
+              "gradient_accumulation_steps": 1
+            },
+            "duration": {
+              "epochs": 400,
+              "optimizer_steps": 320000
+            }
+          },
+          "run_count": 1,
+          "stochastic": true,
+          "random_seeds": [
+            42
+          ],
+          "compute": {
+            "hardware": "2x NVIDIA RTX PRO 5000 Blackwell",
+            "max_concurrent_device_count": 2,
+            "campaign_wall_time_hours": 13.806125000000002,
+            "aggregate_device_hours": 27.612250000000003,
+            "measurement_notes": "From the training log ('Training complete in 13h 48m 22.05s'), 2-way DistributedDataParallel, ~124.2s/epoch across 400 epochs."
+          }
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "transolver-3ch-final",
+        "component_ids": [
+          "input-preprocessing-mlp",
+          "transolver-plus-attention-blocks",
+          "unused-condition-embedding"
+        ],
+        "sha256": "9340d9a6d928bcb3d206448050043e604962fbee5925cc45266a64467b93b623",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw PyTorch state_dict (torch.save(model.module.state_dict(), 'transolver_3ch_final.pt')) saved unconditionally at the end of the fixed 400-epoch schedule.",
+        "role": "Single checkpoint; one forward pass produces all three predicted fields (Ux, Uy, p).",
+        "selection_rule": "Final checkpoint after completing a fixed, predetermined 400-epoch schedule; NOT selected using validation or evaluation-set performance. A separate 'transolver_3ch_best.pt' checkpoint (selected by minimizing validation loss on split_key='full_test', which was verified to be byte-for-byte identical to this benchmark's official 200-case Full evaluation split) was deliberately NOT used for this submission, since its selection used the evaluation cases."
+      }
+    ],
+    "inference_compute": {
+      "status": "measured",
+      "hardware": "1x NVIDIA RTX PRO 5000 Blackwell",
+      "max_concurrent_device_count": 1,
+      "case_count": 200,
+      "campaign_wall_time_seconds": 59.98,
+      "aggregate_device_time_seconds": 59.98,
+      "includes_preprocessing": true,
+      "includes_mapping": false,
+      "measurement_notes": "Single uninterrupted campaign covering data loading, normalization, GPU transfer and the forward pass for all 200 Full-split cases (batch size 1, sequential, single GPU). Does not include the separate scipy cKDTree exact-match/IDW(k=5) repacking step onto native mesh points (pack_predictions.py), which was not separately timed."
+    },
+    "format": "fluidsbench-method-v1"
+  },
+  "submitter_name": "Dummy Submitter",
+  "institution": "Dummy Institution",
+  "paper_url": "",
+  "submitted_at": "2026-09-17",
+  "evaluation": {
+    "reference_version": "prototype-1",
+    "command": "python3 -m reference.evaluate_predictions --support-manifest /mnt/Data_A/AirfRANS_Inference_Handover_2026-09-09/FluidsBench/airfrans-scoring-support/airfrans-native-ground-truth-v1-candidate/manifest.json --case-set standard --prediction-manifest <layer2-output>/manifest.json --submission-id transolverpp-full-v1 --split-id full --output metrics/cases.json ; python3 scripts/finalize_airfrans_metrics.py (folds in velocity_profile_r2 + composite scores)",
+    "evidence_file": "evaluation-evidence.json",
+    "evidence_sha256": "2807ead85112ad334c4dd964031a5350821d0d068e13ddbfa6d097c6b9b4543d"
+  },
+  "reproducibility": {
+    "contract_version": "open-reproducibility-3.0",
+    "access": "public",
+    "public_test_data_use": "evaluation_only",
+    "result_data_license_spdx": "CC-BY-4.0"
+  },
+  "scoring_support": {
+    "status": "candidate",
+    "release_id": "airfrans-native-ground-truth-v1-candidate",
+    "manifest_url": "https://fluidsbench.org/not-yet-published/airfrans-native-ground-truth-v1-candidate/manifest.json",
+    "manifest_sha256": "a2f5f2d63c50de09324837763676f8352454fcfb37fe995673b1c325abbbe4e1"
+  },
+  "spatial_discretization": {
+    "format": "fluidsbench-discretization-v1",
+    "file": "discretization.json",
+    "sha256": "4e3467293c11b53255a1e69307329b8a72b151ffbb387b3777cc2def43194b46"
+  },
+  "case_metrics": {
+    "format": "fluidsbench-case-metrics-v1",
+    "file": "metrics/cases.json",
+    "sha256": "21248feb4e54278043448ee09202f96ea36e5299abe35c1ad9192710a8fe48ca",
+    "case_count": 200
+  },
+  "metric_values": {
+    "flow_domain_velocity_rel_l2": 25.231038318244465,
+    "flow_domain_velocity_physical_rel_l2": 5.039992422163603,
+    "flow_domain_velocity_rel_l1": 17.69790561096158,
+    "flow_domain_pressure_rel_l2": 25.94261544530605,
+    "flow_domain_pressure_physical_rel_l2": 103.6622552536879,
+    "flow_domain_pressure_rel_l1": 29.276204565366797,
+    "surface_pressure_rel_l2": 21.523549391899383,
+    "surface_pressure_equal_entity_rel_l2": 23.893667601820137,
+    "surface_pressure_rel_l1": 24.150142342966134,
+    "surface_wall_shear_rel_l2": 104.44128759651255,
+    "surface_wall_shear_equal_entity_rel_l2": 101.01792479793481,
+    "surface_wall_shear_rel_l1": 102.0759789348515,
+    "cd_r2": -13.048463920064806,
+    "cl_r2": 0.9845177918540026,
+    "c_drag_mae": 0.014284727396812249,
+    "c_lift_mae": 0.05285416825412595,
+    "velocity_profile_r2": 0.7484474272976616,
+    "overall_score": 18.078099618814303,
+    "field_score": 0.0,
+    "force_score": 44.75080872063648,
+    "diagnostic_score": 74.84474272976615
+  },
+  "profile_data": {
+    "format": "fluidsbench-profile-chunks-v1",
+    "index_file": "profiles/index.json",
+    "case_count": 200,
+    "case_set_id": "standard",
+    "profile_ground_truth_release_id": "airfrans-boundary-layer-v1",
+    "profile_ground_truth_manifest_sha256": "2d662d89a133dd9329ee6540325883825907f5a1ff771af3904e1dc477a2753c"
+  },
+  "note": "Candidate AirfRANS schema-v3 package. AirfRANS submissions remain closed (owner_review_required) pending the owner_decisions_required checklist in benchmark-specs/airfrans/submission-spec.json. scoring_support.manifest_url is a placeholder (not resolvable): no AirfRANS scoring-support release has been published anywhere yet; replace it once/if the dataset owner publishes one."
+}

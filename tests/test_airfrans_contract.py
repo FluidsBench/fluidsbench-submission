@@ -296,8 +296,14 @@ class AirfransContractTests(unittest.TestCase):
         }
         fixture_root = ROOT / "submissions" / "airfrans"
         for submission_path in sorted(fixture_root.glob("*/submission.json")):
+            submission = load_json(submission_path)
+            # This check exercises the legacy schema-v1 abridged (3-point) prototype
+            # dummy fixtures specifically; schema-v3 candidate packages (real,
+            # unapproved, full 1001-point profiles) are covered by
+            # scripts/validate_submission.py instead.
+            if submission.get("schema_version") != "1.0":
+                continue
             with self.subTest(submission=submission_path.parent.name):
-                submission = load_json(submission_path)
                 self.assertEqual(submission["approval"]["status"], "prototype")
                 index = load_json(submission_path.parent / submission["profile_data"]["index_file"])
                 for chunk_entry in index["chunks"]:
