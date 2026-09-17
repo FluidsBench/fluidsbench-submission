@@ -1,13 +1,20 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "dataset_id": "windsorml",
   "dataset_name": "WindsorML",
-  "dataset_version": "prototype-1",
-  "status": "prototype_dummy_data",
+  "dataset_version": "windsorml-native-v1-candidate",
+  "status": "candidate_native_support",
   "scoring_support": {
     "status": "owner_review_required",
     "submissions_open": false,
-    "closed_reason": "Submissions are currently closed.",
+    "closed_reason": "Candidate support is under owner review.",
+    "public_source": {
+      "repository_id": "neashton/windsorml",
+      "revision": "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
+      "identity_file": "public-source-identity/windsorml-public-source-identity-v1.json",
+      "published_case_count": 350,
+      "note": "The aggregate tables and the official split manifest enumerate 355 design variants, but run_350..run_354 have no per-run payload in the public release and are therefore unscoreable."
+    },
     "coverage_contract": {
       "dimensionality": "3D surface and 3D flow domain",
       "rule": "complete_original_public_release_entities",
@@ -20,7 +27,7 @@
     },
     "public_supports": [
       {
-        "id": "surface-native",
+        "id": "windsorml_surface_native_points",
         "public_file": "run_<case>/boundary_<case>.vtu",
         "format": "VTK UnstructuredGrid boundary mesh",
         "domain": "three_dimensional_body_surface",
@@ -30,56 +37,82 @@
           "cpavg",
           "cfxavg",
           "cfyavg",
+          "cfzavg"
+        ],
+        "available_point_arrays": [
+          "cpavg",
+          "cfxavg",
+          "cfyavg",
           "cfzavg",
           "cpvar",
-          "yplusavg"
+          "yplusavg",
+          "Normals"
         ],
-        "units_note": "cpavg and the cfxavg/cfyavg/cfzavg skin-friction components are dimensionless coefficients",
-        "physical_weight": "mass_lumped_dual_polygon_area",
+        "units_note": "cpavg and the cfxavg/cfyavg/cfzavg skin-friction components are dimensionless coefficients.",
+        "physical_weight": "published_barycentric_dual_area",
+        "physical_weight_file": "run_<case>/boundary_dual_area_<case>.npy",
+        "physical_weight_note": "The published per-point dual areas are canonical. The dataset README warns that recomputing polygon areas with VTK can drift for non-planar quads, so they must not be regenerated.",
         "verification": "confirmed_from_public_file"
       },
       {
-        "id": "flow-domain-native",
+        "id": "windsorml_volume_native_cells",
         "public_file": "run_<case>/volume_<case>.vtu",
         "format": "VTK UnstructuredGrid",
-      "domain": "three_dimensional_flow_domain",
-      "association": "CellData",
-      "entities": "all_native_volume_cells",
-      "arrays": ["velocityxavg", "velocityyavg", "velocityzavg", "pressureavg"],
-      "available_cell_arrays": [
-        "velocityxavg",
-        "velocityyavg",
-        "velocityzavg",
-        "reynoldsstressxx",
-        "reynoldsstressxy",
-        "reynoldsstressxz",
-        "reynoldsstressyy",
-        "reynoldsstressyz",
-        "reynoldsstresszz",
-        "pressureavg"
-      ],
-      "physical_weight": "cell_volume",
-      "verification": "confirmed_from_public_file"
+        "domain": "three_dimensional_flow_domain",
+        "association": "CellData",
+        "entities": "all_native_volume_cells",
+        "arrays": [
+          "velocityxavg",
+          "velocityyavg",
+          "velocityzavg",
+          "pressureavg"
+        ],
+        "available_cell_arrays": [
+          "velocityxavg",
+          "velocityyavg",
+          "velocityzavg",
+          "reynoldsstressxx",
+          "reynoldsstressxy",
+          "reynoldsstressxz",
+          "reynoldsstressyy",
+          "reynoldsstressyz",
+          "reynoldsstresszz",
+          "pressureavg"
+        ],
+        "physical_weight": "equal_native_entity",
+        "physical_weight_note": "v1 scores the volume with equal-cell weighting. WindsorML publishes no cell-volume sidecar and generating one for ~291M cells x 350 cases costs roughly 400 GB and 1,000 CPU-hours, so the cell-volume-weighted variants are deferred.",
+        "verification": "confirmed_from_public_file"
       }
     ],
+    "force_convention": {
+      "reference_area_m2": 0.112,
+      "reference_area_source": "constant_reference_area_force_mom_csv",
+      "axes": {
+        "drag": "+x",
+        "lift": "+y",
+        "side": "+z"
+      },
+      "axes_note": "The vertical axis is +y. The body sits on a ground plane at y=0 spanning y in [0, 0.343] and is laterally symmetric about z=0. Mapping lift to +z collapses cl from about 0.49 to about -0.01.",
+      "truth_source": "native_field_integration",
+      "audit_reference": "published_force_mom_csv",
+      "audit_note": "Truth and prediction are integrated identically so a perfect prediction scores R^2 = 1; the published CSV bounds the truth integration rather than defining it."
+    },
     "relative_l2_policy": {
       "surface_or_curve_primary": "physical_measure_weighted",
       "surface_or_curve_secondary": "equal_native_entity",
       "flow_domain_primary": "equal_native_entity",
-      "flow_domain_secondary": "physical_measure_weighted",
-      "point_or_vertex_physical_weights": "deterministic_mass_lumped_dual_measure_from_the_exact_public_mesh",
+      "point_or_vertex_physical_weights": "published_barycentric_dual_area",
       "vector_rule": "one_entity_weight_multiplies_the_squared_vector_magnitude",
+      "vector_assembly_note": "Vector components are published as independent scalar arrays. Relative L2 recombines exactly from per-component squared sums; Euclidean MAE and RMSE do not, and are reported per component.",
       "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
     },
     "owner_decisions_required": [
-      "pin_exact_public_release_files_revisions_and_hashes",
-      "confirm_array_names_entity_associations_masks_and_order",
-      "publish_authoritative_physical_weights_and_stable_entity_ids",
-      "approve_public_ground_truth_case_set_and_split_bindings",
-      "approve_loader_evaluator_and_immutable_scoring_support_manifest"
+      "approve_velocity_and_pressure_profile_stations_and_resolution",
+      "approve_scored_case_set_reduction_from_235_to_233_test_cases",
+      "approve_component_weights_after_profiles_are_scored"
     ]
   },
-  "evaluation_reference_version": "prototype-1",
+  "evaluation_reference_version": "windsorml-evaluator-v0.1-candidate",
   "default_field_reduction": "per_geometry_then_macro_average",
   "ranking": {
     "metric_id": "overall_score",
@@ -92,14 +125,40 @@
     "metric_id": "overall_score",
     "operation": "weighted_component_scores",
     "components": [
-      { "metric_id": "surface_pressure_rel_l2", "weight": 0.15, "transform": "bounded_error", "cap": 15.0 },
-      { "metric_id": "surface_wall_shear_rel_l2", "weight": 0.1, "transform": "bounded_error", "cap": 20.0 },
-      { "metric_id": "volume_velocity_rel_l2", "weight": 0.15, "transform": "bounded_error", "cap": 12.0 },
-      { "metric_id": "volume_pressure_rel_l2", "weight": 0.1, "transform": "bounded_error", "cap": 15.0 },
-      { "metric_id": "cd_r2", "weight": 0.15, "transform": "bounded_quality" },
-      { "metric_id": "cl_r2", "weight": 0.1, "transform": "bounded_quality" },
-      { "metric_id": "velocity_profile_r2", "weight": 0.15, "transform": "bounded_quality" },
-      { "metric_id": "cp_cut_r2", "weight": 0.1, "transform": "bounded_quality" }
+      {
+        "metric_id": "surface_pressure_rel_l2",
+        "weight": 0.19999999999999998,
+        "transform": "bounded_error",
+        "cap": 15.0
+      },
+      {
+        "metric_id": "surface_wall_shear_rel_l2",
+        "weight": 0.13333333333333333,
+        "transform": "bounded_error",
+        "cap": 20.0
+      },
+      {
+        "metric_id": "volume_velocity_rel_l2",
+        "weight": 0.19999999999999998,
+        "transform": "bounded_error",
+        "cap": 12.0
+      },
+      {
+        "metric_id": "volume_pressure_rel_l2",
+        "weight": 0.13333333333333333,
+        "transform": "bounded_error",
+        "cap": 15.0
+      },
+      {
+        "metric_id": "cd_r2",
+        "weight": 0.19999999999999998,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "cl_r2",
+        "weight": 0.13333333333333333,
+        "transform": "bounded_quality"
+      }
     ],
     "tolerance": 1e-06
   },
@@ -120,13 +179,6 @@
         "component_metric_ids": [
           "cd_r2",
           "cl_r2"
-        ]
-      },
-      {
-        "metric_id": "diagnostic_score",
-        "component_metric_ids": [
-          "velocity_profile_r2",
-          "cp_cut_r2"
         ]
       }
     ],
@@ -161,15 +213,6 @@
       "weighting": "dataset_declared_component_weights"
     },
     {
-      "id": "diagnostic_score",
-      "unit": "",
-      "direction": "higher",
-      "kind": "score",
-      "equation": "\\frac{\\sum_{j\\in D}\\alpha_j S_j}{\\sum_{j\\in D}\\alpha_j}",
-      "aggregation": "derived_score_equation",
-      "weighting": "dataset_declared_component_weights"
-    },
-    {
       "id": "surface_pressure_rel_l2",
       "unit": "%",
       "direction": "lower",
@@ -183,7 +226,7 @@
       "unit": "%",
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
       "aggregation": "per_geometry_then_macro_average",
       "weighting": "surface_entities_equal"
     },
@@ -201,7 +244,7 @@
       "unit": "%",
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
       "aggregation": "per_geometry_then_macro_average",
       "weighting": "surface_entities_equal"
     },
@@ -210,124 +253,16 @@
       "unit": "%",
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
-      "aggregation": "per_geometry_then_macro_average",
-      "weighting": "volume_cells_equal"
-    },
-    {
-      "id": "volume_velocity_physical_rel_l2",
-      "unit": "%",
-      "direction": "lower",
-      "kind": "error",
       "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
       "aggregation": "per_geometry_then_macro_average",
-      "weighting": "cell_volume"
+      "weighting": "volume_cells_equal"
     },
     {
       "id": "volume_pressure_rel_l2",
       "unit": "%",
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
-      "aggregation": "per_geometry_then_macro_average",
-      "weighting": "volume_cells_equal"
-    },
-    {
-      "id": "volume_pressure_physical_rel_l2",
-      "unit": "%",
-      "direction": "lower",
-      "kind": "error",
       "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
-      "aggregation": "per_geometry_then_macro_average",
-      "weighting": "cell_volume"
-    },
-    {
-      "id": "surface_pressure_rel_l1",
-      "unit": "%",
-      "direction": "lower",
-      "kind": "error",
-      "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
-      "aggregation": "per_geometry_then_macro_average",
-      "weighting": "surface_point_dual_area"
-    },
-    {
-      "id": "surface_wall_shear_rel_l1",
-      "unit": "%",
-      "direction": "lower",
-      "kind": "error",
-      "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
-      "aggregation": "per_geometry_then_macro_average",
-      "weighting": "surface_point_dual_area"
-    },
-    {
-      "id": "volume_velocity_rel_l1",
-      "unit": "%",
-      "direction": "lower",
-      "kind": "error",
-      "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
-      "aggregation": "per_geometry_then_macro_average",
-      "weighting": "volume_cells_equal"
-    },
-    {
-      "id": "volume_pressure_rel_l1",
-      "unit": "%",
-      "direction": "lower",
-      "kind": "error",
-      "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
-      "aggregation": "per_geometry_then_macro_average",
-      "weighting": "volume_cells_equal"
-    },
-    {
-      "id": "velocity_profile_r2",
-      "unit": "",
-      "direction": "higher",
-      "kind": "r2",
-      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
-      "aggregation": "flatten_all_required_profile_samples",
-      "weighting": "samples_equal"
-    },
-    {
-      "id": "cp_cut_r2",
-      "unit": "",
-      "direction": "higher",
-      "kind": "r2",
-      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
-      "aggregation": "flatten_all_required_profile_samples",
-      "weighting": "samples_equal"
-    },
-    {
-      "id": "volume_velocity_mae",
-      "unit": "m/s",
-      "direction": "lower",
-      "kind": "error",
-      "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
-      "aggregation": "per_geometry_then_macro_average",
-      "weighting": "volume_cells_equal"
-    },
-    {
-      "id": "volume_pressure_mae",
-      "unit": "Pa",
-      "direction": "lower",
-      "kind": "error",
-      "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
-      "aggregation": "per_geometry_then_macro_average",
-      "weighting": "volume_cells_equal"
-    },
-    {
-      "id": "volume_velocity_rmse",
-      "unit": "m/s",
-      "direction": "lower",
-      "kind": "error",
-      "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
-      "aggregation": "per_geometry_then_macro_average",
-      "weighting": "volume_cells_equal"
-    },
-    {
-      "id": "volume_pressure_rmse",
-      "unit": "Pa",
-      "direction": "lower",
-      "kind": "error",
-      "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
       "aggregation": "per_geometry_then_macro_average",
       "weighting": "volume_cells_equal"
     },
@@ -371,7 +306,9 @@
   "profile_panels": [
     {
       "id": "pressure_profiles",
-      "required": true,
+      "required": false,
+      "scored_in_this_version": false,
+      "status": "owner_review_required",
       "allow_unlisted_stations": false,
       "minimum_points": 2,
       "coordinate_order": "strictly_increasing",
@@ -381,34 +318,96 @@
       ],
       "quantity_ids": [
         "cp"
-      ]
+      ],
+      "note": "Consistent with the confirmed y-up / z-lateral frame, but the station geometry and sample resolution are not yet frozen."
     },
     {
       "id": "velocity_profiles",
       "required": false,
+      "scored_in_this_version": false,
+      "status": "owner_review_required",
       "allow_unlisted_stations": false,
       "minimum_points": 2,
       "coordinate_order": "strictly_increasing",
-      "station_ids": [
-        "prototype_0_25l",
-        "prototype_0_50l",
-        "prototype_1_00l",
-        "wake_x_0_80l"
-      ],
+      "station_ids": [],
       "quantity_ids": [
         "velocity_ratio"
-      ]
+      ],
+      "note": "The prototype's four stations (prototype_0_25l and similar) were fabricated placeholders and have been removed. Real wake stations must be chosen and validated with a resolution sweep before these are scored."
     }
   ],
   "splits": [
     {
-      "id": "default",
-      "label": "Default",
-      "index_file": "splits/default.json",
-      "case_count": 1,
-      "case_set_id": "default",
-      "case_id_status": "prototype_generated",
-      "sha256": "cdc35549ce238c4e4f706203a83e602c9d0111b58aab34e8f4cd471346790fea"
+      "id": "full",
+      "label": "Full",
+      "index_file": "splits/full.json",
+      "case_count": 35,
+      "case_set_id": "baseline-test",
+      "case_id_status": "official_intersected_with_published",
+      "sha256": "9d8f752f7055844eb9424948e14d7fa843eeec005921539f40886996b4d423e6"
+    },
+    {
+      "id": "medium",
+      "label": "Medium",
+      "index_file": "splits/medium.json",
+      "case_count": 35,
+      "case_set_id": "baseline-test",
+      "case_id_status": "official_intersected_with_published",
+      "sha256": "62dc0af59e7b190bf0258264c75cc6e2b31676b520501f24185a16673ce62695"
+    },
+    {
+      "id": "scarce",
+      "label": "Scarce",
+      "index_file": "splits/scarce.json",
+      "case_count": 35,
+      "case_set_id": "baseline-test",
+      "case_id_status": "official_intersected_with_published",
+      "sha256": "fb4cb4bd74616337c252bc481d010855c1b8d9d0c9e3adaf874af46e984007a7"
+    },
+    {
+      "id": "super_scarce",
+      "label": "Super scarce",
+      "index_file": "splits/super_scarce.json",
+      "case_count": 35,
+      "case_set_id": "baseline-test",
+      "case_id_status": "official_intersected_with_published",
+      "sha256": "2c03bfa1bc821feb38de87a5e72fa157ec2d449672241ac5d8c43aacaf58f58b"
+    },
+    {
+      "id": "geometry",
+      "label": "Geometry OOD",
+      "index_file": "splits/geometry.json",
+      "case_count": 71,
+      "case_set_id": "geometry-test",
+      "case_id_status": "official_intersected_with_published",
+      "sha256": "462a6cbfeeb25682e1841eebd14d584ba07b2e75f6ed10c95f96aaf6b2b90317"
+    },
+    {
+      "id": "high_drag",
+      "label": "High drag",
+      "index_file": "splits/high_drag.json",
+      "case_count": 70,
+      "case_set_id": "high_drag-test",
+      "case_id_status": "official_intersected_with_published",
+      "sha256": "8c3b2fa7b9a68f594e614d93416f16fdb627cdffbc498fb058504b83067eb377"
+    },
+    {
+      "id": "low_drag",
+      "label": "Low drag",
+      "index_file": "splits/low_drag.json",
+      "case_count": 70,
+      "case_set_id": "low_drag-test",
+      "case_id_status": "official_intersected_with_published",
+      "sha256": "b79bfffc06d2f0754bf98e18442d65fba39bcdb448b83b665f255e1f6e1c1511"
+    },
+    {
+      "id": "image_wake",
+      "label": "Image wake",
+      "index_file": "splits/image_wake.json",
+      "case_count": 71,
+      "case_set_id": "image_wake-test",
+      "case_id_status": "official_intersected_with_published",
+      "sha256": "5c2ea7f84965b6b3f87518ef639ea25de7800e2ba5ea34fefbf4d3b3adc07b35"
     }
   ]
 }

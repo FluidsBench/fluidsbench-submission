@@ -2,7 +2,9 @@
 
 This is an evaluator input format, not an official FluidsBench prediction
 artifact.  One JSON manifest describes exactly one ``case_id`` and one native
-``CellData`` support.  Its shape is intentionally small and closed::
+support.  Each support declares the VTK association its raw IDs index: every
+DrivAerML and AhmedML support is ``CellData``, while the WindsorML surface is
+``PointData``.  The manifest shape is intentionally small and closed::
 
     {
       "format": "drivaerml-native-prediction-chunks-candidate",
@@ -25,8 +27,8 @@ artifact.  One JSON manifest describes exactly one ``case_id`` and one native
       ]
     }
 
-Every NPZ contains ``raw_cell_id`` plus exactly the two fields prescribed for
-its support.  Raw IDs are signed int64 and each file covers the half-open
+Every NPZ contains ``raw_cell_id`` plus exactly the fields prescribed for its
+support.  Raw IDs are signed int64 and each file covers the half-open
 interval declared in the manifest.  Manifest intervals must form ``[0, N)``
 in source order, so a fully consumed iterator proves gap-free, duplicate-free
 coverage without retaining IDs from earlier chunks.
@@ -53,6 +55,7 @@ import numpy as np
 
 CANDIDATE_FORMAT = "drivaerml-native-prediction-chunks-candidate"
 AHMEDML_CANDIDATE_FORMAT = "ahmedml-native-prediction-chunks-candidate"
+WINDSORML_CANDIDATE_FORMAT = "windsorml-native-prediction-chunks-candidate"
 CANDIDATE_FORMAT_VERSION = 1
 CANDIDATE_ARTIFACT_ROLE = (
     "local_evaluator_input_not_official_submission_artifact"
@@ -75,7 +78,10 @@ _ALLOWED_ZIP_COMPRESSION = frozenset(
 )
 
 _SHA256_RE = re.compile(r"[0-9a-f]{64}\Z")
-_CASE_ID_RE = re.compile(r"run_[1-9][0-9]*\Z")
+# WindsorML publishes run_0 through run_349. DrivAerML and AhmedML start at
+# run_1 and are held to their own contiguous ranges by their source identities,
+# so widening the shared pattern here cannot loosen either of those.
+_CASE_ID_RE = re.compile(r"run_(0|[1-9][0-9]*)\Z")
 
 _SUPPORT_FIELD_COMPONENTS: Mapping[str, Mapping[str, int]] = MappingProxyType(
     {
@@ -103,6 +109,39 @@ _SUPPORT_FIELD_COMPONENTS: Mapping[str, Mapping[str, int]] = MappingProxyType(
                 "UMean": 3,
             }
         ),
+        # WindsorML publishes its surface fields on points, not cells, and
+        # carries four scalar components per support rather than a scalar plus
+        # a vector.
+        "windsorml_surface_native_points": MappingProxyType(
+            {
+                "cpavg": 1,
+                "cfxavg": 1,
+                "cfyavg": 1,
+                "cfzavg": 1,
+            }
+        ),
+        "windsorml_volume_native_cells": MappingProxyType(
+            {
+                "velocityxavg": 1,
+                "velocityyavg": 1,
+                "velocityzavg": 1,
+                "pressureavg": 1,
+            }
+        ),
+    }
+)
+
+# Every support declares the VTK association its raw IDs index. All existing
+# supports are CellData; the WindsorML surface is the first PointData support,
+# so the association is looked up per support instead of being assumed.
+_SUPPORT_ASSOCIATIONS: Mapping[str, str] = MappingProxyType(
+    {
+        "surface_native_cells": "CellData",
+        "volume_native_cells": "CellData",
+        "ahmedml_surface_native_cells": "CellData",
+        "ahmedml_volume_native_cells": "CellData",
+        "windsorml_surface_native_points": "PointData",
+        "windsorml_volume_native_cells": "CellData",
     }
 )
 
@@ -117,8 +156,26 @@ _FORMAT_SUPPORT_IDS: Mapping[str, frozenset[str]] = MappingProxyType(
                 "ahmedml_volume_native_cells",
             }
         ),
+        WINDSORML_CANDIDATE_FORMAT: frozenset(
+            {
+                "windsorml_surface_native_points",
+                "windsorml_volume_native_cells",
+            }
+        ),
     }
 )
+
+
+def support_association(support_id: str) -> str:
+    """Return the VTK association whose entities a support's raw IDs index."""
+
+    try:
+        return _SUPPORT_ASSOCIATIONS[support_id]
+    except KeyError as exc:
+        expected = ", ".join(sorted(_SUPPORT_ASSOCIATIONS))
+        raise PredictionChunkError(
+            f"unknown support_id {support_id!r}; expected one of {expected}"
+        ) from exc
 
 _MANIFEST_KEYS = frozenset(
     {
@@ -474,8 +531,12 @@ def load_prediction_chunk_manifest(
     expected_fields = _field_component_mapping(
         manifest["field_components"], support_id
     )
-    if manifest["association"] != "CellData":
-        raise PredictionChunkError("association must equal 'CellData'")
+    expected_association = support_association(support_id)
+    if manifest["association"] != expected_association:
+        raise PredictionChunkError(
+            f"association must equal {expected_association!r} for support "
+            f"{support_id!r}"
+        )
     total_rows = _positive_integer(manifest["total_row_count"], "total_row_count")
 
     chunk_values = manifest["chunks"]
@@ -555,7 +616,7 @@ def load_prediction_chunk_manifest(
         sha256=manifest_sha256,
         case_id=case_id,
         support_id=support_id,
-        association="CellData",
+        association=expected_association,
         total_row_count=total_rows,
         field_components=expected_fields,
         chunks=tuple(descriptors),
@@ -1212,6 +1273,7 @@ def validate_prediction_chunks(
 
 __all__ = [
     "AHMEDML_CANDIDATE_FORMAT",
+    "WINDSORML_CANDIDATE_FORMAT",
     "CANDIDATE_ARTIFACT_ROLE",
     "CANDIDATE_FORMAT",
     "CANDIDATE_FORMAT_VERSION",
@@ -1229,6 +1291,7 @@ __all__ = [
     "RAW_CELL_ID_FIELD",
     "iter_prediction_chunks",
     "load_prediction_chunk_manifest",
+    "support_association",
     "support_field_components",
     "validate_prediction_chunks",
 ]
