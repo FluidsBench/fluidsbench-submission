@@ -20,9 +20,12 @@ from reference.hiliftaeroml.compact_profiles import (
     build_compact_support,
     compact_case_metadata,
     decode_compact_predictions,
+    decode_velocity_storage,
     deterministic_npz_bytes,
+    deterministic_prediction_npz_bytes,
     encode_compact_predictions,
     encode_native_predictions,
+    encode_velocity_storage,
     load_compact_prediction_npz,
     load_compact_support_npz,
     score_compact_profiles,
@@ -373,6 +376,18 @@ def test_support_and_prediction_roundtrip_are_deterministic_and_prediction_only(
     assert prediction_a.read_bytes() == prediction_b.read_bytes()
     with zipfile.ZipFile(prediction_a) as archive:
         assert archive.namelist() == [f"{name}.npy" for name in PREDICTION_ARRAYS]
+        assert all(
+            member.compress_type == zipfile.ZIP_DEFLATED
+            for member in archive.infolist()
+        )
+        with archive.open("velocity_speed_over_u_inf.npy") as member:
+            stored_speed = np.lib.format.read_array(member, allow_pickle=False)
+        assert stored_speed.dtype == np.dtype(np.uint8)
+        assert stored_speed.shape == (artifact["velocity_speed_over_u_inf"].size * 4,)
+        np.testing.assert_array_equal(
+            decode_velocity_storage(stored_speed).view(np.uint32),
+            artifact["velocity_speed_over_u_inf"].view(np.uint32),
+        )
         assert all(member.date_time == (1980, 1, 1, 0, 0, 0) for member in archive.infolist())
         assert not any(
             "truth" in member.filename or "reference" in member.filename
@@ -391,6 +406,19 @@ def test_support_and_prediction_roundtrip_are_deterministic_and_prediction_only(
     )
     np.testing.assert_array_equal(loaded_cp, decoded_cp)
     np.testing.assert_array_equal(loaded_speed, decoded_speed)
+
+
+def test_velocity_storage_roundtrip_preserves_every_float32_bit() -> None:
+    values = np.asarray(
+        [0.0, -0.0, 0.625, 1.0, 1.0000001192092896, 16.0],
+        dtype=np.float32,
+    )
+    # Negative zero is numerically non-negative and its sign bit must survive.
+    encoded = encode_velocity_storage(values)
+    assert encoded.dtype == np.dtype(np.uint8)
+    assert encoded.shape == (values.size * 4,)
+    decoded = decode_velocity_storage(encoded)
+    np.testing.assert_array_equal(decoded.view(np.uint32), values.view(np.uint32))
 
 
 def test_compact_scores_match_native_quadrature_on_identical_compact_support(
@@ -606,6 +634,44 @@ def test_encoder_rejects_filled_or_invalid_velocity_gaps(
         )
 
 
+def test_native_encoder_requires_exact_cp_and_velocity_support_alignment(
+    compact_case: tuple[
+        dict[str, np.ndarray],
+        dict[str, np.ndarray],
+        dict[str, np.ndarray],
+        dict[str, np.ndarray],
+    ],
+) -> None:
+    support, _artifact, cp_native, velocity_native = compact_case
+
+    wrong_cp_coordinates = _copy_arrays(cp_native)
+    wrong_cp_coordinates["cut_xyz_in"][0, 1] += 1.0e-6
+    with pytest.raises(CompactProfileError, match="Cp plotting coordinates differ"):
+        encode_native_predictions(
+            support=support,
+            cp_native=wrong_cp_coordinates,
+            velocity_native=velocity_native,
+        )
+
+    wrong_coordinates = _copy_arrays(velocity_native)
+    wrong_coordinates["requested_xyz_in"][0, 0] += 1.0e-6
+    with pytest.raises(CompactProfileError, match="plotting coordinates differ"):
+        encode_native_predictions(
+            support=support,
+            cp_native=cp_native,
+            velocity_native=wrong_coordinates,
+        )
+
+    wrong_mask = _copy_arrays(velocity_native)
+    wrong_mask["valid_mask"][0] = False
+    with pytest.raises(CompactProfileError, match="validity mask differ"):
+        encode_native_predictions(
+            support=support,
+            cp_native=cp_native,
+            velocity_native=wrong_mask,
+        )
+
+
 def test_support_validation_rejects_excess_resolution_and_gap_changes(
     compact_case: tuple[
         dict[str, np.ndarray],
@@ -669,7 +735,9 @@ def test_loaders_reject_noncanonical_array_order(
     metadata = compact_case_metadata(support)
     path = tmp_path / "wrong-order.npz"
     path.write_bytes(
-        deterministic_npz_bytes(artifact, order=tuple(reversed(PREDICTION_ARRAYS)))
+        deterministic_prediction_npz_bytes(
+            artifact, order=tuple(reversed(PREDICTION_ARRAYS))
+        )
     )
     with pytest.raises(CompactProfileError, match="order differs"):
         load_compact_prediction_npz(

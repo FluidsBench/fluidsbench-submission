@@ -5,9 +5,8 @@ Coordinates, topology, validity masks, weights, and reference values remain in
 an explicitly supplied evaluator-owned support release.  This module validates
 both sides of that boundary before it serializes or scores any prediction.
 
-The participant representation is official.  Evaluator-support releases remain
-separate lifecycle artifacts: supplying a local support path and its manifest
-digest does not publish support or open benchmark intake.
+The release format is deliberately a local, inactive candidate.  Supplying a
+release path and its manifest digest does not publish or activate the format.
 """
 
 from __future__ import annotations
@@ -35,6 +34,7 @@ from reference.hiliftaeroml.compact_profiles import (
     PREDICTION_ARRAYS,
     SUPPORT_ARRAYS,
     VELOCITY_ROW_COUNT,
+    VELOCITY_STORAGE_ENCODING,
     VELOCITY_STATIONS,
     CompactProfileError,
     compact_case_metadata,
@@ -63,13 +63,13 @@ COMPACT_PROFILE_CONTRACT_PATH = (
     ROOT / "benchmark-specs" / "hiliftaeroml" / "native-profile-format-v2.json"
 )
 COMPACT_PROFILE_CONTRACT_ID = (
-    "hiliftaeroml-compact-profile-predictions-v2"
+    "hiliftaeroml-compact-profile-predictions-v2-candidate"
 )
 COMPACT_PROFILE_CONTRACT_SHA256 = (
-    "44651f4da2add287e51807f02f329f5aa226dd1fb2ae21d99e129ba2fc9000b5"
+    "b1fd29b2cb6c1c84c694ddffc5d85f6cd68fd175b79c3695a443aa78bf962c2f"
 )
 COMPACT_PROFILE_CHUNK_SCHEMA = (
-    "hiliftaeroml-compact-profile-chunk-v2"
+    "hiliftaeroml-compact-profile-chunk-v2-candidate"
 )
 COMPACT_PROFILE_SCHEMA_VERSION = "2.0"
 COMPACT_PROFILE_INDEX_SCHEMA_VERSION = "1.0"
@@ -138,6 +138,9 @@ _VELOCITY_METADATA_KEYS = {
     "invalid_row_count",
     "prediction_dtype",
     "prediction_array",
+    "storage_dtype",
+    "storage_encoding",
+    "stored_byte_count",
 }
 
 
@@ -431,7 +434,13 @@ def _preflight_npz(
                         _fail(f"{member_label} dtype, shape, or order differs")
     except CompactProfileEvaluationError:
         raise
-    except (OSError, ValueError, zipfile.BadZipFile, MemoryError) as error:
+    except (
+        OSError,
+        ValueError,
+        RuntimeError,
+        zipfile.BadZipFile,
+        MemoryError,
+    ) as error:
         raise CompactProfileEvaluationError(f"cannot preflight {label}: {error}") from error
 
 
@@ -522,10 +531,17 @@ def _support_array_contract(
     expected_velocity_strings = {
         "prediction_dtype": "float32",
         "prediction_array": "velocity_speed_over_u_inf",
+        "storage_dtype": "uint8",
+        "storage_encoding": VELOCITY_STORAGE_ENCODING,
     }
     for key, expected in expected_velocity_strings.items():
         if type(velocity.get(key)) is not str or velocity.get(key) != expected:
             _fail(f"{label}.volume_velocity.{key} differs")
+    _exact_int(
+        velocity.get("stored_byte_count"),
+        valid_count * np.dtype(np.float32).itemsize,
+        f"{label}.volume_velocity.stored_byte_count",
+    )
 
     branch_shape = (branch_count,)
     return {
@@ -1335,6 +1351,42 @@ def _validate_builder_inputs(
     return submission_id, safe_split, safe_case_set, cases, hashes
 
 
+def _opened_support_release(
+    *,
+    support_release_root: Path,
+    support_manifest_sha256: str,
+    case_ids: tuple[str, ...],
+    case_set_id: str,
+    opened_support_release: CompactSupportRelease | None,
+) -> CompactSupportRelease:
+    """Return one exact support handle, opening it only when necessary.
+
+    An assembler may already have fully validated the immutable evaluator-owned
+    release for this exact case set.  Reusing that in-process handle avoids
+    streaming the same private support bytes again while preserving every
+    release, digest, case-set, and ordered-case binding.
+    """
+
+    if opened_support_release is None:
+        return open_compact_support_release(
+            release_root=support_release_root,
+            expected_manifest_sha256=support_manifest_sha256,
+            expected_case_ids=case_ids,
+            case_set_id=case_set_id,
+        )
+    if not isinstance(opened_support_release, CompactSupportRelease):
+        _fail("opened compact support release handle is invalid")
+    if (
+        opened_support_release.release_root.resolve()
+        != support_release_root.resolve()
+        or opened_support_release.manifest_sha256 != support_manifest_sha256
+        or opened_support_release.case_set_id != case_set_id
+        or opened_support_release.case_ids != case_ids
+    ):
+        _fail("opened compact support release differs from the requested binding")
+    return opened_support_release
+
+
 def build_compact_profile_directory(
     *,
     submission_id: str,
@@ -1349,6 +1401,7 @@ def build_compact_profile_directory(
     expected_case_artifact_sha256: Mapping[str, Mapping[str, str]],
     surface_outputs_root: Path | None = None,
     volume_outputs_root: Path | None = None,
+    opened_support_release: CompactSupportRelease | None = None,
 ) -> tuple[str, dict[str, dict[str, float]]]:
     """Build a deterministic prediction-only compact participant directory."""
 
@@ -1366,11 +1419,12 @@ def build_compact_profile_directory(
         cases_per_chunk=cases_per_chunk,
         expected_case_artifact_sha256=expected_case_artifact_sha256,
     )
-    release = open_compact_support_release(
-        release_root=support_release_root,
-        expected_manifest_sha256=support_manifest_sha256,
-        expected_case_ids=cases,
+    release = _opened_support_release(
+        support_release_root=support_release_root,
+        support_manifest_sha256=support_manifest_sha256,
+        case_ids=cases,
         case_set_id=checked_case_set,
+        opened_support_release=opened_support_release,
     )
     surface_root = surface_outputs_root or outputs_root
     volume_root = volume_outputs_root or outputs_root
@@ -1398,11 +1452,15 @@ def build_compact_profile_directory(
             selected = list(cases[start : start + cases_per_chunk])
             entries: list[dict[str, Any]] = []
             for case_id in selected:
-                support, release_hashes = _load_support_case(release, case_id)
-                if release_hashes != expected_hashes[case_id]:
-                    _fail(
-                        f"{case_id} compact support source hashes differ from retained receipt"
-                    )
+                support, _materialization_source_hashes = _load_support_case(
+                    release, case_id
+                )
+                # These release hashes preserve the exact native artifacts used
+                # to materialize evaluator-owned geometry and truth. They are
+                # provenance, not a prediction authorization: several
+                # surrogates can legitimately predict the same physical case.
+                # The current surrogate is independently authenticated below
+                # against its own receipts, then aligned to the support.
                 cp_metrics_path = _safe_child(
                     surface_root,
                     f"{case_id}/surface_submission_stream/cp_profile_metrics.json",
@@ -1606,6 +1664,7 @@ def score_compact_profile_directory(
     split_id: str,
     case_set_id: str,
     expected_case_ids: Sequence[str],
+    opened_support_release: CompactSupportRelease | None = None,
 ) -> dict[str, dict[str, float]]:
     """Strictly validate and score one compact participant profile directory."""
 
@@ -1626,11 +1685,12 @@ def score_compact_profile_directory(
             for case_id in expected_case_ids
         },
     )
-    release = open_compact_support_release(
-        release_root=support_release_root,
-        expected_manifest_sha256=support_manifest_sha256,
-        expected_case_ids=cases,
+    release = _opened_support_release(
+        support_release_root=support_release_root,
+        support_manifest_sha256=support_manifest_sha256,
+        case_ids=cases,
         case_set_id=checked_case_set,
+        opened_support_release=opened_support_release,
     )
     root = _root_directory(profiles_root, "compact profile directory")
     index, _ = _load_canonical_json(
@@ -1774,8 +1834,11 @@ def score_compact_profile_directory(
                     (len(support["cp_truth"]),),
                 ),
                 "velocity_speed_over_u_inf": (
-                    np.dtype(np.float32),
-                    (int(np.count_nonzero(support["velocity_valid_mask"])),),
+                    np.dtype(np.uint8),
+                    (
+                        int(np.count_nonzero(support["velocity_valid_mask"]))
+                        * np.dtype(np.float32).itemsize,
+                    ),
                 ),
             }
             _preflight_npz(

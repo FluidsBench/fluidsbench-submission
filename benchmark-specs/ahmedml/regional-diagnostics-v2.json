@@ -1,0 +1,144 @@
+{
+  "schema": "ahmedml-native-regional-diagnostics-contract-v2",
+  "schema_version": 2,
+  "definition_id": "ahmedml-native-regions-v2-candidate",
+  "status": "candidate_report_only",
+  "dataset_id": "ahmedml",
+  "dataset_revision": "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+  "scoring": {
+    "weight": 0.0,
+    "affects_official_metric_values": false,
+    "affects_component_or_overall_scores": false,
+    "changes_required_prediction_fields": false,
+    "requires_new_model_inference": false
+  },
+  "partition_rules": {
+    "support_association": "native_cell_data",
+    "native_raw_cell_order_preserved": true,
+    "mutually_exclusive": true,
+    "exhaustive": true,
+    "chunk_boundary_invariant": true,
+    "regional_additive_sums_must_reconstruct_global_sums": true,
+    "participant_supplied_region_ids_accepted": false
+  },
+  "surface": {
+    "support_id": "ahmedml-surface-four-normal-regions-v1",
+    "native_support_id": "ahmedml-surface-native-cells-v1",
+    "fields": [
+      "surface_pressure",
+      "surface_wall_shear"
+    ],
+    "primary_weighting": "published_native_polygon_area_m2",
+    "definition_id": "ahmedml-surface-four-dominant-normal-regions-v1",
+    "coordinate_frame": "native AhmedML body frame",
+    "region_source": "evaluator-owned outward oriented surface area vectors already used for force integration",
+    "region_order": [
+      "streamwise_facing",
+      "lateral_facing",
+      "upward_facing",
+      "downward_facing"
+    ],
+    "precedence": [
+      "streamwise_facing",
+      "lateral_facing",
+      "upward_facing",
+      "downward_facing"
+    ],
+    "regions": [
+      {
+        "code": 0,
+        "region_id": "streamwise_facing",
+        "predicate": "abs(nx) >= abs(ny) and abs(nx) >= abs(nz)"
+      },
+      {
+        "code": 1,
+        "region_id": "lateral_facing",
+        "predicate": "not streamwise_facing and abs(ny) >= abs(nz)"
+      },
+      {
+        "code": 2,
+        "region_id": "upward_facing",
+        "predicate": "neither higher-precedence region and nz >= 0"
+      },
+      {
+        "code": 3,
+        "region_id": "downward_facing",
+        "predicate": "all remaining native surface polygons"
+      }
+    ],
+    "semantic_limit": "These are frozen dominant-normal orientation bins. They distinguish pressure- and shear-sensitive surface orientations but are not CFD patches or semantic front, base, roof, side, slant, or underbody labels."
+  },
+  "volume": {
+    "support_id": "ahmedml-volume-three-geometric-regions-v1",
+    "native_support_id": "ahmedml-volume-native-cells-v1",
+    "fields": [
+      "volume_pressure",
+      "volume_velocity"
+    ],
+    "primary_weighting": "one_per_native_cell",
+    "definition_id": "ahmedml-volume-three-geometric-regions-v1",
+    "definition_file": "regional-diagnostics-v1.json",
+    "definition_sha256": "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
+    "coordinate_frame": "native AhmedML body frame in metres",
+    "region_order": [
+      "near_body",
+      "wake",
+      "farfield"
+    ],
+    "precedence": [
+      "near_body",
+      "wake",
+      "farfield"
+    ],
+    "regions": [
+      {
+        "code": 0,
+        "region_id": "near_body",
+        "predicate": "-1.25*L <= x <= 0 and abs(y) <= 0.75*W and 0 <= z <= z_surface_min + 2*H"
+      },
+      {
+        "code": 1,
+        "region_id": "wake",
+        "predicate": "0 < x <= 2*L and abs(y) <= W and 0 <= z <= z_surface_min + 2*H"
+      },
+      {
+        "code": 2,
+        "region_id": "farfield",
+        "predicate": "all remaining native volume cells"
+      }
+    ],
+    "semantic_limit": "Geometric diagnostic zones only; the wake box is not a streamline-, vortex-, or topology-derived wake label."
+  },
+  "metric_semantics": {
+    "relative_l2_percent": "100*sqrt(sum(weight*||prediction-truth||^2)/sum(weight*||truth||^2))",
+    "mae": "sum(weight*||prediction-truth||)/sum(weight)",
+    "rmse": "sqrt(sum(weight*||prediction-truth||^2)/sum(weight))",
+    "component_metrics": "vector fields use the Euclidean component norm per native entity",
+    "chunk_protocol": "accumulate additive sufficient statistics per region and derive metrics only after the complete case closes; never average chunk-local metrics",
+    "case_reconstruction_tolerance": {
+      "relative": 5e-12,
+      "absolute": 1e-12,
+      "integer_counts": "exact"
+    },
+    "aggregate_pooled": "sum per-region additive sufficient statistics across the exact complete split before deriving metrics",
+    "aggregate_macro": "equal arithmetic mean of complete per-case regional derived metrics",
+    "aggregate_distribution": "minimum, median, p90 and maximum across complete case-level regional metrics",
+    "regional_scoring_weight": 0.0
+  },
+  "required_additive_sufficient_statistics": [
+    "entity_count",
+    "physical_weight_sum",
+    "absolute_error",
+    "squared_error",
+    "squared_truth",
+    "total_weight"
+  ],
+  "compatibility": {
+    "legacy_volume_definition_retained": true,
+    "legacy_volume_case_support_sha256_field": "definitions.regional_definition_sha256",
+    "surface_region_codes_derived_at_evaluation_time": true,
+    "new_large_support_arrays_required": false,
+    "prediction_format_changed": false
+  },
+  "notes": "Version 2 adds evaluator-owned surface pressure and wall-shear regional diagnostics while preserving the version-1 volume partition and every official score input."
+}

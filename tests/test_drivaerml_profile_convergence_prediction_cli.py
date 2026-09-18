@@ -12,6 +12,13 @@ from unittest import mock
 
 import numpy as np
 
+try:
+    import vtk  # noqa: F401
+except ImportError:
+    raise unittest.SkipTest(
+        "requires optional VTK for DrivAerML prediction convergence tests"
+    ) from None
+
 from reference.drivaerml.profile_convergence import method_set_sha256
 from reference.drivaerml.profile_convergence_evaluator import (
     FALSE_CLAIMS,

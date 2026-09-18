@@ -1,0 +1,369 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/discretization.schema.json",
+  "schema_version": "1.0",
+  "submission_id": "hiliftaeroml-transolver-ood-aoa-candidate-v1",
+  "dataset_id": "hiliftaeroml",
+  "split_id": "aoa",
+  "scoring_support_release_id": "hiliftaeroml-native-all-splits-support-v1-candidate",
+  "scoring_support_manifest_sha256": "98a9a8d015e42c80f5993e30da94201011bebf67ff44d5574a7ef68a8b5dfbee",
+  "training": {
+    "surface_input": {
+      "used": true,
+      "representation": "sampled native surface point cloud",
+      "entity_counts": [
+        {
+          "entity": "points",
+          "count": {
+            "kind": "fixed",
+            "value": 200000
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "unknown_with_explanation",
+        "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "method": "dataset native-point subsampling",
+        "seed": 42
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "surface_supervision": {
+      "used": true,
+      "representation": "sampled native surface point targets",
+      "entity_counts": [
+        {
+          "entity": "points",
+          "count": {
+            "kind": "fixed",
+            "value": 200000
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "unknown_with_explanation",
+        "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "method": "dataset native-point subsampling",
+        "seed": 42
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "volume_input": {
+      "used": true,
+      "representation": "sampled retained valid native flow-domain point cloud",
+      "entity_counts": [
+        {
+          "entity": "points",
+          "count": {
+            "kind": "fixed",
+            "value": 200000
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "unknown_with_explanation",
+        "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "method": "dataset native-point subsampling",
+        "seed": 42
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "volume_supervision": {
+      "used": true,
+      "representation": "sampled retained valid native flow-domain point targets",
+      "entity_counts": [
+        {
+          "entity": "points",
+          "count": {
+            "kind": "fixed",
+            "value": 200000
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "unknown_with_explanation",
+        "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "method": "dataset native-point subsampling",
+        "seed": 42
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    }
+  },
+  "inference": {
+    "geometry_dependency": "native_cfd_mesh",
+    "surface_input": {
+      "used": true,
+      "representation": "complete native surface point support queried in deterministic chunks",
+      "entity_counts": [
+        {
+          "entity": "points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 135575212,
+            "median": 142319350.5,
+            "maximum": 153070136
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "reported",
+        "native_entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "per_case",
+              "minimum": 135575212,
+              "median": 142319350.5,
+              "maximum": 153070136
+            }
+          }
+        ],
+        "fractions": [
+          {
+            "entity": "points",
+            "fraction": {
+              "kind": "fixed",
+              "value": 1.0
+            }
+          }
+        ]
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native",
+      "case_record_id": "surface-native-input"
+    },
+    "volume_input": {
+      "used": true,
+      "representation": "complete retained valid native flow-domain point support queried in deterministic chunks",
+      "entity_counts": [
+        {
+          "entity": "points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 223829255,
+            "median": 237482366.5,
+            "maximum": 252336627
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "reported",
+        "native_entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "per_case",
+              "minimum": 223829255,
+              "median": 237482366.5,
+              "maximum": 252336627
+            }
+          }
+        ],
+        "fractions": [
+          {
+            "entity": "points",
+            "fraction": {
+              "kind": "fixed",
+              "value": 1.0
+            }
+          }
+        ]
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native",
+      "case_record_id": "volume-native-input"
+    },
+    "direct_outputs": [
+      {
+        "id": "surface-native-output",
+        "domain": "surface",
+        "representation": {
+          "used": true,
+          "representation": "native surface point predictions",
+          "entity_counts": [
+            {
+              "entity": "points",
+              "count": {
+                "kind": "per_case",
+                "minimum": 135575212,
+                "median": 142319350.5,
+                "maximum": 153070136
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "reported",
+            "native_entity_counts": [
+              {
+                "entity": "points",
+                "count": {
+                  "kind": "per_case",
+                  "minimum": 135575212,
+                  "median": 142319350.5,
+                  "maximum": 153070136
+                }
+              }
+            ],
+            "fractions": [
+              {
+                "entity": "points",
+                "fraction": {
+                  "kind": "fixed",
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "sampling": {
+            "kind": "none"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "native"
+        },
+        "queries_per_forward_pass": {
+          "kind": "per_case",
+          "minimum": 678,
+          "median": 712.0,
+          "maximum": 766
+        }
+      },
+      {
+        "id": "volume-native-output",
+        "domain": "volume",
+        "representation": {
+          "used": true,
+          "representation": "retained valid native flow-domain point predictions",
+          "entity_counts": [
+            {
+              "entity": "points",
+              "count": {
+                "kind": "per_case",
+                "minimum": 223829255,
+                "median": 237482366.5,
+                "maximum": 252336627
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "reported",
+            "native_entity_counts": [
+              {
+                "entity": "points",
+                "count": {
+                  "kind": "per_case",
+                  "minimum": 223829255,
+                  "median": 237482366.5,
+                  "maximum": 252336627
+                }
+              }
+            ],
+            "fractions": [
+              {
+                "entity": "points",
+                "fraction": {
+                  "kind": "fixed",
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "sampling": {
+            "kind": "none"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "native"
+        },
+        "queries_per_forward_pass": {
+          "kind": "per_case",
+          "minimum": 1120,
+          "median": 1188.0,
+          "maximum": 1262
+        }
+      }
+    ],
+    "mappings": [
+      {
+        "support_id": "surface-native-points-v1",
+        "source_output_id": "surface-native-output",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "Predictions are emitted in the frozen raw native support order.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "volume-native-valid-points-v1",
+        "source_output_id": "volume-native-output",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "Predictions are emitted in the frozen retained-valid native support order.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "aerodynamic-case-coefficients-v1",
+        "source_output_id": "surface-native-output",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "hiliftaeroml-surface-load-integration",
+          "rule_version": "candidate-v1"
+        },
+        "implementation": "Integrate predicted pressure and wall shear over the retained oriented surface support.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      }
+    ]
+  },
+  "case_manifest": {
+    "format": "jsonl",
+    "file": "discretization/cases.jsonl",
+    "sha256": "dd6660f38e3d09471b178607920faed1dbe89449e0f81b3309d9bade66cb76ad",
+    "case_count": 900
+  },
+  "notes": "Candidate-only complete OOD AoA native-support replay; no dense prediction fields are retained. Point and forward-query counts are exact minimum, median, and maximum values across all 900 completed summaries."
+}

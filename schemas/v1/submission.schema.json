@@ -176,7 +176,8 @@
         "format": {
           "enum": [
             "fluidsbench-profile-chunks-v1",
-            "fluidsbench-drivaerml-physical-profile-chunks-v1"
+            "fluidsbench-drivaerml-physical-profile-chunks-v1",
+            "fluidsbench-drivaerml-relative-profile-chunks-v3-candidate"
           ]
         },
         "index_file": {"const": "profiles/index.json"},
@@ -212,6 +213,31 @@
         "required": ["approval"]
       },
       "then": {"required": ["reproducibility"]}
+    },
+    {
+      "if": {
+        "properties": {
+          "profile_data": {
+            "properties": {
+              "format": {
+                "const": "fluidsbench-drivaerml-relative-profile-chunks-v3-candidate"
+              }
+            },
+            "required": ["format"]
+          }
+        },
+        "required": ["profile_data"]
+      },
+      "then": {
+        "required": ["record_type", "approval"],
+        "properties": {
+          "record_type": {"const": "pre_release_reference"},
+          "approval": {
+            "properties": {"status": {"const": "prototype"}},
+            "required": ["status"]
+          }
+        }
+      }
     }
   ]
 }

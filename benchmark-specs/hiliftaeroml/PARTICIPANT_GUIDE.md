@@ -145,7 +145,10 @@ audit prose.
 ## 5. Produce the official compact-v2 profiles
 
 Compact profile-v2 is the sole accepted HiLiftAeroML profile representation.
-Earlier native profile package formats are not accepted. Profiles are
+Earlier native profile package formats are not accepted. The immutable wire
+identifiers retain their historical `-candidate` suffix so existing support
+and validated packages remain byte-identical. Current format selection is
+recorded in `submission-spec.json`, separately from release activation. Profiles are
 deterministic derivatives of the complete native predictions; they are not
 independent model outputs and must not be sampled on a participant-defined
 mesh.
@@ -182,13 +185,19 @@ Each participant case artifact contains exactly the two prediction arrays
 defined by
 [`native-profile-format-v2.json`](native-profile-format-v2.json):
 `cp_q_delta` and `velocity_speed_over_u_inf`. It contains no evaluator support
-or truth arrays.
+or truth arrays. The NPZ uses deterministic level-9 ZIP Deflate. The velocity
+member losslessly unsigned-delta-codes and byte-shuffles the exact little-endian
+float32 bit patterns before compression; decoding restores every submitted bit
+and therefore does not change values or scores.
 
 The selected Cp support uses at most 128 points per physical connected graph,
 placed uniformly in native physical arc length. Cp values are fixed-int16
 quantized and delta encoded at evaluator-owned retained-branch boundaries.
 Velocity values are scalar `float32` speed-over-freestream predictions for all
-and only the evaluator-owned valid rows at the same five stations. The
+and only the evaluator-owned valid rows at the same five stations. They are
+stored as the `uint8` byte transform defined by the contract so browsers can
+decode the ordinary Deflate NPZ without evaluator support or a native LZMA
+runtime. The
 selection evidence is recorded in
 [`compact-cp-representation-decision-v1.json`](compact-cp-representation-decision-v1.json)
 and
@@ -361,10 +370,13 @@ this closed workflow.
 
 ### Materialize local support for a coordinated dry run
 
-The retained real-surrogate compact package covers the Full360 case set only;
-the public plot-only truth separately covers every official case set. A
-maintainer with the authorized native-profile truth and complete Full360 native
-outputs can materialize an evaluator-owned scoring support release locally:
+Twenty-three retained real-surrogate compact packages comprise eleven Transolver
+results and twelve GeoTransolver results. Together they cover Full, Scarce, the
+three fixed-AoA splits, Super scarce, Geometry scarce, Geometry super scarce,
+Geometry, and all three out-of-distribution splits (AoA, deflection, and stall).
+The public plot-only truth separately covers every official case set. A maintainer with the
+authorized native-profile truth and complete native outputs for the target case
+set can materialize an evaluator-owned scoring support release locally:
 
 ```bash
 python scripts/materialize_hiliftaeroml_compact_profile_support.py \
@@ -376,16 +388,49 @@ python scripts/materialize_hiliftaeroml_compact_profile_support.py \
   --output-root /authorized/local/hiliftaeroml-compact-profile-support-v2-candidate
 ```
 
+The `--split`, `--surface-outputs-root`, and `--volume-outputs-root` groups may
+be repeated in matching order. Maintainers can instead reconstruct support for
+all eight official case sets without prediction outputs from the exact frozen
+authority already bound into the native-profile truth release:
+
+```bash
+python scripts/materialize_hiliftaeroml_compact_profile_support.py \
+  --submission-spec benchmark-specs/hiliftaeroml/submission-spec.json \
+  --split benchmark-specs/hiliftaeroml/splits/full.json \
+  --split benchmark-specs/hiliftaeroml/splits/geometry_scarce.json \
+  --split benchmark-specs/hiliftaeroml/splits/single_aoa_4.json \
+  --split benchmark-specs/hiliftaeroml/splits/single_aoa_12.json \
+  --split benchmark-specs/hiliftaeroml/splits/single_aoa_22.json \
+  --split benchmark-specs/hiliftaeroml/splits/aoa.json \
+  --split benchmark-specs/hiliftaeroml/splits/deflection.json \
+  --split benchmark-specs/hiliftaeroml/splits/stall.json \
+  --prerequisite-authority-index /authorized/local/hiliftaeroml-native-profile-truth-authority-v1.json \
+  --source-truth-release /authorized/local/hiliftaeroml-native-profile-truth-v1-candidate \
+  --output-root /authorized/local/hiliftaeroml-compact-profile-support-v2-candidate
+```
+
+That path validates the authority against the truth-release binding, reads no
+surrogate prediction output, applies the same limit of 128 Cp points per
+physical graph, and stores every overlapping physical case once. Its receipt
+records how the authority record/payload hashes occupy the support format's
+four legacy source-hash provenance slots. The completed two-build all-case
+evidence is
+[`compact-profile-all-case-support-validation-v1.json`](compact-profile-all-case-support-validation-v1.json).
+It is the selected current local candidate support binding, and its ten-preview
+rebind is recorded in
+[`compact-profile-all-case-support-rebind-v1.json`](compact-profile-all-case-support-rebind-v1.json).
+Both records remain intentionally non-activating.
+
 The output is benchmark/evaluator-owned local support and must remain outside
 the participant package. The package configuration has one top-level
 `evaluation` object containing the exact assembler `command` and RFC3339
 `generated_at` time. There is no alternate profile-mode selector.
 
-The assembler rejects the package if the sum of regular files in
-the completed package exceeds 15,000,000 bytes. Passing that hard portability
-gate and the validator remains only local candidate evidence; it does not
-publish support, qualify other case sets, approve the evaluator, or open
-submissions. No earlier HiLift profile package representation is accepted.
+The assembler reports the completed package size but has no aggregate byte
+ceiling, because the official splits have materially different case counts.
+The bounded per-file/archive checks and the validator remain in force. Passing
+them remains only local candidate evidence; it does not publish support,
+approve the evaluator, or open submissions.
 
 ## 10. Package boundary while submissions are closed
 
@@ -404,9 +449,11 @@ code, scoring support, workflows, or an existing result inside a participant
 package.
 
 For compact-v2 packages, each per-case NPZ has exactly `cp_q_delta` and
-`velocity_speed_over_u_inf`; evaluator-owned support remains in the separately
-bound local release. Full native surface/volume evaluation products and their
-receipt chain remain required outside the portable package assembly inputs.
+`velocity_speed_over_u_inf`; the latter is the contract-defined lossless
+float32-bit transform stored as `uint8`. Evaluator-owned support remains in the
+separately bound local release. Full native surface/volume evaluation products
+and their receipt chain remain required outside the portable package assembly
+inputs.
 
 While `submissions_open` is `false`, retain the package locally or share it
 directly with the benchmark owner for coordinated implementation review. Do

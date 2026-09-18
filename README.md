@@ -2,8 +2,9 @@
 
 Submission repository and approved-data feed for the [FluidsBench leaderboard](https://fluidsbench.org/).
 
-> FluidsBench is currently a work in progress. The `dev` branch, split indexes, submissions, metrics, and profile curves are
-> prototype dummy data and are not approved benchmark results.
+> FluidsBench is currently a work in progress. Nothing on the `dev` branch is an approved benchmark result, and most rows remain
+> illustrative prototype data. The explicitly registered HiLiftAeroML Transolver and GeoTransolver previews are checksum-bound
+> retained surrogate inferences with real CFD comparison truth, but remain non-citable pre-release references.
 
 ## Responsibilities
 
@@ -157,8 +158,8 @@ those records with the fixed or minimum/median/maximum summary and verifies `fra
 Contributors leave `approval` absent and must not add `maintainer-validation.json` or
 `prediction-artifact-checks.json`. After submitted-data validation, maintainers add
 the separately hashed validation record and `approval.status=approved`. Prototype packages use `approval.status=prototype`; the feed
-builder publishes only prototype and maintainer-approved rows. The sole exception is an exact maintainer-registered, hash-bound
-HiLiftAeroML `pre_release_reference`; it remains unapproved and explicitly ineligible for citation or promotion.
+builder publishes only prototype and maintainer-approved rows. The sole exception class is an exact maintainer-registered,
+hash-bound HiLiftAeroML `pre_release_reference`; each remains unapproved and explicitly ineligible for citation or promotion.
 
 Sharing full or example prediction fields is optional. When used, `prediction_artifacts` points to a revision-pinned public Hugging
 Face dataset manifest. A maintainer may add one `prediction-artifact-checks.json` index recording accessibility, format, or explicit
@@ -327,12 +328,16 @@ releases use `archive_url: null`; an official release must provide an immutable 
 release-view URLs containing the release ID. The separate full `source_commit` records repository provenance without creating a
 self-referential commit hash.
 
-HiLiftAeroML's registered Full360 preview uses the sole official compact-v2
-profile-prediction contract; prior HiLift profile formats are not accepted.
-Its public Cp and velocity comparison truth lives in the website repository as
-a deduplicated 1,355-case release covering all eight official case sets. It is
-bound as plot-only metadata; evaluator-owned compact support and private truth
-remain the scoring authority and are not copied into participant packages.
+HiLiftAeroML's eleven registered Transolver previews and twelve registered
+GeoTransolver previews use the sole selected compact-v2 prediction contract.
+The historical candidate identifiers remain immutable; the current HiLift
+submission specification records representation selection separately from
+public release approval. Earlier native-v1 participant packages are not accepted. Their public
+Cp and velocity comparison truth lives in
+the website repository as a deduplicated 1,355-case release covering all eight
+official case sets. It is bound as plot-only metadata; the private lossless
+evaluator truth remains the scoring authority and is not copied into this
+repository.
 
 Official `asset_base_url` and `release_view_url` values are clean HTTPS directory bases: their final path segment is exactly the
 safe lowercase release ID, they end in `/`, and they contain no query or fragment. Official builds preserve the manifest's explicit

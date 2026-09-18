@@ -55,6 +55,12 @@ CORE_CASE_STATUS = "candidate_evaluator_evidence_not_official_submission"
 DIAGNOSTIC_CASE_SCHEMA = "drivaerml-case-diagnostics-candidate-v4"
 LEGACY_DIAGNOSTIC_CASE_SCHEMA = "drivaerml-case-diagnostics-candidate-v3"
 DIAGNOSTIC_CASE_STATUS = "candidate_diagnostics_not_active_or_official_submission"
+RETAINED_INFERENCE_DIAGNOSTIC_CASE_SCHEMA = (
+    "drivaerml-retained-inference-diagnostics-v1"
+)
+RETAINED_INFERENCE_DIAGNOSTIC_CASE_STATUS = (
+    "candidate_retained_inference_evidence_not_official_submission"
+)
 
 OFFICIAL_REPOSITORY_ID = "neashton/drivaerml"
 OFFICIAL_REPOSITORY_REVISION = "7a5c0948ce27be709b1116a3a190f806e7a8f79f"
@@ -2109,6 +2115,398 @@ def _validate_surface_only_diagnostic_case(
     )
 
 
+def _validate_retained_inference_diagnostic_case(
+    document: Mapping[str, Any],
+    path: Path,
+    digest: str,
+    *,
+    contract: _Contract,
+    pinned: NativeCaseRecord,
+    core: _CoreCase,
+) -> _DiagnosticCase:
+    """Validate compact profile evidence retained from a complete inference.
+
+    A retained inference result can preserve exact field-manifest identities,
+    profile coordinates, predictions, and sufficient statistics without also
+    preserving the transient sparse raw-cell gather buffers used by a live
+    evaluator invocation.  This narrow candidate-only representation keeps
+    that distinction explicit rather than inventing a sparse-gather audit.
+
+    Complete materialized profile arrays are independently bound by the
+    FluidsBench profile-chunk contract.  This document records the per-case
+    reductions that feed the dataset evaluator and binds them to the same
+    field prediction manifests and current FluidsBench support identities.
+    """
+
+    case_id = pinned.case_id
+    root = _exact_keys(
+        document,
+        {
+            "schema",
+            "schema_version",
+            "status",
+            "case_id",
+            "official_submission",
+            "prediction_scope",
+            "prediction_inputs",
+            "profile_support",
+            "metrics",
+            "claims",
+        },
+        f"retained inference diagnostic evidence {case_id}",
+    )
+    if (
+        root["schema"] != RETAINED_INFERENCE_DIAGNOSTIC_CASE_SCHEMA
+        or root["schema_version"] != 1
+        or root["status"] != RETAINED_INFERENCE_DIAGNOSTIC_CASE_STATUS
+        or root["case_id"] != case_id
+        or root["official_submission"] is not False
+        or root["prediction_scope"] != PREDICTION_SCOPE_FULL
+        or core.prediction_scope != PREDICTION_SCOPE_FULL
+    ):
+        raise DrivAerDatasetScorerError(
+            f"retained inference diagnostic evidence {case_id} schema/status mismatch"
+        )
+
+    prediction_inputs = _exact_keys(
+        root["prediction_inputs"],
+        {"surface_native_cells", "volume_native_cells"},
+        f"retained inference diagnostic evidence {case_id}.prediction_inputs",
+    )
+    for support_id, expected_manifest, expected_chunks in (
+        (
+            "surface_native_cells",
+            core.surface_prediction_manifest_sha256,
+            core.surface_prediction_chunk_sha256,
+        ),
+        (
+            "volume_native_cells",
+            core.volume_prediction_manifest_sha256,
+            core.volume_prediction_chunk_sha256,
+        ),
+    ):
+        record = _exact_keys(
+            prediction_inputs[support_id],
+            {"manifest_sha256", "chunk_sha256"},
+            f"retained inference diagnostic evidence {case_id}.{support_id}",
+        )
+        manifest = _sha256(
+            record["manifest_sha256"],
+            f"{case_id}/{support_id} retained prediction manifest SHA-256",
+        )
+        chunks = record["chunk_sha256"]
+        if not isinstance(chunks, list):
+            raise DrivAerDatasetScorerError(
+                f"{case_id}/{support_id} retained prediction chunks must be an array"
+            )
+        chunk_hashes = tuple(
+            _sha256(
+                value,
+                f"{case_id}/{support_id} retained prediction chunk SHA-256",
+            )
+            for value in chunks
+        )
+        if (
+            expected_manifest is None
+            or expected_chunks is None
+            or manifest != expected_manifest
+            or chunk_hashes != expected_chunks
+        ):
+            raise DrivAerDatasetScorerError(
+                f"{case_id}/{support_id} retained prediction identity differs from core evidence"
+            )
+
+    profile_support = _exact_keys(
+        root["profile_support"],
+        {
+            "native_source_pin_sha256",
+            "profile_definition_sha256",
+            "constant_series_support_index_sha256",
+            "relative_series_support_index_sha256",
+            "profile_series_per_case",
+            "coordinates_rebound_without_resampling",
+        },
+        f"retained inference diagnostic evidence {case_id}.profile_support",
+    )
+    if (
+        profile_support["native_source_pin_sha256"]
+        != contract.native_source_pin_sha256
+        or profile_support["profile_definition_sha256"] != contract.profile_sha256
+        or profile_support["constant_series_support_index_sha256"]
+        != CONSTANT_SERIES_SUPPORT_INDEX_SHA256
+        or profile_support["relative_series_support_index_sha256"]
+        != RELATIVE_SERIES_SUPPORT_INDEX_SHA256
+        or profile_support["profile_series_per_case"]
+        != RELATIVE_PROFILE_SERIES_PER_CASE
+        or profile_support["coordinates_rebound_without_resampling"] is not True
+    ):
+        raise DrivAerDatasetScorerError(
+            f"retained inference diagnostic evidence {case_id} profile support mismatch"
+        )
+
+    claims = _exact_keys(
+        root["claims"],
+        {
+            "scoring_contract_active",
+            "official_submission",
+            "owner_scientific_approval",
+            "profile_resolution_convergence",
+            "three_real_model_ordering",
+            "independent_participant_dry_run",
+            "all_case_chunk_partition_invariance",
+        },
+        f"retained inference diagnostic evidence {case_id}.claims",
+    )
+    if any(value is not False for value in claims.values()):
+        raise DrivAerDatasetScorerError(
+            f"retained inference diagnostic evidence {case_id} makes an ineligible claim"
+        )
+
+    metrics = _exact_keys(
+        root["metrics"],
+        {
+            "cp_cut_rmse",
+            "velocity_profile_uinf_rmse",
+            "velocity_profile_experimental_subset_uinf_rmse",
+        },
+        f"retained inference diagnostic evidence {case_id}.metrics",
+    )
+    cp_cut = _exact_keys(
+        metrics["cp_cut_rmse"],
+        {
+            "metric_id",
+            "ranked_value_available",
+            "required_cut_count",
+            "unavailable_reasons",
+            "case_equal_cut_mean_rmse",
+            "aggregation",
+            "weighting",
+            "support_status",
+            "discrete_cp_probe_fallback_used",
+            "cut_rmse",
+        },
+        f"retained inference diagnostic evidence {case_id}.cp_cut_rmse",
+    )
+    velocity = _exact_keys(
+        metrics["velocity_profile_uinf_rmse"],
+        {
+            "metric_id",
+            "ranked_value_available",
+            "required_line_count",
+            "required_sample_count",
+            "unavailable_reasons",
+            "line_rmse",
+            "case_equal_line_mean_rmse",
+            "quantity",
+            "Uinf_m_per_s",
+            "arc_rule",
+            "aggregation",
+            "weighting",
+        },
+        f"retained inference diagnostic evidence {case_id}.velocity_profile_uinf_rmse",
+    )
+    experimental_velocity = _exact_keys(
+        metrics["velocity_profile_experimental_subset_uinf_rmse"],
+        {
+            "metric_id",
+            "value_available",
+            "required_line_count",
+            "required_profile_ids",
+            "unavailable_reasons",
+            "line_rmse",
+            "case_equal_experimental_line_mean_rmse",
+            "quantity",
+            "Uinf_m_per_s",
+            "arc_rule",
+            "aggregation",
+            "weighting",
+        },
+        f"retained inference diagnostic evidence {case_id}.velocity_profile_experimental_subset_uinf_rmse",
+    )
+
+    if (
+        cp_cut["metric_id"] != "cp_cut_rmse"
+        or cp_cut["ranked_value_available"] is not True
+        or cp_cut["required_cut_count"] != len(contract.profile_cp_cut_ids)
+        or cp_cut["unavailable_reasons"] != []
+        or cp_cut["aggregation"] != "equal_case_equal_cut_macro_average"
+        or cp_cut["weighting"] != "native_cut_intersection_segment_length"
+        or cp_cut["support_status"] != "retained_native_support_rebind"
+        or cp_cut["discrete_cp_probe_fallback_used"] is not False
+        or not isinstance(cp_cut["cut_rmse"], list)
+        or len(cp_cut["cut_rmse"]) != len(contract.profile_cp_cut_ids)
+    ):
+        raise DrivAerDatasetScorerError(
+            f"retained inference diagnostic evidence {case_id} Cp-cut contract mismatch"
+        )
+    cut_values: list[float] = []
+    cut_ids: list[str] = []
+    for position, row in enumerate(cp_cut["cut_rmse"]):
+        item = _exact_keys(
+            row,
+            {"cut_id", "segment_count", "arc_length_m", "rmse"},
+            f"retained inference diagnostic evidence {case_id} Cp-cut row {position}",
+        )
+        cut_ids.append(_string(item["cut_id"], f"{case_id} Cp-cut ID"))
+        _integer(
+            item["segment_count"],
+            f"{case_id}/{item['cut_id']} retained Cp-cut segment count",
+            minimum=1,
+        )
+        if _finite(
+            item["arc_length_m"],
+            f"{case_id}/{item['cut_id']} retained Cp-cut arc length",
+            nonnegative=True,
+        ) <= 0.0:
+            raise DrivAerDatasetScorerError(
+                f"{case_id}/{item['cut_id']} retained Cp-cut arc length must be positive"
+            )
+        cut_values.append(
+            _finite(
+                item["rmse"],
+                f"{case_id}/{item['cut_id']} retained Cp-cut RMSE",
+                nonnegative=True,
+            )
+        )
+    if tuple(cut_ids) != contract.profile_cp_cut_ids:
+        raise DrivAerDatasetScorerError(
+            f"retained inference diagnostic evidence {case_id} Cp-cut order differs from the registry"
+        )
+    cp_value = _finite(
+        cp_cut["case_equal_cut_mean_rmse"],
+        f"{case_id}/retained_cp_cut_rmse",
+        nonnegative=True,
+    )
+    _require_same_float(
+        cp_value,
+        math.fsum(cut_values) / len(cut_values),
+        f"{case_id}/retained_cp_cut_rmse case metric",
+    )
+
+    u_inf = _finite(
+        contract.force_constants.get("freestream_velocity_m_per_s"),
+        "force freestream velocity",
+        nonnegative=True,
+    )
+    if u_inf <= 0.0:
+        raise DrivAerDatasetScorerError("force freestream velocity must be positive")
+
+    def validate_velocity_metric(
+        metric_id: str,
+        metric: Mapping[str, Any],
+        *,
+        availability_key: str,
+        value_key: str,
+        expected_ids: tuple[str, ...],
+        expected_operation: str,
+    ) -> float:
+        if (
+            metric["metric_id"] != metric_id
+            or metric[availability_key] is not True
+            or metric["unavailable_reasons"] != []
+            or metric["required_line_count"] != len(expected_ids)
+            or metric["quantity"] != "magnitude(UMeanTrim)/Uinf"
+            or metric["Uinf_m_per_s"] != u_inf
+            or metric["arc_rule"]
+            != "trapezoidal_squared_error_over_owner_included_mapped_arc_no_gap_bridging"
+            or metric["aggregation"] != expected_operation
+            or metric["weighting"] != "trapezoidal_arc_length_within_line"
+            or not isinstance(metric["line_rmse"], list)
+            or len(metric["line_rmse"]) != len(expected_ids)
+        ):
+            raise DrivAerDatasetScorerError(
+                f"retained inference diagnostic evidence {case_id} {metric_id} contract mismatch"
+            )
+        rows: list[float] = []
+        observed_ids: list[str] = []
+        sample_count_by_id = dict(
+            zip(
+                contract.profile_velocity_line_ids,
+                contract.profile_velocity_line_sample_counts,
+                strict=True,
+            )
+        )
+        for position, row in enumerate(metric["line_rmse"]):
+            item = _exact_keys(
+                row,
+                {"profile_id", "sample_count", "arc_length_m", "rmse"},
+                f"retained inference diagnostic evidence {case_id} {metric_id} row {position}",
+            )
+            profile_id = _string(item["profile_id"], f"{case_id} retained profile ID")
+            observed_ids.append(profile_id)
+            if item["sample_count"] != sample_count_by_id.get(profile_id):
+                raise DrivAerDatasetScorerError(
+                    f"{case_id}/{metric_id}/{profile_id} retained sample count mismatch"
+                )
+            if _finite(
+                item["arc_length_m"],
+                f"{case_id}/{metric_id}/{profile_id} retained arc length",
+                nonnegative=True,
+            ) <= 0.0:
+                raise DrivAerDatasetScorerError(
+                    f"{case_id}/{metric_id}/{profile_id} retained arc length must be positive"
+                )
+            rows.append(
+                _finite(
+                    item["rmse"],
+                    f"{case_id}/{metric_id}/{profile_id} retained RMSE",
+                    nonnegative=True,
+                )
+            )
+        if tuple(observed_ids) != expected_ids:
+            raise DrivAerDatasetScorerError(
+                f"retained inference diagnostic evidence {case_id} {metric_id} line order differs from the registry"
+            )
+        value = _finite(metric[value_key], f"{case_id}/{metric_id}", nonnegative=True)
+        _require_same_float(
+            value,
+            math.fsum(rows) / len(rows),
+            f"{case_id}/{metric_id} retained case metric",
+        )
+        return value
+
+    velocity_value = validate_velocity_metric(
+        "velocity_profile_uinf_rmse",
+        velocity,
+        availability_key="ranked_value_available",
+        value_key="case_equal_line_mean_rmse",
+        expected_ids=contract.profile_velocity_line_ids,
+        expected_operation="equal_case_equal_line_macro_average",
+    )
+    if experimental_velocity["required_profile_ids"] != list(
+        contract.profile_experimental_velocity_line_ids
+    ):
+        raise DrivAerDatasetScorerError(
+            f"retained inference diagnostic evidence {case_id} experimental profile IDs differ from the registry"
+        )
+    experimental_value = validate_velocity_metric(
+        "velocity_profile_experimental_subset_uinf_rmse",
+        experimental_velocity,
+        availability_key="value_available",
+        value_key="case_equal_experimental_line_mean_rmse",
+        expected_ids=contract.profile_experimental_velocity_line_ids,
+        expected_operation="equal_case_equal_experimental_line_macro_average",
+    )
+    return _DiagnosticCase(
+        case_id=case_id,
+        input_file=path.name,
+        input_sha256=digest,
+        values={
+            "cp_cut_rmse": cp_value,
+            "velocity_profile_uinf_rmse": velocity_value,
+            "velocity_profile_experimental_subset_uinf_rmse": experimental_value,
+        },
+        unavailable_reasons={
+            "cp_cut_rmse": (),
+            "velocity_profile_uinf_rmse": (),
+            "velocity_profile_experimental_subset_uinf_rmse": (),
+        },
+        velocity_mapping_sha256=None,
+        velocity_receipt_sha256=None,
+        profile_series=(),
+    )
+
+
 def _validate_diagnostic_case(
     document: Mapping[str, Any],
     path: Path,
@@ -2133,6 +2531,15 @@ def _validate_diagnostic_case(
         "claims",
     }
     root = _mapping(document, f"diagnostic evidence {case_id}")
+    if root.get("schema") == RETAINED_INFERENCE_DIAGNOSTIC_CASE_SCHEMA:
+        return _validate_retained_inference_diagnostic_case(
+            root,
+            path,
+            digest,
+            contract=contract,
+            pinned=pinned,
+            core=core,
+        )
     observed_root_keys = set(root)
     allowed_root_keys = required_root_keys | {"profile_series", "prediction_scope"}
     if not required_root_keys.issubset(observed_root_keys) or not observed_root_keys.issubset(

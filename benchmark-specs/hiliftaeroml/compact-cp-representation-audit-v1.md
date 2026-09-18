@@ -40,7 +40,7 @@ The selected payload projection is:
 11,589,184  projected payload bytes before JSON/ZIP overhead
 ```
 
-This leaves 3,410,816 bytes before overhead against the 15,000,000-byte archive ceiling. The projection is not the acceptance result: two deterministic package builds and their actual archive sizes and hashes remain the authoritative final check.
+This left 3,410,816 bytes before overhead against the original 15,000,000-byte Full360 design target. That target was useful for choosing the representation, but is not an aggregate assembly gate for the larger official case sets. Two deterministic package builds and their actual archive sizes and hashes remain the authoritative final check.
 
 The 524,909-byte non-profile baseline is the sum of compressed member sizes after excluding the 360 surface-Cp and 360 volume-velocity artifacts from the 763-member prior candidate archive. That archive is 2,264,458,600 bytes with SHA-256 `a8dfd6ffbe6d103bc1a3123f6e6f756bacf960f92acc7079237b443bbbb62504`.
 

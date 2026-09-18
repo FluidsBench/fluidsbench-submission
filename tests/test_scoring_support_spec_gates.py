@@ -338,12 +338,30 @@ class ScoringSupportSpecGateTests(unittest.TestCase):
         )
         required_decisions = set(support["owner_decisions_required"])
         self.assertIn(
-            "pin_exact_public_release_files_revisions_and_hashes",
+            "approve_the_hash_bound_cache_derivation_and_production_preinstallation",
             required_decisions,
         )
-        self.assertIn(
-            "publish_authoritative_physical_weights_and_stable_entity_ids",
+        self.assertNotIn(
+            "publish_the_generated_scoring_support_release",
             required_decisions,
+        )
+        cache = support["derived_cache_contract"]
+        self.assertEqual(
+            cache["classification"],
+            "deterministic_rebuildable_evaluator_cache",
+        )
+        self.assertFalse(cache["remote_payload_required"])
+        self.assertTrue(cache["production_installation_required"])
+        self.assertRegex(cache["contract_sha256"], r"^[0-9a-f]{64}$")
+        self.assertTrue(
+            (SPEC_ROOT / "ahmedml" / cache["contract_file"]).is_file()
+        )
+        source = support["dataset_source"]
+        self.assertEqual(source["repository_id"], "neashton/ahmedml")
+        self.assertRegex(source["revision"], r"^[0-9a-f]{40}$")
+        self.assertRegex(source["identity_sha256"], r"^[0-9a-f]{64}$")
+        self.assertTrue(
+            (SPEC_ROOT / "ahmedml" / source["identity_file"]).is_file()
         )
 
     def test_drivaerml_uses_only_equal_native_volume_cell_weighting(self) -> None:

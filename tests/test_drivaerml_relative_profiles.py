@@ -827,6 +827,45 @@ class DrivAerMLRelativeProfileTests(unittest.TestCase):
                 "relative profile format is closed", "\n".join(candidate_errors)
             )
 
+            # A complete retained-inference reference may show its immutable
+            # profiles before activation, but only when it carries both of the
+            # explicit non-ranking lifecycle markers.  A record_type alone is
+            # deliberately not a bypass.
+            pre_release_submission = copy.deepcopy(submission)
+            pre_release_submission["record_type"] = "pre_release_reference"
+            pre_release_submission["approval"] = {"status": "prototype"}
+            pre_release_errors: list[str] = []
+            with synthetic_support_patch(
+                {"cases": [{"case_id": "run_1", "series": run_1_series}]}
+            ), patch("scripts.validate_submission.ROOT", temporary_root):
+                pre_release_stats = validate_profiles(
+                    pre_release_errors.append,
+                    directory,
+                    pre_release_submission,
+                    pending_spec,
+                    split_entry,
+                )
+            self.assertEqual(pre_release_stats, {"cases": 1, "series": 40})
+            self.assertEqual(pre_release_errors, [])
+
+            incomplete_reference = copy.deepcopy(pre_release_submission)
+            incomplete_reference.pop("approval")
+            incomplete_reference_errors: list[str] = []
+            with synthetic_support_patch(
+                {"cases": [{"case_id": "run_1", "series": run_1_series}]}
+            ), patch("scripts.validate_submission.ROOT", temporary_root):
+                validate_profiles(
+                    incomplete_reference_errors.append,
+                    directory,
+                    incomplete_reference,
+                    pending_spec,
+                    split_entry,
+                )
+            self.assertIn(
+                "relative profile format is closed",
+                "\n".join(incomplete_reference_errors),
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

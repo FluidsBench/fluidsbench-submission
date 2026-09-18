@@ -1,0 +1,262 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/submission.schema.json",
+  "schema_version": "3.0",
+  "submission_id": "ahmedml-geotransolver-calibrated-dev-fixture-v1",
+  "result_revision": {
+    "series_id": "ahmedml-geotransolver-calibrated-dev-fixture",
+    "version": 1,
+    "supersedes": null,
+    "change_summary": "Initial non-ranked complete-native-cell AhmedML evaluator and dashboard development fixture."
+  },
+  "model": "GeoTransolver-calibrated synthetic development fixture",
+  "model_type": "Deterministic fixture",
+  "model_types": [
+    "Deterministic fixture",
+    "GeoTransolver calibration reference"
+  ],
+  "training_regime": "other",
+  "training_regime_explanation": "Development fixture only: no AhmedML model training is claimed. A retained GeoTransolver checkpoint supplies error-scale calibration but is not executed.",
+  "target_data_used": "other",
+  "external_pretraining": false,
+  "pretraining_data": [],
+  "methodology": {
+    "format": "fluidsbench-method-v1",
+    "record_kind": "prototype_fixture",
+    "record_note": "Non-ranked evaluator and dashboard development fixture. Complete public CFD truth is transformed deterministically to produce native-cell predictions. The retained GeoTransolver checkpoint is used only to calibrate four target error magnitudes; it was not executed, and this record is not model inference.",
+    "architecture": {
+      "description": "A deterministic signed multiplicative transform produces complete native CellData fields. A 20,166,852-parameter legacy GeoTransolver checkpoint is recorded only as a calibration reference and contributes no executed inference graph.",
+      "total_parameter_count": 20166852,
+      "parameter_count_basis": "exact",
+      "submitter_trainable_parameter_count": 0,
+      "components": [
+        {
+          "id": "legacy-geotransolver-calibration-reference",
+          "family": "GeoTransolver",
+          "role": "Non-executed calibration reference",
+          "description": "Retained checkpoint metadata supplied approximate field-error scales only; the checkpoint does not correspond to an official AhmedML split and was not run for this fixture.",
+          "parameter_count": 20166852
+        },
+        {
+          "id": "deterministic-native-field-fixture",
+          "family": "Deterministic evaluator fixture",
+          "role": "Synthetic native-field generator",
+          "description": "Applies a case- and entity-index-dependent signed multiplicative perturbation directly to complete public CFD truth.",
+          "parameter_count": 0
+        }
+      ],
+      "key_hyperparameters": [
+        {
+          "id": "fixture-transform",
+          "component_ids": [
+            "deterministic-native-field-fixture"
+          ],
+          "name": "fixture transform",
+          "value": "truth*(1+target_ratio*sign(sin(pattern)))",
+          "description": "Deterministic transform used solely for integration testing."
+        },
+        {
+          "id": "profile-sample-count",
+          "component_ids": [
+            "deterministic-native-field-fixture"
+          ],
+          "name": "evaluator-owned samples per profile",
+          "value": 128,
+          "description": "Every Cp cut and velocity profile is sampled by the dataset evaluator at exactly 128 frozen support locations."
+        }
+      ],
+      "input_features": [
+        {
+          "id": "public-native-cfd-truth",
+          "component_ids": [
+            "deterministic-native-field-fixture"
+          ],
+          "name": "complete public CFD truth fields",
+          "domain": "domain",
+          "component_count": 8,
+          "description": "Surface pMean and wallShearStressMean plus volume pMean and UMean on all native cells; use of truth makes this explicitly ineligible for ranking."
+        },
+        {
+          "id": "case-and-cell-index",
+          "component_ids": [
+            "deterministic-native-field-fixture"
+          ],
+          "name": "case and native cell identity",
+          "domain": "case",
+          "component_count": 2,
+          "description": "Run ID and native raw-cell index seed the deterministic sign pattern."
+        }
+      ],
+      "predicted_fields": [
+        {
+          "field_id": "surface-native.pMean",
+          "domain": "surface",
+          "component_count": 1,
+          "component_ids": [
+            "deterministic-native-field-fixture"
+          ],
+          "production": "direct_model_output",
+          "description": "Synthetic complete-native-cell pressure fixture, not model inference."
+        },
+        {
+          "field_id": "surface-native.wallShearStressMean",
+          "domain": "surface",
+          "component_count": 3,
+          "component_ids": [
+            "deterministic-native-field-fixture"
+          ],
+          "production": "direct_model_output",
+          "description": "Synthetic complete-native-cell wall-shear fixture, not model inference."
+        },
+        {
+          "field_id": "flow-domain-native.pMean",
+          "domain": "volume",
+          "component_count": 1,
+          "component_ids": [
+            "deterministic-native-field-fixture"
+          ],
+          "production": "direct_model_output",
+          "description": "Synthetic complete-native-cell volume pressure fixture, not model inference."
+        },
+        {
+          "field_id": "flow-domain-native.UMean",
+          "domain": "volume",
+          "component_count": 3,
+          "component_ids": [
+            "deterministic-native-field-fixture"
+          ],
+          "production": "direct_model_output",
+          "description": "Synthetic complete-native-cell velocity fixture, not model inference."
+        }
+      ]
+    },
+    "data_handling": {
+      "normalization": "No training normalization is claimed. The fixture transform acts on native SI-valued CellData; Cp=2*pMean and Ux/Uinf=Ux because Uinf=1 m/s.",
+      "preprocessing": "The evaluator validates immutable public source hashes, complete native entity order, surface areas, cell volumes, frozen profile mappings, evaluator-owned dominant-normal surface regions, and the retained three-zone volume partition.",
+      "sampling": "No field subsampling. All surface and volume native cells are transformed and scored; evaluator-owned Cp and velocity diagnostics each contain exactly 128 points per station."
+    },
+    "training": {
+      "stages": [
+        {
+          "id": "development-fixture-no-training",
+          "status": "prototype_not_recorded",
+          "component_ids": [
+            "legacy-geotransolver-calibration-reference",
+            "deterministic-native-field-fixture"
+          ],
+          "description": "No training is attributed to this fixture. The legacy checkpoint's exact official-split provenance is unavailable, and the synthetic transform has no trainable parameters."
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "legacy-geotransolver-calibration-reference",
+        "component_ids": [
+          "legacy-geotransolver-calibration-reference"
+        ],
+        "sha256": "37ee4418ef1ee069b5c086322c4c5ef9c35f1a59ea4755b470b7d6358c642ac5",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw 80893878-byte model_best.pt retained checkpoint; hashed for provenance but not loaded or executed by fixture generation.",
+        "role": "Calibration reference only; not the source of submitted prediction values.",
+        "selection_rule": "Previously retained best checkpoint from a legacy configured test split; used only to select representative error scales before fixture generation."
+      }
+    ],
+    "inference_compute": {
+      "status": "not_measured",
+      "reason": "No model inference occurred. CPU fixture generation and exact evaluator runtime are implementation-test costs and must not be reported as surrogate inference performance."
+    }
+  },
+  "submitter_name": "Neil Ashton",
+  "institution": "NVIDIA",
+  "paper_url": "",
+  "submitted_at": "2026-09-16",
+  "reproducibility": {
+    "contract_version": "open-reproducibility-3.0",
+    "access": "public",
+    "public_test_data_use": "evaluation_only",
+    "result_data_license_spdx": "CC-BY-SA-4.0"
+  },
+  "note": "DEVELOPMENT FIXTURE ONLY: predictions are deterministic transforms of public CFD truth, not checkpoint inference. This row is permanently ineligible for ranking, citation, promotion, or treatment as an AhmedML submission.",
+  "dataset_id": "ahmedml",
+  "prediction_scope": "surface_and_volume",
+  "parameter_count_millions": 20.166852,
+  "dataset": "AhmedML",
+  "dataset_version": "ahmedml-native-v1-candidate",
+  "split": "Full",
+  "split_id": "full",
+  "case_set_id": "full-test",
+  "split_sha256": "a565e78b41f8b793220985e6b1bcf535ced54d454e3325fb5de51c8b553eb920",
+  "evaluation": {
+    "reference_version": "ahmedml-evaluator-v0.1-candidate",
+    "command": "python scripts/assemble_ahmedml_schema_v3_dev_fixture.py --dataset-evidence <full-evidence.json> --case-evidence-directory <case-evidence> --prediction-directory <synthetic-native-fields> --support-release <candidate-support> --profile-ground-truth-manifest <dashboard-manifest> --checkpoint <model_best.pt> --output submissions/ahmedml/ahmedml-geotransolver-calibrated-dev-fixture-v1",
+    "evidence_file": "evaluation-evidence.json",
+    "evidence_sha256": "beb9c170b20353e9901debf1488047842f6ad6f7d259cdc7a159610a4457e10c"
+  },
+  "scoring_support": {
+    "status": "candidate",
+    "release_id": "ahmedml-native-all-splits-support-v1-candidate",
+    "manifest_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/ahmedml/scoring-support/ahmedml-native-all-splits-support-v1-candidate/manifest.json",
+    "manifest_sha256": "c727bad2ca2566dfed44920cc334af136f2fbe32f3c8886b2fcb130f495fd124"
+  },
+  "spatial_discretization": {
+    "format": "fluidsbench-discretization-v1",
+    "file": "discretization.json",
+    "sha256": "f26fe26a2f7cec0d333719a3929faf27d9e6425be81b801081f49a1a0a5f5c6a"
+  },
+  "case_metrics": {
+    "format": "fluidsbench-case-metrics-v1",
+    "file": "metrics/cases.json",
+    "sha256": "4510c094f14be60451ca007e0c036ec85548640a3fdcb7306543eb113c765479",
+    "case_count": 50
+  },
+  "metric_values": {
+    "surface_pressure_equal_entity_rel_l2": 3.5069108003230154,
+    "surface_pressure_mae": 0.005306850762178214,
+    "surface_pressure_rel_l1": 3.5069108005130905,
+    "surface_pressure_rel_l2": 3.506910800076319,
+    "surface_pressure_rmse": 0.007310515578976348,
+    "surface_wall_shear_equal_entity_rel_l2": 5.47280609296826,
+    "surface_wall_shear_mae": 0.00010120980923982433,
+    "surface_wall_shear_rel_l1": 5.472806095479603,
+    "surface_wall_shear_rel_l2": 5.472806099198559,
+    "surface_wall_shear_rmse": 0.00012084518812279857,
+    "volume_pressure_mae": 0.007718986568340287,
+    "volume_pressure_physical_rel_l2": 9.651640113127634,
+    "volume_pressure_rel_l1": 9.65164009579354,
+    "volume_pressure_rel_l2": 9.651640162769075,
+    "volume_pressure_rmse": 0.012415400724947942,
+    "volume_velocity_mae": 0.0464299413433207,
+    "volume_velocity_physical_rel_l2": 5.1400571729721936,
+    "volume_velocity_rel_l1": 5.140057209400708,
+    "volume_velocity_rel_l2": 5.1400572107741676,
+    "volume_velocity_rmse": 0.04832085429824181,
+    "cd_r2": 0.9962764787141668,
+    "cl_r2": 0.9989208316658043,
+    "c_drag_mae": 0.00246045424154734,
+    "c_lift_mae": 0.005227936249007566,
+    "cp_cut_r2": 0.9974183266322754,
+    "velocity_profile_r2": 0.9804383875626065,
+    "field_score": 61.79437572335462,
+    "force_score": 99.73342198948218,
+    "diagnostic_score": 98.72303631904741,
+    "overall_score": 80.51130243880971
+  },
+  "profile_data": {
+    "format": "fluidsbench-profile-chunks-v1",
+    "index_file": "profiles/index.json",
+    "case_count": 50,
+    "case_set_id": "full-test",
+    "profile_ground_truth_release_id": "prototype-profile-ground-truth-2026-09-04",
+    "profile_ground_truth_manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
+  },
+  "regional_diagnostics": {
+    "format": "ahmedml-regional-diagnostics-aggregate-v2",
+    "file": "regional-diagnostics.json",
+    "sha256": "a12d57a4708eb7c12db9adc24f172e6803da8deb1b8c3dc2629efc770bec06af",
+    "contract_sha256": "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
+    "definition_id": "ahmedml-native-regions-v2-candidate",
+    "case_count": 50,
+    "role": "report_only",
+    "weight": 0.0,
+    "official_score_changed": false
+  }
+}

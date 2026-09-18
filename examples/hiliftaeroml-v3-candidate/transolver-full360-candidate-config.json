@@ -48,21 +48,28 @@
         "key_hyperparameters": [
           {
             "id": "surface-architecture",
-            "component_ids": ["surface-transolver"],
+            "component_ids": [
+              "surface-transolver"
+            ],
             "name": "Transolver architecture",
             "value": "layers=16,width=320,heads=8,mlp_ratio=4,slices=256",
             "description": "Exact resolved surface model configuration."
           },
           {
             "id": "volume-architecture",
-            "component_ids": ["volume-transolver"],
+            "component_ids": [
+              "volume-transolver"
+            ],
             "name": "Transolver architecture",
             "value": "layers=16,width=320,heads=8,mlp_ratio=4,slices=256",
             "description": "Exact resolved volume model configuration."
           },
           {
             "id": "training-query-count",
-            "component_ids": ["surface-transolver", "volume-transolver"],
+            "component_ids": [
+              "surface-transolver",
+              "volume-transolver"
+            ],
             "name": "Training sampling resolution",
             "value": 200000,
             "description": "Maximum sampled native points per case during training."
@@ -71,7 +78,9 @@
         "input_features": [
           {
             "id": "surface-local-input",
-            "component_ids": ["surface-transolver"],
+            "component_ids": [
+              "surface-transolver"
+            ],
             "name": "Surface coordinates and normals",
             "domain": "surface",
             "component_count": 6,
@@ -79,7 +88,9 @@
           },
           {
             "id": "surface-global-input",
-            "component_ids": ["surface-transolver"],
+            "component_ids": [
+              "surface-transolver"
+            ],
             "name": "Freestream velocity",
             "domain": "global",
             "component_count": 3,
@@ -87,7 +98,9 @@
           },
           {
             "id": "volume-local-input",
-            "component_ids": ["volume-transolver"],
+            "component_ids": [
+              "volume-transolver"
+            ],
             "name": "Volume coordinates, signed distance, and signed-distance normals",
             "domain": "volume",
             "component_count": 7,
@@ -95,7 +108,9 @@
           },
           {
             "id": "volume-global-input",
-            "component_ids": ["volume-transolver"],
+            "component_ids": [
+              "volume-transolver"
+            ],
             "name": "Freestream velocity",
             "domain": "global",
             "component_count": 3,
@@ -107,7 +122,9 @@
             "field_id": "surface-native.pressure",
             "domain": "surface",
             "component_count": 1,
-            "component_ids": ["surface-transolver"],
+            "component_ids": [
+              "surface-transolver"
+            ],
             "production": "direct_model_output",
             "description": "Surface pressure is a direct output channel."
           },
@@ -115,7 +132,9 @@
             "field_id": "surface-native.wall_shear_stress",
             "domain": "surface",
             "component_count": 3,
-            "component_ids": ["surface-transolver"],
+            "component_ids": [
+              "surface-transolver"
+            ],
             "production": "direct_model_output",
             "description": "The three wall-shear-stress components are direct output channels."
           },
@@ -123,7 +142,9 @@
             "field_id": "flow-domain-native.velocity",
             "domain": "volume",
             "component_count": 3,
-            "component_ids": ["volume-transolver"],
+            "component_ids": [
+              "volume-transolver"
+            ],
             "production": "direct_model_output",
             "description": "The three nondimensional velocity components are direct output channels."
           },
@@ -131,7 +152,9 @@
             "field_id": "flow-domain-native.pressure",
             "domain": "volume",
             "component_count": 1,
-            "component_ids": ["volume-transolver"],
+            "component_ids": [
+              "volume-transolver"
+            ],
             "production": "direct_model_output",
             "description": "Nondimensional flow-domain pressure is a direct output channel."
           }
@@ -147,7 +170,9 @@
           {
             "id": "surface-training",
             "status": "performed_by_submitter",
-            "component_ids": ["surface-transolver"],
+            "component_ids": [
+              "surface-transolver"
+            ],
             "description": "From-scratch distributed training on the official Full surface training split.",
             "procedure": {
               "kind": "gradient_based",
@@ -174,7 +199,9 @@
             },
             "run_count": 1,
             "stochastic": true,
-            "random_seeds": [42],
+            "random_seeds": [
+              42
+            ],
             "compute": {
               "hardware": "NVIDIA GPU distributed Slurm campaign; exact accelerator SKU requires owner metadata confirmation",
               "max_concurrent_device_count": 32,
@@ -186,7 +213,9 @@
           {
             "id": "volume-training",
             "status": "performed_by_submitter",
-            "component_ids": ["volume-transolver"],
+            "component_ids": [
+              "volume-transolver"
+            ],
             "description": "From-scratch distributed training on the official Full volume training split.",
             "procedure": {
               "kind": "gradient_based",
@@ -213,7 +242,9 @@
             },
             "run_count": 1,
             "stochastic": true,
-            "random_seeds": [42],
+            "random_seeds": [
+              42
+            ],
             "compute": {
               "hardware": "NVIDIA GPU distributed Slurm campaign; exact accelerator SKU requires owner metadata confirmation",
               "max_concurrent_device_count": 32,
@@ -227,7 +258,9 @@
       "checkpoints": [
         {
           "id": "surface-epoch-1000",
-          "component_ids": ["surface-transolver"],
+          "component_ids": [
+            "surface-transolver"
+          ],
           "sha256": "677f9a0bc0c2408a14e634b9e4606e6717924c2261a1e9ea12dfe9793b14b063",
           "digest_scope": "raw_loaded_file",
           "bytes_description": "Raw 74283869-byte Transolver.0.1000.mdlus model-state file loaded by surface inference.",
@@ -236,7 +269,9 @@
         },
         {
           "id": "volume-epoch-1000",
-          "component_ids": ["volume-transolver"],
+          "component_ids": [
+            "volume-transolver"
+          ],
           "sha256": "d1c6b01ec56d574836f545b8e3a4682a1fd0b589766e1cd060cb791399514ab5",
           "digest_scope": "raw_loaded_file",
           "bytes_description": "Raw 74282589-byte Transolver.0.1000.mdlus model-state file loaded by volume inference.",
@@ -269,45 +304,113 @@
     "note": "Maintainer-local candidate dry run only; not an accepted or owner-approved FluidsBench result."
   },
   "evaluation": {
-    "command": "python scripts/assemble_hiliftaeroml_schema_v3_candidate.py --config examples/hiliftaeroml-v3-candidate/transolver-full360-candidate-config.json --native-aggregate ../hiliftaeroml-transolver-submission-v1/release/full360_schema_v3_candidate_20260902/aggregate-a --native-surface-outputs ../hiliftaeroml-transolver-submission-v1/outputs/full360_exact_v1 --native-volume-outputs ../hiliftaeroml-transolver-submission-v1/outputs/full360 --native-receipts ../hiliftaeroml-transolver-submission-v1/release/full360_schema_v3_candidate_20260902/receipts-a --profile-support-release ../eval_runs/hilift_compact_profile_support_v2_candidate_20260903/release/hiliftaeroml-compact-profile-support-v2-candidate --output ../hiliftaeroml-transolver-submission-v1/release/full360_schema_v3_compact_candidate_20260903/package-a",
-    "generated_at": "2026-09-03T07:28:49-07:00"
+    "command": "python scripts/assemble_hiliftaeroml_schema_v3_candidate.py --config examples/hiliftaeroml-v3-candidate/transolver-full360-candidate-config.json --native-aggregate ../hiliftaeroml-transolver-submission-v1/release/full360_schema_v3_candidate_20260902/aggregate-a --native-surface-outputs ../hiliftaeroml-transolver-submission-v1/outputs/full360_exact_v1 --native-volume-outputs ../hiliftaeroml-transolver-submission-v1/outputs/full360 --native-receipts ../hiliftaeroml-transolver-submission-v1/release/full360_schema_v3_candidate_20260902/receipts-a --profile-support-release ../eval_runs/hilift_compact_profile_support_v2_all1355_candidate_20260907/release/hiliftaeroml-compact-profile-support-v2-candidate --output ../hiliftaeroml-transolver-submission-v1/release/all10_compact_support_rebind_candidate_20260908/packages/full/package-a",
+    "generated_at": "2026-09-08T06:44:40-07:00"
   },
   "spatial_discretization": {
     "training": {
       "surface_input": {
         "used": true,
         "representation": "sampled native surface point cloud",
-        "entity_counts": [{"entity": "points", "count": {"kind": "fixed", "value": 200000}}],
-        "native_comparison": {"status": "unknown_with_explanation", "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."},
-        "sampling": {"kind": "resampled_each_epoch", "method": "dataset native-point subsampling", "seed": 42},
-        "domain": {"kind": "full_dataset_domain"},
+        "entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "fixed",
+              "value": 200000
+            }
+          }
+        ],
+        "native_comparison": {
+          "status": "unknown_with_explanation",
+          "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."
+        },
+        "sampling": {
+          "kind": "resampled_each_epoch",
+          "method": "dataset native-point subsampling",
+          "seed": 42
+        },
+        "domain": {
+          "kind": "full_dataset_domain"
+        },
         "connectivity": "none"
       },
       "surface_supervision": {
         "used": true,
         "representation": "sampled native surface point targets",
-        "entity_counts": [{"entity": "points", "count": {"kind": "fixed", "value": 200000}}],
-        "native_comparison": {"status": "unknown_with_explanation", "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."},
-        "sampling": {"kind": "resampled_each_epoch", "method": "dataset native-point subsampling", "seed": 42},
-        "domain": {"kind": "full_dataset_domain"},
+        "entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "fixed",
+              "value": 200000
+            }
+          }
+        ],
+        "native_comparison": {
+          "status": "unknown_with_explanation",
+          "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."
+        },
+        "sampling": {
+          "kind": "resampled_each_epoch",
+          "method": "dataset native-point subsampling",
+          "seed": 42
+        },
+        "domain": {
+          "kind": "full_dataset_domain"
+        },
         "connectivity": "none"
       },
       "volume_input": {
         "used": true,
         "representation": "sampled retained valid native flow-domain point cloud",
-        "entity_counts": [{"entity": "points", "count": {"kind": "fixed", "value": 200000}}],
-        "native_comparison": {"status": "unknown_with_explanation", "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."},
-        "sampling": {"kind": "resampled_each_epoch", "method": "dataset native-point subsampling", "seed": 42},
-        "domain": {"kind": "full_dataset_domain"},
+        "entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "fixed",
+              "value": 200000
+            }
+          }
+        ],
+        "native_comparison": {
+          "status": "unknown_with_explanation",
+          "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."
+        },
+        "sampling": {
+          "kind": "resampled_each_epoch",
+          "method": "dataset native-point subsampling",
+          "seed": 42
+        },
+        "domain": {
+          "kind": "full_dataset_domain"
+        },
         "connectivity": "none"
       },
       "volume_supervision": {
         "used": true,
         "representation": "sampled retained valid native flow-domain point targets",
-        "entity_counts": [{"entity": "points", "count": {"kind": "fixed", "value": 200000}}],
-        "native_comparison": {"status": "unknown_with_explanation", "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."},
-        "sampling": {"kind": "resampled_each_epoch", "method": "dataset native-point subsampling", "seed": 42},
-        "domain": {"kind": "full_dataset_domain"},
+        "entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "fixed",
+              "value": 200000
+            }
+          }
+        ],
+        "native_comparison": {
+          "status": "unknown_with_explanation",
+          "explanation": "The retained resolved config records a 200000-point sampling ceiling, not per-case native fractions."
+        },
+        "sampling": {
+          "kind": "resampled_each_epoch",
+          "method": "dataset native-point subsampling",
+          "seed": 42
+        },
+        "domain": {
+          "kind": "full_dataset_domain"
+        },
         "connectivity": "none"
       }
     },
@@ -316,19 +419,91 @@
       "surface_input": {
         "used": true,
         "representation": "complete native surface point support queried in deterministic chunks",
-        "entity_counts": [{"entity": "points", "count": {"kind": "per_case", "minimum": 126278762, "median": 140277988.5, "maximum": 153354275}}],
-        "native_comparison": {"status": "reported", "native_entity_counts": [{"entity": "points", "count": {"kind": "per_case", "minimum": 126278762, "median": 140277988.5, "maximum": 153354275}}], "fractions": [{"entity": "points", "fraction": {"kind": "fixed", "value": 1.0}}]},
-        "sampling": {"kind": "none"},
-        "domain": {"kind": "full_dataset_domain"},
+        "entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "per_case",
+              "minimum": 126278762,
+              "median": 140277988.5,
+              "maximum": 153354275
+            }
+          }
+        ],
+        "native_comparison": {
+          "status": "reported",
+          "native_entity_counts": [
+            {
+              "entity": "points",
+              "count": {
+                "kind": "per_case",
+                "minimum": 126278762,
+                "median": 140277988.5,
+                "maximum": 153354275
+              }
+            }
+          ],
+          "fractions": [
+            {
+              "entity": "points",
+              "fraction": {
+                "kind": "fixed",
+                "value": 1.0
+              }
+            }
+          ]
+        },
+        "sampling": {
+          "kind": "none"
+        },
+        "domain": {
+          "kind": "full_dataset_domain"
+        },
         "connectivity": "native"
       },
       "volume_input": {
         "used": true,
         "representation": "complete retained valid native flow-domain point support queried in deterministic chunks",
-        "entity_counts": [{"entity": "points", "count": {"kind": "per_case", "minimum": 204602986, "median": 232416955, "maximum": 251732130}}],
-        "native_comparison": {"status": "reported", "native_entity_counts": [{"entity": "points", "count": {"kind": "per_case", "minimum": 204602986, "median": 232416955, "maximum": 251732130}}], "fractions": [{"entity": "points", "fraction": {"kind": "fixed", "value": 1.0}}]},
-        "sampling": {"kind": "none"},
-        "domain": {"kind": "full_dataset_domain"},
+        "entity_counts": [
+          {
+            "entity": "points",
+            "count": {
+              "kind": "per_case",
+              "minimum": 204602986,
+              "median": 232416955,
+              "maximum": 251732130
+            }
+          }
+        ],
+        "native_comparison": {
+          "status": "reported",
+          "native_entity_counts": [
+            {
+              "entity": "points",
+              "count": {
+                "kind": "per_case",
+                "minimum": 204602986,
+                "median": 232416955,
+                "maximum": 251732130
+              }
+            }
+          ],
+          "fractions": [
+            {
+              "entity": "points",
+              "fraction": {
+                "kind": "fixed",
+                "value": 1.0
+              }
+            }
+          ]
+        },
+        "sampling": {
+          "kind": "none"
+        },
+        "domain": {
+          "kind": "full_dataset_domain"
+        },
         "connectivity": "native"
       },
       "direct_outputs": [
@@ -338,13 +513,54 @@
           "representation": {
             "used": true,
             "representation": "native surface point predictions",
-            "entity_counts": [{"entity": "points", "count": {"kind": "per_case", "minimum": 126278762, "median": 140277988.5, "maximum": 153354275}}],
-            "native_comparison": {"status": "reported", "native_entity_counts": [{"entity": "points", "count": {"kind": "per_case", "minimum": 126278762, "median": 140277988.5, "maximum": 153354275}}], "fractions": [{"entity": "points", "fraction": {"kind": "fixed", "value": 1.0}}]},
-            "sampling": {"kind": "none"},
-            "domain": {"kind": "full_dataset_domain"},
+            "entity_counts": [
+              {
+                "entity": "points",
+                "count": {
+                  "kind": "per_case",
+                  "minimum": 126278762,
+                  "median": 140277988.5,
+                  "maximum": 153354275
+                }
+              }
+            ],
+            "native_comparison": {
+              "status": "reported",
+              "native_entity_counts": [
+                {
+                  "entity": "points",
+                  "count": {
+                    "kind": "per_case",
+                    "minimum": 126278762,
+                    "median": 140277988.5,
+                    "maximum": 153354275
+                  }
+                }
+              ],
+              "fractions": [
+                {
+                  "entity": "points",
+                  "fraction": {
+                    "kind": "fixed",
+                    "value": 1.0
+                  }
+                }
+              ]
+            },
+            "sampling": {
+              "kind": "none"
+            },
+            "domain": {
+              "kind": "full_dataset_domain"
+            },
             "connectivity": "native"
           },
-          "queries_per_forward_pass": {"kind": "per_case", "minimum": 632, "median": 702, "maximum": 767}
+          "queries_per_forward_pass": {
+            "kind": "per_case",
+            "minimum": 632,
+            "median": 702,
+            "maximum": 767
+          }
         },
         {
           "id": "volume-native-output",
@@ -352,20 +568,63 @@
           "representation": {
             "used": true,
             "representation": "retained valid native flow-domain point predictions",
-            "entity_counts": [{"entity": "points", "count": {"kind": "per_case", "minimum": 204602986, "median": 232416955, "maximum": 251732130}}],
-            "native_comparison": {"status": "reported", "native_entity_counts": [{"entity": "points", "count": {"kind": "per_case", "minimum": 204602986, "median": 232416955, "maximum": 251732130}}], "fractions": [{"entity": "points", "fraction": {"kind": "fixed", "value": 1.0}}]},
-            "sampling": {"kind": "none"},
-            "domain": {"kind": "full_dataset_domain"},
+            "entity_counts": [
+              {
+                "entity": "points",
+                "count": {
+                  "kind": "per_case",
+                  "minimum": 204602986,
+                  "median": 232416955,
+                  "maximum": 251732130
+                }
+              }
+            ],
+            "native_comparison": {
+              "status": "reported",
+              "native_entity_counts": [
+                {
+                  "entity": "points",
+                  "count": {
+                    "kind": "per_case",
+                    "minimum": 204602986,
+                    "median": 232416955,
+                    "maximum": 251732130
+                  }
+                }
+              ],
+              "fractions": [
+                {
+                  "entity": "points",
+                  "fraction": {
+                    "kind": "fixed",
+                    "value": 1.0
+                  }
+                }
+              ]
+            },
+            "sampling": {
+              "kind": "none"
+            },
+            "domain": {
+              "kind": "full_dataset_domain"
+            },
             "connectivity": "native"
           },
-          "queries_per_forward_pass": {"kind": "per_case", "minimum": 1024, "median": 1162.5, "maximum": 1259}
+          "queries_per_forward_pass": {
+            "kind": "per_case",
+            "minimum": 1024,
+            "median": 1162.5,
+            "maximum": 1259
+          }
         }
       ],
       "mappings": [
         {
           "support_id": "surface-native-points-v1",
           "source_output_id": "surface-native-output",
-          "method": {"kind": "identity"},
+          "method": {
+            "kind": "identity"
+          },
           "implementation": "Predictions are emitted in the frozen raw native support order.",
           "extrapolation_policy": "forbidden",
           "unmapped_fraction": 0.0,
@@ -375,7 +634,9 @@
         {
           "support_id": "volume-native-valid-points-v1",
           "source_output_id": "volume-native-output",
-          "method": {"kind": "identity"},
+          "method": {
+            "kind": "identity"
+          },
           "implementation": "Predictions are emitted in the frozen retained-valid native support order.",
           "extrapolation_policy": "forbidden",
           "unmapped_fraction": 0.0,
@@ -385,7 +646,11 @@
         {
           "support_id": "aerodynamic-case-coefficients-v1",
           "source_output_id": "surface-native-output",
-          "method": {"kind": "reference_rule", "rule_id": "hiliftaeroml-surface-load-integration", "rule_version": "candidate-v1"},
+          "method": {
+            "kind": "reference_rule",
+            "rule_id": "hiliftaeroml-surface-load-integration",
+            "rule_version": "candidate-v1"
+          },
           "implementation": "Integrate predicted pressure and wall shear over the retained oriented surface support.",
           "extrapolation_policy": "forbidden",
           "unmapped_fraction": 0.0,
@@ -407,15 +672,15 @@
       "reference_version": "hiliftaeroml-evaluator-v0.1-candidate",
       "code_revision": "68899f780d96b70f2badb5658971c87af0b17172"
     },
-    "profile_contract": {
-      "contract_id": "hiliftaeroml-compact-profile-predictions-v2",
-      "file": "native-profile-format-v2.json",
-      "format": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2",
-      "sha256": "44651f4da2add287e51807f02f329f5aa226dd1fb2ae21d99e129ba2fc9000b5"
-    },
     "profile_ground_truth": {
       "release_id": "hiliftaeroml-native-profile-truth-v1-candidate",
       "manifest_sha256": "3e20b857e12055e16f1d248d125b8df62a3669c604411dc67322fe98d9ab4477"
+    },
+    "profile_contract": {
+      "contract_id": "hiliftaeroml-compact-profile-predictions-v2-candidate",
+      "file": "native-profile-format-v2.json",
+      "format": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate",
+      "sha256": "b1fd29b2cb6c1c84c694ddffc5d85f6cd68fd175b79c3695a443aa78bf962c2f"
     }
   }
 }

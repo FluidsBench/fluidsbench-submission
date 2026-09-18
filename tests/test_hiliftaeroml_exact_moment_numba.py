@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import unittest
+
 import numpy as np
 import pytest
 
-pytest.importorskip("numba")
+try:
+    import numba  # noqa: F401
+except ImportError:
+    raise unittest.SkipTest("requires an importable numba") from None
 
 from reference.hiliftaeroml.exact_moment_audit import (
     ExactMomentAuditError,

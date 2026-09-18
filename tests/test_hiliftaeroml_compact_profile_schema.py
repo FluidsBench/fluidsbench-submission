@@ -8,16 +8,16 @@ from jsonschema import Draft202012Validator
 
 
 ROOT = Path(__file__).resolve().parents[1]
-FORMAT = "fluidsbench-hiliftaeroml-compact-profile-chunks-v2"
-CONTRACT_ID = "hiliftaeroml-compact-profile-predictions-v2"
+FORMAT = "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
+CONTRACT_ID = "hiliftaeroml-compact-profile-predictions-v2-candidate"
 CASE_ID = "geo_LHC001_AoA_4"
 IMPLEMENTATION_BINDING = {
-    "status": "official_contract_unbound_implementation",
+    "status": "unbound_worktree_candidate",
     "activation_effect": "none",
     "code_revision": None,
     "implementation_manifest_sha256": None,
     "base_dataset_evaluator_scope": (
-        "base_field_force_and_nonprofile_scoring_only"
+        "native_v1_base_field_force_and_noncompact_scoring_only"
     ),
 }
 
@@ -28,7 +28,7 @@ def load(relative: str) -> dict:
 
 def valid_chunk() -> dict:
     return {
-        "schema": "hiliftaeroml-compact-profile-chunk-v2",
+        "schema": "hiliftaeroml-compact-profile-chunk-v2-candidate",
         "schema_version": "2.0",
         "format": FORMAT,
         "contract_id": CONTRACT_ID,
@@ -74,6 +74,12 @@ def valid_chunk() -> dict:
                     "invalid_row_count": 105,
                     "prediction_dtype": "float32",
                     "prediction_array": "velocity_speed_over_u_inf",
+                    "storage_dtype": "uint8",
+                    "storage_encoding": (
+                        "little_endian_float32_bits_unsigned_delta_modulo_"
+                        "2pow32_byte_shuffle_v1"
+                    ),
+                    "stored_byte_count": 15600,
                 },
             }
         ],
@@ -84,13 +90,19 @@ def test_compact_profile_contract_is_official_exclusive_and_excludes_full_surfac
     contract = load("benchmark-specs/hiliftaeroml/native-profile-format-v2.json")
     assert contract["format"] == FORMAT
     assert contract["contract_id"] == CONTRACT_ID
-    assert contract["status"] == "official"
-    assert contract["representation_lifecycle"] == {
-        "official_submission_representation": True,
-        "supersedes": "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate",
-        "prior_profile_formats_accepted": False,
-        "submission_specification_binding": "profile_definition",
-    }
+    # The immutable wire contract remains byte-compatible with all retained
+    # support and result packages; the current spec owns format selection.
+    specification = load("benchmark-specs/hiliftaeroml/submission-spec.json")
+    definition = specification["profile_definition"]
+    assert definition["status"] == "official"
+    assert definition["format"] == FORMAT
+    assert definition["accepted_profile_formats"] == [FORMAT]
+    assert definition["prior_profile_formats_accepted"] is False
+    assert definition["sha256"] == (
+        "b1fd29b2cb6c1c84c694ddffc5d85f6cd68fd175b79c3695a443aa78bf962c2f"
+    )
+    assert "compact_profile_definition" not in specification
+    assert specification["scoring_support"]["submissions_open"] is False
     full_surface = contract["scope"]["full_surface_cp_dual_area_l2"]
     assert full_surface == {
         "metric_id": "surface_pressure_rel_l2",
@@ -100,6 +112,7 @@ def test_compact_profile_contract_is_official_exclusive_and_excludes_full_surfac
         "profile_payload_used": False,
     }
     assert contract["evaluator_owned_support"]["included_in_participant_artifact"] is False
+    assert contract["container"]["compression"] == "zip_deflate_method_8_level_9"
     identities = contract["evaluator_owned_support"]["identity_encoding"]
     assert identities["truth_arrays_included"] is False
     assert identities["volume_velocity_prediction_order_array_order"] == [
@@ -113,12 +126,25 @@ def test_compact_profile_contract_is_official_exclusive_and_excludes_full_surfac
     assert contract["surface_cp"]["quantization"]["formula"] == (
         "q=int16(round(Cp*1024))"
     )
-    assert contract["volume_velocity"]["prediction_array"]["dtype"] == "float32"
+    velocity = contract["volume_velocity"]["prediction_array"]
+    assert velocity["logical_dtype"] == "float32"
+    assert velocity["storage"] == {
+        **velocity["storage"],
+        "dtype": "uint8",
+        "shape": ["4*velocity_valid_row_count"],
+        "encoding": (
+            "little_endian_float32_bits_unsigned_delta_modulo_2pow32_"
+            "byte_shuffle_v1"
+        ),
+        "lossless": True,
+        "browser_native_container_decompression": True,
+    }
     counts = contract["case_metadata"]["count_semantics"]
     assert counts["row_count"].startswith("4005 canonical source rows")
     assert counts["valid_row_count"].endswith(
-        "length(velocity_speed_over_u_inf)"
+        "decoded logical length of velocity_speed_over_u_inf"
     )
+    assert counts["stored_byte_count"].startswith("4*valid_row_count")
 
 
 def test_compact_profile_chunk_and_generic_index_are_schema_valid() -> None:
@@ -173,6 +199,16 @@ def test_compact_profile_chunk_and_generic_index_are_schema_valid() -> None:
     }
     profile_validator = Draft202012Validator(profile_fragment)
     assert list(profile_validator.iter_errors(compact_profile_data)) == []
+
+    legacy_format = "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate"
+    assert list(
+        Draft202012Validator(index_schema).iter_errors(
+            {**index, "format": legacy_format}
+        )
+    )
+    assert list(
+        profile_validator.iter_errors({**compact_profile_data, "format": legacy_format})
+    )
 
     evidence_schema = load("schemas/v3/evaluation-evidence.schema.json")
     binding_fragment = {

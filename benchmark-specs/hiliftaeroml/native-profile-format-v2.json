@@ -2,10 +2,10 @@
   "schema": "hiliftaeroml-compact-profile-format-contract-v2",
   "schema_version": 2,
   "dataset_id": "hiliftaeroml",
-  "contract_id": "hiliftaeroml-compact-profile-predictions-v2",
-  "format": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2",
-  "status": "official",
-  "activation_effect": "official_profile_representation_only",
+  "contract_id": "hiliftaeroml-compact-profile-predictions-v2-candidate",
+  "format": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate",
+  "status": "additive_candidate_not_bound",
+  "activation_effect": "none",
   "scope": {
     "included": [
       "surface_cp_cut_profile_diagnostic",
@@ -35,7 +35,7 @@
       "velocity_speed_over_u_inf"
     ],
     "zip_timestamp": "1980-01-01T00:00:00",
-    "compression": "deflate_level_9",
+    "compression": "zip_deflate_method_8_level_9",
     "ownership": "participant",
     "content": "predictions_only"
   },
@@ -168,11 +168,26 @@
     "prediction_selection": "all and only valid_mask=true rows, preserving canonical 4005-row station-major order",
     "prediction_array": {
       "array": "velocity_speed_over_u_inf",
-      "dtype": "float32",
-      "shape": [
+      "logical_dtype": "float32",
+      "logical_shape": [
         "velocity_valid_row_count"
       ],
       "values": "finite scalar speed predictions",
+      "storage": {
+        "dtype": "uint8",
+        "shape": [
+          "4*velocity_valid_row_count"
+        ],
+        "encoding": "little_endian_float32_bits_unsigned_delta_modulo_2pow32_byte_shuffle_v1",
+        "steps": [
+          "reinterpret the canonical float32 values as little-endian unsigned 32-bit words",
+          "store the first word unchanged and each later word minus its predecessor modulo 2^32",
+          "concatenate byte lane 0 for every delta word, then lanes 1, 2, and 3"
+        ],
+        "decode": "unshuffle the four byte lanes, reinterpret as little-endian uint32 deltas, cumulatively add modulo 2^32, then reinterpret the reconstructed words as little-endian float32",
+        "lossless": true,
+        "browser_native_container_decompression": true
+      },
       "exact_scoring_preferred": true,
       "scoring_rule": "score the submitted scalar float32 values directly on evaluator-owned valid rows without reconstructing vector velocity"
     },
@@ -205,7 +220,8 @@
       "retained_branch_count": "length(cp_branch_point_offsets)-1",
       "retained_point_count": "length(cp_q_delta), equal to length(cp_xyz_in) in evaluator support",
       "row_count": "4005 canonical source rows before valid-mask compaction",
-      "valid_row_count": "count_nonzero(velocity_valid_mask), equal to length(velocity_speed_over_u_inf)",
+      "valid_row_count": "count_nonzero(velocity_valid_mask), equal to the decoded logical length of velocity_speed_over_u_inf",
+      "stored_byte_count": "4*valid_row_count, equal to the on-disk uint8 length of velocity_speed_over_u_inf",
       "invalid_row_count": "row_count-valid_row_count; invalid rows are not serialized"
     },
     "required_identity_bindings": [
@@ -222,11 +238,11 @@
     "evaluator_support_arrays_forbidden": true,
     "profile_ground_truth_is_benchmark_owned": true
   },
-  "representation_lifecycle": {
-    "official_submission_representation": true,
-    "supersedes": "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate",
-    "prior_profile_formats_accepted": false,
-    "submission_specification_binding": "profile_definition"
+  "backward_compatibility": {
+    "native_profile_v1_is_unchanged": true,
+    "v1_and_v2_require_explicit_format_dispatch": true,
+    "silent_v1_to_v2_reinterpretation_forbidden": true,
+    "submission_specification_binding": "not_yet_bound"
   },
-  "intake_gate": "The compact-v2 representation is official. Submission intake remains closed until immutable evaluator support is published for every enabled case set and the independent benchmark scoring and owner-approval gates are complete."
+  "activation_gate": "Owner approval, an immutable evaluator-support and profile-truth release bound to this exact contract SHA-256, and explicit submission-specification activation are required before v2 submissions open."
 }

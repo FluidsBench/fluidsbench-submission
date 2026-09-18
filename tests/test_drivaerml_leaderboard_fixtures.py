@@ -31,6 +31,12 @@ from scripts.generate_drivaerml_leaderboard_fixtures import (
 
 ROOT = Path(__file__).resolve().parents[1]
 
+if any(
+    not (SUBMISSIONS_ROOT / submission_id / "submission.json").is_file()
+    for submission_id in SUBMISSION_SPLITS
+):
+    raise unittest.SkipTest("requires retired DrivAerML leaderboard fixture packages")
+
 
 def second_difference_is_nonzero(values: list[float]) -> bool:
     return any(

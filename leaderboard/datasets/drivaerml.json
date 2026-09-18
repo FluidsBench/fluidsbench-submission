@@ -23,17 +23,17 @@
     "institution": "Pre-release validation reference",
     "paper_url": "",
     "code_url": "",
-    "submitted_at": "2026-08-31",
+    "submitted_at": "2026-09-09",
     "evaluation": {
       "reference_version": "drivaerml-evaluator-v3-candidate",
-      "code_revision": "v1.1.3",
-      "command": "Compatibility import of retained complete full-split evaluator output",
+      "code_revision": "ced834568789affe99a920dcf17b4d17e31ad794",
+      "command": "FluidsBench DrivAerML retained-inference replay with the native full-split evaluator and profile support.",
       "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "bae8d26fe8d4dd4bb5eaa138301d05f53599f29a38f6a1514aa13dd2310696cc"
+      "evidence_sha256": "4ef73a0358cafb5ebbc1d3d71c13e244fafc8d3d64e6b07c28672d29ba15eb12"
     },
     "approval": {
       "status": "prototype",
-      "note": "Real complete-field evaluation retained solely as the pre-opening DrivAerML integration reference; it is not an official benchmark submission or ranking claim."
+      "note": "Real complete-field Transolver inference retained as a closed FluidsBench pre-release reference; it is not an official benchmark submission or ranking claim."
     },
     "metric_values": {
       "overall_score": 77.592058032528,
@@ -45,12 +45,12 @@
       "c_pitch_r2": 0.998371101278,
       "velocity_profile_r2": 0.998519196705,
       "cp_cut_r2": 0.99853999908,
-      "surface_pressure_rel_l2": 3.51503361999,
+      "surface_pressure_rel_l2": 3.5150336199901204,
       "surface_pressure_equal_entity_rel_l2": 3.1913268321273494,
-      "surface_wall_shear_rel_l2": 5.646989146713,
+      "surface_wall_shear_rel_l2": 5.646989146713126,
       "surface_wall_shear_equal_entity_rel_l2": 6.093700139516622,
-      "volume_velocity_rel_l2": 10.908889052922,
-      "volume_pressure_rel_l2": 3.479489346032,
+      "volume_velocity_rel_l2": 10.908889052922204,
+      "volume_pressure_rel_l2": 3.4794893460323943,
       "drivaerml_surface_pressure_area_mae": 5.255322176831512,
       "drivaerml_surface_pressure_area_rmse": 8.711768981792064,
       "drivaerml_surface_pressure_equal_entity_mae": 6.375457785594652,
@@ -74,14 +74,15 @@
       "cp_cut_rmse": 0.010785042143846584
     },
     "profile_data": {
-      "format": "fluidsbench-drivaerml-physical-profile-chunks-v1",
+      "format": "fluidsbench-drivaerml-relative-profile-chunks-v3-candidate",
       "index_file": "submissions/drivaerml/drivaerml-transolver/profiles/index.json",
       "case_count": 50,
       "case_set_id": "standard",
-      "index_sha256": "994eed0a44a5b69fb5c1cabec3d9593af07dabe36a99f54ad0358132011fe07c"
+      "index_sha256": "0a248294e8ab530146981d0496fcd1366188b67817dcd66e6986ba6252f00891"
     },
-    "note": "Real complete-field Transolver evaluation on the full DrivAerML split, retained as the pre-opening integration reference. It exercises the field scores, profiles, and zero-weight regional diagnostics, but is not an official benchmark submission or a ranking claim.",
+    "note": "Native FluidsBench representation of the complete full-split Transolver inference, including all current constant and relative profile series. It is pending the closed DrivAerML candidate-release gates.",
     "training_regime_explanation": "Training configuration is not represented in this retained evaluation package.",
+    "record_type": "pre_release_reference",
     "regional_diagnostics": {
       "format": "drivaerml-regional-aggregate-v2",
       "file": "submissions/drivaerml/drivaerml-transolver/regional-diagnostics.json",
@@ -92,7 +93,6 @@
       "weight": 0.0,
       "official_score_changed": false
     },
-    "record_type": "pre_release_reference",
     "parameter_count": null,
     "result_revision": {
       "series_id": "drivaerml-transolver",

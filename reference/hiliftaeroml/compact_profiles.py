@@ -1,7 +1,8 @@
 """Compact, prediction-only HiLiftAeroML diagnostic profile primitives.
 
-This module defines the sole participant-facing HiLiftAeroML profile
-representation.  It keeps plotting coordinates, topology, quadrature weights, validity
+This module is deliberately independent of the native profile-v1 package
+contract.  Version 1 remains the lossless audit representation.  The compact
+version keeps plotting coordinates, topology, quadrature weights, validity
 gaps, and reference values in an evaluator-owned support artifact.  A
 participant artifact contains exactly two prediction arrays; the surrounding
 case metadata binds their support and prediction order with four SHA-256
@@ -12,8 +13,10 @@ digests:
   Predictions use ``int16(round(Cp * 1024))`` and are delta coded, with a reset
   at every retained branch.
 * velocity stores scalar ``speed/|U_inf|`` as float32 for all and only valid
-  rows.  The evaluator-owned mask reconstructs all five 801-row lines and
-  their explicit NaN gaps.
+  rows.  Its exact IEEE-754 bits are unsigned-delta coded modulo ``2**32``
+  and byte-shuffled before ordinary ZIP Deflate compression.  The transform
+  is lossless and browser-decodable; the evaluator-owned mask reconstructs
+  all five 801-row lines and their explicit NaN gaps.
 
 The Cp score uses the same exact piecewise-linear squared-error quadrature and
 per-physical-graph centering as the native evaluator.  Velocity uses the same
@@ -37,7 +40,7 @@ import numpy as np
 
 
 COMPACT_PROFILE_FORMAT = (
-    "fluidsbench-hiliftaeroml-compact-profile-chunks-v2"
+    "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
 )
 CP_POINTS_PER_GRAPH = 128
 CP_FIXED_POINT_SCALE = 1024
@@ -45,6 +48,10 @@ CP_TINY_BRANCH_RELATIVE_LENGTH = 1.0e-4
 VELOCITY_STATIONS = ("B.2", "B.3", "C.1", "C.2", "C.3")
 VELOCITY_ROWS_PER_STATION = 801
 VELOCITY_ROW_COUNT = len(VELOCITY_STATIONS) * VELOCITY_ROWS_PER_STATION
+VELOCITY_STORAGE_ENCODING = (
+    "little_endian_float32_bits_unsigned_delta_modulo_2pow32_"
+    "byte_shuffle_v1"
+)
 
 SUPPORT_ARRAYS = (
     "cp_xyz_in",
@@ -794,7 +801,62 @@ def native_velocity_speed_prediction(
     """Extract and validate all 4005 native predicted speed rows and gaps."""
 
     validate_compact_support(support)
-    valid = support["velocity_valid_mask"]
+    native_xyz = _require_array(
+        velocity_native,
+        "requested_xyz_in",
+        dtype=np.float64,
+        shape=(VELOCITY_ROW_COUNT, 3),
+    )
+    native_valid = _require_array(
+        velocity_native,
+        "valid_mask",
+        dtype=np.bool_,
+        shape=(VELOCITY_ROW_COUNT,),
+    )
+    native_station_names = _require_array(
+        velocity_native,
+        "station_names",
+        shape=(len(VELOCITY_STATIONS),),
+    )
+    native_station_offsets = _require_array(
+        velocity_native,
+        "station_row_offsets",
+        dtype=np.int64,
+        shape=(len(VELOCITY_STATIONS) + 1,),
+    )
+    native_weights = _require_array(
+        velocity_native,
+        "line_length_weights_in",
+        dtype=np.float64,
+        shape=(VELOCITY_ROW_COUNT,),
+    )
+    alignments = (
+        (
+            native_xyz,
+            support["velocity_requested_xyz_in"],
+            "plotting coordinates",
+        ),
+        (native_valid, support["velocity_valid_mask"], "validity mask"),
+        (
+            native_station_names,
+            support["velocity_station_names"],
+            "station names/order",
+        ),
+        (
+            native_station_offsets,
+            support["velocity_station_row_offsets"],
+            "station row offsets",
+        ),
+        (
+            native_weights,
+            support["velocity_line_length_weights_in"],
+            "line-length weights",
+        ),
+    )
+    for observed, expected, label in alignments:
+        if not np.array_equal(observed, expected):
+            _fail(f"compact support and native velocity {label} differ")
+    valid = native_valid
     if "predicted_velocity_nd" not in velocity_native:
         _fail("native velocity prediction is missing predicted_velocity_nd")
     vectors = _require_array(
@@ -936,6 +998,9 @@ def compact_case_metadata(
             "invalid_row_count": VELOCITY_ROW_COUNT - valid_count,
             "prediction_dtype": "float32",
             "prediction_array": "velocity_speed_over_u_inf",
+            "storage_dtype": "uint8",
+            "storage_encoding": VELOCITY_STORAGE_ENCODING,
+            "stored_byte_count": valid_count * np.dtype(np.float32).itemsize,
         },
     }
 
@@ -1048,6 +1113,53 @@ def _decode_cp_delta(
     ):
         _fail("delta-coded Cp reconstruction overflows int16")
     return quantized
+
+
+def encode_velocity_storage(speed: np.ndarray) -> np.ndarray:
+    """Losslessly encode a one-dimensional float32 vector as shuffled bytes.
+
+    Adjacent IEEE-754 bit patterns are differenced as unsigned 32-bit words
+    modulo ``2**32``. The four little-endian byte lanes are then stored
+    contiguously, which makes smooth profile values substantially more
+    compressible with browser-native ZIP Deflate.
+    """
+
+    values = np.asarray(speed)
+    if values.dtype != np.dtype(np.float32) or values.ndim != 1 or not len(values):
+        _fail("velocity storage input must be a non-empty float32 vector")
+    if not np.all(np.isfinite(values)) or np.any(values < 0.0):
+        _fail("velocity storage input must be finite and non-negative")
+    little = np.ascontiguousarray(values, dtype=np.dtype("<f4"))
+    words = little.view(np.dtype("<u4"))
+    deltas = np.empty_like(words)
+    deltas[0] = words[0]
+    deltas[1:] = np.subtract(words[1:], words[:-1], dtype=np.uint32)
+    byte_rows = deltas.view(np.uint8).reshape(len(deltas), 4)
+    return np.ascontiguousarray(byte_rows.T).reshape(-1)
+
+
+def decode_velocity_storage(storage: np.ndarray) -> np.ndarray:
+    """Invert :func:`encode_velocity_storage` exactly."""
+
+    encoded = np.asarray(storage)
+    if (
+        encoded.dtype != np.dtype(np.uint8)
+        or encoded.ndim != 1
+        or not len(encoded)
+        or len(encoded) % np.dtype(np.float32).itemsize
+    ):
+        _fail("velocity storage must be a non-empty uint8 vector divisible by four")
+    count = len(encoded) // np.dtype(np.float32).itemsize
+    byte_rows = np.ascontiguousarray(encoded.reshape(4, count).T)
+    deltas = byte_rows.reshape(-1).view(np.dtype("<u4"))
+    words = np.bitwise_and(
+        np.cumsum(deltas.astype(np.uint64), dtype=np.uint64),
+        np.uint64(np.iinfo(np.uint32).max),
+    ).astype(np.dtype("<u4"))
+    values = np.array(words.view(np.dtype("<f4")), copy=True)
+    if not np.all(np.isfinite(values)) or np.any(values < 0.0):
+        _fail("decoded compact predicted speed must be finite and non-negative")
+    return values
 
 
 def validate_compact_predictions(
@@ -1268,6 +1380,24 @@ def deterministic_npz_bytes(
     return output.getvalue()
 
 
+def deterministic_prediction_npz_bytes(
+    arrays: Mapping[str, np.ndarray], *, order: Sequence[str]
+) -> bytes:
+    """Return canonical browser-decodable prediction NPZ bytes.
+
+    The logical velocity values remain exact float32. Only their on-disk
+    representation is transformed to lossless shuffled delta bytes before
+    deterministic level-9 ZIP Deflate.
+    """
+
+    _require_exact_keys(arrays, order, "deterministic prediction NPZ")
+    stored = dict(arrays)
+    stored["velocity_speed_over_u_inf"] = encode_velocity_storage(
+        np.asarray(arrays["velocity_speed_over_u_inf"])
+    )
+    return deterministic_npz_bytes(stored, order=order)
+
+
 def _write_exclusive(path: Path, payload: bytes, *, label: str) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     try:
@@ -1301,7 +1431,9 @@ def write_compact_prediction_npz(
     """Write a canonical prediction-only participant artifact."""
 
     validate_compact_predictions(artifact, support=support, metadata=metadata)
-    payload = deterministic_npz_bytes(artifact, order=PREDICTION_ARRAYS)
+    payload = deterministic_prediction_npz_bytes(
+        artifact, order=PREDICTION_ARRAYS
+    )
     return _write_exclusive(path, payload, label="compact prediction artifact")
 
 
@@ -1350,11 +1482,17 @@ def load_compact_prediction_npz(
 ) -> tuple[dict[str, np.ndarray], str]:
     """Load and strictly validate a prediction-only participant artifact."""
 
-    artifact, digest = _load_npz_exact(
+    stored, digest = _load_npz_exact(
         path, order=PREDICTION_ARRAYS, label="compact prediction artifact"
     )
+    artifact = dict(stored)
+    artifact["velocity_speed_over_u_inf"] = decode_velocity_storage(
+        stored["velocity_speed_over_u_inf"]
+    )
     validate_compact_predictions(artifact, support=support, metadata=metadata)
-    canonical = deterministic_npz_bytes(artifact, order=PREDICTION_ARRAYS)
+    canonical = deterministic_prediction_npz_bytes(
+        artifact, order=PREDICTION_ARRAYS
+    )
     if hashlib.sha256(canonical).hexdigest() != digest:
         _fail("compact prediction bytes are not in canonical deterministic form")
     return artifact, digest
@@ -1369,15 +1507,19 @@ __all__ = [
     "SUPPORT_ARRAYS",
     "VELOCITY_ROW_COUNT",
     "VELOCITY_ROWS_PER_STATION",
+    "VELOCITY_STORAGE_ENCODING",
     "VELOCITY_STATIONS",
     "CompactProfileError",
     "allocate_branch_samples",
     "build_compact_support",
     "compact_case_metadata",
     "decode_compact_predictions",
+    "decode_velocity_storage",
     "deterministic_npz_bytes",
+    "deterministic_prediction_npz_bytes",
     "encode_compact_predictions",
     "encode_native_predictions",
+    "encode_velocity_storage",
     "load_compact_prediction_npz",
     "load_compact_support_npz",
     "native_velocity_speed_prediction",

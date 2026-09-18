@@ -48,6 +48,12 @@ def load_module(path: Path, name: str):
 class DrivAerMLParticipantDriverTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        try:
+            import vtk  # noqa: F401
+        except ImportError:
+            raise unittest.SkipTest(
+                "requires optional VTK for the real DrivAerML driver"
+            ) from None
         cls.driver = load_module(
             DRIVER_PATH, "drivaerml_candidate_native_chunk_driver"
         )

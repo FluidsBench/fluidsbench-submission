@@ -5,17 +5,19 @@ not open for submissions. The machine-readable
 [`submission-spec.json`](submission-spec.json) currently has
 `submissions_open: false`. A candidate package may be used for local or
 benchmark-owner-coordinated dry runs only; it is not accepted, citable as an
-official result, or evidence of benchmark approval. One exact real-inference
-Full360 package is additionally registered by path and hashes as a public
-`pre_release_reference` so the evaluator, plots, and leaderboard integration
-can be exercised before intake opens. Its citation and promotion eligibility
-are both false.
+official result, or evidence of benchmark approval. Twenty-three exact
+real-inference packages are additionally registered by path and hashes as
+public `pre_release_reference` rows: eleven Transolver results and twelve
+GeoTransolver results covering every represented Table 5 split, including the
+Transolver out-of-distribution deflection and GeoTransolver Scarce results. They allow the evaluator,
+plots, and leaderboard integration to be exercised before intake opens. Their
+citation and promotion eligibility are all false.
 
 No private leaderboard is created or operated by this candidate workflow.
 `--candidate-dry-run` validates files locally and does not register arbitrary
-candidates. The sole preview registration is maintained in
-[`compact-profile-full360-validation-v1.json`](compact-profile-full360-validation-v1.json)
-and is bound to the deterministic compact archive identity.
+candidates. Each permitted preview has a `compact-profile-*-validation-v1.json`
+record in this directory and is bound in code to its exact submission and
+deterministic compact-archive identities.
 
 The candidate brings the thoroughly tested DrivAerML packaging pattern to
 HiLiftAeroML while retaining HiLiftAeroML's native scientific definitions:
@@ -144,7 +146,11 @@ must not be interpolated or bridged in evaluator support; participant arrays
 contain only the valid rows in evaluator-defined order.
 
 Compact profile-v2 is the official and sole participant-facing profile
-representation. Earlier HiLift profile package formats are not accepted.
+representation. Earlier HiLift profile package formats are not accepted. The current
+`submission-spec.json` selects the unchanged compact contract. Its historical
+`-candidate` identifiers and contract metadata remain frozen to preserve the
+validated support, all 23 package archives, and their recorded scores.
+Representation selection does not publish support or attest the implementation.
 Participant artifacts contain predictions only; evaluator-owned alignment,
 topology, weights, masks, and truth remain outside the package.
 
@@ -163,37 +169,65 @@ Compact profile-v2 removes geometry and topology arrays from the participant
 profile artifacts. The evaluator owns that immutable support,
 joins it outside the submission, and accepts exactly two prediction-value
 arrays per case: quantized Cp deltas and scalar Float32 velocity-profile
-values. No truth, reference, geometry, topology, mask, weight, or alignment
-array is included in the participant artifact.
+values. The exact velocity float32 bits use a lossless unsigned-delta and byte
+shuffle before browser-compatible level-9 ZIP Deflate. No truth, reference,
+geometry, topology, mask, weight, or alignment array is included in the
+participant artifact.
 
 The frozen Full360 study selected at most 128 samples per physical connected
 Cp graph, placed uniformly in physical graph arc length. The all-split support
 replay additionally confirms that a closed native contour is unwrapped by
 repeating its first vertex, thereby retaining its existing closing segment
 without creating a new edge; this does not change any Full360 support bytes.
-Velocity retains the five official stations and submits all and only evaluator-selected valid rows as
-scalar `float32` speed-over-freestream values. This compact path changes only
+Velocity retains the
+five stations and submits all and only evaluator-selected valid rows as
+scalar `float32` speed-over-freestream values; the on-disk `uint8` transform
+round-trips every bit. This compact path changes only
 Cp-cut and velocity-profile plotting/scoring payloads. Complete native-surface
 Cp scoring, wall-shear scoring, force integration, and pitching-moment
 integration continue to use the unchanged full native surface prediction.
 
-The compact assembler enforces a hard 15,000,000-byte limit on the complete
-assembled package. This is an implementation gate in addition to the
-prediction-only and release-binding checks. Passing it does not open benchmark
-intake. The format and retained scientific evidence
-are [`native-profile-format-v2.json`](native-profile-format-v2.json),
+The compact assembler does not impose an aggregate package-size ceiling:
+package size scales with the official case count, while the strict per-file,
+array-shape, archive-member, prediction-only, and release-binding safety checks
+remain in force. Package size is reported in the assembly receipt. This does
+not make the candidate published or active. The format and retained scientific
+evidence are [`native-profile-format-v2.json`](native-profile-format-v2.json),
 [`compact-cp-representation-decision-v1.json`](compact-cp-representation-decision-v1.json),
 and
 [`compact-cp-representation-audit-v1.md`](compact-cp-representation-audit-v1.md).
-The completed two-build Full360 size, identity, metric, and validation receipt
-is
-[`compact-profile-full360-validation-v1.json`](compact-profile-full360-validation-v1.json).
-The retained evaluator implementation manifest predates compact-v2 and the v2
-regional dashboard contract, and does not attest either. The format contract
-is official, while implementation provenance remains explicitly
-`official_contract_unbound_implementation` until a complete source inventory
-and immutable evaluator revision are frozen. Preview registration does not
-open intake or revise that older attestation.
+The prediction-free two-build materialization and compatibility evidence for
+all 1,355 cases is
+[`compact-profile-all-case-support-validation-v1.json`](compact-profile-all-case-support-validation-v1.json).
+It is the selected current local candidate binding for all eight official case
+sets; the package rebind and its ten independent A/B package checks are
+recorded in
+[`compact-profile-all-case-support-rebind-v1.json`](compact-profile-all-case-support-rebind-v1.json).
+Neither record activates submissions.
+The completed two-build size, identity, metric, and validation receipts are
+[`compact-profile-full360-validation-v1.json`](compact-profile-full360-validation-v1.json),
+[`compact-profile-aoa4-validation-v1.json`](compact-profile-aoa4-validation-v1.json),
+[`compact-profile-aoa12-validation-v1.json`](compact-profile-aoa12-validation-v1.json),
+[`compact-profile-aoa22-validation-v1.json`](compact-profile-aoa22-validation-v1.json),
+[`compact-profile-super-scarce-validation-v1.json`](compact-profile-super-scarce-validation-v1.json),
+[`compact-profile-geometry-scarce-validation-v1.json`](compact-profile-geometry-scarce-validation-v1.json),
+and
+[`compact-profile-geometry-super-scarce-validation-v1.json`](compact-profile-geometry-super-scarce-validation-v1.json),
+[`compact-profile-geometry-validation-v1.json`](compact-profile-geometry-validation-v1.json),
+[`compact-profile-ood-aoa-validation-v1.json`](compact-profile-ood-aoa-validation-v1.json),
+[`compact-profile-ood-deflection-validation-v1.json`](compact-profile-ood-deflection-validation-v1.json),
+and
+[`compact-profile-ood-stall-validation-v1.json`](compact-profile-ood-stall-validation-v1.json).
+The corresponding GeoTransolver receipts use the
+`compact-profile-geotransolver-*-validation-v1.json` names and cover Full,
+Scarce, AoA 4/12/22, Geometry, Geometry scarce, Geometry super scarce, Super scarce,
+OOD AoA, OOD Deflection, and OOD Stall.
+The retained evaluator implementation manifest predates this additive compact
+preview and the v2 regional dashboard contract, and does not attest either.
+Their implementation provenance therefore remains explicitly
+`unbound_worktree_candidate` until a complete additive-source inventory and
+immutable evaluator revision are frozen; preview registration does not
+activate or implicitly revise that older attestation.
 
 ## Regional reporting
 
@@ -235,8 +269,9 @@ bindings, or an existing output directory.
 Validate a resulting directory with `scripts/validate_submission.py` in
 `--candidate-dry-run` mode. A pass means only that the directory implements the
 closed candidate contract. It does not open submissions, grant owner approval,
-or create a leaderboard entry. Only the separately registered, hash-bound
-Full360 preview is visible as a non-citable pre-release reference.
+or create a leaderboard entry. Only the 23 separately registered, hash-bound
+Transolver and GeoTransolver previews are visible as non-citable pre-release
+references.
 
 The machine-readable authorities are:
 
@@ -247,7 +282,7 @@ The machine-readable authorities are:
 - [`native-profile-format-v2.json`](native-profile-format-v2.json) for the sole
   accepted prediction-only profile serialization;
 - [`public-compact-profile-truth-binding-v1.json`](public-compact-profile-truth-binding-v1.json)
-  for the non-scoring Full360 browser-plot truth;
+  for the non-scoring all-case browser-plot truth;
 - [`regional-diagnostics-v2.json`](regional-diagnostics-v2.json) for optional
   report-only regions; and
 - [`candidate-evaluator-release-binding.json`](candidate-evaluator-release-binding.json)

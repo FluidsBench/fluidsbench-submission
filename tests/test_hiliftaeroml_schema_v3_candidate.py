@@ -134,13 +134,17 @@ def test_frozen_evaluator_revision_is_consistent_and_nonactivating() -> None:
     dataset = next(
         item for item in manifest["datasets"] if item["slug"] == "hiliftaeroml"
     )
+    preview_rows = load(ROOT / "leaderboard" / "datasets" / "hiliftaeroml.json")
     support = specification["scoring_support"]
     evaluator = support["dataset_evaluator_binding"]
 
     assert dataset["scoring_support"] == support
-    assert dataset["submission_count"] == 1
-    assert dataset["revision_count"] == 1
-    assert dataset["updated_at"] == "2026-09-02"
+    assert len(preview_rows) == 23
+    assert dataset["submission_count"] == len(preview_rows)
+    assert dataset["revision_count"] == len(preview_rows)
+    assert dataset["updated_at"] == max(
+        row["submitted_at"] for row in preview_rows
+    )
     assert evaluator["status"] == "frozen"
     assert evaluator["evaluator_reference_version"] == specification[
         "evaluation_reference_version"
@@ -197,15 +201,35 @@ def test_official_compact_v2_is_the_only_profile_command_and_evidence_path() -> 
     assert (
         assembler.COMPACT_PROFILE_IMPLEMENTATION_BINDING
         == {
-            "status": "official_contract_unbound_implementation",
+            "status": "unbound_worktree_candidate",
             "activation_effect": "none",
             "code_revision": None,
             "implementation_manifest_sha256": None,
             "base_dataset_evaluator_scope": (
-                "base_field_force_and_nonprofile_scoring_only"
+                "native_v1_base_field_force_and_noncompact_scoring_only"
             ),
         }
     )
+
+
+@pytest.mark.parametrize(
+    "config_path",
+    sorted(CONCRETE_CONFIG.parent.rglob("*.json")),
+    ids=lambda path: path.name,
+)
+def test_every_example_configuration_uses_the_selected_profile_contract(
+    config_path: Path,
+) -> None:
+    config = load(config_path)
+    assembler._validate_config_envelope(config)
+    bindings = config["release_bindings"]
+    assert "native_profile_contract" not in bindings
+    assert bindings["profile_contract"]["sha256"] == digest(PROFILE_FORMAT)
+    assert bindings["profile_contract"]["format"] == assembler.COMPACT_PROFILE_FORMAT
+    assert "compact_evaluation" not in config
+    if "template" not in config_path.name:
+        assert "--profile-support-release" in config["evaluation"]["command"]
+        assembler._release_bindings(config, load(SPEC), SPEC)
 
 
 def test_primary_l2_policy_and_activation_gate_are_explicit() -> None:

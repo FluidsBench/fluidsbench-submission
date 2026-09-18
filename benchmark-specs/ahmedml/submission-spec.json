@@ -1,13 +1,13 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "dataset_id": "ahmedml",
   "dataset_name": "AhmedML",
-  "dataset_version": "prototype-1",
-  "status": "prototype_dummy_data",
+  "dataset_version": "ahmedml-native-v1-candidate",
+  "status": "candidate_native_support",
   "scoring_support": {
     "status": "owner_review_required",
     "submissions_open": false,
-    "closed_reason": "Submissions are currently closed.",
+    "closed_reason": "AhmedML native evaluator and support are under owner review; only the explicit non-ranked development fixture may be exercised.",
     "coverage_contract": {
       "dimensionality": "3D surface and 3D flow domain",
       "rule": "complete_original_public_release_entities",
@@ -33,27 +33,36 @@
           "yPlusMean"
         ],
         "physical_weight": "polygon_area",
-        "verification": "confirmed_from_public_file"
+        "physical_weight_public_file": "run_<case>/boundary_cell_area_<case>.npy",
+        "force_orientation_source": "public_boundary_vtp_polygon_winding",
+        "force_area_vector_storage": "deterministic_rebuildable_evaluator_cache",
+        "verification": "pinned_public_revision_and_source_identity"
       },
       {
         "id": "flow-domain-native",
         "public_file": "run_<case>/volume_<case>.vtu",
         "format": "VTK UnstructuredGrid",
-      "domain": "three_dimensional_flow_domain",
-      "association": "CellData",
-      "entities": "all_native_volume_cells",
-      "arrays": ["UMean", "pMean"],
-      "available_cell_arrays": [
-        "nutMean",
-        "pMean",
-        "static(p)_coeffMean",
-        "total(p)_coeffMean",
-        "UMean",
-        "vorticityMean",
-        "UPrime2Mean"
-      ],
-      "physical_weight": "cell_volume",
-      "verification": "confirmed_from_public_file"
+        "domain": "three_dimensional_flow_domain",
+        "association": "CellData",
+        "entities": "all_native_volume_cells",
+        "arrays": [
+          "UMean",
+          "pMean"
+        ],
+        "available_cell_arrays": [
+          "nutMean",
+          "pMean",
+          "static(p)_coeffMean",
+          "total(p)_coeffMean",
+          "UMean",
+          "vorticityMean",
+          "UPrime2Mean"
+        ],
+        "physical_weight": "cell_volume",
+        "physical_weight_source": "deterministic_vtk_9_5_2_derivation_from_public_volume_vtu",
+        "physical_weight_storage": "deterministic_rebuildable_evaluator_cache",
+        "primary_ranked_weighting": "equal_native_cell",
+        "verification": "pinned_public_revision_and_source_identity"
       }
     ],
     "relative_l2_policy": {
@@ -66,14 +75,44 @@
       "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
     },
     "owner_decisions_required": [
-      "pin_exact_public_release_files_revisions_and_hashes",
-      "confirm_array_names_entity_associations_masks_and_order",
-      "publish_authoritative_physical_weights_and_stable_entity_ids",
-      "approve_public_ground_truth_case_set_and_split_bindings",
-      "approve_loader_evaluator_and_immutable_scoring_support_manifest"
-    ]
+      "review_and_approve_profile_station_geometry",
+      "review_and_approve_candidate_score_weights_and_caps",
+      "approve_the_hash_bound_cache_derivation_and_production_preinstallation",
+      "approve_evaluator_implementation_and_open_submissions"
+    ],
+    "dataset_source": {
+      "repository_id": "neashton/ahmedml",
+      "revision": "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+      "identity_file": "public-source-identity/ahmedml-public-source-identity-v1.json",
+      "identity_sha256": "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44"
+    },
+    "source_audit_exceptions": [
+      {
+        "id": "ahmedml-run-492-force-csv-native-field-mismatch-v1",
+        "case_id": "run_492",
+        "scope": "published_force_csv_replay_only",
+        "published_csv_used_for_scoring": false,
+        "scoring_truth_source": "native_surface_field_integration",
+        "policy": "checksum_and_value_bound_single_case_exception_no_global_tolerance_relaxation"
+      }
+    ],
+    "derived_cache_contract": {
+      "status": "candidate",
+      "classification": "deterministic_rebuildable_evaluator_cache",
+      "contract_file": "derived-cache-contract-v1.json",
+      "contract_sha256": "9ddbd006f23130d2d581202635b3686b0689a0882d62cc3a7362bb9c192a325e",
+      "remote_payload_required": false,
+      "production_installation_required": true
+    },
+    "candidate_manifest": {
+      "status": "candidate",
+      "release_id": "ahmedml-native-all-splits-support-v1-candidate",
+      "manifest_file": "scoring-support/ahmedml-native-all-splits-support-v1-candidate/manifest.json",
+      "manifest_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/ahmedml/scoring-support/ahmedml-native-all-splits-support-v1-candidate/manifest.json",
+      "manifest_sha256": "c727bad2ca2566dfed44920cc334af136f2fbe32f3c8886b2fcb130f495fd124"
+    }
   },
-  "evaluation_reference_version": "prototype-1",
+  "evaluation_reference_version": "ahmedml-evaluator-v0.1-candidate",
   "default_field_reduction": "per_geometry_then_macro_average",
   "ranking": {
     "metric_id": "overall_score",
@@ -86,14 +125,50 @@
     "metric_id": "overall_score",
     "operation": "weighted_component_scores",
     "components": [
-      { "metric_id": "surface_pressure_rel_l2", "weight": 0.15, "transform": "bounded_error", "cap": 15.0 },
-      { "metric_id": "surface_wall_shear_rel_l2", "weight": 0.1, "transform": "bounded_error", "cap": 20.0 },
-      { "metric_id": "volume_velocity_rel_l2", "weight": 0.15, "transform": "bounded_error", "cap": 12.0 },
-      { "metric_id": "volume_pressure_rel_l2", "weight": 0.1, "transform": "bounded_error", "cap": 15.0 },
-      { "metric_id": "cd_r2", "weight": 0.15, "transform": "bounded_quality" },
-      { "metric_id": "cl_r2", "weight": 0.1, "transform": "bounded_quality" },
-      { "metric_id": "velocity_profile_r2", "weight": 0.15, "transform": "bounded_quality" },
-      { "metric_id": "cp_cut_r2", "weight": 0.1, "transform": "bounded_quality" }
+      {
+        "metric_id": "surface_pressure_rel_l2",
+        "weight": 0.15,
+        "transform": "bounded_error",
+        "cap": 15.0
+      },
+      {
+        "metric_id": "surface_wall_shear_rel_l2",
+        "weight": 0.1,
+        "transform": "bounded_error",
+        "cap": 20.0
+      },
+      {
+        "metric_id": "volume_velocity_rel_l2",
+        "weight": 0.15,
+        "transform": "bounded_error",
+        "cap": 12.0
+      },
+      {
+        "metric_id": "volume_pressure_rel_l2",
+        "weight": 0.1,
+        "transform": "bounded_error",
+        "cap": 15.0
+      },
+      {
+        "metric_id": "cd_r2",
+        "weight": 0.15,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "cl_r2",
+        "weight": 0.1,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "velocity_profile_r2",
+        "weight": 0.15,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "cp_cut_r2",
+        "weight": 0.1,
+        "transform": "bounded_quality"
+      }
     ],
     "tolerance": 1e-06
   },
@@ -291,7 +366,7 @@
     },
     {
       "id": "surface_pressure_mae",
-      "unit": "Pa",
+      "unit": "m2/s2",
       "direction": "lower",
       "kind": "error",
       "equation": "\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i}",
@@ -300,7 +375,7 @@
     },
     {
       "id": "surface_wall_shear_mae",
-      "unit": "Pa",
+      "unit": "m2/s2",
       "direction": "lower",
       "kind": "error",
       "equation": "\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i}",
@@ -318,7 +393,7 @@
     },
     {
       "id": "volume_pressure_mae",
-      "unit": "Pa",
+      "unit": "m2/s2",
       "direction": "lower",
       "kind": "error",
       "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
@@ -327,7 +402,7 @@
     },
     {
       "id": "surface_pressure_rmse",
-      "unit": "Pa",
+      "unit": "m2/s2",
       "direction": "lower",
       "kind": "error",
       "equation": "\\sqrt{\\frac{\\sum_i w_i(\\hat{y}_i-y_i)^2}{\\sum_i w_i}}",
@@ -336,7 +411,7 @@
     },
     {
       "id": "surface_wall_shear_rmse",
-      "unit": "Pa",
+      "unit": "m2/s2",
       "direction": "lower",
       "kind": "error",
       "equation": "\\sqrt{\\frac{\\sum_i w_i(\\hat{y}_i-y_i)^2}{\\sum_i w_i}}",
@@ -354,7 +429,7 @@
     },
     {
       "id": "volume_pressure_rmse",
-      "unit": "Pa",
+      "unit": "m2/s2",
       "direction": "lower",
       "kind": "error",
       "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
@@ -403,31 +478,87 @@
       "id": "pressure_profiles",
       "required": true,
       "allow_unlisted_stations": false,
-      "minimum_points": 2,
+      "minimum_points": 128,
+      "exact_points": 128,
       "coordinate_order": "strictly_increasing",
       "station_ids": [
         "upper_body_centerline",
         "underbody_centerline",
         "rear_slant_centerline"
       ],
+      "station_sample_counts": {
+        "upper_body_centerline": 128,
+        "underbody_centerline": 128,
+        "rear_slant_centerline": 128
+      },
+      "station_coordinate_intervals": {
+        "upper_body_centerline": [
+          0.0,
+          1.0
+        ],
+        "underbody_centerline": [
+          0.0,
+          1.0
+        ],
+        "rear_slant_centerline": [
+          0.0,
+          1.0
+        ]
+      },
+      "station_coordinate_spacings": {
+        "upper_body_centerline": "uniform",
+        "underbody_centerline": "uniform",
+        "rear_slant_centerline": "uniform"
+      },
       "quantity_ids": [
         "cp"
       ]
     },
     {
       "id": "velocity_profiles",
-      "required": false,
+      "required": true,
       "allow_unlisted_stations": false,
-      "minimum_points": 2,
+      "minimum_points": 128,
+      "exact_points": 128,
       "coordinate_order": "strictly_increasing",
       "station_ids": [
-        "prototype_0_25l",
-        "prototype_0_50l",
-        "prototype_1_00l",
-        "wake_x_0_50l"
+        "wake_vertical_x_0p25_l",
+        "wake_vertical_x_0p50_l",
+        "wake_vertical_x_1p00_l",
+        "wake_lateral_x_0p50_l_z_0p50_h"
       ],
+      "station_sample_counts": {
+        "wake_vertical_x_0p25_l": 128,
+        "wake_vertical_x_0p50_l": 128,
+        "wake_vertical_x_1p00_l": 128,
+        "wake_lateral_x_0p50_l_z_0p50_h": 128
+      },
+      "station_coordinate_intervals": {
+        "wake_vertical_x_0p25_l": [
+          0.0,
+          2.0
+        ],
+        "wake_vertical_x_0p50_l": [
+          0.0,
+          2.0
+        ],
+        "wake_vertical_x_1p00_l": [
+          0.0,
+          2.0
+        ],
+        "wake_lateral_x_0p50_l_z_0p50_h": [
+          -1.0,
+          1.0
+        ]
+      },
+      "station_coordinate_spacings": {
+        "wake_vertical_x_0p25_l": "uniform",
+        "wake_vertical_x_0p50_l": "uniform",
+        "wake_vertical_x_1p00_l": "uniform",
+        "wake_lateral_x_0p50_l_z_0p50_h": "uniform"
+      },
       "quantity_ids": [
-        "velocity_ratio"
+        "ux_over_uinf"
       ]
     }
   ],
@@ -437,72 +568,94 @@
       "label": "Full",
       "index_file": "splits/full.json",
       "case_count": 50,
-      "case_set_id": "standard",
-      "case_id_status": "prototype_generated",
-      "sha256": "a19dfa9f246a16c7e02c3f1cce8c34ea137e24a32c8f06a2afac3bb91102782c"
+      "case_set_id": "full-test",
+      "case_id_status": "official",
+      "sha256": "a565e78b41f8b793220985e6b1bcf535ced54d454e3325fb5de51c8b553eb920"
     },
     {
       "id": "medium",
       "label": "Medium",
       "index_file": "splits/medium.json",
       "case_count": 50,
-      "case_set_id": "standard",
-      "case_id_status": "prototype_generated",
-      "sha256": "f6993e6a7f842cd231fc1693da1e296046862806ba2941dc6277233f2f203c19"
+      "case_set_id": "full-test",
+      "case_id_status": "official",
+      "sha256": "863cdbf692930632512c532145a3fc27bda4d941c204a93a09349c0d0da413ae"
     },
     {
       "id": "scarce",
       "label": "Scarce",
       "index_file": "splits/scarce.json",
       "case_count": 50,
-      "case_set_id": "standard",
-      "case_id_status": "prototype_generated",
-      "sha256": "ce95532798ea9a9bf35767815113e47120446c796bc0cfec2c3800c925fe7a28"
+      "case_set_id": "full-test",
+      "case_id_status": "official",
+      "sha256": "c5d44e9589f820315faf5e8134065ff53a11d21d8c8ad8ec82929e04145cb324"
     },
     {
       "id": "super_scarce",
       "label": "Super scarce",
       "index_file": "splits/super_scarce.json",
       "case_count": 50,
-      "case_set_id": "standard",
-      "case_id_status": "prototype_generated",
-      "sha256": "250bdc465f7062c68445e1b88447f68df76d8afeaf49fc9b7b6be2245dfdeee8"
+      "case_set_id": "full-test",
+      "case_id_status": "official",
+      "sha256": "1e7f4e26f5d26fb60a22d8741f30e3eb23f840fa3628306354b02d5c5628f1c7"
     },
     {
       "id": "geometry",
-      "label": "Geometry",
+      "label": "Geometry OOD",
       "index_file": "splits/geometry.json",
       "case_count": 100,
-      "case_set_id": "geometry",
-      "case_id_status": "prototype_generated",
-      "sha256": "03c96b42e9b172c2ad65cb86ca9ad19e53140380e0b5c2468ead1600bd19e5d8"
+      "case_set_id": "geometry-test",
+      "case_id_status": "official",
+      "sha256": "1be921583dfa7a463c75a235f80f1a0af3fb059b09a4012a26bdaeeb8fd080eb"
     },
     {
       "id": "high_drag",
-      "label": "High drag",
+      "label": "High drag OOD",
       "index_file": "splits/high_drag.json",
       "case_count": 100,
-      "case_set_id": "high_drag",
-      "case_id_status": "prototype_generated",
-      "sha256": "51e44305c719fac07a9df22cfe31d074bd3e7c5e02053c4242539dcc5c38798c"
+      "case_set_id": "high_drag-test",
+      "case_id_status": "official",
+      "sha256": "c057c1cb520c1cc955cf525fbadbe55817924947764d07d7625bf49fe9b694f6"
     },
     {
       "id": "low_drag",
-      "label": "Low drag",
+      "label": "Low drag OOD",
       "index_file": "splits/low_drag.json",
       "case_count": 100,
-      "case_set_id": "low_drag",
-      "case_id_status": "prototype_generated",
-      "sha256": "6ca43bba491edaa9cb57b1cb4b3ca0a213643035bfc47d32cb7b3d763c51a0fa"
+      "case_set_id": "low_drag-test",
+      "case_id_status": "official",
+      "sha256": "3347deb2666b232344e0f9895cd543c6c651bee0df0810fcb48ebbda6e3ff22e"
     },
     {
       "id": "image_wake",
-      "label": "Image wake",
+      "label": "Image wake OOD",
       "index_file": "splits/image_wake.json",
       "case_count": 100,
-      "case_set_id": "image_wake",
-      "case_id_status": "prototype_generated",
-      "sha256": "4abac076a5a80bae041e4894e937dd7a5ae3e10139a7100c57dfed52ad56be9c"
+      "case_set_id": "image_wake-test",
+      "case_id_status": "official",
+      "sha256": "30d1c338f5076decc203740ec3c00410f09d463e69e8957bc9db5d29cf86bf58"
     }
-  ]
+  ],
+  "profile_definition": {
+    "id": "ahmedml-native-profiles-v1-candidate",
+    "file": "profile-definition-v1.json",
+    "sha256": "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae",
+    "sample_count_per_series": 128,
+    "prediction_source": "evaluator_derived_from_complete_native_fields"
+  },
+  "regional_diagnostics": {
+    "status": "candidate_report_only",
+    "required_for_new_submissions": true,
+    "format": "ahmedml-regional-diagnostics-aggregate-v2",
+    "definition_id": "ahmedml-native-regions-v2-candidate",
+    "contract_file": "regional-diagnostics-v2.json",
+    "contract_sha256": "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
+    "role": "report_only",
+    "weight": 0.0,
+    "affects_official_metrics": false,
+    "affects_official_score": false,
+    "requires_new_inference": false,
+    "prediction_format_changed": false,
+    "activation_gate": "Candidate evaluator support remains closed to real submissions until owner review; the development fixture exercises this required report."
+  }
 }

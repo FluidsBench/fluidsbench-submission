@@ -1,0 +1,257 @@
+{
+  "schema": "ahmedml-native-case-support-v1",
+  "schema_version": 1,
+  "status": "candidate_evaluator_support_not_official",
+  "official_submission_support": false,
+  "case_id": "run_324",
+  "run_id": 324,
+  "dataset_revision": "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+  "source": {
+    "source_identity_sha256": "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44",
+    "boundary": {
+      "path": "run_324/boundary_324.vtp",
+      "sha256": "2148747822f11677be6c59688ba6c8bdfc163fbdebeec4298d24c0a4968c8d63",
+      "size_bytes": 69646379
+    },
+    "surface_cell_area": {
+      "path": "run_324/boundary_cell_area_324.npy",
+      "sha256": "124fa92aa306ca6cf3b8a3507e9bd34e49abf7ecf35a6c18d3494a0c351dd0ff",
+      "size_bytes": 3708880
+    },
+    "volume": {
+      "path": "run_324/volume_324.vtu",
+      "sha256": "2f929be67f8e369647afc7ddabdd0b9bdee2044d13d4aa1595ed21f83908a714",
+      "size_bytes": 5427571572
+    },
+    "geometry_parameters": {
+      "path": "run_324/geo_parameters_324.csv",
+      "sha256": "3fc285ff281428343ac011c03d8783d7bb73077a714b503b8bebfeb937291b48",
+      "size_bytes": 283
+    },
+    "force_coefficients": {
+      "path": "run_324/force_mom_324.csv",
+      "sha256": "ebcb05f15de735f3ac4a2ec87c80fbeef8b5a19dd28f6a4f7c85a00219fe0233",
+      "size_bytes": 43
+    }
+  },
+  "definitions": {
+    "profile_definition_sha256": "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae",
+    "regional_definition_sha256": "338db5b806caec2883e2583e491b751546624d3f101c04ae644cf9357b1275d7",
+    "profile_sample_count": 128,
+    "surface_station_ids": [
+      "upper_body_centerline",
+      "underbody_centerline",
+      "rear_slant_centerline"
+    ],
+    "volume_station_ids": [
+      "wake_vertical_x_0p25_l",
+      "wake_vertical_x_0p50_l",
+      "wake_vertical_x_1p00_l",
+      "wake_lateral_x_0p50_l_z_0p50_h"
+    ]
+  },
+  "entity_counts": {
+    "surface": 927188,
+    "volume": 20801717
+  },
+  "geometry_parameters_mm_or_degrees": {
+    "body-length": 803.2064128256513,
+    "body-height": 271.88376753507015,
+    "body-width": 439.8797595190381,
+    "front-arc-diameter": 169.93987975951904,
+    "slant-angle-length": 183.07336783509294,
+    "slant-angle-height": 202.38413130892607,
+    "slant-surface-length": 272.90143754870894,
+    "slant-angle-degrees": 47.868023038401475
+  },
+  "artifacts": {
+    "surface_area_vector": {
+      "path": "surface_area_vector_m2.npy",
+      "sha256": "cadccc192f1fa36d1431b0dca032bf55e0a302245d70287f0fc14611288152f7",
+      "size_bytes": 22252640,
+      "dtype": "<f8",
+      "shape": [
+        927188,
+        3
+      ],
+      "format": "npy"
+    },
+    "volume_cell_volume": {
+      "path": "volume_cell_volume_m3.npy",
+      "sha256": "48f32bc029b28507828681805b2812ac22db36b07e57fc875c54e30c74c4cfe2",
+      "size_bytes": 83206996,
+      "dtype": "<f4",
+      "shape": [
+        20801717
+      ],
+      "format": "npy"
+    },
+    "volume_region_code": {
+      "path": "volume_region_code.npy",
+      "sha256": "c32a1ec9fc0046282e0147ffd7f0f8d2381699bf3da9997cf7c8858931d879d4",
+      "size_bytes": 20801845,
+      "dtype": "|u1",
+      "shape": [
+        20801717
+      ],
+      "format": "npy"
+    },
+    "profile_mapping_and_truth": {
+      "path": "profile_mapping_and_truth.npz",
+      "sha256": "5bc1ee7dc703fbb1479b29f73cc46baec996d7e3e55c0b30bb052fccd09a9e7a",
+      "size_bytes": 23413,
+      "format": "npz",
+      "arrays": {
+        "surface_raw_cell_id": {
+          "dtype": "<i8",
+          "shape": [
+            3,
+            128
+          ]
+        },
+        "surface_coordinate": {
+          "dtype": "<f8",
+          "shape": [
+            3,
+            128
+          ]
+        },
+        "surface_target_xyz_m": {
+          "dtype": "<f8",
+          "shape": [
+            3,
+            128,
+            3
+          ]
+        },
+        "surface_projected_xyz_m": {
+          "dtype": "<f8",
+          "shape": [
+            3,
+            128,
+            3
+          ]
+        },
+        "surface_distance_m": {
+          "dtype": "<f8",
+          "shape": [
+            3,
+            128
+          ]
+        },
+        "surface_truth_cp": {
+          "dtype": "<f4",
+          "shape": [
+            3,
+            128
+          ]
+        },
+        "volume_raw_cell_id": {
+          "dtype": "<i8",
+          "shape": [
+            4,
+            128
+          ]
+        },
+        "volume_coordinate": {
+          "dtype": "<f8",
+          "shape": [
+            4,
+            128
+          ]
+        },
+        "volume_target_xyz_m": {
+          "dtype": "<f8",
+          "shape": [
+            4,
+            128,
+            3
+          ]
+        },
+        "volume_projected_xyz_m": {
+          "dtype": "<f8",
+          "shape": [
+            4,
+            128,
+            3
+          ]
+        },
+        "volume_distance_m": {
+          "dtype": "<f8",
+          "shape": [
+            4,
+            128
+          ]
+        },
+        "volume_truth_ux_over_uinf": {
+          "dtype": "<f4",
+          "shape": [
+            4,
+            128
+          ]
+        }
+      }
+    }
+  },
+  "audits": {
+    "vtk_version": "9.5.2",
+    "surface_bounds_m": [
+      -0.8032064437866211,
+      2.168404344971009e-19,
+      -0.21994054317474365,
+      0.21994054317474365,
+      0.04976048320531845,
+      0.32192158699035645
+    ],
+    "volume_bounds_m": [
+      -4.0,
+      6.0,
+      -1.0,
+      1.0,
+      -4.336808689942018e-18,
+      1.399999976158142
+    ],
+    "surface_area": {
+      "calculated_sum_m2": 1.2399666084247114,
+      "published_sum_m2": 1.2399666083588983,
+      "maximum_relative_magnitude_difference": 5.938577647704452e-08,
+      "relative_tolerance": 2e-06
+    },
+    "force_truth": {
+      "published_cd": 0.32273307966,
+      "published_cl": -0.010283892041,
+      "field_replay_cd": 0.3227330809735715,
+      "field_replay_cl": -0.010283919959492117,
+      "absolute_tolerance": 2e-06,
+      "pressure_force_xyz": [
+        0.015920190990368753,
+        -0.00010173358136860854,
+        -0.0006463977608345394
+      ],
+      "wall_shear_force_xyz": [
+        0.0021580252734468295,
+        -8.827675035148516e-07,
+        7.033370038362892e-05
+      ]
+    },
+    "volume_cell_volume": {
+      "storage_dtype": "<f4",
+      "sum_before_float32_m3": 27.914901547739117,
+      "sum_after_float32_m3": 27.91490154786658,
+      "minimum_m3": 5.630149471635981e-11,
+      "maximum_m3": 4.716220428235829e-05
+    },
+    "volume_regions": {
+      "near_body": 8719055,
+      "wake": 4776186,
+      "farfield": 7306476,
+      "sum": 20801717
+    },
+    "profile_mapping": {
+      "surface_maximum_projection_distance_m": 0.07452492491359097,
+      "volume_nearest_cell_fallback_count": 0,
+      "volume_maximum_projection_distance_m": 0.0,
+      "runtime_geometric_remapping_forbidden": true
+    }
+  }
+}

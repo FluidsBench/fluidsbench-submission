@@ -30,6 +30,7 @@ from reference.hiliftaeroml.compact_profiles import (
     build_compact_support,
 )
 from reference.hiliftaeroml.native_profiles import (
+    CP_SOURCE_ARRAYS,
     VELOCITY_SOURCE_ARRAYS,
     canonical_json_bytes,
     validate_cp_source,
@@ -160,6 +161,24 @@ def _make_release(
     return release, manifest_sha, source_hashes
 
 
+def _change_cp_prediction_only(outputs: Path) -> dict[str, dict[str, str]]:
+    surface = outputs / CASE_ID / "surface_submission_stream"
+    npz_path = surface / "cp_cut_values.npz"
+    with np.load(npz_path, allow_pickle=False) as archive:
+        arrays = {
+            name: np.array(archive[name], copy=True) for name in CP_SOURCE_ARRAYS
+        }
+    arrays["prediction_cp"] += 0.03125
+    npz_path.unlink()
+    write_ordered_npz(npz_path, arrays, CP_SOURCE_ARRAYS)
+    metrics_path = surface / "cp_profile_metrics.json"
+    metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+    metrics["cut_values"]["sha256"] = _digest(npz_path)
+    metrics["cut_values"]["size_bytes"] = npz_path.stat().st_size
+    _write_canonical_json(metrics_path, metrics)
+    return retained_profile_hashes(outputs)
+
+
 def _build_directory(
     *,
     outputs: Path,
@@ -167,6 +186,7 @@ def _build_directory(
     manifest_sha: str,
     source_hashes: dict[str, dict[str, str]],
     destination: Path,
+    opened_support_release: compact_evaluator.CompactSupportRelease | None = None,
 ) -> tuple[str, dict[str, dict[str, float]]]:
     return build_compact_profile_directory(
         submission_id=SUBMISSION_ID,
@@ -179,6 +199,7 @@ def _build_directory(
         profiles_root=destination,
         cases_per_chunk=1,
         expected_case_artifact_sha256=source_hashes,
+        opened_support_release=opened_support_release,
     )
 
 
@@ -301,6 +322,51 @@ def test_release_and_participant_directory_are_strict_private_and_deterministic(
     ) == first_metrics
 
 
+def test_preopened_support_handle_preserves_exact_bindings_and_scores(
+    tmp_path: Path,
+) -> None:
+    outputs = tmp_path / "outputs"
+    release, manifest_sha, source_hashes = _make_release(tmp_path, outputs)
+    handle = open_compact_support_release(
+        release_root=release,
+        expected_manifest_sha256=manifest_sha,
+        expected_case_ids=[CASE_ID],
+        case_set_id=CASE_SET_ID,
+    )
+    profiles = tmp_path / "profiles"
+    _index_sha, expected_metrics = _build_directory(
+        outputs=outputs,
+        release=release,
+        manifest_sha=manifest_sha,
+        source_hashes=source_hashes,
+        destination=profiles,
+        opened_support_release=handle,
+    )
+    assert score_compact_profile_directory(
+        profiles_root=profiles,
+        support_release_root=release,
+        support_manifest_sha256=manifest_sha,
+        submission_id=SUBMISSION_ID,
+        split_id=SPLIT_ID,
+        case_set_id=CASE_SET_ID,
+        expected_case_ids=[CASE_ID],
+        opened_support_release=handle,
+    ) == expected_metrics
+    with pytest.raises(
+        CompactProfileEvaluationError, match="requested binding"
+    ):
+        score_compact_profile_directory(
+            profiles_root=profiles,
+            support_release_root=release,
+            support_manifest_sha256="0" * 64,
+            submission_id=SUBMISSION_ID,
+            split_id=SPLIT_ID,
+            case_set_id=CASE_SET_ID,
+            expected_case_ids=[CASE_ID],
+            opened_support_release=handle,
+        )
+
+
 def test_release_loader_rejects_wrong_binding_case_set_and_extra_file(
     tmp_path: Path,
 ) -> None:
@@ -361,6 +427,28 @@ def test_builder_rejects_receipt_mismatch_and_removes_partial_output(
             destination=destination,
         )
     assert not destination.exists()
+
+
+def test_support_materialization_provenance_does_not_pin_one_surrogate(
+    tmp_path: Path,
+) -> None:
+    outputs = tmp_path / "outputs"
+    release, manifest_sha, materialization_hashes = _make_release(
+        tmp_path, outputs
+    )
+    current_hashes = _change_cp_prediction_only(outputs)
+    assert current_hashes[CASE_ID] != materialization_hashes[CASE_ID]
+
+    destination = tmp_path / "profiles-second-surrogate"
+    index_sha, metrics = _build_directory(
+        outputs=outputs,
+        release=release,
+        manifest_sha=manifest_sha,
+        source_hashes=current_hashes,
+        destination=destination,
+    )
+    assert index_sha == _digest(destination / "index.json")
+    assert set(metrics[CASE_ID]) == {"cp_cut_r2", "velocity_profile_r2"}
 
 
 def test_scorer_rejects_rebound_metadata_even_with_updated_chunk_hash(
@@ -478,7 +566,10 @@ def test_preflight_rejects_huge_declared_shape_before_numpy_load(
     with np.load(artifact_path, allow_pickle=False) as archive:
         speed = np.array(archive["velocity_speed_over_u_inf"], copy=True)
     with zipfile.ZipFile(
-        artifact_path, mode="w", compression=zipfile.ZIP_DEFLATED
+        artifact_path,
+        mode="w",
+        compression=zipfile.ZIP_DEFLATED,
+        compresslevel=9,
     ) as archive:
         archive.writestr(
             "cp_q_delta.npy",

@@ -11,6 +11,11 @@ from pathlib import Path
 
 import numpy as np
 
+try:
+    import vtk  # noqa: F401
+except ImportError:
+    raise unittest.SkipTest("requires optional VTK for DrivAerML evaluator tests") from None
+
 from reference.drivaerml.evaluator import (
     CANDIDATE_EVIDENCE_SCHEMA,
     CANDIDATE_STATUS,

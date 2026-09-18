@@ -96,6 +96,82 @@ def test_profile_support_release_is_rejected_outside_candidate_mode() -> None:
     assert totals == {"submissions": 0, "cases": 0, "series": 0}
 
 
+def test_candidate_compact_support_preopen_cache_is_exact_per_case_set(
+    tmp_path: Path, monkeypatch
+) -> None:
+    support_root = tmp_path / "support"
+    support_root.mkdir()
+    manifest = {
+        "datasets": [
+            {
+                "slug": "hiliftaeroml",
+                "splits": [{"id": "full"}],
+            }
+        ]
+    }
+    submission = {
+        "dataset_id": "hiliftaeroml",
+        "split_id": "full",
+        "profile_data": {"format": validator.HILIFT_PROFILE_FORMAT},
+    }
+    specification = {
+        "splits": [
+            {
+                "id": "full",
+                "case_set_id": "caseset-compact-test",
+                "index_file": "splits/full.json",
+            }
+        ],
+        "profile_definition": {
+            "candidate_dry_run_evaluator_support": {
+                "manifest_sha256": "c" * 64,
+            }
+        },
+    }
+    split_index = {
+        "case_set_id": "caseset-compact-test",
+        "case_ids": ["case-0001"],
+    }
+    calls: list[dict] = []
+    handle = object()
+
+    monkeypatch.setattr(validator, "load_submission_json", lambda _path: submission)
+    monkeypatch.setattr(
+        validator,
+        "load_json",
+        lambda path: specification if path.name == "submission-spec.json" else split_index,
+    )
+
+    def open_support(**kwargs):
+        calls.append(kwargs)
+        return handle
+
+    monkeypatch.setattr(validator, "open_hilift_compact_support_release", open_support)
+    cache: dict = {}
+    first = validator._preopened_hilift_compact_support_for_submission(
+        path=tmp_path / "submission.json",
+        manifest=manifest,
+        support_release_root=support_root,
+        cache=cache,
+    )
+    second = validator._preopened_hilift_compact_support_for_submission(
+        path=tmp_path / "submission.json",
+        manifest=manifest,
+        support_release_root=support_root,
+        cache=cache,
+    )
+    assert first is handle
+    assert second is handle
+    assert calls == [
+        {
+            "release_root": support_root,
+            "expected_manifest_sha256": "c" * 64,
+            "expected_case_ids": ["case-0001"],
+            "case_set_id": "caseset-compact-test",
+        }
+    ]
+
+
 def test_candidate_reproducibility_uses_candidate_truth_declaration() -> None:
     submission = _submission()
     dataset_spec = {

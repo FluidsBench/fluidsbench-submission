@@ -103,15 +103,34 @@
   },
   "profile_definition": {
     "status": "official",
-    "contract_id": "hiliftaeroml-compact-profile-predictions-v2",
+    "contract_id": "hiliftaeroml-compact-profile-predictions-v2-candidate",
     "file": "native-profile-format-v2.json",
-    "format": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2",
-    "sha256": "44651f4da2add287e51807f02f329f5aa226dd1fb2ae21d99e129ba2fc9000b5",
+    "format": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate",
+    "sha256": "b1fd29b2cb6c1c84c694ddffc5d85f6cd68fd175b79c3695a443aa78bf962c2f",
     "representation_decision": {
       "status": "full360_sensitivity_complete_128_selected",
       "file": "compact-cp-representation-decision-v1.json",
       "sha256": "f0290ad8c2b390dc09cf8e43797d4d838fba616a0695ba53ebf0e9b72fd64bd7"
     },
+    "evaluator_support": {
+      "status": "not_published",
+      "release_id": null,
+      "manifest_sha256": null
+    },
+    "candidate_dry_run_evaluator_support": {
+      "status": "complete_candidate_not_published",
+      "usage": "maintainer_local_candidate_dry_run_only",
+      "release_id": "hiliftaeroml-compact-profile-support-v2-candidate",
+      "manifest_sha256": "7f946510cf8f63d05adaff4c91980d74f29c45ed7209b5a8f7e604e521cb823b"
+    },
+    "public_plot_ground_truth": {
+      "status": "public_plot_only_candidate",
+      "usage": "browser_visualization_only_not_metric_recomputation",
+      "activation_effect": "none",
+      "binding_file": "public-compact-profile-truth-binding-v1.json",
+      "binding_sha256": "ba0110dbdfa4d4576a9949386277df45e0bef07c3710e8c7aa7a82deadfa19af"
+    },
+    "activation_rule": "Compact-v2 is the sole selected participant representation. Its immutable contract and wire identifiers retain the historical candidate suffix; this submission specification governs current representation selection. Intake remains closed until immutable evaluator support is published for every enabled case set and independent scoring-support and owner-approval gates are complete.",
     "profile_ground_truth": {
       "status": "not_published",
       "release_id": null,
@@ -125,29 +144,10 @@
       "binding_file": "candidate-profile-truth-binding.json",
       "binding_sha256": "11deb05bb29d98149c72712aef571b9be4de543cd69d5d6a1ef68b5bd53f7b93"
     },
-    "evaluator_support": {
-      "status": "not_published",
-      "release_id": null,
-      "manifest_sha256": null
-    },
-    "candidate_dry_run_evaluator_support": {
-      "status": "complete_candidate_not_published",
-      "usage": "maintainer_local_candidate_dry_run_only",
-      "release_id": "hiliftaeroml-compact-profile-support-v2-candidate",
-      "manifest_sha256": "81150cc075d5b64caf0c63b9601a23bbecbf38a8f60bfd69814981e408dd712c"
-    },
-    "public_plot_ground_truth": {
-      "status": "public_plot_only_candidate",
-      "usage": "browser_visualization_only_not_metric_recomputation",
-      "activation_effect": "none",
-      "binding_file": "public-compact-profile-truth-binding-v1.json",
-      "binding_sha256": "752de610cb910df034ad4c741ecbb885f307e4dd835ef754c304c83cb86ea3df"
-    },
     "accepted_profile_formats": [
-      "fluidsbench-hiliftaeroml-compact-profile-chunks-v2"
+      "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
     ],
-    "prior_profile_formats_accepted": false,
-    "activation_rule": "The compact-v2 representation is official and exclusive. Intake remains closed until immutable evaluator support is published for every enabled case set and the independent scoring-support and owner-approval gates are complete."
+    "prior_profile_formats_accepted": false
   },
   "evaluation_reference_version": "hiliftaeroml-evaluator-v0.1-candidate",
   "default_field_reduction": "per_geometry_then_macro_average",

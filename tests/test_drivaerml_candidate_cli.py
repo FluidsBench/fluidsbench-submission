@@ -8,6 +8,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
+try:
+    import vtk  # noqa: F401
+except ImportError:
+    raise unittest.SkipTest("requires optional VTK for DrivAerML evaluator imports") from None
+
 from reference.drivaerml.diagnostic_evaluator import (
     DrivAerDiagnosticEvaluatorError,
 )

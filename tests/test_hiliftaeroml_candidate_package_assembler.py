@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 import scripts.assemble_hiliftaeroml_schema_v3_candidate as assembler
+from reference.hiliftaeroml.compact_profile_evaluator import CompactSupportRelease
 from scripts import validate_submission as submission_validator
 
 
@@ -19,6 +20,12 @@ RESOLVED_CONFIG = (
     / "examples"
     / "hiliftaeroml-v3-candidate"
     / "transolver-full360-candidate-config.json"
+)
+ALL_CASE_SUPPORT_VALIDATION = (
+    DATASET / "compact-profile-all-case-support-validation-v1.json"
+)
+ALL_CASE_SUPPORT_REBIND = (
+    DATASET / "compact-profile-all-case-support-rebind-v1.json"
 )
 
 
@@ -157,6 +164,100 @@ def test_all_official_split_labels_resolve_to_the_exact_eight_case_sets() -> Non
     assert len(observed_case_sets) == 8
 
 
+def test_all_case_compact_support_record_covers_every_official_split() -> None:
+    specification = load(SPECIFICATION)
+    validation = load(ALL_CASE_SUPPORT_VALIDATION)
+    recorded = {
+        binding["split_id"]: binding
+        for binding in validation["coverage"]["split_bindings"]
+    }
+    assert len(recorded) == validation["coverage"]["advertised_split_label_count"]
+    assert len(recorded) == len(specification["splits"]) == 14
+    for declared in specification["splits"]:
+        split = load(DATASET / declared["index_file"])
+        assert recorded[declared["id"]] == {
+            "split_id": declared["id"],
+            "case_set_id": split["case_set_id"],
+            "case_count": split["case_count"],
+            "case_set_sha256": split["case_set_sha256"],
+        }
+    assert validation["coverage"]["distinct_case_set_count"] == 8
+    assert validation["coverage"]["unique_case_count"] == 1355
+    assert validation["representation"][
+        "maximum_cp_points_per_physical_graph"
+    ] == 128
+    assert validation["compatibility"][
+        "overlapping_case_support_records_exact"
+    ] == validation["coverage"]["previous_unique_case_count"] == 652
+    assert validation["source"][
+        "prediction_bearing_evaluator_outputs_used_as_source"
+    ] is False
+    assert validation["package_size_policy"][
+        "aggregate_package_byte_ceiling"
+    ] is None
+    candidate_support = specification["profile_definition"][
+        "candidate_dry_run_evaluator_support"
+    ]
+    assert validation["candidate_binding"]["submission_spec_manifest_sha256"] == (
+        validation["compatibility"]["prior_evaluator_support_manifest_sha256"]
+    )
+    assert validation["candidate_binding"]["successor_manifest_sha256"] == (
+        validation["evaluator_support"]["manifest_sha256"]
+    )
+    assert validation["candidate_binding"]["successor_manifest_sha256"] == (
+        candidate_support["manifest_sha256"]
+    )
+    assert validation["activation"] == {
+        "owner_approval_complete": False,
+        "published": False,
+        "submissions_opened": False,
+        "validation_changes_activation": False,
+    }
+
+
+def test_all_case_compact_support_rebind_preserves_closed_candidate_status() -> None:
+    rebind = load(ALL_CASE_SUPPORT_REBIND)
+    specification = load(SPECIFICATION)
+    support = specification["profile_definition"][
+        "candidate_dry_run_evaluator_support"
+    ]
+    assert rebind["schema"] == (
+        "hiliftaeroml-compact-profile-all-case-support-rebind-v1"
+    )
+    assert rebind["status"] == "complete_candidate_not_published"
+    assert rebind["usage"] == "maintainer_local_candidate_dry_run_only"
+    assert rebind["activation"] == {
+        "owner_approval_complete": False,
+        "published": False,
+        "submissions_opened": False,
+        "validation_changes_activation": False,
+    }
+    assert rebind["prior_evaluator_support_manifest_sha256"] == (
+        "6797a7a9578b2f9c34c24d218637129f37d6bb5074f0059f2410455e9e59c6ff"
+    )
+    assert rebind["evaluator_support"] == {
+        "release_id": support["release_id"],
+        "manifest_sha256": support["manifest_sha256"],
+        "case_count": 1355,
+        "case_set_count": 8,
+    }
+    compatibility = rebind["compatibility_evidence"]
+    assert compatibility["path"] == (
+        "benchmark-specs/hiliftaeroml/compact-profile-all-case-support-validation-v1.json"
+    )
+    assert compatibility["sha256"] == digest(ALL_CASE_SUPPORT_VALIDATION)
+    assert compatibility["overlapping_case_support_records_exact"] == 652
+    migration = rebind["preview_migration"]
+    assert migration["retained_preview_count"] == 7
+    assert migration["new_finished_preview_count"] == 3
+    assert migration["total_preview_count"] == 10
+    assert migration["retained_preview_metric_values_unchanged"] is True
+    assert migration["all_preview_packages_rebuilt_twice"] is True
+    assert migration["canonical_builds_candidate_validated"] is True
+    assert migration["second_builds_byte_identical"] is True
+    assert len(migration["registered_previews"]) == 10
+
+
 def test_release_native_contract_is_case_set_generic_and_surface_v7() -> None:
     assert assembler.NATIVE_ARTIFACT_SCHEMA == (
         "hiliftaeroml-transolver-case-set-aggregate-artifacts-v1"
@@ -175,6 +276,47 @@ def test_release_native_contract_is_case_set_generic_and_surface_v7() -> None:
     )
     assert assembler.SURFACE_SUMMARY_SCHEMA_VERSION == 7
     assert assembler.VOLUME_SUMMARY_SCHEMA_VERSION == 2
+
+
+def test_preopened_compact_support_handle_cannot_cross_bind_a_package(
+    tmp_path: Path,
+) -> None:
+    support_root = tmp_path / "support"
+    support_root.mkdir()
+    declaration = {
+        "release_id": "hiliftaeroml-compact-profile-support-v2-candidate",
+        "manifest_sha256": "a" * 64,
+    }
+    handle = CompactSupportRelease(
+        release_root=support_root.resolve(),
+        release_id=declaration["release_id"],
+        manifest_sha256=declaration["manifest_sha256"],
+        source_profile_truth_release_id="hiliftaeroml-native-profile-truth-v1-candidate",
+        source_profile_truth_manifest_sha256="b" * 64,
+        manifest={},
+        index={},
+        case_set_id="caseset-compact-test",
+        case_ids=("case-0001",),
+        case_records={},
+    )
+    assert assembler._open_or_validate_compact_support_release(
+        release_root=support_root,
+        declaration=declaration,
+        case_ids=["case-0001"],
+        case_set_id="caseset-compact-test",
+        opened_release=handle,
+    ) is handle
+    with pytest.raises(
+        assembler.HiLiftPackageAssemblyError,
+        match="differs from this package binding",
+    ):
+        assembler._open_or_validate_compact_support_release(
+            release_root=support_root,
+            declaration=declaration,
+            case_ids=["case-0002"],
+            case_set_id="caseset-compact-test",
+            opened_release=handle,
+        )
 
 
 def test_blocker_inspection_is_read_only_and_reports_owner_gates() -> None:

@@ -11,6 +11,13 @@ from unittest import mock
 
 import numpy as np
 
+try:
+    import vtk  # noqa: F401
+except ImportError:
+    raise unittest.SkipTest(
+        "requires optional VTK for DrivAerML Run419 fixture export"
+    ) from None
+
 from scripts import evaluate_drivaerml_candidate_case as candidate_cli
 from scripts import export_drivaerml_run419_relative_fixture as exporter
 

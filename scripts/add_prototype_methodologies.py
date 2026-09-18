@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Populate every checked-in prototype result with structured method metadata."""
+"""Populate checked-in dummy prototype results with structured method metadata."""
 
 from __future__ import annotations
 
@@ -27,6 +27,21 @@ def write_json(path: Path, value: Any) -> None:
         handle.write("\n")
 
 
+def is_prototype_fixture(submission: dict[str, Any], evidence: dict[str, Any]) -> bool:
+    """Return whether a retained package is a dummy methodology fixture.
+
+    Pre-release integration references deliberately retain ``approval.status`` as
+    ``prototype`` so they cannot be ranked or cited.  They are genuine evaluator
+    outputs rather than synthetic fixtures, however, and can truthfully omit a
+    nominal model parameter count and a generated prototype methodology record.
+    """
+
+    return (
+        submission.get("approval", {}).get("status") == "prototype"
+        and evidence.get("status") == "prototype_dummy_data"
+    )
+
+
 def update_all(*, check: bool) -> tuple[int, list[Path]]:
     changed: list[Path] = []
     count = 0
@@ -37,6 +52,17 @@ def update_all(*, check: bool) -> tuple[int, list[Path]]:
     for path in sorted((ROOT / "submissions").glob("*/*/submission.json")):
         submission = load_json(path)
         if submission.get("approval", {}).get("status") != "prototype":
+            continue
+        evaluation = submission.get("evaluation")
+        evidence_file = (
+            evaluation.get("evidence_file") if isinstance(evaluation, dict) else None
+        )
+        if not isinstance(evidence_file, str) or not evidence_file:
+            raise ValueError(
+                f"missing evaluation.evidence_file for {path.relative_to(ROOT)}"
+            )
+        evidence = load_json(path.parent / evidence_file)
+        if not is_prototype_fixture(submission, evidence):
             continue
         dataset_id = submission.get("dataset_id")
         contract = contracts.get(dataset_id)

@@ -18,16 +18,16 @@
   ],
   "properties": {
     "schema": {
-      "const": "hiliftaeroml-compact-profile-chunk-v2"
+      "const": "hiliftaeroml-compact-profile-chunk-v2-candidate"
     },
     "schema_version": {
       "const": "2.0"
     },
     "format": {
-      "const": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2"
+      "const": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
     },
     "contract_id": {
-      "const": "hiliftaeroml-compact-profile-predictions-v2"
+      "const": "hiliftaeroml-compact-profile-predictions-v2-candidate"
     },
     "contract_sha256": {
       "$ref": "#/$defs/sha256"
@@ -176,7 +176,10 @@
         "valid_row_count",
         "invalid_row_count",
         "prediction_dtype",
-        "prediction_array"
+        "prediction_array",
+        "storage_dtype",
+        "storage_encoding",
+        "stored_byte_count"
       ],
       "properties": {
         "support_identity_sha256": {
@@ -209,6 +212,18 @@
         },
         "prediction_array": {
           "const": "velocity_speed_over_u_inf"
+        },
+        "storage_dtype": {
+          "const": "uint8"
+        },
+        "storage_encoding": {
+          "const": "little_endian_float32_bits_unsigned_delta_modulo_2pow32_byte_shuffle_v1"
+        },
+        "stored_byte_count": {
+          "type": "integer",
+          "minimum": 4,
+          "maximum": 16020,
+          "multipleOf": 4
         }
       }
     },
