@@ -42,6 +42,14 @@ sha256sum benchmark-specs/drivaernetplusplus/samples/DrivAer_E_S_WW_WM_075.vtk
 
 ## Reproducing the validation
 
+The released files are legacy VTK **BINARY**, which the publisher reads through pyvista. That is
+not part of the repository's `requirements.txt`, so install it into the evaluation environment
+first:
+
+```bash
+python -m pip install pyvista
+```
+
 ```bash
 python benchmark-specs/drivaernetplusplus/tools/publish_scoring_support.py \
   --vtk-dir benchmark-specs/drivaernetplusplus/samples \
