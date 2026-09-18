@@ -1,0 +1,255 @@
+{
+  "schema_version": "1.0",
+  "id": "windsorml-profile-definition-v1",
+  "dataset_id": "windsorml",
+  "dataset_version": "windsorml-native-v1-candidate",
+  "status": "candidate_stations_and_resolution_frozen_pending_per_case_support",
+  "provenance": {
+    "aligned_with": "AutoCFD Case 1 (Windsor Squareback body)",
+    "why": "AutoCFD Case 1 is the same 1/4-scale Windsor body and shares this dataset's reference area of 0.112 m^2. Its measured geometry matches the published WindsorML meshes exactly: length 1044 mm, width 389 mm, reference area 0.112 m^2.",
+    "axis_note": "AutoCFD reports 2D PIV on planes y = 0 mm and z = 194 mm. That is the SAE automotive convention (x rearward, y lateral, z up), under which y = 0 is the symmetry plane and z = 194 mm is a horizontal plane 194 mm above the ground. WindsorML uses the mirrored convention (y up, z lateral), so those map to z = 0 and y = 0.194 m here.",
+    "axis_caveat": "The AutoCFD public case page does not state its coordinate origin, so the mapping above is inferred from the plane semantics rather than read off a published definition. It is not load-bearing: y = 0.194 m lies inside the body for every published variant (clearance is about 0.054 m and the shortest body reaches y = 0.316 m), so the horizontal cut is valid regardless of which reading is correct.",
+    "measured_from": "run_0 volume field, 291,324,855 cells",
+    "measured_facts": {
+      "free_stream_ux_m_s": 42.1,
+      "recirculation_present_at_x_over_l": [
+        0.05,
+        0.1
+      ],
+      "recirculation_closed_by_x_over_l": 0.25,
+      "wake_recovered_by_x_over_l": 1.0
+    }
+  },
+  "geometry_invariants": {
+    "note": "Measured across eight geometric variants spanning the design space. The streamwise and lateral extents are identical for every published run, so absolute x and z stations are the same physical location in all 350 cases. Body HEIGHT varies from 0.316 m to 0.473 m, so no station may be defined as a fraction of body height.",
+    "nose_x_m": -0.56075,
+    "base_x_m": 0.48325,
+    "body_length_m": 1.044,
+    "half_width_m": 0.1945,
+    "ground_plane_y_m": 0.0,
+    "body_height_range_m": [
+      0.31574,
+      0.4734
+    ]
+  },
+  "sampling": {
+    "sample_count": 128,
+    "spacing": "uniform_in_the_station_coordinate",
+    "coordinate": "arc_length_from_start_point_in_metres",
+    "resolution_status": "frozen_after_stratified_sweep",
+    "resolution_evidence": {
+      "method": "run_0 profiles regenerated at 64/96/128/160 samples, each resampled onto the 64-sample grid and compared as max |delta ux/uinf|",
+      "max_delta_vs_64_samples": {
+        "wake_vertical_x_0p05l": {
+          "96": 0.01199,
+          "128": 0.01553,
+          "160": 0.00986
+        },
+        "wake_vertical_x_0p10l": {
+          "96": 0.0086,
+          "128": 0.01255,
+          "160": 0.01061
+        },
+        "wake_vertical_x_0p25l": {
+          "96": 0.00984,
+          "128": 0.00579,
+          "160": 0.00666
+        },
+        "wake_vertical_x_0p50l": {
+          "96": 0.00778,
+          "128": 0.00168,
+          "160": 0.00498
+        },
+        "wake_lateral_x_0p10l_y_0p194": {
+          "96": 0.01882,
+          "128": 0.01255,
+          "160": 0.01828
+        }
+      },
+      "interpretation": "Differences between sample counts are at most about 2% of U_inf and are NOT monotonic in sample count. That is the signature of nearest-cell snapping jitter rather than of unresolved profile structure: 128 samples over a 0.6 m line is 4.7 mm spacing, and the measured maximum snap distance at those stations is 3.05 to 7.68 mm. Sample spacing is therefore already at the local cell size, so counts above 128 resample the same native cells and add no information.",
+      "max_snap_distance_mm": {
+        "wake_vertical_x_0p05l": 3.47,
+        "wake_vertical_x_0p10l": 3.05,
+        "wake_vertical_x_0p25l": 3.08,
+        "wake_vertical_x_0p50l": 6.99,
+        "wake_lateral_x_0p10l_y_0p194": 7.68
+      },
+      "residual_noise_note": "Because values are snapped to the nearest native cell centre rather than interpolated, the profile metric carries a quantisation floor of roughly 1-2% of U_inf. Raising the sample count does not reduce it. Moving to interpolation would, and is the change to make if the profile metric is ever to discriminate below that level."
+    }
+  },
+  "pressure_profiles": {
+    "quantity_id": "cp",
+    "source": "evaluator_derived_from_the_submitted_native_surface_field",
+    "stations": [
+      {
+        "id": "surface_symmetry_centreline",
+        "label": "Body centreline, symmetry plane",
+        "plane": "z = 0",
+        "description": "Surface cp along the body centreline from nose to base. The canonical automotive centreline pressure plot, and the AutoCFD Case 1 y = 0 PIV/pressure plane under the axis mapping above.",
+        "constant_coordinates": {
+          "z_m": 0.0
+        },
+        "varying_coordinate": "x",
+        "interval_m": [
+          -0.56075,
+          0.48325
+        ]
+      },
+      {
+        "id": "surface_horizontal_cut_y_0p194",
+        "label": "Body horizontal cut, y = 194 mm",
+        "plane": "y = 0.194",
+        "description": "Surface cp around the body on a horizontal plane 194 mm above the ground, matching the AutoCFD Case 1 constant-height PIV plane. Inside the body for every published variant.",
+        "constant_coordinates": {
+          "y_m": 0.194
+        },
+        "varying_coordinate": "x",
+        "interval_m": [
+          -0.56075,
+          0.48325
+        ]
+      }
+    ]
+  },
+  "velocity_profiles": {
+    "quantity_id": "ux_over_uinf",
+    "reference_velocity_m_s": 42.1,
+    "reference_velocity_source": "measured far-field velocityxavg at x > base + 1.5 m, y > 1.5 * body height, |z| < 0.05 m",
+    "source": "evaluator_derived_from_the_submitted_native_volume_field",
+    "stations": [
+      {
+        "id": "wake_vertical_x_0p05l",
+        "label": "Wake vertical, 0.05 L behind base",
+        "description": "Inside the separated region; measured Ux reaches -11.5 m/s here.",
+        "x_over_l": 0.05,
+        "start_m": [
+          0.53545,
+          0.0,
+          0.0
+        ],
+        "end_m": [
+          0.53545,
+          0.6,
+          0.0
+        ],
+        "varying_coordinate": "y",
+        "interval_m": [
+          0.0,
+          0.6
+        ]
+      },
+      {
+        "id": "wake_vertical_x_0p10l",
+        "label": "Wake vertical, 0.10 L behind base",
+        "description": "Still inside the separated region; measured Ux reaches -7.8 m/s here.",
+        "x_over_l": 0.1,
+        "start_m": [
+          0.58765,
+          0.0,
+          0.0
+        ],
+        "end_m": [
+          0.58765,
+          0.6,
+          0.0
+        ],
+        "varying_coordinate": "y",
+        "interval_m": [
+          0.0,
+          0.6
+        ]
+      },
+      {
+        "id": "wake_vertical_x_0p25l",
+        "label": "Wake vertical, 0.25 L behind base",
+        "description": "Just past recirculation closure; measured minimum Ux is +14.1 m/s.",
+        "x_over_l": 0.25,
+        "start_m": [
+          0.74425,
+          0.0,
+          0.0
+        ],
+        "end_m": [
+          0.74425,
+          0.6,
+          0.0
+        ],
+        "varying_coordinate": "y",
+        "interval_m": [
+          0.0,
+          0.6
+        ]
+      },
+      {
+        "id": "wake_vertical_x_0p50l",
+        "label": "Wake vertical, 0.50 L behind base",
+        "description": "Recovering wake; measured minimum Ux is +19.6 m/s.",
+        "x_over_l": 0.5,
+        "start_m": [
+          1.00525,
+          0.0,
+          0.0
+        ],
+        "end_m": [
+          1.00525,
+          0.6,
+          0.0
+        ],
+        "varying_coordinate": "y",
+        "interval_m": [
+          0.0,
+          0.6
+        ]
+      },
+      {
+        "id": "wake_lateral_x_0p10l_y_0p194",
+        "label": "Wake lateral, 0.10 L behind base, y = 194 mm",
+        "description": "Spanwise cut through the near wake at the AutoCFD constant-height plane, capturing lateral wake asymmetry that the symmetry-plane lines cannot see.",
+        "x_over_l": 0.1,
+        "start_m": [
+          0.58765,
+          0.194,
+          -0.35
+        ],
+        "end_m": [
+          0.58765,
+          0.194,
+          0.35
+        ],
+        "varying_coordinate": "z",
+        "interval_m": [
+          -0.35,
+          0.35
+        ]
+      }
+    ],
+    "measured_ux_over_uinf_range_run_0": {
+      "wake_vertical_x_0p05l": [
+        -0.2507,
+        1.0057
+      ],
+      "wake_vertical_x_0p10l": [
+        -0.1536,
+        0.9999
+      ],
+      "wake_vertical_x_0p25l": [
+        0.3422,
+        0.991
+      ],
+      "wake_vertical_x_0p50l": [
+        0.4719,
+        0.9901
+      ],
+      "wake_lateral_x_0p10l_y_0p194": [
+        0.4881,
+        1.0024
+      ]
+    },
+    "siting_confirmation": "Reverse flow is present at 0.05 L and 0.10 L (ux/uinf reaches -0.251 and -0.154) and absent by 0.25 L (minimum +0.342), so the four vertical stations do bracket the recirculation as intended."
+  },
+  "rationale": {
+    "station_siting": "The four vertical wake stations bracket the measured recirculation: two inside it (0.05 L, 0.10 L), one immediately past closure (0.25 L), and one in the recovering wake (0.50 L). Siting them from the measured flow rather than by analogy avoids the prototype's fabricated placeholders, which carried no physical meaning.",
+    "vertical_extent": "y from 0 to 0.6 m is a fixed absolute span covering the ground plane to well above the tallest published body (0.473 m), so the same station samples the same physical region in every variant despite the height spread.",
+    "why_not_fractions_of_height": "Body height varies by 50% across the design space while length and width do not. A height-relative station would sample a different physical location in every case and would make the profile metric partly a function of geometry rather than of flow prediction."
+  }
+}
