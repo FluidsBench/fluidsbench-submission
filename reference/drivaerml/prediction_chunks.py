@@ -1,4 +1,4 @@
-"""Candidate local NPZ transport for native DrivAerML predictions.
+"""Candidate local NPZ transport for native-cell predictions.
 
 This is an evaluator input format, not an official FluidsBench prediction
 artifact.  One JSON manifest describes exactly one ``case_id`` and one native
@@ -52,6 +52,7 @@ import numpy as np
 
 
 CANDIDATE_FORMAT = "drivaerml-native-prediction-chunks-candidate"
+AHMEDML_CANDIDATE_FORMAT = "ahmedml-native-prediction-chunks-candidate"
 CANDIDATE_FORMAT_VERSION = 1
 CANDIDATE_ARTIFACT_ROLE = (
     "local_evaluator_input_not_official_submission_artifact"
@@ -88,6 +89,32 @@ _SUPPORT_FIELD_COMPONENTS: Mapping[str, Mapping[str, int]] = MappingProxyType(
             {
                 "pMeanTrim": 1,
                 "UMeanTrim": 3,
+            }
+        ),
+        "ahmedml_surface_native_cells": MappingProxyType(
+            {
+                "pMean": 1,
+                "wallShearStressMean": 3,
+            }
+        ),
+        "ahmedml_volume_native_cells": MappingProxyType(
+            {
+                "pMean": 1,
+                "UMean": 3,
+            }
+        ),
+    }
+)
+
+_FORMAT_SUPPORT_IDS: Mapping[str, frozenset[str]] = MappingProxyType(
+    {
+        CANDIDATE_FORMAT: frozenset(
+            {"surface_native_cells", "volume_native_cells"}
+        ),
+        AHMEDML_CANDIDATE_FORMAT: frozenset(
+            {
+                "ahmedml_surface_native_cells",
+                "ahmedml_volume_native_cells",
             }
         ),
     }
@@ -414,10 +441,11 @@ def load_prediction_chunk_manifest(
         expected=_MANIFEST_KEYS,
         context="prediction chunk manifest",
     )
-    if manifest["format"] != CANDIDATE_FORMAT:
+    candidate_format = manifest["format"]
+    if candidate_format not in _FORMAT_SUPPORT_IDS:
         raise PredictionChunkError(
-            f"format must be {CANDIDATE_FORMAT!r}; this loader does not read "
-            "official prediction artifacts"
+            "format must identify one supported local candidate transport; "
+            "this loader does not read official prediction artifacts"
         )
     if (
         isinstance(manifest["format_version"], bool)
@@ -435,6 +463,14 @@ def load_prediction_chunk_manifest(
     if _CASE_ID_RE.fullmatch(case_id) is None:
         raise PredictionChunkError("case_id must have the form run_<positive integer>")
     support_id = _string(manifest["support_id"], "support_id")
+    if support_id not in _FORMAT_SUPPORT_IDS[str(candidate_format)]:
+        expected_supports = ", ".join(
+            sorted(_FORMAT_SUPPORT_IDS[str(candidate_format)])
+        )
+        raise PredictionChunkError(
+            f"support_id {support_id!r} is not valid for format "
+            f"{candidate_format!r}; expected one of {expected_supports}"
+        )
     expected_fields = _field_component_mapping(
         manifest["field_components"], support_id
     )
@@ -1175,6 +1211,7 @@ def validate_prediction_chunks(
 
 
 __all__ = [
+    "AHMEDML_CANDIDATE_FORMAT",
     "CANDIDATE_ARTIFACT_ROLE",
     "CANDIDATE_FORMAT",
     "CANDIDATE_FORMAT_VERSION",

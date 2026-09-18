@@ -1,0 +1,305 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/discretization.schema.json",
+  "schema_version": "1.0",
+  "submission_id": "ahmedml-geotransolver-calibrated-dev-fixture-v1",
+  "dataset_id": "ahmedml",
+  "split_id": "full",
+  "scoring_support_release_id": "ahmedml-native-all-splits-support-v1-candidate",
+  "scoring_support_manifest_sha256": "c727bad2ca2566dfed44920cc334af136f2fbe32f3c8886b2fcb130f495fd124",
+  "training": {
+    "surface_input": {
+      "used": false,
+      "notes": "No model training is attributed to this development fixture."
+    },
+    "surface_supervision": {
+      "used": false,
+      "notes": "No model training is attributed to this development fixture."
+    },
+    "volume_input": {
+      "used": false,
+      "notes": "No model training is attributed to this development fixture."
+    },
+    "volume_supervision": {
+      "used": false,
+      "notes": "No model training is attributed to this development fixture."
+    }
+  },
+  "inference": {
+    "geometry_dependency": "native_cfd_mesh",
+    "surface_input": {
+      "used": true,
+      "representation": "complete native surface CFD truth used by the synthetic fixture transform",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "per_case",
+            "minimum": 721602,
+            "median": 1094776.0,
+            "maximum": 1404826
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "reported",
+        "native_entity_counts": [
+          {
+            "entity": "cells",
+            "count": {
+              "kind": "per_case",
+              "minimum": 721602,
+              "median": 1094776.0,
+              "maximum": 1404826
+            }
+          }
+        ],
+        "fractions": [
+          {
+            "entity": "cells",
+            "fraction": {
+              "kind": "fixed",
+              "value": 1.0
+            }
+          }
+        ]
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native",
+      "case_record_id": "surface-native-input"
+    },
+    "volume_input": {
+      "used": true,
+      "representation": "complete native volume CFD truth used by the synthetic fixture transform",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "per_case",
+            "minimum": 19461878,
+            "median": 21252206.5,
+            "maximum": 22773261
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "reported",
+        "native_entity_counts": [
+          {
+            "entity": "cells",
+            "count": {
+              "kind": "per_case",
+              "minimum": 19461878,
+              "median": 21252206.5,
+              "maximum": 22773261
+            }
+          }
+        ],
+        "fractions": [
+          {
+            "entity": "cells",
+            "fraction": {
+              "kind": "fixed",
+              "value": 1.0
+            }
+          }
+        ]
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native",
+      "case_record_id": "volume-native-input"
+    },
+    "direct_outputs": [
+      {
+        "id": "surface-native-output",
+        "domain": "surface",
+        "representation": {
+          "used": true,
+          "representation": "complete native surface-cell synthetic prediction fields",
+          "entity_counts": [
+            {
+              "entity": "cells",
+              "count": {
+                "kind": "per_case",
+                "minimum": 721602,
+                "median": 1094776.0,
+                "maximum": 1404826
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "reported",
+            "native_entity_counts": [
+              {
+                "entity": "cells",
+                "count": {
+                  "kind": "per_case",
+                  "minimum": 721602,
+                  "median": 1094776.0,
+                  "maximum": 1404826
+                }
+              }
+            ],
+            "fractions": [
+              {
+                "entity": "cells",
+                "fraction": {
+                  "kind": "fixed",
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "sampling": {
+            "kind": "none"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "native"
+        },
+        "queries_per_forward_pass": {
+          "kind": "fixed",
+          "value": 1
+        }
+      },
+      {
+        "id": "volume-native-output",
+        "domain": "volume",
+        "representation": {
+          "used": true,
+          "representation": "complete native volume-cell synthetic prediction fields",
+          "entity_counts": [
+            {
+              "entity": "cells",
+              "count": {
+                "kind": "per_case",
+                "minimum": 19461878,
+                "median": 21252206.5,
+                "maximum": 22773261
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "reported",
+            "native_entity_counts": [
+              {
+                "entity": "cells",
+                "count": {
+                  "kind": "per_case",
+                  "minimum": 19461878,
+                  "median": 21252206.5,
+                  "maximum": 22773261
+                }
+              }
+            ],
+            "fractions": [
+              {
+                "entity": "cells",
+                "fraction": {
+                  "kind": "fixed",
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "sampling": {
+            "kind": "none"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "native"
+        },
+        "queries_per_forward_pass": {
+          "kind": "fixed",
+          "value": 1
+        }
+      }
+    ],
+    "mappings": [
+      {
+        "support_id": "ahmedml-surface-native-cells-v1",
+        "source_output_id": "surface-native-output",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "Predictions retain the exact native CellData entity order.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-volume-native-cells-v1",
+        "source_output_id": "volume-native-output",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "Predictions retain the exact native CellData entity order.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-force-coefficients-v1",
+        "source_output_id": "surface-native-output",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "ahmedml-evaluator-derived-support-v1",
+          "rule_version": "candidate-v1"
+        },
+        "implementation": "Dataset evaluator derives force or profile values from the same complete native prediction fields.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-surface-cp-profiles-v1",
+        "source_output_id": "surface-native-output",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "ahmedml-evaluator-derived-support-v1",
+          "rule_version": "candidate-v1"
+        },
+        "implementation": "Dataset evaluator derives force or profile values from the same complete native prediction fields.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-volume-velocity-profiles-v1",
+        "source_output_id": "volume-native-output",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "ahmedml-evaluator-derived-support-v1",
+          "rule_version": "candidate-v1"
+        },
+        "implementation": "Dataset evaluator derives force or profile values from the same complete native prediction fields.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      }
+    ]
+  },
+  "case_manifest": {
+    "format": "jsonl",
+    "file": "discretization/cases.jsonl",
+    "sha256": "88f9bf2f9421a1d332dd7dea87999ceb2e3f9138e89e9da15ac2f5aa1edaacf9",
+    "case_count": 50
+  },
+  "notes": "Exact full-native-cell evaluator fixture. The direct-output wording describes generated fixture arrays, not neural-network inference."
+}

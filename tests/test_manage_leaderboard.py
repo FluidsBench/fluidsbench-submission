@@ -40,7 +40,13 @@ class ManageLeaderboardTests(unittest.TestCase):
         }
 
     def test_feed_row_pins_profile_index_bytes(self) -> None:
-        path = manage_leaderboard.ROOT / "submissions" / "ahmedml" / "transolver" / "submission.json"
+        path = (
+            manage_leaderboard.ROOT
+            / "submissions"
+            / "ahmedml"
+            / "ahmedml-geotransolver-calibrated-dev-fixture-v1"
+            / "submission.json"
+        )
         manifest = {
             "data_release": {"status": "prototype_dummy_data"},
             "datasets": [{"name": "AhmedML"}],

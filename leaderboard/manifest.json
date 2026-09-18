@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-09-16T15:32:29Z",
+  "generated_at": "2026-09-18T03:00:34Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -19,13 +19,13 @@
     "rounding": "decimal_half_up"
   },
   "data_release": {
-    "id": "prototype-dev-2026-09-12-ff7bc182fdcd",
+    "id": "prototype-dev-2026-09-16-b1cafe65dc8c",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-09-16T15:32:29Z",
+    "generated_at": "2026-09-18T03:00:34Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
-    "feed_sha256": "ff7bc182fdcde1276ae061245f5099a036ff45daf9ebcc11e8fac2e3d73ed03d",
+    "feed_sha256": "b1cafe65dc8ca6a7154bfa857983a178786d6a7e06065364eb4cdb638b7a4f85",
     "canonical_url": "https://fluidsbench.org/",
     "archive_url": null,
     "release_view_url": null,
@@ -34,7 +34,7 @@
     "profile_ground_truth": {
       "release_id": "prototype-profile-ground-truth-2026-09-04",
       "manifest_url": "https://fluidsbench.org/assets/data/profile-ground-truth/manifest.json",
-      "manifest_sha256": "fa57d0eeebbda2bb900930efbdc138599c42556e31d977206702fda2f796e861"
+      "manifest_sha256": "51d2e2ac4a4c0cbb9ff01e06b12551206d648e5bcb1d56955b8172c551607057"
     },
     "license": {
       "spdx_id": "Apache-2.0",
@@ -51,16 +51,16 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "bf4d03c744aa7009b2c77643c950a6cc51a4f5a6a2b72ffcb36511787b3d274b",
-      "record_count": 78,
+      "index_sha256": "831a2283d55ddf5b37fb069934db7251b5c4ea0a4c913d1bb66b3bdd0fc7cdc5",
+      "record_count": 68,
       "eligible_record_count": 0
     },
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "ce7ac2e9b63cd51942d9bbed4660b63245eaaff02a97d20efe0dbea168a5f5aa",
-      "record_count": 78,
-      "series_count": 78
+      "sha256": "37a356060e5cbbdfdeb8780bfc396e3b2a98e8f5d80c91c269a0f3648bf3ca9f",
+      "record_count": 69,
+      "series_count": 69
     }
   },
   "all_file": "leaderboard/all.json",
@@ -233,8 +233,8 @@
       "name": "AhmedML",
       "slug": "ahmedml",
       "file": "leaderboard/datasets/ahmedml.json",
-      "submission_count": 10,
-      "updated_at": "2026-07-08",
+      "submission_count": 1,
+      "updated_at": "2026-09-16",
       "metrics": {
         "dimensional_fields": [
           "surface_pressure",
@@ -385,12 +385,12 @@
         {
           "id": "pressure_profiles",
           "title": "Pressure-coefficient profiles",
-          "description": "Reference and submitted pressure-coefficient traces at the selected station.",
+          "description": "Evaluator-derived Cp traces on frozen native surface-cell mappings.",
           "data_key": "cp_cuts",
           "x_keys": [
-            "x",
-            "x_over_c",
-            "x_over_l"
+            "x_over_l",
+            "s_over_slant",
+            "x"
           ],
           "quantities": [
             {
@@ -407,29 +407,27 @@
             {
               "id": "upper_body_centerline",
               "label": "Upper-body centreline",
-              "x_label": "x/L along upper-body centreline",
-              "description": "FluidsBench symmetry-plane trace over the roof and rear slant.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://arxiv.org/abs/2407.20801"
+              "x_label": "Normalized upper-body coordinate",
+              "description": "Nearest native surface polygons along the upper-body centreline.",
+              "basis": "fluidsbench_candidate_native_mapping"
             },
             {
               "id": "underbody_centerline",
               "label": "Underbody centreline",
-              "x_label": "x/L along underbody centreline",
-              "description": "FluidsBench symmetry-plane trace along the Ahmed body underfloor.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://arxiv.org/abs/2407.20801"
+              "x_label": "x/L",
+              "description": "Nearest native surface polygons along the underbody centreline.",
+              "basis": "fluidsbench_candidate_native_mapping"
             },
             {
               "id": "rear_slant_centerline",
               "label": "Rear-slant centreline",
-              "x_label": "s/L along rear-slant centreline",
-              "description": "FluidsBench centreline trace across the pressure-sensitive rear slant.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://arxiv.org/abs/2407.20801"
+              "x_label": "s/slant",
+              "description": "Nearest native surface polygons along the rear-slant centreline.",
+              "basis": "fluidsbench_candidate_native_mapping"
             }
           ],
           "required": true,
+          "allow_unlisted_stations": false,
           "required_series_fields": [
             "case_id",
             "station_id"
@@ -438,62 +436,58 @@
         },
         {
           "id": "velocity_profiles",
-          "title": "Velocity profiles",
-          "description": "Reference and submitted normalized velocity traces at the selected station.",
+          "title": "Wake velocity profiles",
+          "description": "Evaluator-derived Ux/Uinf traces on frozen native volume-cell mappings.",
           "data_key": "velocity_profiles",
           "x_keys": [
-            "x",
-            "offset",
-            "distance"
+            "z_over_h",
+            "y_over_w",
+            "x"
           ],
           "quantities": [
             {
-              "id": "velocity_ratio",
-              "label": "Velocity",
-              "y_label": "Normalized velocity",
+              "id": "ux_over_uinf",
+              "label": "Ux/Uinf",
+              "y_label": "Streamwise velocity, Ux/Uinf",
               "y_keys": [
-                "u_over_u_inf",
-                "velocity_ratio"
+                "ux_over_uinf",
+                "u_over_u_inf"
               ],
               "unit": ""
             }
           ],
           "stations": [
             {
-              "id": "prototype_0_25l",
-              "label": "0.25L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 0.25 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
+              "id": "wake_vertical_x_0p25_l",
+              "label": "Vertical wake, x/L = 0.25",
+              "x_label": "z/H",
+              "description": "Vertical centreplane wake profile 0.25 body lengths downstream.",
+              "basis": "fluidsbench_candidate_native_mapping"
             },
             {
-              "id": "prototype_0_50l",
-              "label": "0.50L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 0.50 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
+              "id": "wake_vertical_x_0p50_l",
+              "label": "Vertical wake, x/L = 0.50",
+              "x_label": "z/H",
+              "description": "Vertical centreplane wake profile 0.50 body lengths downstream.",
+              "basis": "fluidsbench_candidate_native_mapping"
             },
             {
-              "id": "prototype_1_00l",
-              "label": "1.00L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 1.00 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
+              "id": "wake_vertical_x_1p00_l",
+              "label": "Vertical wake, x/L = 1.00",
+              "x_label": "z/H",
+              "description": "Vertical centreplane wake profile 1.00 body lengths downstream.",
+              "basis": "fluidsbench_candidate_native_mapping"
             },
             {
-              "id": "wake_x_0_50l",
-              "label": "Wake at 0.50L",
-              "x_label": "Profile coordinate",
-              "description": "Profile in the wake at x/L = 0.50.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.org/datasets/"
+              "id": "wake_lateral_x_0p50_l_z_0p50_h",
+              "label": "Lateral wake, x/L = 0.50",
+              "x_label": "y/W",
+              "description": "Lateral wake profile at x/L = 0.50 and z/H = 0.50 above the body minimum.",
+              "basis": "fluidsbench_candidate_native_mapping"
             }
           ],
-          "required": false,
-          "allow_unlisted_stations": true,
+          "required": true,
+          "allow_unlisted_stations": false,
           "required_series_fields": [
             "case_id",
             "station_id"
@@ -503,7 +497,7 @@
       "scoring_support": {
         "status": "owner_review_required",
         "submissions_open": false,
-        "closed_reason": "Submissions are currently closed.",
+        "closed_reason": "AhmedML native evaluator and support are under owner review; only the explicit non-ranked development fixture may be exercised.",
         "coverage_contract": {
           "dimensionality": "3D surface and 3D flow domain",
           "rule": "complete_original_public_release_entities",
@@ -529,7 +523,10 @@
               "yPlusMean"
             ],
             "physical_weight": "polygon_area",
-            "verification": "confirmed_from_public_file"
+            "physical_weight_public_file": "run_<case>/boundary_cell_area_<case>.npy",
+            "force_orientation_source": "public_boundary_vtp_polygon_winding",
+            "force_area_vector_storage": "deterministic_rebuildable_evaluator_cache",
+            "verification": "pinned_public_revision_and_source_identity"
           },
           {
             "id": "flow-domain-native",
@@ -552,7 +549,10 @@
               "UPrime2Mean"
             ],
             "physical_weight": "cell_volume",
-            "verification": "confirmed_from_public_file"
+            "physical_weight_source": "deterministic_vtk_9_5_2_derivation_from_public_volume_vtu",
+            "physical_weight_storage": "deterministic_rebuildable_evaluator_cache",
+            "primary_ranked_weighting": "equal_native_cell",
+            "verification": "pinned_public_revision_and_source_identity"
           }
         ],
         "relative_l2_policy": {
@@ -565,12 +565,42 @@
           "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
         },
         "owner_decisions_required": [
-          "pin_exact_public_release_files_revisions_and_hashes",
-          "confirm_array_names_entity_associations_masks_and_order",
-          "publish_authoritative_physical_weights_and_stable_entity_ids",
-          "approve_public_ground_truth_case_set_and_split_bindings",
-          "approve_loader_evaluator_and_immutable_scoring_support_manifest"
-        ]
+          "review_and_approve_profile_station_geometry",
+          "review_and_approve_candidate_score_weights_and_caps",
+          "approve_the_hash_bound_cache_derivation_and_production_preinstallation",
+          "approve_evaluator_implementation_and_open_submissions"
+        ],
+        "dataset_source": {
+          "repository_id": "neashton/ahmedml",
+          "revision": "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+          "identity_file": "public-source-identity/ahmedml-public-source-identity-v1.json",
+          "identity_sha256": "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44"
+        },
+        "source_audit_exceptions": [
+          {
+            "id": "ahmedml-run-492-force-csv-native-field-mismatch-v1",
+            "case_id": "run_492",
+            "scope": "published_force_csv_replay_only",
+            "published_csv_used_for_scoring": false,
+            "scoring_truth_source": "native_surface_field_integration",
+            "policy": "checksum_and_value_bound_single_case_exception_no_global_tolerance_relaxation"
+          }
+        ],
+        "derived_cache_contract": {
+          "status": "candidate",
+          "classification": "deterministic_rebuildable_evaluator_cache",
+          "contract_file": "derived-cache-contract-v1.json",
+          "contract_sha256": "9ddbd006f23130d2d581202635b3686b0689a0882d62cc3a7362bb9c192a325e",
+          "remote_payload_required": false,
+          "production_installation_required": true
+        },
+        "candidate_manifest": {
+          "status": "candidate",
+          "release_id": "ahmedml-native-all-splits-support-v1-candidate",
+          "manifest_file": "scoring-support/ahmedml-native-all-splits-support-v1-candidate/manifest.json",
+          "manifest_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/ahmedml/scoring-support/ahmedml-native-all-splits-support-v1-candidate/manifest.json",
+          "manifest_sha256": "c727bad2ca2566dfed44920cc334af136f2fbe32f3c8886b2fcb130f495fd124"
+        }
       },
       "overall_score_composite": {
         "metric_id": "overall_score",
@@ -652,7 +682,14 @@
         ],
         "tolerance": 1e-06
       },
-      "revision_count": 10
+      "revision_count": 1,
+      "profile_definition": {
+        "id": "ahmedml-native-profiles-v1-candidate",
+        "file": "profile-definition-v1.json",
+        "sha256": "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae",
+        "sample_count_per_series": 128,
+        "prediction_source": "evaluator_derived_from_complete_native_fields"
+      }
     },
     {
       "name": "AirfRANS",
