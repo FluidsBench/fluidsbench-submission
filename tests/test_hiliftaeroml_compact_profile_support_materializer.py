@@ -31,8 +31,6 @@ from reference.hiliftaeroml.native_profile_truth import (
 )
 from reference.hiliftaeroml.native_profiles import (
     CP_SOURCE_ARRAYS,
-    PROFILE_CONTRACT_ID,
-    PROFILE_CONTRACT_SHA256,
     canonical_json_bytes,
 )
 from tests.test_hiliftaeroml_native_profiles import (
@@ -152,8 +150,11 @@ def _benchmark_specification(root: Path, truth_manifest_sha: str) -> tuple[Path,
     spec = {
         "dataset_id": "hiliftaeroml",
         "profile_definition": {
-            "contract_id": PROFILE_CONTRACT_ID,
-            "sha256": PROFILE_CONTRACT_SHA256,
+            "status": "official",
+            "contract_id": COMPACT_PROFILE_CONTRACT_ID,
+            "file": contract_path.name,
+            "format": COMPACT_PROFILE_FORMAT,
+            "sha256": COMPACT_PROFILE_CONTRACT_SHA256,
             "candidate_dry_run_profile_ground_truth": {
                 "status": "complete_candidate_not_published",
                 "usage": "maintainer_local_candidate_dry_run_only",
@@ -162,12 +163,6 @@ def _benchmark_specification(root: Path, truth_manifest_sha: str) -> tuple[Path,
                 "binding_file": binding_path.name,
                 "binding_sha256": binding_sha,
             },
-        },
-        "compact_profile_definition": {
-            "contract_id": COMPACT_PROFILE_CONTRACT_ID,
-            "file": contract_path.name,
-            "format": COMPACT_PROFILE_FORMAT,
-            "sha256": COMPACT_PROFILE_CONTRACT_SHA256,
             "candidate_dry_run_evaluator_support": {
                 "status": COMPACT_SUPPORT_RELEASE_STATUS,
                 "usage": COMPACT_SUPPORT_RELEASE_USAGE,
@@ -305,7 +300,7 @@ def test_materializer_is_truth_safe_exclusive_and_ab_deterministic(
     # Rebuilding against that pin is byte-identical; a different pin leaves no
     # output release behind.
     spec_body = json.loads(spec.read_text(encoding="utf-8"))
-    support_declaration = spec_body["compact_profile_definition"][
+    support_declaration = spec_body["profile_definition"][
         "candidate_dry_run_evaluator_support"
     ]
     support_declaration["manifest_sha256"] = manifest_sha
@@ -591,7 +586,7 @@ def test_routed_materializer_deduplicates_cases_and_preserves_case_sets(
     )
     spec_body = json.loads(spec.read_text(encoding="utf-8"))
     prior_manifest_sha = "7" * 64
-    spec_body["compact_profile_definition"][
+    spec_body["profile_definition"][
         "candidate_dry_run_evaluator_support"
     ]["manifest_sha256"] = prior_manifest_sha
     mirror_case_set_id = "caseset-test-mirror"

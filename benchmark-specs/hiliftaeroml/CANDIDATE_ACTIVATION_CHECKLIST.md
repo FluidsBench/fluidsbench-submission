@@ -35,6 +35,9 @@ contract before the benchmark owner considers activation.
 - Closed candidate evaluator revision:
   `68899f780d96b70f2badb5658971c87af0b17172`, frozen for maintainer-local
   candidate dry runs only with no activation effect.
+- Official and exclusive profile representation:
+  `fluidsbench-hiliftaeroml-compact-profile-chunks-v2`, contract SHA-256
+  `44651f4da2add287e51807f02f329f5aa226dd1fb2ae21d99e129ba2fc9000b5`.
 
 The scoring-support generator verifies all 1,355 unique evaluation cases
 against the complete internal 1,800-case surface and volume integrity
@@ -138,8 +141,8 @@ upload or publish the package, or create a public or private leaderboard entry.
   arrays, association, ordering, and the retained volume mask.
 - Finish and owner-approve the authoritative surface dual-area, Cp cut, load,
   and five-station velocity prerequisite chain for every case.
-- Freeze a lossless Cp disconnected-graph profile serialization and publish a
-  matching complete-split profile-ground-truth release.
+- Publish immutable compact-v2 evaluator support for every enabled case set
+  and bind its implementation into the frozen evaluator release.
 - Exercise and independently audit the same-stream nondimensional relative and
   dimensional absolute field reductions, vector semantics, loads, and profile
   aggregation.
