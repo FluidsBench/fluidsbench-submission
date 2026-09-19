@@ -1,10 +1,12 @@
-# HiLiftAeroML native profile truth candidate
+# HiLiftAeroML internal source-truth export
 
 `scripts/export_hiliftaeroml_native_profile_truth.py` builds the separate,
-benchmark-owned truth required by the prediction-only native profile contract.
-It does not publish truth, complete owner approval, activate scoring, or open
-submissions. The exact format is frozen in
-`native-profile-truth-release-format-v1.json`.
+benchmark-owned lossless source truth used to materialize evaluator support
+for the official compact profile-v2 contract. This is internal maintainer
+machinery, not a participant submission representation, and native profile-v1
+packages are not accepted. Running it does not publish truth, complete owner
+approval, activate scoring, or open submissions. The internal release format
+is frozen in `native-profile-truth-release-format-v1.json`.
 
 ## Scientific and privacy boundary
 

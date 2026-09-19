@@ -86,12 +86,23 @@ def valid_chunk() -> dict:
     }
 
 
-def test_compact_profile_contract_is_additive_and_excludes_full_surface_l2() -> None:
+def test_compact_profile_contract_is_official_exclusive_and_excludes_full_surface_l2() -> None:
     contract = load("benchmark-specs/hiliftaeroml/native-profile-format-v2.json")
     assert contract["format"] == FORMAT
     assert contract["contract_id"] == CONTRACT_ID
-    assert contract["status"] == "additive_candidate_not_bound"
-    assert contract["backward_compatibility"]["native_profile_v1_is_unchanged"]
+    # The immutable wire contract remains byte-compatible with all retained
+    # support and result packages; the current spec owns format selection.
+    specification = load("benchmark-specs/hiliftaeroml/submission-spec.json")
+    definition = specification["profile_definition"]
+    assert definition["status"] == "official"
+    assert definition["format"] == FORMAT
+    assert definition["accepted_profile_formats"] == [FORMAT]
+    assert definition["prior_profile_formats_accepted"] is False
+    assert definition["sha256"] == (
+        "b1fd29b2cb6c1c84c694ddffc5d85f6cd68fd175b79c3695a443aa78bf962c2f"
+    )
+    assert "compact_profile_definition" not in specification
+    assert specification["scoring_support"]["submissions_open"] is False
     full_surface = contract["scope"]["full_surface_cp_dual_area_l2"]
     assert full_surface == {
         "metric_id": "surface_pressure_rel_l2",
@@ -188,6 +199,16 @@ def test_compact_profile_chunk_and_generic_index_are_schema_valid() -> None:
     }
     profile_validator = Draft202012Validator(profile_fragment)
     assert list(profile_validator.iter_errors(compact_profile_data)) == []
+
+    legacy_format = "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate"
+    assert list(
+        Draft202012Validator(index_schema).iter_errors(
+            {**index, "format": legacy_format}
+        )
+    )
+    assert list(
+        profile_validator.iter_errors({**compact_profile_data, "format": legacy_format})
+    )
 
     evidence_schema = load("schemas/v3/evaluation-evidence.schema.json")
     binding_fragment = {

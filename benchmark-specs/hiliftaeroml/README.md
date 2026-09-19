@@ -142,13 +142,17 @@ Volume velocity uses exactly five stations: `B.2`, `B.3`, `C.1`, `C.2`, and
 mask, physical polyline arc-length weights, and explicit gaps. Truth is centered
 within each station; station SSE and SST are pooled within the case before the
 equal-case macro average. Invalid runs remain serialized with zero weight and
-must not be interpolated or bridged.
+must not be interpolated or bridged in evaluator support; participant arrays
+contain only the valid rows in evaluator-defined order.
 
-The package profile chunks contain predictions and alignment support, not
-ground truth. Candidate truth is a separate unpublished benchmark-owned
-release used only for an authorized local dry run. See
-[`native-profile-format-v1.json`](native-profile-format-v1.json) and
-[`NATIVE_PROFILE_TRUTH_EXPORT.md`](NATIVE_PROFILE_TRUTH_EXPORT.md).
+Compact profile-v2 is the official and sole participant-facing profile
+representation. Earlier HiLift profile package formats are not accepted. The current
+`submission-spec.json` selects the unchanged compact contract. Its historical
+`-candidate` identifiers and contract metadata remain frozen to preserve the
+validated support, all 23 package archives, and their recorded scores.
+Representation selection does not publish support or attest the implementation.
+Participant artifacts contain predictions only; evaluator-owned alignment,
+topology, weights, masks, and truth remain outside the package.
 
 The website repository now publishes a separate, checksum-bound float32
 projection of the Cp and velocity truth for all 1,355 unique cases in all
@@ -159,10 +163,10 @@ and cannot be used for metric recomputation. Its exact cross-repository binding
 is
 [`public-compact-profile-truth-binding-v1.json`](public-compact-profile-truth-binding-v1.json).
 
-### Additive compact profile-v2 candidate
+### Official compact profile-v2 representation
 
-An additive, inactive v2 candidate removes geometry and topology arrays from
-the participant profile artifacts. The evaluator owns that immutable support,
+Compact profile-v2 removes geometry and topology arrays from the participant
+profile artifacts. The evaluator owns that immutable support,
 joins it outside the submission, and accepts exactly two prediction-value
 arrays per case: quantized Cp deltas and scalar Float32 velocity-profile
 values. The exact velocity float32 bits use a lossless unsigned-delta and byte
@@ -176,7 +180,7 @@ replay additionally confirms that a closed native contour is unwrapped by
 repeating its first vertex, thereby retaining its existing closing segment
 without creating a new edge; this does not change any Full360 support bytes.
 Velocity retains the
-five v1 stations and submits all and only evaluator-selected valid rows as
+five stations and submits all and only evaluator-selected valid rows as
 scalar `float32` speed-over-freestream values; the on-disk `uint8` transform
 round-trips every bit. This compact path changes only
 Cp-cut and velocity-profile plotting/scoring payloads. Complete native-surface
@@ -257,8 +261,8 @@ Use the configuration template and instructions in
 [`../../examples/hiliftaeroml-v3-candidate/`](../../examples/hiliftaeroml-v3-candidate/)
 and [`PARTICIPANT_GUIDE.md`](PARTICIPANT_GUIDE.md). The assembler consumes the
 native evaluator's complete case-set aggregate, separate surface and volume
-output roots if necessary, case receipts, and the authorized local candidate
-profile-truth release. It writes a normal FluidsBench schema-v3 package and
+output roots if necessary, case receipts, and the authorized local compact-v2
+evaluator-support release. It writes a normal FluidsBench schema-v3 package and
 refuses missing cases, placeholder values, stale hashes, unresolved release
 bindings, or an existing output directory.
 
@@ -275,8 +279,8 @@ The machine-readable authorities are:
   aliases, and lifecycle status;
 - [`methodology-contract.json`](methodology-contract.json) for required model
   outputs;
-- [`native-profile-format-v1.json`](native-profile-format-v1.json) for
-  prediction-only profile serialization;
+- [`native-profile-format-v2.json`](native-profile-format-v2.json) for the sole
+  accepted prediction-only profile serialization;
 - [`public-compact-profile-truth-binding-v1.json`](public-compact-profile-truth-binding-v1.json)
   for the non-scoring all-case browser-plot truth;
 - [`regional-diagnostics-v2.json`](regional-diagnostics-v2.json) for optional
@@ -284,7 +288,6 @@ The machine-readable authorities are:
 - [`candidate-evaluator-release-binding.json`](candidate-evaluator-release-binding.json)
   for the fail-closed release hand-off.
 
-The additive [`native-profile-format-v2.json`](native-profile-format-v2.json)
-is a candidate contract only. Its evaluator-owned scoring support is not
-public; publishing the plot-only derivative does not supersede the v1
-authority or activate compact-profile intake.
+The compact-v2 representation is official. Its evaluator-owned scoring support
+is not yet public for every enabled case set, so publishing the plot-only
+derivative does not open profile intake.

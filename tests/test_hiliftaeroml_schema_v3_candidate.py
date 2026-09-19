@@ -20,7 +20,7 @@ from scripts.validate_scoring_supports import validate_candidate_manifest_releas
 ROOT = Path(__file__).resolve().parents[1]
 DATASET = ROOT / "benchmark-specs" / "hiliftaeroml"
 SPEC = DATASET / "submission-spec.json"
-PROFILE_FORMAT = DATASET / "native-profile-format-v1.json"
+PROFILE_FORMAT = DATASET / "native-profile-format-v2.json"
 LEADERBOARD_MANIFEST = ROOT / "leaderboard" / "manifest.json"
 SUBMISSION_SCHEMA = ROOT / "schemas" / "v3" / "submission.schema.json"
 FULL_SPLIT = DATASET / "splits" / "full.json"
@@ -184,39 +184,20 @@ def test_frozen_evaluator_revision_is_consistent_and_nonactivating() -> None:
     assert "freeze_and_approve_the_immutable_dataset_evaluator_git_revision" not in decisions
 
 
-def test_compact_command_and_evidence_are_additive_to_native_v1() -> None:
+def test_official_compact_v2_is_the_only_profile_command_and_evidence_path() -> None:
     config = load(CONCRETE_CONFIG)
     assembler._validate_config_envelope(config)
-    native = assembler._selected_evaluation(
-        config, compact_profile_mode=False
-    )
-    compact = assembler._selected_evaluation(
-        config, compact_profile_mode=True
-    )
-    assert "--candidate-profile-truth-release" in native["command"]
-    assert "--candidate-compact-profile-support-release" not in native["command"]
-    assert "--candidate-compact-profile-support-release" in compact["command"]
-    assert "--candidate-profile-truth-release" not in compact["command"]
-    assert native != compact
+    evaluation = assembler._selected_evaluation(config)
+    assert "--profile-support-release" in evaluation["command"]
+    assert "--candidate-profile-truth-release" not in evaluation["command"]
+    assert "--candidate-compact-profile-support-release" not in evaluation["command"]
+    assert "compact_evaluation" not in config
 
     revision = config["release_bindings"]["evaluator"]["code_revision"]
-    native_notes = assembler._profile_evidence_notes(
-        evaluator_revision=revision, compact_profile_mode=False
-    )
-    assert native_notes == (
-        "Evaluator identity is repository-frozen at "
-        f"{revision}; profile topology contract is "
-        f"{assembler.PROFILE_CONTRACT_SHA256}. Cp/velocity profile R2 was "
-        "recomputed from prediction-only chunks against the explicitly supplied "
-        "inactive local candidate truth release; this does not publish or "
-        "activate profile intake."
-    )
-    compact_notes = assembler._profile_evidence_notes(
-        evaluator_revision=revision, compact_profile_mode=True
-    )
-    assert assembler.COMPACT_PROFILE_CONTRACT_SHA256 in compact_notes
-    assert "unbound worktree candidate" in compact_notes
-    assert "no code revision or implementation-manifest SHA-256" in compact_notes
+    notes = assembler._profile_evidence_notes(evaluator_revision=revision)
+    assert assembler.COMPACT_PROFILE_CONTRACT_SHA256 in notes
+    assert "sole official participant profile representation" in notes
+    assert "has not yet been bound into the frozen evaluator manifest" in notes
     assert (
         assembler.COMPACT_PROFILE_IMPLEMENTATION_BINDING
         == {
@@ -229,6 +210,26 @@ def test_compact_command_and_evidence_are_additive_to_native_v1() -> None:
             ),
         }
     )
+
+
+@pytest.mark.parametrize(
+    "config_path",
+    sorted(CONCRETE_CONFIG.parent.rglob("*.json")),
+    ids=lambda path: path.name,
+)
+def test_every_example_configuration_uses_the_selected_profile_contract(
+    config_path: Path,
+) -> None:
+    config = load(config_path)
+    assembler._validate_config_envelope(config)
+    bindings = config["release_bindings"]
+    assert "native_profile_contract" not in bindings
+    assert bindings["profile_contract"]["sha256"] == digest(PROFILE_FORMAT)
+    assert bindings["profile_contract"]["format"] == assembler.COMPACT_PROFILE_FORMAT
+    assert "compact_evaluation" not in config
+    if "template" not in config_path.name:
+        assert "--profile-support-release" in config["evaluation"]["command"]
+        assembler._release_bindings(config, load(SPEC), SPEC)
 
 
 def test_primary_l2_policy_and_activation_gate_are_explicit() -> None:

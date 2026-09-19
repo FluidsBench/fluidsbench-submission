@@ -61,8 +61,6 @@ from reference.hiliftaeroml.native_profile_truth_materializer import (  # noqa: 
     load_prerequisite_authority_index,
 )
 from reference.hiliftaeroml.native_profiles import (  # noqa: E402
-    PROFILE_CONTRACT_ID,
-    PROFILE_CONTRACT_SHA256,
     ROWS,
     SAFE_CASE_ID,
     NativeProfileError,
@@ -223,7 +221,7 @@ def _load_benchmark_bindings(
         _fail("selected split differs from its submission-spec binding")
 
     compact = _require_mapping(
-        spec.get("compact_profile_definition"), "compact_profile_definition"
+        spec.get("profile_definition"), "profile_definition"
     )
     contract_path = _safe_declared_file(
         submission_spec_path.parent,
@@ -235,7 +233,8 @@ def _load_benchmark_bindings(
     except NativeProfileError as error:
         raise CompactProfileEvaluationError(str(error)) from error
     if (
-        compact.get("contract_id") != COMPACT_PROFILE_CONTRACT_ID
+        compact.get("status") != "official"
+        or compact.get("contract_id") != COMPACT_PROFILE_CONTRACT_ID
         or compact.get("format") != COMPACT_PROFILE_FORMAT
         or compact.get("sha256") != COMPACT_PROFILE_CONTRACT_SHA256
         or contract_sha != COMPACT_PROFILE_CONTRACT_SHA256
@@ -265,14 +264,8 @@ def _load_benchmark_bindings(
             "candidate evaluator-support manifest_sha256",
         )
 
-    native = _require_mapping(spec.get("profile_definition"), "profile_definition")
-    if (
-        native.get("contract_id") != PROFILE_CONTRACT_ID
-        or native.get("sha256") != PROFILE_CONTRACT_SHA256
-    ):
-        _fail("native profile-v1 contract binding differs")
     truth_declaration = _require_mapping(
-        native.get("candidate_dry_run_profile_ground_truth"),
+        compact.get("candidate_dry_run_profile_ground_truth"),
         "candidate_dry_run_profile_ground_truth",
     )
     binding_path = _safe_declared_file(

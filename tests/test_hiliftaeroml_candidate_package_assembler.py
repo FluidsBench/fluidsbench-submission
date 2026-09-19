@@ -105,14 +105,21 @@ def write_surface_load_case(root: Path, case_id: str, value: dict) -> tuple[Path
     return load_path, digest(load_path)
 
 
-def test_specification_binds_the_native_profile_contract_but_not_fake_truth() -> None:
+def test_specification_binds_only_the_official_compact_v2_profile_contract() -> None:
     specification = load(SPECIFICATION)
     profile = specification["profile_definition"]
     contract = DATASET / profile["file"]
-    assert profile["status"] == "candidate_owner_review_required"
-    assert profile["contract_id"] == assembler.PROFILE_CONTRACT_ID
-    assert profile["format"] == assembler.PROFILE_FORMAT
-    assert profile["sha256"] == digest(contract) == assembler.PROFILE_CONTRACT_SHA256
+    assert profile["status"] == "official"
+    assert profile["contract_id"] == assembler.COMPACT_PROFILE_CONTRACT_ID
+    assert profile["format"] == assembler.COMPACT_PROFILE_FORMAT
+    assert (
+        profile["sha256"]
+        == digest(contract)
+        == assembler.COMPACT_PROFILE_CONTRACT_SHA256
+    )
+    assert profile["accepted_profile_formats"] == [assembler.COMPACT_PROFILE_FORMAT]
+    assert profile["prior_profile_formats_accepted"] is False
+    assert "compact_profile_definition" not in specification
     assert profile["profile_ground_truth"] == {
         "status": "not_published",
         "release_id": None,
@@ -188,7 +195,7 @@ def test_all_case_compact_support_record_covers_every_official_split() -> None:
     assert validation["package_size_policy"][
         "aggregate_package_byte_ceiling"
     ] is None
-    candidate_support = specification["compact_profile_definition"][
+    candidate_support = specification["profile_definition"][
         "candidate_dry_run_evaluator_support"
     ]
     assert validation["candidate_binding"]["submission_spec_manifest_sha256"] == (
@@ -211,7 +218,7 @@ def test_all_case_compact_support_record_covers_every_official_split() -> None:
 def test_all_case_compact_support_rebind_preserves_closed_candidate_status() -> None:
     rebind = load(ALL_CASE_SUPPORT_REBIND)
     specification = load(SPECIFICATION)
-    support = specification["compact_profile_definition"][
+    support = specification["profile_definition"][
         "candidate_dry_run_evaluator_support"
     ]
     assert rebind["schema"] == (
@@ -325,7 +332,7 @@ def test_blocker_inspection_is_read_only_and_reports_owner_gates() -> None:
     assert result["blocker_count"] == len(result["blockers"])
     assert "configuration_token" in gates
     assert "frozen_evaluator_revision" not in gates
-    assert "profile_ground_truth_release" in gates
+    assert "profile_support_release" in gates
     assert "split" in gates
     assert result["note"] == "No package is written by blocker inspection."
 

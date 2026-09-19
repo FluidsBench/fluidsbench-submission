@@ -1326,8 +1326,7 @@ def approve_submission(
         )
         scoring_support = specification.get("scoring_support", {})
         profile_definition = specification.get("profile_definition", {})
-        compact_definition = specification.get("compact_profile_definition", {})
-        compact_profile = (
+        official_profile = (
             submission.get("profile_data", {}).get("format")
             == "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
         )
@@ -1335,13 +1334,12 @@ def approve_submission(
             specification.get("status") != "official"
             or scoring_support.get("status") != "official"
             or scoring_support.get("submissions_open") is not True
+            or profile_definition.get("status") != "official"
+            or not official_profile
             or profile_definition.get("profile_ground_truth", {}).get("status")
             != "published"
-            or (
-                compact_profile
-                and compact_definition.get("evaluator_support", {}).get("status")
-                != "published"
-            )
+            or profile_definition.get("evaluator_support", {}).get("status")
+            != "published"
         ):
             return [
                 "HiLiftAeroML approval is closed until scoring support, profile "

@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-09-18T03:02:15Z",
+  "generated_at": "2026-09-19T06:15:53Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -19,13 +19,13 @@
     "rounding": "decimal_half_up"
   },
   "data_release": {
-    "id": "prototype-dev-2026-09-16-b1cafe65dc8c",
+    "id": "prototype-dev-2026-09-16-7702b02f0140",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-09-18T03:02:15Z",
+    "generated_at": "2026-09-19T06:15:53Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
-    "feed_sha256": "b1cafe65dc8ca6a7154bfa857983a178786d6a7e06065364eb4cdb638b7a4f85",
+    "feed_sha256": "7702b02f01408b26e16d0d687ade3cebce4c4267a395dd803fa3f0d645dea572",
     "canonical_url": "https://fluidsbench.org/",
     "archive_url": null,
     "release_view_url": null,
@@ -34,7 +34,7 @@
     "profile_ground_truth": {
       "release_id": "prototype-profile-ground-truth-2026-09-04",
       "manifest_url": "https://fluidsbench.org/assets/data/profile-ground-truth/manifest.json",
-      "manifest_sha256": "51d2e2ac4a4c0cbb9ff01e06b12551206d648e5bcb1d56955b8172c551607057"
+      "manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
     },
     "license": {
       "spdx_id": "Apache-2.0",
@@ -51,16 +51,16 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "8b8bdc243f9c8247639ea16943f2ab6cc0de60e179e8144f9c020962dd2dbef2",
-      "record_count": 68,
+      "index_sha256": "0d85795b3b1554068a60038c3f66c5f5136be1ff6581a15e26fe18abb1bac7ee",
+      "record_count": 58,
       "eligible_record_count": 0
     },
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "9625e7ec5c513998636d065e24b4ff4bd975888da81e37a315e46ef3bc1bdfd2",
-      "record_count": 69,
-      "series_count": 69
+      "sha256": "70fd300c0573e39ab0e124db355f7666018c20926bd25e1379cbff8c439867f6",
+      "record_count": 59,
+      "series_count": 59
     }
   },
   "all_file": "leaderboard/all.json",
@@ -2824,11 +2824,35 @@
       },
       "revision_count": 23,
       "profile_definition": {
-        "status": "candidate_owner_review_required",
-        "contract_id": "hiliftaeroml-native-profile-predictions-v1-candidate",
-        "file": "native-profile-format-v1.json",
-        "format": "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate",
-        "sha256": "39a1e79edf951b3e4f5d1b5fa456cbd1fad524e93dac1bdca58534e01647ae25",
+        "status": "official",
+        "contract_id": "hiliftaeroml-compact-profile-predictions-v2-candidate",
+        "file": "native-profile-format-v2.json",
+        "format": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate",
+        "sha256": "b1fd29b2cb6c1c84c694ddffc5d85f6cd68fd175b79c3695a443aa78bf962c2f",
+        "representation_decision": {
+          "status": "full360_sensitivity_complete_128_selected",
+          "file": "compact-cp-representation-decision-v1.json",
+          "sha256": "f0290ad8c2b390dc09cf8e43797d4d838fba616a0695ba53ebf0e9b72fd64bd7"
+        },
+        "evaluator_support": {
+          "status": "not_published",
+          "release_id": null,
+          "manifest_sha256": null
+        },
+        "candidate_dry_run_evaluator_support": {
+          "status": "complete_candidate_not_published",
+          "usage": "maintainer_local_candidate_dry_run_only",
+          "release_id": "hiliftaeroml-compact-profile-support-v2-candidate",
+          "manifest_sha256": "7f946510cf8f63d05adaff4c91980d74f29c45ed7209b5a8f7e604e521cb823b"
+        },
+        "public_plot_ground_truth": {
+          "status": "public_plot_only_candidate",
+          "usage": "browser_visualization_only_not_metric_recomputation",
+          "activation_effect": "none",
+          "binding_file": "public-compact-profile-truth-binding-v1.json",
+          "binding_sha256": "ba0110dbdfa4d4576a9949386277df45e0bef07c3710e8c7aa7a82deadfa19af"
+        },
+        "activation_rule": "Compact-v2 is the sole selected participant representation. Its immutable contract and wire identifiers retain the historical candidate suffix; this submission specification governs current representation selection. Intake remains closed until immutable evaluator support is published for every enabled case set and independent scoring-support and owner-approval gates are complete.",
         "profile_ground_truth": {
           "status": "not_published",
           "release_id": null,
@@ -2842,15 +2866,18 @@
           "binding_file": "candidate-profile-truth-binding.json",
           "binding_sha256": "11deb05bb29d98149c72712aef571b9be4de543cd69d5d6a1ef68b5bd53f7b93"
         },
-        "activation_rule": "Publish and owner-approve one complete profile ground-truth release bound to this exact contract SHA-256 before accepting native profile chunks."
+        "accepted_profile_formats": [
+          "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
+        ],
+        "prior_profile_formats_accepted": false
       }
     },
     {
       "name": "WindsorML",
       "slug": "windsorml",
       "file": "leaderboard/datasets/windsorml.json",
-      "submission_count": 10,
-      "updated_at": "2026-07-08",
+      "submission_count": 0,
+      "updated_at": null,
       "metrics": {
         "dimensional_fields": [
           "surface_pressure",
@@ -2865,37 +2892,80 @@
       },
       "splits": [
         {
-          "id": "default",
-          "name": "Default",
-          "description": "Default prototype benchmark split."
+          "id": "full",
+          "name": "Full",
+          "case_set_id": "baseline-test",
+          "case_count": 35,
+          "description": "280 training / 35 validation / 35 test cases with published fields; official test assignment: 36."
+        },
+        {
+          "id": "medium",
+          "name": "Medium",
+          "case_set_id": "baseline-test",
+          "case_count": 35,
+          "description": "93 training / 35 validation / 35 test cases with published fields; official test assignment: 36."
+        },
+        {
+          "id": "scarce",
+          "name": "Scarce",
+          "case_set_id": "baseline-test",
+          "case_count": 35,
+          "description": "47 training / 35 validation / 35 test cases with published fields; official test assignment: 36."
+        },
+        {
+          "id": "super_scarce",
+          "name": "Super scarce",
+          "case_set_id": "baseline-test",
+          "case_count": 35,
+          "description": "8 training / 35 validation / 35 test cases with published fields; official test assignment: 36."
+        },
+        {
+          "id": "geometry",
+          "name": "Geometry OOD",
+          "case_set_id": "geometry-test",
+          "case_count": 71,
+          "description": "243 training / 36 validation / 71 test cases with published fields; official test assignment: 71."
+        },
+        {
+          "id": "high_drag",
+          "name": "High drag",
+          "case_set_id": "high_drag-test",
+          "case_count": 70,
+          "description": "244 training / 36 validation / 70 test cases with published fields; official test assignment: 71."
+        },
+        {
+          "id": "low_drag",
+          "name": "Low drag",
+          "case_set_id": "low_drag-test",
+          "case_count": 70,
+          "description": "244 training / 36 validation / 70 test cases with published fields; official test assignment: 71."
+        },
+        {
+          "id": "image_wake",
+          "name": "Image wake",
+          "case_set_id": "image_wake-test",
+          "case_count": 71,
+          "description": "244 training / 35 validation / 71 test cases with published fields; official test assignment: 71."
         }
       ],
-      "submission_format": "legacy_external_aero",
+      "submission_format": "windsorml_native_candidate",
       "metric_ids": [
         "overall_score",
         "field_score",
         "force_score",
-        "diagnostic_score",
         "surface_pressure_rel_l2",
         "surface_pressure_equal_entity_rel_l2",
         "surface_wall_shear_rel_l2",
         "surface_wall_shear_equal_entity_rel_l2",
         "volume_velocity_rel_l2",
-        "volume_velocity_physical_rel_l2",
         "volume_pressure_rel_l2",
-        "volume_pressure_physical_rel_l2",
-        "surface_pressure_rel_l1",
-        "surface_wall_shear_rel_l1",
-        "volume_velocity_rel_l1",
-        "volume_pressure_rel_l1",
-        "velocity_profile_r2",
-        "cp_cut_r2",
-        "volume_velocity_mae",
-        "volume_pressure_mae",
-        "volume_velocity_rmse",
-        "volume_pressure_rmse",
+        "diagnostic_score",
         "cd_r2",
         "cl_r2",
+        "velocity_profile_r2",
+        "cp_cut_r2",
+        "velocity_profile_relative_r2",
+        "cp_cut_relative_r2",
         "c_drag_mae",
         "c_lift_mae"
       ],
@@ -2904,15 +2974,9 @@
           "label": "Surface pressure rel. L2 (area-weighted)",
           "description": "Area-weighted relative L2 error for surface pressure; each scored surface point is weighted by its benchmark-supplied represented area. Lower is better."
         },
-        "surface_pressure_rel_l1": {
-          "description": "Area-weighted relative L1 error for surface pressure. Lower is better."
-        },
         "surface_wall_shear_rel_l2": {
           "label": "Surface wall shear rel. L2 (area-weighted)",
           "description": "Area-weighted relative L2 error for surface wall shear; each scored surface point is weighted by its benchmark-supplied represented area. Lower is better."
-        },
-        "surface_wall_shear_rel_l1": {
-          "description": "Area-weighted relative L1 error for surface wall shear. Lower is better."
         }
       },
       "ranking": {
@@ -2946,20 +3010,22 @@
           ],
           "stations": [
             {
-              "id": "symmetry_plane_z_0",
-              "label": "Symmetry-plane trace (z = 0 m)",
-              "x_label": "x/L along z = 0 m surface trace",
-              "description": "Mean surface-pressure cut used in the WindsorML supplementary validation (Figure 18).",
-              "basis": "published_validation_trace",
-              "source_url": "https://arxiv.org/abs/2407.19320"
+              "id": "cp_centreline_upper",
+              "label": "Upper centreline, nose to base",
+              "x_label": "Streamwise x, m",
+              "description": "for each sampled x, the largest-y boundary point with |z| < 0.004 m"
             },
             {
-              "id": "horizontal_cut_y_0_2595",
-              "label": "Horizontal trace (y = 0.2595 m)",
-              "x_label": "x/L along y = 0.2595 m surface trace",
-              "description": "Mean surface-pressure cut used in the WindsorML supplementary validation (Figure 19).",
-              "basis": "published_validation_trace",
-              "source_url": "https://arxiv.org/abs/2407.19320"
+              "id": "cp_base_vertical",
+              "label": "Base vertical centreline",
+              "x_label": "Height y, m",
+              "description": "for each sampled y, the boundary point nearest (base_x, y, 0) with |z| < 0.004 m and x > base_x - 0.01"
+            },
+            {
+              "id": "cp_side_horizontal_y_0p194",
+              "label": "Side surface, horizontal cut at y = 194 mm",
+              "x_label": "Streamwise x, m",
+              "description": "for each sampled x, the largest-z boundary point with |y - 0.194| < 0.004 m"
             }
           ],
           "required": true,
@@ -2967,7 +3033,62 @@
             "case_id",
             "station_id"
           ],
-          "reverse_y": true
+          "reverse_y": true,
+          "allow_unlisted_stations": false,
+          "families": [
+            {
+              "id": "windsorml_cp_constant_v1",
+              "placement_mode": "constant",
+              "label": "Fixed locations",
+              "description": "128 pinned native CFD samples per station. Included in the candidate score.",
+              "stations": [
+                {
+                  "id": "cp_centreline_upper",
+                  "label": "Upper centreline, nose to base",
+                  "x_label": "Streamwise x, m",
+                  "description": "for each sampled x, the largest-y boundary point with |z| < 0.004 m"
+                },
+                {
+                  "id": "cp_base_vertical",
+                  "label": "Base vertical centreline",
+                  "x_label": "Height y, m",
+                  "description": "for each sampled y, the boundary point nearest (base_x, y, 0) with |z| < 0.004 m and x > base_x - 0.01"
+                },
+                {
+                  "id": "cp_side_horizontal_y_0p194",
+                  "label": "Side surface, horizontal cut at y = 194 mm",
+                  "x_label": "Streamwise x, m",
+                  "description": "for each sampled x, the largest-z boundary point with |y - 0.194| < 0.004 m"
+                }
+              ]
+            },
+            {
+              "id": "windsorml_cp_relative_v1",
+              "placement_mode": "relative",
+              "label": "Geometry-relative locations \u2014 report only",
+              "description": "128 pinned native CFD samples per station. Body-height-relative diagnostics carry zero score weight.",
+              "stations": [
+                {
+                  "id": "cp_centreline_upper_relative",
+                  "label": "Upper centreline, nose to base",
+                  "x_label": "Normalized streamwise position, x/L",
+                  "description": "identical selection, parameterised by x/L rather than x"
+                },
+                {
+                  "id": "cp_base_vertical_relative",
+                  "label": "Base vertical centreline",
+                  "x_label": "Height / body height, y/h",
+                  "description": "for each sampled eta, the boundary point nearest (base_x, eta * h_case, 0)"
+                },
+                {
+                  "id": "cp_side_horizontal_relative",
+                  "label": "Side surface, horizontal cut at y/h = 0.56491",
+                  "x_label": "Streamwise x, m",
+                  "description": "for each sampled x, the largest-z boundary point with |y - eta * h_case| < 0.004 m, eta = 0.56491"
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "velocity_profiles",
@@ -2981,62 +3102,152 @@
           ],
           "quantities": [
             {
-              "id": "velocity_ratio",
-              "label": "Velocity",
-              "y_label": "Normalized velocity",
+              "id": "ux_over_uinf",
+              "label": "Streamwise velocity",
+              "y_label": "Streamwise velocity, u_x / U_inf",
               "y_keys": [
-                "u_over_u_inf",
-                "velocity_ratio"
+                "ux_over_uinf"
               ],
               "unit": ""
             }
           ],
           "stations": [
             {
-              "id": "prototype_0_25l",
-              "label": "0.25L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 0.25 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
+              "id": "wake_vertical_x_0p05l",
+              "label": "Vertical wake, 0.05L behind base",
+              "x_label": "Height y, m",
+              "description": "Native volume samples at x = 0.53545 m."
             },
             {
-              "id": "prototype_0_50l",
-              "label": "0.50L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 0.50 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
+              "id": "wake_vertical_x_0p10l",
+              "label": "Vertical wake, 0.1L behind base",
+              "x_label": "Height y, m",
+              "description": "Native volume samples at x = 0.58765 m."
             },
             {
-              "id": "prototype_1_00l",
-              "label": "1.00L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 1.00 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
+              "id": "wake_vertical_x_0p25l",
+              "label": "Vertical wake, 0.25L behind base",
+              "x_label": "Height y, m",
+              "description": "Native volume samples at x = 0.74425 m."
             },
             {
-              "id": "wake_x_0_80l",
-              "label": "Wake at 0.80L",
-              "x_label": "Profile coordinate",
-              "description": "Windsor body wake profile at x/L = 0.80.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.org/datasets/"
+              "id": "wake_vertical_x_0p50l",
+              "label": "Vertical wake, 0.5L behind base",
+              "x_label": "Height y, m",
+              "description": "Native volume samples at x = 1.00525 m."
+            },
+            {
+              "id": "wake_lateral_x_0p10l_y_0p194",
+              "label": "Lateral wake, 0.1L behind base",
+              "x_label": "Lateral z, m",
+              "description": "Native volume samples at x = 0.58765 m."
             }
           ],
-          "required": false,
-          "allow_unlisted_stations": true,
+          "required": true,
+          "allow_unlisted_stations": false,
           "required_series_fields": [
             "case_id",
             "station_id"
+          ],
+          "families": [
+            {
+              "id": "windsorml_velocity_constant_v1",
+              "placement_mode": "constant",
+              "label": "Fixed locations",
+              "description": "128 pinned native CFD samples per station. Included in the candidate score.",
+              "stations": [
+                {
+                  "id": "wake_vertical_x_0p05l",
+                  "label": "Vertical wake, 0.05L behind base",
+                  "x_label": "Height y, m",
+                  "description": "Native volume samples at x = 0.53545 m."
+                },
+                {
+                  "id": "wake_vertical_x_0p10l",
+                  "label": "Vertical wake, 0.1L behind base",
+                  "x_label": "Height y, m",
+                  "description": "Native volume samples at x = 0.58765 m."
+                },
+                {
+                  "id": "wake_vertical_x_0p25l",
+                  "label": "Vertical wake, 0.25L behind base",
+                  "x_label": "Height y, m",
+                  "description": "Native volume samples at x = 0.74425 m."
+                },
+                {
+                  "id": "wake_vertical_x_0p50l",
+                  "label": "Vertical wake, 0.5L behind base",
+                  "x_label": "Height y, m",
+                  "description": "Native volume samples at x = 1.00525 m."
+                },
+                {
+                  "id": "wake_lateral_x_0p10l_y_0p194",
+                  "label": "Lateral wake, 0.1L behind base",
+                  "x_label": "Lateral z, m",
+                  "description": "Native volume samples at x = 0.58765 m."
+                }
+              ]
+            },
+            {
+              "id": "windsorml_velocity_relative_v1",
+              "placement_mode": "relative",
+              "label": "Geometry-relative locations \u2014 report only",
+              "description": "128 pinned native CFD samples per station. Body-height-relative diagnostics carry zero score weight.",
+              "stations": [
+                {
+                  "id": "wake_vertical_x_0p05l_relative",
+                  "label": "Vertical wake, 0.05L behind base",
+                  "x_label": "Height / body height, y/h",
+                  "description": "Native volume samples at x = 0.53545 m."
+                },
+                {
+                  "id": "wake_vertical_x_0p10l_relative",
+                  "label": "Vertical wake, 0.1L behind base",
+                  "x_label": "Height / body height, y/h",
+                  "description": "Native volume samples at x = 0.58765 m."
+                },
+                {
+                  "id": "wake_vertical_x_0p25l_relative",
+                  "label": "Vertical wake, 0.25L behind base",
+                  "x_label": "Height / body height, y/h",
+                  "description": "Native volume samples at x = 0.74425 m."
+                },
+                {
+                  "id": "wake_vertical_x_0p50l_relative",
+                  "label": "Vertical wake, 0.5L behind base",
+                  "x_label": "Height / body height, y/h",
+                  "description": "Native volume samples at x = 1.00525 m."
+                },
+                {
+                  "id": "wake_lateral_x_0p10l_relative",
+                  "label": "Lateral wake, 0.1L behind base, y/h = 0.56491",
+                  "x_label": "Lateral z, m",
+                  "description": "Native volume samples at x = 0.58765 m."
+                }
+              ]
+            }
           ]
         }
       ],
       "scoring_support": {
         "status": "owner_review_required",
         "submissions_open": false,
-        "closed_reason": "Submissions are currently closed.",
+        "closed_reason": "Every contract input is frozen and every support artefact is generated and hash-pinned; opening submissions is a release decision for the dataset owner.",
+        "profile_support": {
+          "status": "generated_and_hash_pinned",
+          "manifest_file": "profile-support/windsorml-profile-support-v3-manifest.json",
+          "manifest_sha256": "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376",
+          "support_schema": "windsorml-profile-support-v3",
+          "case_count": 233,
+          "note": "One support file per scored test case, each pinning the native entity IDs the profile series are read at. Every case reports exactly 8 containment fallbacks: the eight vertical stations each begin at y = 0 on the ground plane, outside the fluid mesh."
+        },
+        "public_source": {
+          "repository_id": "neashton/windsorml",
+          "revision": "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
+          "identity_file": "public-source-identity/windsorml-public-source-identity-v1.json",
+          "published_case_count": 350,
+          "note": "The aggregate tables and the official split manifest enumerate 355 design variants, but run_350..run_354 have no per-run payload in the public release and are therefore unscoreable."
+        },
         "coverage_contract": {
           "dimensionality": "3D surface and 3D flow domain",
           "rule": "complete_original_public_release_entities",
@@ -3049,7 +3260,7 @@
         },
         "public_supports": [
           {
-            "id": "surface-native",
+            "id": "windsorml_surface_native_points",
             "public_file": "run_<case>/boundary_<case>.vtu",
             "format": "VTK UnstructuredGrid boundary mesh",
             "domain": "three_dimensional_body_surface",
@@ -3059,16 +3270,25 @@
               "cpavg",
               "cfxavg",
               "cfyavg",
+              "cfzavg"
+            ],
+            "available_point_arrays": [
+              "cpavg",
+              "cfxavg",
+              "cfyavg",
               "cfzavg",
               "cpvar",
-              "yplusavg"
+              "yplusavg",
+              "Normals"
             ],
-            "units_note": "cpavg and the cfxavg/cfyavg/cfzavg skin-friction components are dimensionless coefficients",
-            "physical_weight": "mass_lumped_dual_polygon_area",
+            "units_note": "cpavg and the cfxavg/cfyavg/cfzavg skin-friction components are dimensionless coefficients.",
+            "physical_weight": "published_barycentric_dual_area",
+            "physical_weight_file": "run_<case>/boundary_dual_area_<case>.npy",
+            "physical_weight_note": "The published per-point dual areas are canonical. The dataset README warns that recomputing polygon areas with VTK can drift for non-planar quads, so they must not be regenerated.",
             "verification": "confirmed_from_public_file"
           },
           {
-            "id": "flow-domain-native",
+            "id": "windsorml_volume_native_cells",
             "public_file": "run_<case>/volume_<case>.vtu",
             "format": "VTK UnstructuredGrid",
             "domain": "three_dimensional_flow_domain",
@@ -3092,25 +3312,64 @@
               "reynoldsstresszz",
               "pressureavg"
             ],
-            "physical_weight": "cell_volume",
+            "physical_weight": "equal_native_entity",
+            "physical_weight_note": "v1 scores the volume with equal-cell weighting. WindsorML publishes no cell-volume sidecar and generating one for ~291M cells x 350 cases costs roughly 400 GB and 1,000 CPU-hours, so the cell-volume-weighted variants are deferred.",
             "verification": "confirmed_from_public_file"
           }
         ],
+        "force_convention": {
+          "reference_area_m2": 0.112,
+          "reference_area_source": "constant_reference_area_force_mom_csv",
+          "axes": {
+            "drag": "+x",
+            "lift": "+y",
+            "side": "+z"
+          },
+          "axes_note": "The vertical axis is +y. The body sits on a ground plane at y=0 spanning y in [0, 0.343] and is laterally symmetric about z=0. Mapping lift to +z collapses cl from about 0.49 to about -0.01.",
+          "truth_source": "native_field_integration",
+          "audit_reference": "published_force_mom_csv",
+          "audit_note": "Truth and prediction are integrated identically so a perfect prediction scores R^2 = 1; the published CSV bounds the truth integration rather than defining it."
+        },
         "relative_l2_policy": {
           "surface_or_curve_primary": "physical_measure_weighted",
           "surface_or_curve_secondary": "equal_native_entity",
           "flow_domain_primary": "equal_native_entity",
-          "flow_domain_secondary": "physical_measure_weighted",
-          "point_or_vertex_physical_weights": "deterministic_mass_lumped_dual_measure_from_the_exact_public_mesh",
+          "point_or_vertex_physical_weights": "published_barycentric_dual_area",
           "vector_rule": "one_entity_weight_multiplies_the_squared_vector_magnitude",
+          "vector_assembly_note": "Vector components are published as independent scalar arrays. Relative L2 recombines exactly from per-component squared sums; Euclidean MAE and RMSE do not, and are reported per component.",
           "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
         },
+        "scored_case_set": {
+          "status": "owner_approved",
+          "approved_on": "2026-09-17",
+          "rule": "official_split_manifest_intersected_with_published_runs",
+          "official_unique_test_cases": 235,
+          "scored_unique_test_cases": 233,
+          "excluded_case_ids": [
+            "run_352",
+            "run_354"
+          ],
+          "excluded_reason": "The official manifest assigns 355 identifiers, but run_350 through run_354 have no per-run payload in the public release. run_352 (high_drag) and run_354 (baseline and low_drag test sets) are therefore unscoreable.",
+          "comparability_note": "Scores on these case sets are not comparable to any evaluation run against the unreduced official manifest."
+        },
+        "placement_mode_policy": {
+          "rule": "at_most_one_placement_mode_per_diagnostic_kind_may_have_nonzero_weight",
+          "ranked_mode": "constant",
+          "report_only_mode": "relative",
+          "definition_file": "profile-definition-v2.json"
+        },
+        "component_weights": {
+          "status": "owner_approved",
+          "approved_on": "2026-09-17",
+          "split": {
+            "field_score": 0.5,
+            "force_score": 0.25,
+            "diagnostic_score": 0.25
+          },
+          "rationale": "Identical to AhmedML and HiLiftAeroML component for component, and to DrivAerML apart from its force group, which splits three ways (cd 0.15, cl 0.05, c_pitch 0.05) because it scores pitching moment. WindsorML publishes cmy, so a c_pitch_r2 term is supported by the data, but it would need surface moment integration and a pinned moment reference point that the dataset does not publish. Not adopted."
+        },
         "owner_decisions_required": [
-          "pin_exact_public_release_files_revisions_and_hashes",
-          "confirm_array_names_entity_associations_masks_and_order",
-          "publish_authoritative_physical_weights_and_stable_entity_ids",
-          "approve_public_ground_truth_case_set_and_split_bindings",
-          "approve_loader_evaluator_and_immutable_scoring_support_manifest"
+          "approve_release_and_open_submissions"
         ]
       },
       "overall_score_composite": {
@@ -3193,7 +3452,7 @@
         ],
         "tolerance": 1e-06
       },
-      "revision_count": 10
+      "revision_count": 0
     },
     {
       "name": "VKI-LS59",
@@ -4418,7 +4677,7 @@
       "digits": 2,
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
       "comparison_group": "relative-l2",
       "comparison_group_label": "Relative L2",
       "column_group_label": "Relative"
@@ -4482,7 +4741,7 @@
       "digits": 2,
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
       "comparison_group": "relative-l2",
       "comparison_group_label": "Relative L2",
       "column_group_label": "Relative"
@@ -6040,7 +6299,7 @@
       "digits": 2,
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
       "comparison_group": "relative-l2",
       "comparison_group_label": "Relative L2",
       "column_group_label": "Relative"
@@ -6056,7 +6315,7 @@
       "digits": 2,
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
       "comparison_group": "relative-l2",
       "comparison_group_label": "Relative L2",
       "column_group_label": "Relative"
@@ -6796,6 +7055,38 @@
       "comparison_group": "profile-errors",
       "comparison_group_label": "Profile errors",
       "column_group_label": "Diagnostics"
+    },
+    {
+      "id": "cp_cut_relative_r2",
+      "label": "Geometry-relative Cp cuts R2",
+      "description": "Body-height-relative WindsorML diagnostic, reported separately with zero score weight. Higher is better.",
+      "group": "r2-metrics",
+      "group_label": "R2",
+      "column_group": "relative",
+      "unit": "",
+      "digits": 3,
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "comparison_group": "r2",
+      "comparison_group_label": "R2",
+      "column_group_label": "Relative"
+    },
+    {
+      "id": "velocity_profile_relative_r2",
+      "label": "Geometry-relative velocity profiles R2",
+      "description": "Body-height-relative WindsorML diagnostic, reported separately with zero score weight. Higher is better.",
+      "group": "r2-metrics",
+      "group_label": "R2",
+      "column_group": "relative",
+      "unit": "",
+      "digits": 3,
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "comparison_group": "r2",
+      "comparison_group_label": "R2",
+      "column_group_label": "Relative"
     }
   ],
   "submission_schema_version": "1.0"

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -24,6 +25,34 @@ FROZEN_REGIONAL_DECLARATION = {
         "1579b0262f3368fe3748eb53025aa5e46c0a32c8ff1616c9becdbb5dedd85650"
     ),
 }
+FROZEN_PROFILE_DECLARATION = {
+    "status": "candidate_owner_review_required",
+    "contract_id": "hiliftaeroml-native-profile-predictions-v1-candidate",
+    "file": "native-profile-format-v1.json",
+    "format": "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate",
+    "sha256": "39a1e79edf951b3e4f5d1b5fa456cbd1fad524e93dac1bdca58534e01647ae25",
+    "profile_ground_truth": {
+        "status": "not_published",
+        "release_id": None,
+        "manifest_sha256": None,
+    },
+    "candidate_dry_run_profile_ground_truth": {
+        "status": "complete_candidate_not_published",
+        "usage": "maintainer_local_candidate_dry_run_only",
+        "release_id": "hiliftaeroml-native-profile-truth-v1-candidate",
+        "manifest_sha256": (
+            "3e20b857e12055e16f1d248d125b8df62a3669c604411dc67322fe98d9ab4477"
+        ),
+        "binding_file": "candidate-profile-truth-binding.json",
+        "binding_sha256": (
+            "11deb05bb29d98149c72712aef571b9be4de543cd69d5d6a1ef68b5bd53f7b93"
+        ),
+    },
+    "activation_rule": (
+        "Publish and owner-approve one complete profile ground-truth release bound "
+        "to this exact contract SHA-256 before accepting native profile chunks."
+    ),
+}
 
 
 @pytest.fixture(scope="module")
@@ -45,9 +74,11 @@ def group_identity(manifest: dict, group_id: str, path: str) -> dict:
     return next(item for item in group["files"] if item["path"] == path)
 
 
-def remove_postfreeze_additive_extensions(specification: dict) -> None:
-    compact_definition = specification.pop("compact_profile_definition")
-    assert compact_definition["status"] == "additive_candidate_not_bound"
+def restore_frozen_manifest_science(specification: dict) -> None:
+    current_profile = specification["profile_definition"]
+    assert current_profile["status"] == "official"
+    assert current_profile["prior_profile_formats_accepted"] is False
+    specification["profile_definition"] = copy.deepcopy(FROZEN_PROFILE_DECLARATION)
     regional = specification["regional_diagnostics"]
     assert regional["role"] == "report_only"
     assert regional["weight"] == 0.0
@@ -260,7 +291,7 @@ def test_lifecycle_normalization_breaks_revision_cycle_but_binds_science(
         ("fluidsbench_adapter", spec_relative)
     ]
     spec = json.loads((ROOT / spec_relative).read_text(encoding="utf-8"))
-    remove_postfreeze_additive_extensions(spec)
+    restore_frozen_manifest_science(spec)
     spec["status"] = "future_activation_state"
     spec["evaluation_reference_version"] = "future-revision-label"
     spec["scoring_support"]["status"] = "future_status"
@@ -288,7 +319,7 @@ def test_lifecycle_normalization_breaks_revision_cycle_but_binds_science(
     assert normalized_lifecycle_spec == spec_identity
 
     scientific_spec = json.loads((ROOT / spec_relative).read_text(encoding="utf-8"))
-    remove_postfreeze_additive_extensions(scientific_spec)
+    restore_frozen_manifest_science(scientific_spec)
     scientific_spec["overall_score_composite"]["components"][0]["weight"] += 0.001
     scientific_spec_path = tmp_path / "submission-spec-scientific.json"
     scientific_spec_path.write_text(json.dumps(scientific_spec), encoding="utf-8")

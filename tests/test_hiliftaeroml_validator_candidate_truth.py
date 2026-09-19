@@ -59,7 +59,7 @@ def _scores() -> dict[str, dict[str, float]]:
 
 def test_hidden_profile_scores_bind_per_case_and_macro_aggregates() -> None:
     errors: list[str] = []
-    validator._validate_hilift_native_profile_score_bindings(
+    validator._validate_hilift_profile_score_bindings(
         errors.append,
         submission=_submission(),
         case_metrics=_case_metrics(),
@@ -74,7 +74,7 @@ def test_hidden_profile_score_mismatches_are_rejected() -> None:
     case_metrics = _case_metrics()
     case_metrics["cases"][0]["nonspatial_metric_values"]["cp_cut_r2"] = 0.2
     errors: list[str] = []
-    validator._validate_hilift_native_profile_score_bindings(
+    validator._validate_hilift_profile_score_bindings(
         errors.append,
         submission=submission,
         case_metrics=case_metrics,
@@ -85,26 +85,13 @@ def test_hidden_profile_score_mismatches_are_rejected() -> None:
     assert "metric_values.velocity_profile_r2" in joined
 
 
-def test_candidate_truth_release_is_rejected_outside_candidate_mode() -> None:
+def test_profile_support_release_is_rejected_outside_candidate_mode() -> None:
     errors, totals = validator.validate_many(
         [],
-        candidate_profile_truth_release=Path("/tmp/inactive-candidate-truth"),
+        profile_support_release=Path("/tmp/inactive-compact-support"),
     )
     assert errors == [
-        "--candidate-profile-truth-release requires --candidate-dry-run"
-    ]
-    assert totals == {"submissions": 0, "cases": 0, "series": 0}
-
-
-def test_candidate_compact_support_release_is_rejected_outside_candidate_mode() -> None:
-    errors, totals = validator.validate_many(
-        [],
-        candidate_compact_profile_support_release=Path(
-            "/tmp/inactive-candidate-compact-support"
-        ),
-    )
-    assert errors == [
-        "--candidate-compact-profile-support-release requires --candidate-dry-run"
+        "--profile-support-release requires --candidate-dry-run"
     ]
     assert totals == {"submissions": 0, "cases": 0, "series": 0}
 
@@ -125,7 +112,7 @@ def test_candidate_compact_support_preopen_cache_is_exact_per_case_set(
     submission = {
         "dataset_id": "hiliftaeroml",
         "split_id": "full",
-        "profile_data": {"format": validator.HILIFT_COMPACT_PROFILE_FORMAT},
+        "profile_data": {"format": validator.HILIFT_PROFILE_FORMAT},
     }
     specification = {
         "splits": [
@@ -135,7 +122,7 @@ def test_candidate_compact_support_preopen_cache_is_exact_per_case_set(
                 "index_file": "splits/full.json",
             }
         ],
-        "compact_profile_definition": {
+        "profile_definition": {
             "candidate_dry_run_evaluator_support": {
                 "manifest_sha256": "c" * 64,
             }
@@ -225,63 +212,7 @@ def test_candidate_reproducibility_uses_candidate_truth_declaration() -> None:
     assert not [error for error in errors if "profile_ground_truth" in error]
 
 
-def test_unpublished_public_truth_closes_hilift_native_profile_intake(
-    tmp_path: Path,
-    monkeypatch,
-) -> None:
-    monkeypatch.setattr(validator, "ROOT", tmp_path)
-    submission = {
-        "submission_id": "hilift-candidate-test",
-        "dataset_id": "hiliftaeroml",
-        "split_id": "full",
-        "case_set_id": "caseset-test",
-        "profile_data": {
-            "format": validator.HILIFT_PROFILE_FORMAT,
-            "index_file": "profiles/index.json",
-            "case_count": 1,
-            "case_set_id": "caseset-test",
-        },
-    }
-    dataset_spec = {
-        "profile_definition": {
-            "profile_ground_truth": {
-                "status": "not_published",
-                "release_id": None,
-                "manifest_sha256": None,
-            },
-            "candidate_dry_run_profile_ground_truth": {
-                "release_id": "candidate-truth-v1",
-                "manifest_sha256": "a" * 64,
-            },
-        }
-    }
-    split_entry = {"index_file": "splits/full.json"}
-
-    public_errors: list[str] = []
-    validator.validate_profiles(
-        public_errors.append,
-        tmp_path,
-        submission,
-        dataset_spec,
-        split_entry,
-    )
-    assert "native profile intake is closed" in "\n".join(public_errors)
-
-    candidate_errors: list[str] = []
-    validator.validate_profiles(
-        candidate_errors.append,
-        tmp_path,
-        submission,
-        dataset_spec,
-        split_entry,
-        candidate_dry_run=True,
-    )
-    assert "explicit local candidate profile-truth release" in "\n".join(
-        candidate_errors
-    )
-
-
-def test_compact_profile_intake_requires_the_explicit_bound_support_release(
+def test_official_profile_intake_requires_the_explicit_bound_support_release(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
@@ -292,7 +223,7 @@ def test_compact_profile_intake_requires_the_explicit_bound_support_release(
         "split_id": "full",
         "case_set_id": "caseset-test",
         "profile_data": {
-            "format": validator.HILIFT_COMPACT_PROFILE_FORMAT,
+            "format": validator.HILIFT_PROFILE_FORMAT,
             "index_file": "profiles/index.json",
             "case_count": 1,
             "case_set_id": "caseset-test",
@@ -304,16 +235,21 @@ def test_compact_profile_intake_requires_the_explicit_bound_support_release(
     }
     dataset_spec = {
         "profile_definition": {
+            "status": "official",
+            "contract_id": validator.HILIFT_PROFILE_CONTRACT_ID,
+            "format": validator.HILIFT_PROFILE_FORMAT,
+            "sha256": validator.HILIFT_PROFILE_CONTRACT_SHA256,
+            "accepted_profile_formats": [validator.HILIFT_PROFILE_FORMAT],
+            "prior_profile_formats_accepted": False,
+            "profile_ground_truth": {
+                "status": "not_published",
+                "release_id": None,
+                "manifest_sha256": None,
+            },
             "candidate_dry_run_profile_ground_truth": {
                 "release_id": "candidate-truth-v1",
                 "manifest_sha256": "a" * 64,
-            }
-        },
-        "compact_profile_definition": {
-            "status": "additive_candidate_not_bound",
-            "contract_id": validator.HILIFT_COMPACT_PROFILE_CONTRACT_ID,
-            "format": validator.HILIFT_COMPACT_PROFILE_FORMAT,
-            "sha256": validator.HILIFT_COMPACT_PROFILE_CONTRACT_SHA256,
+            },
             "evaluator_support": {
                 "status": "not_published",
                 "release_id": None,
@@ -337,7 +273,7 @@ def test_compact_profile_intake_requires_the_explicit_bound_support_release(
         candidate_dry_run=True,
     )
     joined = "\n".join(errors)
-    assert "explicit local candidate compact evaluator-support release" in joined
+    assert "explicit local compact-v2 evaluator-support release" in joined
 
     public_errors: list[str] = []
     validator.validate_profiles(
@@ -347,18 +283,18 @@ def test_compact_profile_intake_requires_the_explicit_bound_support_release(
         dataset_spec,
         {"index_file": "splits/full.json"},
     )
-    assert "compact profile intake is closed" in "\n".join(public_errors)
+    assert "profile intake is closed" in "\n".join(public_errors)
 
 
 def test_compact_profile_implementation_provenance_is_exact_and_cross_bound() -> None:
     implementation = copy.deepcopy(
-        validator.HILIFT_COMPACT_PROFILE_IMPLEMENTATION_BINDING
+        validator.HILIFT_PROFILE_IMPLEMENTATION_BINDING
     )
     revision = "1" * 40
     submission = {
         "evaluation": {"reference_version": "hilift-evaluator-v1"},
         "profile_data": {
-            "format": validator.HILIFT_COMPACT_PROFILE_FORMAT,
+            "format": validator.HILIFT_PROFILE_FORMAT,
             "compact_profile_implementation_binding": copy.deepcopy(
                 implementation
             ),
@@ -406,16 +342,18 @@ def test_compact_profile_implementation_provenance_is_exact_and_cross_bound() ->
     assert "exact unbound compact_profile_implementation_binding" in joined
     assert "must exactly match submission.json profile_data" in joined
 
-    native_submission = copy.deepcopy(submission)
-    native_submission["profile_data"]["format"] = validator.HILIFT_PROFILE_FORMAT
-    native_errors: list[str] = []
+    legacy_submission = copy.deepcopy(submission)
+    legacy_submission["profile_data"]["format"] = (
+        "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate"
+    )
+    legacy_errors: list[str] = []
     validator._validate_hiliftaeroml_dataset_evaluator_binding(
-        native_errors.append,
-        submission=native_submission,
+        legacy_errors.append,
+        submission=legacy_submission,
         evidence=evidence,
         dataset_spec=dataset_spec,
     )
-    assert native_errors == [
+    assert legacy_errors == [
         "compact_profile_implementation_binding is permitted only for the "
         "HiLiftAeroML compact-v2 profile format"
     ]

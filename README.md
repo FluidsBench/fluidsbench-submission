@@ -329,7 +329,10 @@ release-view URLs containing the release ID. The separate full `source_commit` r
 self-referential commit hash.
 
 HiLiftAeroML's eleven registered Transolver previews and twelve registered
-GeoTransolver previews use the compact-v2 prediction contract. Their public
+GeoTransolver previews use the sole selected compact-v2 prediction contract.
+The historical candidate identifiers remain immutable; the current HiLift
+submission specification records representation selection separately from
+public release approval. Earlier native-v1 participant packages are not accepted. Their public
 Cp and velocity comparison truth lives in
 the website repository as a deduplicated 1,355-case release covering all eight
 official case sets. It is bound as plot-only metadata; the private lossless

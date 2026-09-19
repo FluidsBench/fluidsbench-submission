@@ -102,28 +102,7 @@
     ]
   },
   "profile_definition": {
-    "status": "candidate_owner_review_required",
-    "contract_id": "hiliftaeroml-native-profile-predictions-v1-candidate",
-    "file": "native-profile-format-v1.json",
-    "format": "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate",
-    "sha256": "39a1e79edf951b3e4f5d1b5fa456cbd1fad524e93dac1bdca58534e01647ae25",
-    "profile_ground_truth": {
-      "status": "not_published",
-      "release_id": null,
-      "manifest_sha256": null
-    },
-    "candidate_dry_run_profile_ground_truth": {
-      "status": "complete_candidate_not_published",
-      "usage": "maintainer_local_candidate_dry_run_only",
-      "release_id": "hiliftaeroml-native-profile-truth-v1-candidate",
-      "manifest_sha256": "3e20b857e12055e16f1d248d125b8df62a3669c604411dc67322fe98d9ab4477",
-      "binding_file": "candidate-profile-truth-binding.json",
-      "binding_sha256": "11deb05bb29d98149c72712aef571b9be4de543cd69d5d6a1ef68b5bd53f7b93"
-    },
-    "activation_rule": "Publish and owner-approve one complete profile ground-truth release bound to this exact contract SHA-256 before accepting native profile chunks."
-  },
-  "compact_profile_definition": {
-    "status": "additive_candidate_not_bound",
+    "status": "official",
     "contract_id": "hiliftaeroml-compact-profile-predictions-v2-candidate",
     "file": "native-profile-format-v2.json",
     "format": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate",
@@ -149,9 +128,26 @@
       "usage": "browser_visualization_only_not_metric_recomputation",
       "activation_effect": "none",
       "binding_file": "public-compact-profile-truth-binding-v1.json",
-      "binding_sha256": "931357daebbc0bd01830b7b7d2669c6c90a64059addcb5cd0842401d6190ec28"
+      "binding_sha256": "ba0110dbdfa4d4576a9949386277df45e0bef07c3710e8c7aa7a82deadfa19af"
     },
-    "activation_rule": "Owner approval, publication of immutable evaluator support and profile truth bound to this exact contract SHA-256, and an explicit status change are required before compact-v2 submissions open."
+    "activation_rule": "Compact-v2 is the sole selected participant representation. Its immutable contract and wire identifiers retain the historical candidate suffix; this submission specification governs current representation selection. Intake remains closed until immutable evaluator support is published for every enabled case set and independent scoring-support and owner-approval gates are complete.",
+    "profile_ground_truth": {
+      "status": "not_published",
+      "release_id": null,
+      "manifest_sha256": null
+    },
+    "candidate_dry_run_profile_ground_truth": {
+      "status": "complete_candidate_not_published",
+      "usage": "maintainer_local_candidate_dry_run_only",
+      "release_id": "hiliftaeroml-native-profile-truth-v1-candidate",
+      "manifest_sha256": "3e20b857e12055e16f1d248d125b8df62a3669c604411dc67322fe98d9ab4477",
+      "binding_file": "candidate-profile-truth-binding.json",
+      "binding_sha256": "11deb05bb29d98149c72712aef571b9be4de543cd69d5d6a1ef68b5bd53f7b93"
+    },
+    "accepted_profile_formats": [
+      "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
+    ],
+    "prior_profile_formats_accepted": false
   },
   "evaluation_reference_version": "hiliftaeroml-evaluator-v0.1-candidate",
   "default_field_reduction": "per_geometry_then_macro_average",

@@ -1282,6 +1282,19 @@ def index_inline_binary_vtk_xml(
             if parsed is None:
                 continue
             name, closing, self_closing, attributes = parsed
+
+            # A binary DataArray may carry nested metadata children, which VTK
+            # writes for arrays that own an information object. WindsorML's
+            # boundary `Normals` array does exactly this; DrivAerML and AhmedML
+            # files do not, which is why their fixtures strip InformationKey.
+            # The base64 body therefore ends at the FIRST nested tag, not at
+            # </DataArray>; using the closing tag would feed that trailing XML
+            # to the base64 decoder.
+            if stack and stack[-1].binary_array is not None:
+                record = stack[-1].binary_array
+                if record.get("first_child_start") is None:
+                    record["first_child_start"] = tag_start
+
             if closing:
                 if not stack or stack[-1].name != name:
                     expected = stack[-1].name if stack else None
@@ -1307,7 +1320,13 @@ def index_inline_binary_vtk_xml(
                             format="binary",
                             opening_tag_start=int(record["opening_tag_start"]),
                             encoded_start=int(record["encoded_start"]),
-                            encoded_end=tag_start,
+                            # Stop at the first nested child when one exists;
+                            # otherwise the </DataArray> tag bounds the body.
+                            encoded_end=(
+                                tag_start
+                                if record.get("first_child_start") is None
+                                else int(record["first_child_start"])
+                            ),
                             closing_tag_end=tag_end,
                         )
                     )
