@@ -9,6 +9,8 @@ profile registry. That is not an instruction to replace this template's v10
 tokens: wait until the active specification and all owner-release bindings are
 published as one coherent release.
 
+## Inputs and blockers
+
 Copy `package-config.template.json` outside the repository, fill the
 participant fields, and use the immutable release values published by the
 DrivAerML benchmark owner. Check what remains before attempting assembly:
@@ -19,6 +21,14 @@ python scripts/assemble_drivaerml_schema_v3_candidate.py \
   --list-unresolved
 ```
 
+Include the common [methodology record](../../METHODOLOGY.md) and the selected scope's outputs.
+`surface_only` requires the two surface fields and four Cp cuts; omit volume predictions and velocity series, retain fixed
+zero contributions without renormalizing weights, and do not fill missing metrics with dummy values (maximum overall score 60).
+`surface_and_volume` requires all four fields, four Cp cuts, and 16 velocity profiles.
+
+<details>
+<summary>Required method configuration, checkpoint identity, stages, and parameter counts</summary>
+
 The config-v2 format for schema-v3 packages requires a structured
 `participant.methodology` record. Start from the placeholders in the template
 and use [`methodology.example.json`](methodology.example.json) only as a shape
@@ -26,7 +36,7 @@ example. Replace all illustrative values with the submitted method's actual:
 
 - named architecture components, exact total and submitter-trainable parameter
   counts, scoped hyperparameters and inputs, and the production path for all
-  four required fields;
+  required fields for the selected scope (two surface fields in either scope, plus two volume fields only for `surface_and_volume`);
 - normalization, preprocessing, and sampling plus every submitter or upstream
   training stage; submitter stages include their fitting procedure, runs,
   random seeds when stochastic, and measured compute;
@@ -48,6 +58,10 @@ For an upstream stage use `status=performed_upstream`, a component scope, and
 an upstream reference. This provenance choice is independent of the top-level
 target-data `training_regime`.
 
+</details>
+
+## Commands: assemble
+
 The token report does not validate repository bindings or evaluator outputs;
 successful assembly is the authoritative readiness check. Once the
 owner-release fields are published and the frozen evaluator produces
@@ -62,6 +76,8 @@ python scripts/assemble_drivaerml_schema_v3_candidate.py \
   --discretization-cases /path/to/discretization/cases.jsonl \
   --output /path/to/drivaerml-my-model-v1
 ```
+
+## Outputs and validation
 
 The assembler derives dataset and split identities from the checked-in
 DrivAerML specification, canonicalizes the participant files, creates the
@@ -92,3 +108,6 @@ The output contains no `approval`, `maintainer-validation.json`, or
 `prediction-artifact-checks.json`; those are not contributor-owned records.
 Complete native prediction artifacts are optional and are intentionally not
 added by this initial assembler.
+
+Use the [participant guide](../../benchmark-specs/drivaerml/PARTICIPANT_GUIDE.md#6-assemble-and-validate-a-closed-candidate)
+for `--candidate-dry-run` after assembly. A pass is non-approving and never resolves missing release tokens or grants a rank.

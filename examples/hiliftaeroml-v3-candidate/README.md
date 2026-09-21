@@ -14,7 +14,9 @@ selects that exact compact contract as official and rejects earlier native-v1
 participant packages. Existing evaluator support, prediction bytes, validation
 receipts, and all 23 registered previews remain unchanged.
 
-## Prepare the configuration and native products
+<a id="prepare-the-configuration-and-native-products"></a>
+
+## Inputs and blockers
 
 Copy `package-config.template.json` outside this example directory and fill in
 all participant and release fields. Preserve the selected split's exact case
@@ -33,7 +35,9 @@ and its RFC3339 `generated_at` time. There is one profile path. The retained
 Transolver example configurations cover eleven labels; update their method,
 checkpoint, timing, command, and provenance fields for your own run.
 
-## Inspect, assemble, and validate locally
+<a id="inspect-assemble-and-validate-locally"></a>
+
+## Commands: inspect, assemble, and validate
 
 Run from the repository root, using authorized evaluator-owned compact support:
 
@@ -69,6 +73,8 @@ size is reported; there is no aggregate 15 MB cap because split sizes differ.
 Per-file, shape, inventory, digest, and deterministic archive checks remain in
 force.
 
+## Outputs
+
 Each case's NPZ contains exactly `cp_q_delta` and
 `velocity_speed_over_u_inf`. Cp uses at most 128 samples per physical connected
 graph, with evaluator-owned placement and fixed-int16 delta encoding. Velocity
@@ -83,6 +89,9 @@ complete-split, report-only evidence with zero score weight. Local dry-run
 success does not open public intake or create a leaderboard entry.
 
 ## Retained evidence and support
+
+<details>
+<summary>Registered previews, implementation provenance, and maintainer support materialization</summary>
 
 Eleven Transolver and twelve GeoTransolver packages are registered as unapproved,
 non-citable preview references. Their unchanged validation receipts are listed
@@ -100,6 +109,7 @@ Selecting the representation does not rewrite that evidence.
 
 Maintainers can materialize support from authorized native source truth and
 validated evaluator outputs, or directly from the frozen prerequisite authority.
-The [participant guide](../../benchmark-specs/hiliftaeroml/PARTICIPANT_GUIDE.md)
-describes the materializer and exact split routing. Keep evaluator support
+The [maintainer guide](../../docs/MAINTAINERS.md#hiliftaeroml-local-support-for-a-coordinated-dry-run) describes the materializer and exact split routing. Keep evaluator support
 outside participant packages and use the declared manifest digest unchanged.
+
+</details>

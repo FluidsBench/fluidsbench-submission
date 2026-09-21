@@ -1,72 +1,36 @@
 # Submission examples
 
-New submissions use schema v3. Start with the synthetic [`v3-template/`](v3-template/) to understand the submission, detailed
-methodology record, evaluation
-evidence, canonical scoring support, per-case metrics and sufficient statistics, spatial report, optional prediction artifact,
-profiles, maintainer validation, and internal SHA-256 bindings. It is a format fixture, not an official dataset result; use the
-selected dataset's official support release and specification when submissions open.
+New results use schema v3. **Public intake is closed.** Follow the selected [dataset guide](../benchmark-specs/README.md) and
+[submission workflow](../SUBMITTING.md); examples do not bypass release or approval gates.
 
-For the closed DrivAerML candidate, use the dataset-specific
-[`drivaerml-v3-candidate/`](drivaerml-v3-candidate/) configuration and
-fail-closed assembler. It contains explicit unresolved release tokens rather
-than invented hashes and cannot produce a package until the repository
-publishes matching candidate support, evaluator, profile-v10, and profile
-ground-truth bindings. Its config-v2 format for schema-v3 packages also
-requires the common FluidsBench methodology disclosure with DrivAerML's
-dataset-specific required fields; the filled
-[`methodology.example.json`](drivaerml-v3-candidate/methodology.example.json)
-shows the record's shape but contains illustrative values only.
+## Dataset candidate configurations
 
-For the closed HiLiftAeroML candidate, use
-[`hiliftaeroml-v3-candidate/`](hiliftaeroml-v3-candidate/). Its direct native
-adapter supports all official split labels, preserves disconnected Cp graphs
-and the exact five-station velocity support, and reports zero-weight surface
-and volume regions. It refuses to build force or overall results when any
-case lacks exact complete truth-load coverage. The completed hidden-profile
-truth candidate is bound for an explicit maintainer-local dry run, while the
-public truth binding remains unpublished and inactive; the template still
-retains an unresolved evaluator-revision token until that revision is frozen.
+| Example                                             | Inputs and limits                                                                                                                                                                                                                                                            |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [AhmedML](ahmedml-v3-candidate/README.md)           | Genuine inference on any of eight official splits; verifies each local checkpoint and re-reduces complete case evidence into metrics, profiles, spatial records, and regional reports. Separate from the synthetic development fixture.                                      |
+| [DrivAerML](drivaerml-v3-candidate/README.md)       | Requires matching candidate support, evaluator, profile-v10, and profile-truth bindings. Unresolved release tokens block assembly. Config-v2 describes a schema-v3 package with the common methodology record and scope-specific outputs.                                    |
+| [HiLiftAeroML](hiliftaeroml-v3-candidate/README.md) | Supports all official labels, native fields, disconnected Cp graphs, five velocity stations, and optional zero-weight regions. Requires complete truth-load coverage and authorized local compact-v2 support; evaluator-revision and public-release gates remain unresolved. |
 
-For the closed AhmedML candidate, use
-[`ahmedml-v3-candidate/`](ahmedml-v3-candidate/). Its genuine-inference
-assembler supports all eight official splits, verifies every declared local
-checkpoint, re-reduces complete evaluator case evidence, and creates the same
-schema-v3 metric, profile, discretization, and regional products exercised by
-the separate synthetic development fixture. An optional maintainer registry can
-show an exact immutable candidate only on the dev feed as a non-citable
-pre-release reference.
+Illustrative values in the DrivAerML [methodology example](drivaerml-v3-candidate/methodology.example.json) show structure only.
+Never substitute example values or invented hashes for actual method records or missing release bindings. Maintainer registration
+can expose an exact AhmedML candidate on the dev feed as a non-citable pre-release reference; local validation alone cannot.
 
-A real dataset specification pins its original public field-bearing files and requires one mapped prediction for every official
-entity in every case. It also identifies whether fields are point-, node-, face-, or cell-associated and supplies the authoritative
-area, length, volume, or cell-area weights. The guidance distinguishes three-dimensional surfaces and flow domains, two-dimensional
-flow domains,
-two-dimensional surface manifolds embedded in three dimensions, and one-dimensional boundary curves.
+## Demonstrations and historical formats
 
-Methods may perform inference in chunks or on another internal representation. Relative-L2 chunks are combined by adding their
-numerators and denominators, entity counts, and total weights before calculating the complete-case value; chunk-level L2 values are
-never averaged. Surface, two-dimensional surface-manifold, or boundary-curve results report area or length weighting as primary
-and an unweighted result as secondary.
-Volume or two-dimensional-domain results report an unweighted result as primary and volume or area weighting as secondary. Complete
-case values are macro-averaged across the test set.
+| Example                                             | Use it for                                                                                                                                                                                                                  |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [v3 template](v3-template/)                         | Synthetic demonstration of methodology, support, sufficient statistics, spatial records, profiles, optional artifacts, validation records, and SHA-256 bindings. It is not an official result or a ready-to-submit package. |
+| [Profile chunk](profile-chunk.example.json)         | Abridged Cp, Cf, and velocity JSON series; not a complete benchmark split.                                                                                                                                                  |
+| [AirfRANS extraction](airfrans-profile-extraction/) | Hash-bound official-data fixture and pinned extrados-velocity extractor, including native point-ordered NumPy/PyTorch predictions without a predicted VTU.                                                                  |
+| [v2 template](v2-template/)                         | Interpreting historical approved packages only; new v2 submissions are rejected.                                                                                                                                            |
 
-[`v2-template/`](v2-template/) is retained to interpret previously approved schema-v2 packages. The contributor-stage validator
-does not accept it as a new submission.
+Removed AhmedML v1 dummy packages predate the native evaluator, moving-geometry profiles, regional diagnostics, and v3 evidence;
+do not use them as templates.
 
-[`profile-chunk.example.json`](profile-chunk.example.json) demonstrates the compact case/series representation with Cp, Cf, and
-velocity profiles. It is intentionally abridged and is not a complete benchmark split.
+The [result reference](../docs/RESULT_FORMAT.md) explains fixed support, exact coverage, geometry weights, vector reductions,
+chunk accumulation, and dataset-specific exceptions. Submitters provide the evaluated result, profile, and spatial data. Full
+prediction sharing is optional, as are public code, model weights, environments, and artifact documentation. Supplied artifacts
+must meet the [access, revision, digest, and licence rules](../OPEN_REPRODUCIBILITY.md).
 
-[`airfrans-profile-extraction/`](airfrans-profile-extraction/) provides the hash-bound official-data reference fixture and the
-pinned extractor for AirfRANS extrados velocity profiles. It also demonstrates evaluating native point-ordered NumPy or PyTorch
-velocity predictions without serializing a predicted VTU mesh.
-
-Do not use removed historical AhmedML v1 dummy packages as submission
-templates; they predate the native-cell evaluator, moving-geometry profiles,
-regional diagnostics, and schema-v3 evidence contract.
-
-Participants may generate equivalent JSON with Python, MATLAB, Julia, C++, or another language. The schema and final values matter;
-the code does not need to follow the example implementation. Public code, a pinned model, a locked environment, and artifact
-documentation are optional. If supplied, their URLs, versions, hashes, and licences must satisfy the open reproducibility contract.
-
-The submitter supplies all prediction, result, spatial, and profile data. Sharing the complete prediction fields is optional.
-Contributor-stage validation checks the package but does not approve it. Maintainers validate the submitted files and hashes before
-approval; FluidsBench does not execute any shared model artifact as part of required approval.
+Equivalent JSON may be produced in any language. Contributor validation checks the package; maintainer submitted-data validation
+and approval are separate, and required approval does not execute a shared model.

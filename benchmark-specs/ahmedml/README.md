@@ -1,4 +1,6 @@
-# AhmedML candidate evaluator
+<a id="ahmedml-candidate-evaluator"></a>
+
+# AhmedML: prepare a candidate result
 
 AhmedML remains a closed, owner-review candidate. Public submissions are not
 open. The benchmark definition is pinned to `neashton/ahmedml` revision
@@ -22,7 +24,17 @@ metric, with cell-volume-weighted values reported secondarily. Profiles are
 derived from the same complete fields used for spatial scoring; a submission
 cannot supply its own profile values.
 
+Start with the [candidate packaging instructions](../../examples/ahmedml-v3-candidate/README.md).
+You need the pinned public files, a verified derived cache, complete evaluator outputs for one official split, and actual model
+checkpoint/spatial records. Run commands from the repository root. Shared package, version, and optional-artifact rules are in
+[SUBMITTING.md](../../SUBMITTING.md).
+
 ## Canonical public data and derived cache
+
+The public dataset is canonical. A production evaluator must install/rebuild and verify its derived cache once before evaluating submissions; it must never rebuild support during an individual evaluation.
+
+<details>
+<summary>Source files, cache verification commands, profile geometry, and the run_492 force exception</summary>
 
 The large local evaluator support is not an additional ground-truth release.
 The pinned Hugging Face revision remains canonical:
@@ -79,7 +91,14 @@ the CSV. It hash-binds and value-binds this one discrepancy and uses native
 surface-field integration as force truth, exactly as it does for every other
 case.
 
+</details>
+
 ## Development fixture
+
+The development fixture perturbs CFD truth; it does not run a surrogate checkpoint and is permanently ineligible for ranking, citation, or promotion. Use the genuine-inference assembler for a model result.
+
+<details>
+<summary>Development fixture provenance and purpose</summary>
 
 `ahmedml-geotransolver-calibrated-dev-fixture-v1` is an explicit non-ranked
 integration fixture. It deterministically perturbs public CFD truth on every
@@ -93,7 +112,12 @@ interpretation as surrogate inference. Its exact field metrics, forces,
 profiles, and regional diagnostics are nevertheless recomputed by the same
 dataset-owned evaluator path intended for future real submissions.
 
+</details>
+
 ## Relevant files
+
+<details>
+<summary>Evaluator, support, and maintainer file reference</summary>
 
 - `submission-spec.json`: score, split, and lifecycle contract.
 - `profile-definition-v1.json`: frozen 3-Cp/4-velocity 128-point profile rules.
@@ -135,3 +159,5 @@ The compact 316-case candidate metadata is already published and hash-bound in
 change, `scripts/publish_ahmedml_candidate_support.py` validates every case
 before atomically recording the new candidate manifest SHA-256. Regeneration
 is not required merely to copy or rebuild an identical production cache.
+
+</details>
