@@ -5,49 +5,41 @@
 - Submission ID:
 - Model:
 
-## Checklist
+<a id="checklist"></a>
 
-- [ ] I used the exact dataset and split version recorded in `submission.json`.
-- [ ] `submission_id` is `<result_revision.series_id>-v<result_revision.version>`; v1 sets `supersedes` to `null`, while later
-      versions point to the immediately preceding published submission and summarize what changed.
-- [ ] I added a new immutable submission directory and did not edit or replace an earlier result version.
-- [ ] The dataset specification marks my exact scoring-support release `official`, owner-approved, and open for submissions.
-- [ ] I followed the published FluidsBench metric equations and dataset-specific reductions.
-- [ ] `metrics/cases.json` covers every official case and support with complete count and weight coverage.
-- [ ] `discretization.json` and `discretization/cases.jsonl` accurately report training and inference representations, counts,
-      domains, direct outputs, and mappings to every scoring support.
-- [ ] My profile index contains every required test case, station, and quantity.
-- [ ] `evaluation-evidence.json` was produced by the evaluation run recorded in `submission.json`.
-- [ ] The evaluation reference version, command, and evidence checksum are accurate; if I supplied code metadata, all matching code
-      revisions are accurate.
-- [ ] The dataset version, split hash, case set, scoring-support release/hash, spatial hash, per-case-metric hash, and profile
-      ground-truth release/hash match throughout the package.
-- [ ] I used public evaluation data only for final evaluation, not fitting, selection, tuning, or preprocessing statistics.
-- [ ] For a schema-v3 DrivAerML result, `methodology` accurately records every architecture component, total and
-      submitter-trainable parameter counts, scoped inputs and outputs, data handling, training stages, every loaded checkpoint-file
-      digest, and measured training/inference compute.
-- [ ] If I supplied optional code, model, environment, or documentation artifacts, their revisions, digests, URLs, and licences are
-      accurate and public.
-- [ ] I left `approval` absent and did not add `maintainer-validation.json` or `prediction-artifact-checks.json`.
-- [ ] If I declared optional prediction artifacts, each repository revision, manifest digest, support identity, split, coverage,
-      and licence is accurate.
-- [ ] I ran `python3 scripts/validate_submission.py --contributor-stage <submission-directory>` successfully.
-- [ ] I have the right to publish the submitted metadata and profile values.
-- [ ] I understand that maintainers may request calculation evidence before approval.
+## Contributor checklist
+
+- [ ] **Dataset and release:** I used the exact dataset/split version recorded in `submission.json`; the exact scoring-support
+      release is official, owner-approved, and open for submissions.
+- [ ] **Evaluation data:** I used public evaluation fields only for final evaluation, not fitting, selection, tuning, or
+      preprocessing statistics. I disclosed any earlier contact below.
+- [ ] **Complete evaluation:** I followed the published equations and dataset-specific reductions. `metrics/cases.json` covers
+      every required case/support with complete count and weight coverage; profiles cover every required case, station, and
+      quantity. Spatial records accurately describe representations, counts, domains, direct outputs, and mappings.
+- [ ] **Methodology:** My schema-v3 method record covers every architecture component, exact total and submitter-trainable
+      parameter counts, scoped inputs/outputs, data handling, training stages, every loaded checkpoint-file digest, and measured
+      training/inference compute as applicable.
+- [ ] **Evidence and bindings:** The recorded evaluation run produced `evaluation-evidence.json`. The reference version, command,
+      evidence checksum, and any declared matching code revisions are accurate. Dataset version, split hash, case set, support
+      release/hash, spatial hash, case-metric hash, and profile-ground-truth release/hash agree throughout the package.
+- [ ] **Immutable package:** This PR adds exactly one new directory and does not change earlier results or repository machinery.
+      Its ID is `<result_revision.series_id>-v<result_revision.version>`; v1 has `supersedes: null`, and later versions identify
+      the immediately preceding published result and explain the change. I left `approval` absent and added no
+      `maintainer-validation.json` or `prediction-artifact-checks.json`.
+- [ ] **Optional artifacts:** Any supplied code/model/environment/documentation has accurate public URLs, revisions, digests,
+      and licences. Any prediction-artifact declaration also has the exact manifest digest, support identity, split, and coverage.
+- [ ] **Publication rights:** I have the right to publish the submitted metadata, profiles, and result material under the
+      declared open result-data licence.
+- [ ] **Validation and review:** I successfully ran
+      `python3 scripts/validate_submission.py --contributor-stage <submission-directory>` and retained the calculation evidence
+      that maintainers may request before approval.
 
 ## Notes
 
-Describe preprocessing, dimensionalisation, external pretraining, unusual metric handling, and any reproducibility limitations.
-Disclose any contact with evaluation data before the final evaluation run; such use may make the result ineligible for ranking.
+Describe preprocessing, dimensionalisation, external pretraining, unusual metric handling, and reproducibility limitations.
+Disclose contact with evaluation data before the final evaluation run; it may make the result ineligible for ranking.
 
-## Maintainer validation follow-up pull request
+<a id="maintainer-validation-follow-up-pull-request"></a>
 
-Complete this section only in the separate maintainer-owned validation/approval pull request.
-
-- [ ] Scientific provenance and retained evidence have been reviewed.
-- [ ] The result-data licence and any declared optional artifact access, digests, and licences have been reviewed.
-- [ ] A maintainer validated the submitter-supplied files, hashes, required coverage, and ground-truth comparison basis.
-- [ ] `maintainer-validation.json` records `submitted_data_only`, `model_execution=not_performed`, and
-      `metric_recomputation=not_performed`.
-- [ ] The validation record binds the scoring support, spatial report, per-case metrics, profiles, and evaluation evidence.
-- [ ] A maintainer added the validation checksum, `approval.status`, approver, approval date, and this pull-request URL.
+Maintainers: use the [separate approval checklist](../docs/MAINTAINERS.md#maintainer-validation-follow-up-checklist)
+in the maintainer-owned validation/approval PR.

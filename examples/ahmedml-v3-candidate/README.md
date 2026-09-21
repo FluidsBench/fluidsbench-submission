@@ -13,7 +13,9 @@ an explicit attestation that every prediction was produced by actual model
 inference and not generated from evaluation truth, and verifies the local bytes
 of every checkpoint named by the methodology record.
 
-## Inputs
+<a id="inputs"></a>
+
+## Inputs and blockers
 
 Copy `package-config.template.json` outside the repository and replace every
 `__REPLACE_...__` value with the actual method record. The fixed release
@@ -51,7 +53,9 @@ direct-output, and mapping counts. Reusing native meshes, sampling model points,
 or mapping predictions back to native cells must be described rather than
 silently normalized by the assembler.
 
-## Assemble and validate
+<a id="assemble-and-validate"></a>
+
+## Commands: assemble and validate
 
 ```bash
 python scripts/assemble_ahmedml_schema_v3_candidate.py \
@@ -75,12 +79,19 @@ two. The optional retained dataset evidence is compared byte-for-data with a
 fresh reduction; the assembler always recomputes the split from per-case
 evidence.
 
+## Outputs
+
 The output contains prediction-only profile chunks with exactly seven series
 per case and 128 values per series, complete per-case sufficient statistics,
 discretization evidence, and zero-weight regional diagnostics. It contains no
 `approval`, maintainer validation, or official claim.
 
 ## Dev-only pre-release registration
+
+Maintainer-only registration can expose an exact candidate on the dev feed. Candidate validation alone does not publish it or approve it.
+
+<details>
+<summary>Inspect or register an immutable pre-release binding</summary>
 
 After the package passes the candidate dry run and is stored at its conventional
 repository path, inspect its proposed exact binding:
@@ -106,3 +117,5 @@ Registration affects only the prototype dev feed. The resulting row is labeled
 `pre_release_reference`, remains non-citable and non-promotable, and disappears
 from an official feed unless it later follows the separate owner approval
 workflow. Any changed package byte invalidates the registration.
+
+</details>

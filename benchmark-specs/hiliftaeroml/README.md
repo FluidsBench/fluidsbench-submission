@@ -1,4 +1,18 @@
-# HiLiftAeroML closed-candidate submission contract
+<a id="hiliftaeroml-closed-candidate-submission-contract"></a>
+
+# HiLiftAeroML: prepare a candidate result
+
+**Public submissions are closed.** Follow the [participant guide](PARTICIPANT_GUIDE.md) and
+[compact-v2 packaging example](../../examples/hiliftaeroml-v3-candidate/README.md) for a local, owner-coordinated dry run.
+You need complete native surface and volume predictions, evaluator aggregates and case receipts, actual methodology/spatial
+records, and authorized compact-v2 scoring support. Public plot truth alone is insufficient.
+
+Every case requires four fields: surface pressure and wall shear, volume pressure and velocity. There is no surface-only option.
+Use the evaluator's loads and compact-v2 profiles; regional reports are optional and have zero score weight.
+Check the [activation checklist](CANDIDATE_ACTIVATION_CHECKLIST.md) before treating any candidate as ready for intake.
+
+<details>
+<summary>Current candidate status and the 23 registered real-inference previews</summary>
 
 HiLiftAeroML has a participant-shaped FluidsBench schema-v3 contract, but it is
 not open for submissions. The machine-readable
@@ -33,27 +47,29 @@ The detailed workflow is in [`PARTICIPANT_GUIDE.md`](PARTICIPANT_GUIDE.md).
 The activation work that remains is tracked separately in
 [`CANDIDATE_ACTIVATION_CHECKLIST.md`](CANDIDATE_ACTIVATION_CHECKLIST.md).
 
+</details>
+
 ## Official evaluation labels and case sets
 
 Each package declares exactly one `split_id`. The 14 accepted labels map to
 eight exact ordered evaluation case sets:
 
-| `split_id` | Display label | Evaluation cases | Case-set ID |
-| --- | --- | ---: | --- |
-| `full` | Full | 360 | `caseset-ac791749e527` |
-| `medium` | Medium | 360 | `caseset-ac791749e527` |
-| `scarce` | Scarce | 360 | `caseset-ac791749e527` |
-| `super_scarce` | Super scarce | 360 | `caseset-ac791749e527` |
-| `geometry` | Geometry | 360 | `caseset-53990ea68fa6` |
-| `geometry_medium` | Geometry medium | 360 | `caseset-53990ea68fa6` |
-| `geometry_scarce` | Geometry scarce | 360 | `caseset-53990ea68fa6` |
-| `geometry_super_scarce` | Geometry super scarce | 360 | `caseset-53990ea68fa6` |
-| `single_aoa_4` | AoA 4 | 36 | `caseset-7a743a20b3bd` |
-| `single_aoa_12` | AoA 12 | 36 | `caseset-02fc12ff3494` |
-| `single_aoa_22` | AoA 22 | 36 | `caseset-85ecccd9ccda` |
-| `aoa` | AoA extrapolation | 900 | `caseset-29693354ed8a` |
-| `deflection` | Deflection | 360 | `caseset-c0ecb14de138` |
-| `stall` | Stall | 723 | `caseset-804491c8956e` |
+| `split_id`              | Display label         | Evaluation cases | Case-set ID            |
+| ----------------------- | --------------------- | ---------------: | ---------------------- |
+| `full`                  | Full                  |              360 | `caseset-ac791749e527` |
+| `medium`                | Medium                |              360 | `caseset-ac791749e527` |
+| `scarce`                | Scarce                |              360 | `caseset-ac791749e527` |
+| `super_scarce`          | Super scarce          |              360 | `caseset-ac791749e527` |
+| `geometry`              | Geometry              |              360 | `caseset-53990ea68fa6` |
+| `geometry_medium`       | Geometry medium       |              360 | `caseset-53990ea68fa6` |
+| `geometry_scarce`       | Geometry scarce       |              360 | `caseset-53990ea68fa6` |
+| `geometry_super_scarce` | Geometry super scarce |              360 | `caseset-53990ea68fa6` |
+| `single_aoa_4`          | AoA 4                 |               36 | `caseset-7a743a20b3bd` |
+| `single_aoa_12`         | AoA 12                |               36 | `caseset-02fc12ff3494` |
+| `single_aoa_22`         | AoA 22                |               36 | `caseset-85ecccd9ccda` |
+| `aoa`                   | AoA extrapolation     |              900 | `caseset-29693354ed8a` |
+| `deflection`            | Deflection            |              360 | `caseset-c0ecb14de138` |
+| `stall`                 | Stall                 |              723 | `caseset-804491c8956e` |
 
 The union contains 1,355 unique physical cases. Labels that share a case set
 still represent distinct declared training regimes; they are not interchangeable
@@ -65,15 +81,18 @@ checkpoint selection, or manual model selection.
 
 ## Native fields and reductions
 
+<details>
+<summary>Read native fields and reductions requirements</summary>
+
 The closed candidate requires all four logical predictions for every case in
 the selected evaluation set:
 
-| Support | Required prediction | Primary spatial weight |
-| --- | --- | --- |
-| all native boundary `PointData` points | scalar surface pressure | published native nodal dual area |
-| all native boundary `PointData` points | three-component wall shear | published native nodal dual area |
-| retained native volume `PointData` points | scalar volume pressure | one per valid point |
-| retained native volume `PointData` points | three-component velocity | one per valid point |
+| Support                                   | Required prediction        | Primary spatial weight           |
+| ----------------------------------------- | -------------------------- | -------------------------------- |
+| all native boundary `PointData` points    | scalar surface pressure    | published native nodal dual area |
+| all native boundary `PointData` points    | three-component wall shear | published native nodal dual area |
+| retained native volume `PointData` points | scalar volume pressure     | one per valid point              |
+| retained native volume `PointData` points | three-component velocity   | one per valid point              |
 
 The volume validity rule is the raw Float32 `avg(P) != 0.0` test before
 normalization. There is no dual-volume or cell-volume-weighted secondary
@@ -95,7 +114,12 @@ Relative metrics use `(P-p_inf)/q_inf`, `tau_wall/q_inf`, and `U/|U_inf|`.
 The companion MAE and RMSE diagnostics are converted back to their dimensional
 bases per case before equal-case macro aggregation.
 
+</details>
+
 ## Loads and composite score
+
+<details>
+<summary>Read loads and composite score requirements</summary>
 
 The evaluator derives loads from the same complete native surface prediction;
 participants do not provide an independently fitted force value. Pressure and
@@ -115,21 +139,26 @@ their prediction-side integration.
 
 The bounded candidate composite is:
 
-| Component | Transform | Weight |
-| --- | --- | ---: |
-| surface pressure relative L2 | `clip(100 * (1 - error/15), 0, 100)` | 0.15 |
-| surface wall-shear relative L2 | `clip(100 * (1 - error/20), 0, 100)` | 0.10 |
-| volume velocity relative L2 | `clip(100 * (1 - error/12), 0, 100)` | 0.15 |
-| volume pressure relative L2 | `clip(100 * (1 - error/15), 0, 100)` | 0.10 |
-| `Cd` R2 | `100 * clip(R2, 0, 1)` | 0.15 |
-| `Cl` R2 | `100 * clip(R2, 0, 1)` | 0.10 |
-| velocity-profile R2 | `100 * clip(R2, 0, 1)` | 0.15 |
-| Cp-cut R2 | `100 * clip(R2, 0, 1)` | 0.10 |
+| Component                      | Transform                            | Weight |
+| ------------------------------ | ------------------------------------ | -----: |
+| surface pressure relative L2   | `clip(100 * (1 - error/15), 0, 100)` |   0.15 |
+| surface wall-shear relative L2 | `clip(100 * (1 - error/20), 0, 100)` |   0.10 |
+| volume velocity relative L2    | `clip(100 * (1 - error/12), 0, 100)` |   0.15 |
+| volume pressure relative L2    | `clip(100 * (1 - error/15), 0, 100)` |   0.10 |
+| `Cd` R2                        | `100 * clip(R2, 0, 1)`               |   0.15 |
+| `Cl` R2                        | `100 * clip(R2, 0, 1)`               |   0.10 |
+| velocity-profile R2            | `100 * clip(R2, 0, 1)`               |   0.15 |
+| Cp-cut R2                      | `100 * clip(R2, 0, 1)`               |   0.10 |
 
 This preserves 50% field, 25% force, and 25% profile weight. The specification,
 not this prose summary, is the numerical source of truth.
 
+</details>
+
 ## Profile diagnostics
+
+<details>
+<summary>Read profile diagnostics requirements</summary>
 
 Every complete case has ten pressure-cut rows, `A` through `J`. Cp scoring
 retains every disconnected physical cut graph, centers truth independently
@@ -229,7 +258,12 @@ Their implementation provenance therefore remains explicitly
 immutable evaluator revision are frozen; preview registration does not
 activate or implicitly revise that older attestation.
 
+</details>
+
 ## Regional reporting
+
+<details>
+<summary>Read regional reporting requirements</summary>
 
 [`regional-diagnostics-v2.json`](regional-diagnostics-v2.json) defines four
 surface regions and four volume regions. They reuse the native predictions and
@@ -254,6 +288,8 @@ dashboard view because it remains interpretable when local farfield pressure
 is close to zero. Local regional relative L2 and regional R2 remain visible as
 diagnostics. All regional values still have weight `0.0`; the official volume
 metrics, component scores, weights, and overall score are unchanged.
+
+</details>
 
 ## Closed schema-v3 workflow
 
