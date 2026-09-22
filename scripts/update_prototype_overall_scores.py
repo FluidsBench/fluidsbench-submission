@@ -17,7 +17,8 @@ from scripts.validate_submission import load_json, sha256_file
 
 
 def write_json(path: Path, value: object) -> None:
-    with path.open("w", encoding="utf-8") as handle:
+    # newline="\n" keeps generated files byte-identical across platforms.
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
         json.dump(value, handle, indent=2, ensure_ascii=True)
         handle.write("\n")
 

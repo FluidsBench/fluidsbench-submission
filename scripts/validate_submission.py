@@ -4243,7 +4243,7 @@ def validate_v3_scoring_support(
                 f"missing={missing[:5]}, unexpected={unexpected[:5]}"
             )
     actual_chunk_files = {
-        str(path.relative_to(case_index_path.parent))
+        path.relative_to(case_index_path.parent).as_posix()
         for path in case_index_path.parent.rglob("chunk-*.json")
     }
     if actual_chunk_files != referenced_files:

@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-09-18T07:45:12Z",
+  "generated_at": "2026-09-19T06:15:53Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -21,7 +21,7 @@
   "data_release": {
     "id": "prototype-dev-2026-09-16-7702b02f0140",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-09-18T07:45:12Z",
+    "generated_at": "2026-09-19T06:15:53Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
@@ -51,14 +51,14 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "f9c6030677d8da142e721b3688add5a53d4e799eeccd644cb0f4fb9f95fb421c",
+      "index_sha256": "0d85795b3b1554068a60038c3f66c5f5136be1ff6581a15e26fe18abb1bac7ee",
       "record_count": 58,
       "eligible_record_count": 0
     },
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "956d6328d26d5115234a24d8afc0ae55f79d366c919099c8a3725680c0ed8f67",
+      "sha256": "70fd300c0573e39ab0e124db355f7666018c20926bd25e1379cbff8c439867f6",
       "record_count": 59,
       "series_count": 59
     }
@@ -2106,27 +2106,44 @@
         "public_supports": [
           {
             "id": "surface-pressure-native",
-            "public_file": "SurfacePressureVTK/<design>.vtk in Dataverse DOI 10.7910/DVN/K7PWNJ",
-            "format": "legacy VTK surface mesh",
+            "public_file": "SurfacePressureVTK/DrivAer_<design>.vtk in Harvard Dataverse doi:10.7910/DVN/K7PWNJ version 1.0",
+            "format": "legacy VTK PolyData surface mesh",
             "domain": "three_dimensional_vehicle_surface",
             "association": "PointData",
             "entities": "all_native_surface_points",
             "arrays": [
               "p"
             ],
-            "units_note": "The confirmed public task uses the dataset-native kinematic-pressure array; absolute-unit metrics remain disabled until the release-bound convention is pinned.",
+            "units_note": "Owner statement (M. Elrefaie, 2026-08-18): PointData array p stores kinematic pressure in m^2/s^2 (static pressure divided by density) from incompressible OpenFOAM v11 simpleFoam with k-omega SST at U_inf = 30 m/s, rho = 1.184 kg/m^3, nu = 1.56e-5 m^2/s; the kinematic dynamic head 0.5*U_inf^2 is 450 m^2/s^2. Dimensional metrics may be enabled later under this convention.",
             "physical_weight": "mass_lumped_dual_surface_area",
-            "verification": "confirmed_by_official_loader"
+            "verification": "confirmed_by_official_loader",
+            "case_file_rule": "case ID <ID> maps to SurfacePressureVTK/DrivAer_<ID>.vtk (prepend DrivAer_, append .vtk)",
+            "source_pins": {
+              "dataverse_doi": "doi:10.7910/DVN/K7PWNJ",
+              "dataverse_version": "1.0",
+              "access_route": "Harvard Dataverse (Globus-backed storage)",
+              "data_licence": "CC BY-NC 4.0",
+              "code_licence": "MIT",
+              "splits_repository": "https://github.com/Mohamedelrefaie/DrivAerNet",
+              "splits_commit": "8b8c053053aa0f27c30f73af00be070a20205858",
+              "loader_of_record": "RegDGCNN_SurfaceFields/data_loader.py",
+              "paper": "https://arxiv.org/abs/2406.09624",
+              "splits_path": "train_val_test_splits/{train,val,test}_design_ids.txt",
+              "splits_url": "https://github.com/Mohamedelrefaie/DrivAerNet/tree/main/train_val_test_splits",
+              "benchmark_repository": "https://github.com/Mohamedelrefaie/CarBench",
+              "benchmark_evaluation_status": "CarBench is the reference surface-pressure benchmark for this dataset. Its evaluation code and models are not yet public (the repository currently publishes the benchmark description only); the official split files will also be mirrored there after the CarBench release. CarBench reports equal-point (unweighted) relative L2 under three evaluation protocols, compared in Elrefaie et al. (journal revision) on a stratified 61-geometry subset of the held-out test split. 'Subsampled' scores a 10,000-point prediction on those same 10,000 points. 'Interpolated' upscales that 10,000-point prediction to every native node by radial-basis interpolation; in that study its degradation relative to subsampled is dominated by interpolation error rather than by resolution. 'Patchwise' predicts every native node directly (ceil(N/1e4) disjoint 10,000-point passes, or a single geometry encoding with chunked queries for models such as AB-UPT and TripNet that decode arbitrary query points); its relative L2 tracks the subsampled values closely and preserves the model ordering. These labels describe how CarBench produced its published numbers and do not by themselves decide eligibility here. Eligibility follows the repository submission rules: a submission must supply one prediction for every native point of all 1,154 official_test cases and report every prescribed metric, including the area-weighted primary and the equal-point diagnostic. Any interpolation, mapping or resampling used to reach those native points is permitted, must be declared in discretization.json, and carries its own error into the score. No published CarBench value is usable as an official row as it stands: the protocol comparison covers 61 geometries rather than the 1,154-case official_test split, and its values are equal-point only, so they correspond to this dataset's surface_pressure_equal_entity_rel_l2 diagnostic rather than to the area-weighted primary metric. AB-UPT is evaluated from an author-provided checkpoint rather than a CarBench-trained model."
+            }
           },
           {
             "id": "future-wss-and-flow-domain",
-            "public_file": "Dataverse WSS DOI 10.7910/DVN/PCZYL4 and full CFD DOI 10.7910/DVN/EEYHUA",
+            "public_file": "Dataverse WSS doi:10.7910/DVN/PCZYL4 version 2.0 and full CFD doi:10.7910/DVN/EEYHUA version 1.0",
             "format": "VTK archives",
             "domain": "future_surface_and_three_dimensional_flow_domain",
             "association": "pending_owner_inspection",
             "entities": "not_active_until_one_official_file_from_each_archive_is_inspected",
             "physical_weight": "pending_association_confirmation",
-            "verification": "owner_review_required"
+            "verification": "owner_review_required",
+            "owner_note": "WSS surface files share coordinates with the pressure files but store points in a different (permuted) order; activating any joint pressure+WSS support requires a reviewed deterministic index-matching or resampling rule before it can be scored."
           }
         ],
         "relative_l2_policy": {
@@ -2139,11 +2156,11 @@
           "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
         },
         "owner_decisions_required": [
-          "pin_exact_public_release_files_revisions_and_hashes",
-          "confirm_array_names_entity_associations_masks_and_order",
-          "publish_authoritative_physical_weights_and_stable_entity_ids",
-          "approve_public_ground_truth_case_set_and_split_bindings",
-          "approve_loader_evaluator_and_immutable_scoring_support_manifest"
+          "publish_immutable_scoring_support_release_with_manifest_hashes_and_dual_area_weights",
+          "run_publisher_on_official_dataverse_files_and_record_publication_validation",
+          "define_and_validate_profile_station_ground_truth_extraction",
+          "confirm_or_retire_pending_wall_shear_and_volume_supports",
+          "record_final_owner_approval_with_pull_request"
         ]
       },
       "overall_score_composite": {

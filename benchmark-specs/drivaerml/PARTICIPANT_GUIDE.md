@@ -9,6 +9,43 @@ closed candidate:
 produce implementation-feedback scores, but no package made with these
 instructions is an official leaderboard submission yet.
 
+Use this sequence: [check the runtime](#before-you-start), [choose a split and scope](#1-choose-one-official-split),
+[predict native fields](#2-predict-on-the-actual-native-supports), [run the evaluator](#5-install-and-run-the-candidate-tools),
+then [assemble and validate](#6-assemble-and-validate-a-closed-candidate).
+The shared [submission workflow](../../SUBMITTING.md) covers package versions, optional artifacts, and later PR review.
+
+## Before you start
+
+The complete native-VTK candidate evaluator is currently supported on Linux
+only, including Linux HPC nodes and Linux containers or WSL. Its retained-file
+protections rely on Linux descriptor-filesystem semantics and are not yet
+validated on native macOS or Windows. JSON/schema and profile-package checks
+may run on other platforms, but official evaluator evidence must be generated
+on Linux until cross-platform support is implemented and tested.
+
+The generic repository checks use `requirements.txt`. The exact recommended
+stack for the complete VTK-based DrivAerML evidence workflow is defined in
+[`requirements-drivaerml-evaluator.txt`](../../requirements-drivaerml-evaluator.txt):
+Python 3.12.13, NumPy 2.2.6, and VTK 9.5.2. Runtime enforcement differs by
+workflow. Velocity-assignment generation rejects a Python, NumPy, or VTK
+version mismatch. The native-surface reader rejects a VTK version other than
+9.5.2, and its evidence records the dependency identities available to that
+path. Force replay records its Python, NumPy, and VTK versions but does not
+reject a different Python patch or NumPy version. The bounded XML equal-cell
+volume audit does not invoke VTK or compute cell volumes; it records its
+Python/NumPy runtime for provenance, while the strict aggregate validates the
+v2 schema and source identities. Use the exact recommended stack when
+reproducing the complete candidate evidence workflow.
+
+```bash
+python3.12 --version  # must print: Python 3.12.13
+python3.12 -m venv .venv-drivaerml
+.venv-drivaerml/bin/pip install -r requirements-drivaerml-evaluator.txt
+.venv-drivaerml/bin/python -c \
+  'import platform,numpy,vtk; print(platform.python_version(), numpy.__version__, vtk.vtkVersion.GetVTKVersion())'
+# must print: 3.12.13 2.2.6 9.5.2
+```
+
 ## 1. Choose one official split
 
 Choose exactly one JSON file in [`splits/`](splits/). Fit the model and every
@@ -40,6 +77,13 @@ Do not fill omitted components with dummy values. The evaluator records their
 unavailable scope explicitly.
 
 ### Submit a reproducible method record
+
+Include the common [methodology record](../../METHODOLOGY.md) with the outputs for your selected scope, exact parameter counts,
+all loaded checkpoint-file digests, training/selection details, and measured compute. Keep it consistent with the spatial records.
+Public checkpoint bytes are optional. Test splits contain 50 or 97 cases; use the selected split's count, not all 484 cases.
+
+<details>
+<summary>Required methodology detail: components, stages, parameter counting, checkpoint files, and timing</summary>
 
 Every schema-v3 DrivAerML package must include
 `methodology.format=fluidsbench-method-v1`. It must cover the two mandatory
@@ -110,6 +154,8 @@ actual representation sizes, direct outputs, sampling counts, and mappings to
 the scoring supports. The two disclosures must describe the same pipeline;
 maintainers reject contradictions.
 
+</details>
+
 ## 2. Predict on the actual native supports
 
 The source dataset is `neashton/drivaerml` at immutable revision
@@ -164,10 +210,10 @@ The candidate local evaluator accepts one manifest per case and support. Each
 manifest identifies its count and SHA-256-bound NPZ chunks. Every NPZ contains
 signed-int64 `raw_cell_id` and exactly these Float32 or Float64 arrays:
 
-| Support | Required arrays |
-| --- | --- |
-| `surface_native_cells` | `pMeanTrim: [N]`, `wallShearStressMeanTrim: [N,3]` |
-| `volume_native_cells` (`surface_and_volume` only) | `pMeanTrim: [N]`, `UMeanTrim: [N,3]` |
+| Support                                           | Required arrays                                    |
+| ------------------------------------------------- | -------------------------------------------------- |
+| `surface_native_cells`                            | `pMeanTrim: [N]`, `wallShearStressMeanTrim: [N,3]` |
+| `volume_native_cells` (`surface_and_volume` only) | `pMeanTrim: [N]`, `UMeanTrim: [N,3]`               |
 
 For bounded validation, each NPZ chunk may contain at most 512 MiB across the
 sum of all archive members' declared uncompressed byte sizes; this is not a
@@ -220,6 +266,9 @@ evaluator proves that each row agrees exactly with the aggregate table. This
 does not change any target value or score; it provides one hash-bound source of
 truth while retaining the per-case files for convenient local processing.
 
+<details>
+<summary>Required profile support, global R2 reductions, score caps, and velocity validity rules</summary>
+
 The current closed package still names
 [`drivaerml-diagnostics-v9.json`](drivaerml-diagnostics-v9.json); the
 owner-approved successor awaiting immutable release binding is
@@ -229,47 +278,6 @@ underbody centreline (`y=0`), sidewall (`z=0.15 m`), and front-left wheelhouse
 (`y=-0.6 m`). All-case native velocity and continuous-Cp support and truth are
 published and scientifically approved. Contributors must use the frozen
 release when it is issued and must not invent replacement support.
-
-### Geometry-relative diagnostics candidate (not active)
-
-A hash-bound evaluator-side candidate is being validated in which velocity
-profiles and Cp cuts follow case-specific vehicle landmarks while the fixed
-definitions above remain available as the `constant` view. This does not
-change the participant submission format: the evaluator derives the candidate
-relative velocity profiles from the same native volume `UMeanTrim` prediction
-and the relative Cp cuts from the same native surface `pMeanTrim` prediction.
-Participants do not predict or upload moved coordinates, landmarks, mappings,
-or another Cp field.
-
-Both relative diagnostic families have composite weight `0.0` and are
-report-only. They do not affect submission eligibility or ranking, and the
-current `constant` definitions remain the submission-facing view with their
-candidate weights unchanged. Exact all-case velocity-placement,
-velocity-mapping, and relative-Cp manifests are now retained and verified, and
-the nested `relative_support` hand-off is ready. A separate pending release
-record binds those bytes, their per-case relative-series identities, and an
-exact evaluator Git revision. Relative diagnostics remain unavailable in
-participant packages because genuine-model sensitivity and the final
-release-specific approval record are still pending. The underlying support is
-included in the 2026-08-28 scientific approval, but artifact publication or
-scientific approval alone does not activate this report-only format.
-
-The retained candidate is
-[`drivaerml-relative-diagnostics-v3.json`](drivaerml-relative-diagnostics-v3.json).
-It binds `drivaerml-velocity-relative-v3` and
-`drivaerml_cp_relative_v1`; the earlier relative-velocity-v1 and v2 families
-are not accepted. Its additive profile format,
-`fluidsbench-drivaerml-relative-profile-chunks-v3-candidate`, is defined by
-[`drivaerml-relative-profile-chunk.schema.json`](../../schemas/v1/drivaerml-relative-profile-chunk.schema.json).
-Each complete case has 40 namespaced logical series: 20 unchanged constant
-series, 16 materialized relative-velocity series, two moved relative Cp cuts,
-and two relative Cp aliases that reference the materialized constant
-centrelines without copying their arrays. The submission specification keeps
-`profile_format_enabled=false`; the validator therefore rejects this format.
-The velocity-placement, velocity-mapping, and Cp manifest bytes and SHA-256
-identities are retained under [`support/relative-v3/`](support/relative-v3/),
-but their verified publication does not activate the format. The legacy
-20-series format and its score are unchanged.
 
 The four continuous Cp cuts remain a ranked component with composite weight
 0.10; the velocity profiles retain weight 0.15. The evaluator derives every cut
@@ -312,37 +320,14 @@ adjacent trapezoidal edges; gaps are never bridged. The owner has approved the
 published all-case support and this fail-closed behavior. The final evaluator
 must bind and reproduce the identical support rather than infer a new mask.
 
+</details>
+
 ## 5. Install and run the candidate tools
 
-The complete native-VTK candidate evaluator is currently supported on Linux
-only, including Linux HPC nodes and Linux containers or WSL. Its retained-file
-protections rely on Linux descriptor-filesystem semantics and are not yet
-validated on native macOS or Windows. JSON/schema and profile-package checks
-may run on other platforms, but official evaluator evidence must be generated
-on Linux until cross-platform support is implemented and tested.
+Use the [runtime installed above](#before-you-start). Run these commands from the repository root.
 
-The generic repository checks use `requirements.txt`. The exact recommended
-stack for the complete VTK-based DrivAerML evidence workflow is defined in
-[`requirements-drivaerml-evaluator.txt`](../../requirements-drivaerml-evaluator.txt):
-Python 3.12.13, NumPy 2.2.6, and VTK 9.5.2. Runtime enforcement differs by
-workflow. Velocity-assignment generation rejects a Python, NumPy, or VTK
-version mismatch. The native-surface reader rejects a VTK version other than
-9.5.2, and its evidence records the dependency identities available to that
-path. Force replay records its Python, NumPy, and VTK versions but does not
-reject a different Python patch or NumPy version. The bounded XML equal-cell
-volume audit does not invoke VTK or compute cell volumes; it records its
-Python/NumPy runtime for provenance, while the strict aggregate validates the
-v2 schema and source identities. Use the exact recommended stack when
-reproducing the complete candidate evidence workflow.
-
-```bash
-python3.12 --version  # must print: Python 3.12.13
-python3.12 -m venv .venv-drivaerml
-.venv-drivaerml/bin/pip install -r requirements-drivaerml-evaluator.txt
-.venv-drivaerml/bin/python -c \
-  'import platform,numpy,vtk; print(platform.python_version(), numpy.__version__, vtk.vtkVersion.GetVTKVersion())'
-# must print: 3.12.13 2.2.6 9.5.2
-```
+<details>
+<summary>Optional synthetic transport demonstration (not a real result)</summary>
 
 Run the small two-part/three-part teaching fixture with one command:
 
@@ -366,6 +351,8 @@ The command performs the fixture's schema-v3 checks itself. Its deliberately
 unregistered `synthetic-drivaerml-shaped` namespace is not accepted by the
 repository's official-dataset semantic validator. That validator must remain
 fail-closed for real DrivAerML packages until the owner activates the contract.
+
+</details>
 
 For a real `surface_and_volume` case, first create or obtain candidate surface
 and volume prediction manifests. For `surface_only`, create only the surface
@@ -445,8 +432,9 @@ same reducer with the schema-v3 adapters:
   --candidate-support-manifest-sha256 <64-character-sha256>
 ```
 
-Profile packaging fails closed unless every test case contains all four Cp-cut
-series followed by all 16 velocity-profile series. While the Cp-cut extraction
+Profile packaging requires all four Cp-cut series for every test case. In
+`surface_and_volume`, those are followed by all 16 velocity-profile series;
+`surface_only` contains no velocity-profile series. While the Cp-cut extraction
 support remains unpublished, this command may produce candidate dataset and
 case-metric evidence but must refuse the complete profile output; it never
 fills missing curves with placeholders.
@@ -522,10 +510,11 @@ pull request then contains exactly one entirely new
 `submissions/drivaerml/<submission-id>/` directory and no edits to schemas,
 specifications, scripts, workflows, generated feeds, maintainer-owned files,
 or existing submissions. Follow the immutable result-series/version rules in
-the repository root README.
+the [result reference](../../docs/RESULT_FORMAT.md#result-versions).
 
-The profile JSON must cover every required case and contain all 16 velocity
-series and all four continuous Cp-cut series. The official evaluator and
+The profile JSON must cover every required case and contain all four continuous
+Cp-cut series, plus all 16 velocity series only for `surface_and_volume`.
+`surface_only` must omit velocity-profile values and volume predictions. The official evaluator and
 support release IDs and hashes must match exactly.
 
 Sharing complete native prediction fields is optional under the repository's
@@ -540,3 +529,51 @@ the frozen evaluator remains the required result payload.
 
 Until then, use this workflow for implementation feedback and reproducibility
 review only.
+
+## Inactive diagnostic extension
+
+<details>
+<summary>Geometry-relative diagnostics: retained candidate only, rejected by the current participant format</summary>
+
+### Geometry-relative diagnostics candidate (not active)
+
+A hash-bound evaluator-side candidate is being validated in which velocity
+profiles and Cp cuts follow case-specific vehicle landmarks while the fixed
+definitions above remain available as the `constant` view. This does not
+change the participant submission format: the evaluator derives the candidate
+relative velocity profiles from the same native volume `UMeanTrim` prediction
+and the relative Cp cuts from the same native surface `pMeanTrim` prediction.
+Participants do not predict or upload moved coordinates, landmarks, mappings,
+or another Cp field.
+
+Both relative diagnostic families have composite weight `0.0` and are
+report-only. They do not affect submission eligibility or ranking, and the
+current `constant` definitions remain the submission-facing view with their
+candidate weights unchanged. Exact all-case velocity-placement,
+velocity-mapping, and relative-Cp manifests are now retained and verified, and
+the nested `relative_support` hand-off is ready. A separate pending release
+record binds those bytes, their per-case relative-series identities, and an
+exact evaluator Git revision. Relative diagnostics remain unavailable in
+participant packages because genuine-model sensitivity and the final
+release-specific approval record are still pending. The underlying support is
+included in the 2026-08-28 scientific approval, but artifact publication or
+scientific approval alone does not activate this report-only format.
+
+The retained candidate is
+[`drivaerml-relative-diagnostics-v3.json`](drivaerml-relative-diagnostics-v3.json).
+It binds `drivaerml-velocity-relative-v3` and
+`drivaerml_cp_relative_v1`; the earlier relative-velocity-v1 and v2 families
+are not accepted. Its additive profile format,
+`fluidsbench-drivaerml-relative-profile-chunks-v3-candidate`, is defined by
+[`drivaerml-relative-profile-chunk.schema.json`](../../schemas/v1/drivaerml-relative-profile-chunk.schema.json).
+Each complete case has 40 namespaced logical series: 20 unchanged constant
+series, 16 materialized relative-velocity series, two moved relative Cp cuts,
+and two relative Cp aliases that reference the materialized constant
+centrelines without copying their arrays. The submission specification keeps
+`profile_format_enabled=false`; the validator therefore rejects this format.
+The velocity-placement, velocity-mapping, and Cp manifest bytes and SHA-256
+identities are retained under [`support/relative-v3/`](support/relative-v3/),
+but their verified publication does not activate the format. The legacy
+20-series format and its score are unchanged.
+
+</details>

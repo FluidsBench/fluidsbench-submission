@@ -8,6 +8,21 @@ force, velocity-profile, continuous-Cp, sampling, and tolerance decisions on
 release, multi-model sensitivity study, and independent full-submission dry run
 are completed. Existing leaderboard rows remain non-rankable prototype fixtures.
 
+## Prepare a candidate
+
+Follow the [participant guide](PARTICIPANT_GUIDE.md), then the
+[packaging example](../../examples/drivaerml-v3-candidate/README.md). The complete native evaluator requires Linux and the
+published dependency pins. Check unresolved release tokens before an expensive run.
+
+| Scope                | Required predictions and profiles                                                                                                                                                   |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `surface_and_volume` | Native surface pressure/wall shear and volume pressure/velocity; four Cp cuts and 16 velocity profiles.                                                                             |
+| `surface_only`       | Native surface pressure/wall shear and four Cp cuts. No volume files or velocity series; omitted components contribute zero with fixed weights retained (maximum overall score 60). |
+
+Both scopes use complete native coverage, evaluator-derived forces, actual methodology/checkpoint records, and the same
+immutable release gates. Do not insert dummy values for unavailable metrics or renormalize score weights.
+The [specification](submission-spec.json) is authoritative; the [activation checklist](ACTIVATION_CHECKLIST.md) tracks intake gates.
+
 ## Public data and split use
 
 The source dataset is `neashton/drivaerml` at immutable revision
@@ -24,6 +39,9 @@ and binds 484 `run_N/boundary_cell_area_N.npy` payloads to 4,159,517,910 raw
 boundary polygons. FluidsBench uses those published arrays directly and does
 not regenerate areas during evaluation.
 
+<details>
+<summary>Native-field requirements, force/profile reductions, masks, methodology, and score components</summary>
+
 For every selected case:
 
 1. Read every native surface polygon from `run_N/boundary_N.vtp` as `CellData`.
@@ -32,7 +50,7 @@ For every selected case:
    area-weighted reductions; the equal-polygon values are mandatory secondary
    results. Verify each payload against the public manifest and its case record;
    never apply it to a reordered, remeshed, triangulated, or STL surface.
-2. Reconstruct the actual `run_N/volume_N.vtu` by byte-concatenating the exact
+2. For `surface_and_volume`, reconstruct the actual `run_N/volume_N.vtu` by byte-concatenating the exact
    ordered part list in [`proposal/native-source-pin.json`](proposal/native-source-pin.json).
    Ten cases have a `.02.part`, so code must not assume two parts. Predict
    `UMeanTrim` and `pMeanTrim` for every native `CellData` cell in raw VTK order.
@@ -65,7 +83,7 @@ For every selected case:
    cut-intersection segment-length weight within each cut. The corresponding
    RMSE values remain report-only diagnostics. Submit the complete
    evaluator-produced coordinate and prediction arrays for all 16 velocity
-   profiles and all four Cp cuts in the normal FluidsBench profile JSON.
+   profiles for `surface_and_volume` and all four Cp cuts in either scope, in the normal FluidsBench profile JSON. `surface_only` supplies no velocity-profile series.
 
 The 209 discrete Cp probes are not part of the DrivAerML submission or scoring
 contract. Participants do not submit probe outputs or probe-mapping support,
@@ -121,7 +139,7 @@ four field errors use `clip(100 * (1 - error/cap), 0, 100)` with fixed caps of
 15% surface pressure, 20% wall shear, 12% volume velocity, and 15% volume
 pressure. Force and profile R2 values use `100 * clip(R2, 0, 1)`. The component
 weights preserve a 50% field, 25% force, and 25% profile split. `Clf`, `Clr`,
-and all RMSE values remain mandatory report-only diagnostics and receive no
+and all RMSE values for the selected scope remain mandatory report-only diagnostics and receive no
 duplicate composite weight.
 
 The complete machine-readable source of truth is
@@ -131,7 +149,12 @@ history and paper-parity definitions remain in [`proposal/`](proposal/). The
 exact work still needed before opening submissions is tracked in
 [`ACTIVATION_CHECKLIST.md`](ACTIVATION_CHECKLIST.md).
 
+</details>
+
 ## Dataset-owner scientific approval
+
+<details>
+<summary>Scientific approval record and remaining release-specific approval</summary>
 
 The machine-readable approval record is
 [`evidence/owner-scientific-approval-2026-08-28.json`](evidence/owner-scientific-approval-2026-08-28.json)
@@ -148,7 +171,14 @@ release-specific approval. The latter cannot be issued until it can bind the
 frozen evaluator, scoring-support and truth release IDs, three-model
 sensitivity evidence, and approving release commit.
 
+</details>
+
 ## Prototype leaderboard fixtures
+
+These rows are analytical fixtures, not trained-model results. Native CFD comparison truth and completed evaluator audits do not make them rankable.
+
+<details>
+<summary>Fixture regeneration, retained audits, inactive diagnostics, and release hand-off</summary>
 
 The ten checked-in DrivAerML leaderboard rows can be regenerated with:
 
@@ -242,3 +272,5 @@ Support publication is not scientific activation. The nested status is
 independent and does not block promotion of the ranked constant candidate.
 This extension does not alter the active constant velocity weight
 0.15, constant Cp weight 0.10, or legacy profile package shape.
+
+</details>
