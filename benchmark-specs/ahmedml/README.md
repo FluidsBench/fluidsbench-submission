@@ -29,6 +29,9 @@ You need the pinned public files, a verified derived cache, complete evaluator o
 checkpoint/spatial records. Run commands from the repository root. Shared package, version, and optional-artifact rules are in
 [SUBMITTING.md](../../SUBMITTING.md).
 
+Use the shared [hardware and compute fields](../../METHODOLOGY.md#hardware-and-compute)
+for each training stage and inference campaign, including GPU model and allocation counts.
+
 ## Canonical public data and derived cache
 
 The public dataset is canonical. A production evaluator must install/rebuild and verify its derived cache once before evaluating submissions; it must never rebuild support during an individual evaluation.

@@ -4669,7 +4669,7 @@
     {
       "id": "volume_velocity_rel_l2",
       "label": "Velocity rel. L2 (unweighted)",
-      "description": "Unweighted relative L2 error for velocity; every original mesh point or cell counts equally. Lower is better.",
+      "description": "Unweighted relative L2 error for velocity; every original mesh point or cell counts equally. Vector quantities include all components. Calculate this error per case, then take the equal-case mean. Lower is better.",
       "group": "relative-l2",
       "group_label": "Relative L2",
       "column_group": "relative",
@@ -4677,7 +4677,7 @@
       "digits": 2,
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "equation": "100\\sqrt{\\frac{\\sum_i\\lVert\\hat{y}_i-y_i\\rVert_2^2}{\\sum_i\\lVert y_i\\rVert_2^2}}",
       "comparison_group": "relative-l2",
       "comparison_group_label": "Relative L2",
       "column_group_label": "Relative"
@@ -4733,7 +4733,7 @@
     {
       "id": "volume_pressure_rel_l2",
       "label": "Pressure rel. L2 (unweighted)",
-      "description": "Unweighted relative L2 error for pressure; every original mesh point or cell counts equally. Lower is better.",
+      "description": "Unweighted relative L2 error for pressure; every original mesh point or cell counts equally. Vector quantities include all components. Calculate this error per case, then take the equal-case mean. Lower is better.",
       "group": "relative-l2",
       "group_label": "Relative L2",
       "column_group": "relative",
@@ -4741,7 +4741,7 @@
       "digits": 2,
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "equation": "100\\sqrt{\\frac{\\sum_i\\lVert\\hat{y}_i-y_i\\rVert_2^2}{\\sum_i\\lVert y_i\\rVert_2^2}}",
       "comparison_group": "relative-l2",
       "comparison_group_label": "Relative L2",
       "column_group_label": "Relative"
@@ -6291,7 +6291,7 @@
     {
       "id": "surface_pressure_equal_entity_rel_l2",
       "label": "Surface pressure rel. L2 (unweighted)",
-      "description": "Unweighted relative L2 error for surface pressure; every original surface or boundary point, face, or polygon counts equally. Lower is better.",
+      "description": "Unweighted relative L2 error for surface pressure; every original surface or boundary point, face, or polygon counts equally. Vector quantities include all components. Calculate this error per case, then take the equal-case mean. Lower is better.",
       "group": "relative-l2",
       "group_label": "Relative L2",
       "column_group": "relative",
@@ -6299,7 +6299,7 @@
       "digits": 2,
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "equation": "100\\sqrt{\\frac{\\sum_i\\lVert\\hat{y}_i-y_i\\rVert_2^2}{\\sum_i\\lVert y_i\\rVert_2^2}}",
       "comparison_group": "relative-l2",
       "comparison_group_label": "Relative L2",
       "column_group_label": "Relative"
@@ -6307,7 +6307,7 @@
     {
       "id": "surface_wall_shear_equal_entity_rel_l2",
       "label": "Surface wall shear rel. L2 (unweighted)",
-      "description": "Unweighted relative L2 error for surface wall shear; every original surface or boundary point, face, or polygon counts equally. Lower is better.",
+      "description": "Unweighted relative L2 error for surface wall shear; every original surface or boundary point, face, or polygon counts equally. Vector quantities include all components. Calculate this error per case, then take the equal-case mean. Lower is better.",
       "group": "relative-l2",
       "group_label": "Relative L2",
       "column_group": "relative",
@@ -6315,7 +6315,7 @@
       "digits": 2,
       "direction": "lower",
       "kind": "error",
-      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "equation": "100\\sqrt{\\frac{\\sum_i\\lVert\\hat{y}_i-y_i\\rVert_2^2}{\\sum_i\\lVert y_i\\rVert_2^2}}",
       "comparison_group": "relative-l2",
       "comparison_group_label": "Relative L2",
       "column_group_label": "Relative"

@@ -83,6 +83,8 @@ python3 -m reference.example_calculation
 
 Follow the [result format](docs/RESULT_FORMAT.md) and [methodology guide](METHODOLOGY.md). Record the actual architecture,
 training and selection procedure, loaded checkpoint digests, measured compute, spatial representation, and mapping counts.
+Report the GPU/device model and devices per job separately from peak campaign concurrency; see
+[hardware and compute](METHODOLOGY.md#hardware-and-compute) for the shared fields and unknown-value rules.
 Use the dataset's assembler where provided; preserve its evidence, required profile format, and hash bindings.
 
 Create one globally unique `submissions/<dataset-id>/<series-id>-vN/` directory. A new series starts at v1; revisions increment

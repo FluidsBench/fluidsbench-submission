@@ -9,6 +9,9 @@ profile registry. That is not an instruction to replace this template's v10
 tokens: wait until the active specification and all owner-release bindings are
 published as one coherent release.
 
+Use the shared [hardware and compute fields](../../METHODOLOGY.md#hardware-and-compute)
+for each training stage and inference campaign, including GPU model and allocation counts.
+
 ## Inputs and blockers
 
 Copy `package-config.template.json` outside the repository, fill the

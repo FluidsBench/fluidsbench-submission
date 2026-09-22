@@ -14,6 +14,9 @@ Use this sequence: [check the runtime](#before-you-start), [choose a split and s
 then [assemble and validate](#6-assemble-and-validate-a-closed-candidate).
 The shared [submission workflow](../../SUBMITTING.md) covers package versions, optional artifacts, and later PR review.
 
+Use the shared [hardware and compute fields](../../METHODOLOGY.md#hardware-and-compute)
+for each training stage and inference campaign, including GPU model and allocation counts.
+
 ## Before you start
 
 The complete native-VTK candidate evaluator is currently supported on Linux
