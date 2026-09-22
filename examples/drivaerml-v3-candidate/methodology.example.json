@@ -148,7 +148,13 @@
           "max_concurrent_device_count": 8,
           "campaign_wall_time_hours": 18.5,
           "aggregate_device_hours": 148.0,
-          "measurement_notes": "One constant eight-GPU allocation for the complete training run."
+          "measurement_notes": "One constant eight-GPU allocation for the complete training run.",
+          "accelerator": {
+            "type": "gpu",
+            "vendor": "NVIDIA",
+            "model": "A100 80GB"
+          },
+          "devices_per_job": 8
         }
       }
     ]
@@ -175,6 +181,12 @@
     "aggregate_device_time_seconds": 1452.0,
     "includes_preprocessing": true,
     "includes_mapping": true,
-    "measurement_notes": "One end-to-end pass over all 50 evaluation cases in the official full split, excluding dataset download but including native-support mapping and prediction serialization."
+    "measurement_notes": "One end-to-end pass over all 50 evaluation cases in the official full split, excluding dataset download but including native-support mapping and prediction serialization.",
+    "accelerator": {
+      "type": "gpu",
+      "vendor": "NVIDIA",
+      "model": "A100 80GB"
+    },
+    "devices_per_job": 1
   }
 }

@@ -861,6 +861,44 @@
         {"required": ["description"]}
       ]
     },
+    "methodology_accelerator": {
+      "description": "Identity of the devices counted by the compute record. Use null for unconfirmed identity; explain unknown or mixed hardware in hardware and measurement_notes.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "vendor", "model"],
+      "properties": {
+        "type": {
+          "enum": ["gpu", "cpu", "tpu", "other", "mixed", "unknown"]
+        },
+        "vendor": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "\\S"
+        },
+        "model": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "\\S"
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"type": {"enum": ["mixed", "unknown"]}}},
+          "then": {"properties": {"model": {"type": "null"}}}
+        },
+        {
+          "if": {"properties": {"type": {"const": "unknown"}}},
+          "then": {"properties": {"vendor": {"type": "null"}}}
+        }
+      ]
+    },
+    "methodology_devices_per_job": {
+      "description": "Devices allocated to one job, using the same device unit as max_concurrent_device_count. Null when unknown or variable; explain job scope and allocation in measurement_notes.",
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
     "methodology_training_compute": {
       "type": "object",
       "additionalProperties": false,
@@ -872,6 +910,8 @@
         "measurement_notes"
       ],
       "properties": {
+        "accelerator": {"$ref": "#/$defs/methodology_accelerator"},
+        "devices_per_job": {"$ref": "#/$defs/methodology_devices_per_job"},
         "hardware": {
           "type": "string",
           "minLength": 1,
@@ -914,6 +954,8 @@
         "status": {
           "const": "measured"
         },
+        "accelerator": {"$ref": "#/$defs/methodology_accelerator"},
+        "devices_per_job": {"$ref": "#/$defs/methodology_devices_per_job"},
         "hardware": {
           "type": "string",
           "minLength": 1,

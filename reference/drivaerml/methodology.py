@@ -110,6 +110,30 @@ def _known_reference_errors(
     return errors
 
 
+def _compute_allocation_errors(compute: Any, *, label: str) -> list[str]:
+    """Compare per-job allocation with the campaign peak in the same device unit.
+
+    Omitted/null allocation is intentionally compatible with historical records
+    and variable allocations. Schema validation handles types and positivity.
+    """
+    if not isinstance(compute, dict):
+        return []
+    per_job = compute.get("devices_per_job")
+    peak = compute.get("max_concurrent_device_count")
+    # JSON Schema integers include numbers written as 4.0 in JSON.
+    valid_counts = all(
+        not isinstance(value, bool)
+        and (isinstance(value, int) or isinstance(value, float) and value.is_integer())
+        and value > 0
+        for value in (per_job, peak)
+    )
+    if valid_counts and per_job > peak:
+        return [
+            f"{label}.devices_per_job cannot exceed max_concurrent_device_count"
+        ]
+    return []
+
+
 def _compute_capacity_error(
     compute: Any,
     *,
@@ -418,6 +442,10 @@ def methodology_errors(
                         f"methodology.training.stages[{index}].random_seeds must be "
                         "empty when stochastic is false"
                     )
+            errors.extend(_compute_allocation_errors(
+                stage.get("compute"),
+                label=f"methodology.training.stages[{index}].compute",
+            ))
             compute_error = _compute_capacity_error(
                 stage.get("compute"),
                 label=f"methodology.training.stages[{index}].compute",
@@ -495,6 +523,9 @@ def methodology_errors(
                 "methodology.inference_compute.case_count must equal the official "
                 f"evaluation case count {expected_case_count}"
             )
+    errors.extend(_compute_allocation_errors(
+        inference, label="methodology.inference_compute",
+    ))
     inference_compute_error = _compute_capacity_error(
         inference,
         label="methodology.inference_compute",

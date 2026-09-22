@@ -35,6 +35,9 @@ evaluation cases; `prototype_generated` indexes are dummy case lists and cannot 
 
 ## Shared requirements
 
+Every dataset uses the same [hardware and compute fields](../METHODOLOGY.md#hardware-and-compute).
+Report them per model result and training stage, not in the dataset's field contract.
+
 All official case IDs and evaluation ground truth are public. Use evaluation data only for final evaluation, never for fitting,
 selection, tuning, or preprocessing statistics. New packages declare `public_test_data_use="evaluation_only"` under the
 [open reproducibility policy](../OPEN_REPRODUCIBILITY.md).
