@@ -39,6 +39,26 @@ class ManageLeaderboardTests(unittest.TestCase):
             ],
         }
 
+    def test_compute_identity_and_counts_do_not_change_scores_or_ranks(self) -> None:
+        rows = {"Example": [
+            {"submission_id": f"model-{index}", "split_id": "full", "metric_values": {"score": score}}
+            for index, score in enumerate((93.25, 88.0, 93.25))
+        ]}
+        manifest = self.ranking_manifest()
+        manage_leaderboard.add_release_rankings(manifest, rows)
+        original = deepcopy(rows)
+        for row in rows["Example"]:
+            row["methodology"] = {"inference_compute": {
+                "accelerator": {"type": "gpu", "vendor": "NVIDIA", "model": "H200"},
+                "devices_per_job": 4,
+                "max_concurrent_device_count": 40,
+            }}
+        manage_leaderboard.add_release_rankings(manifest, rows)
+        for before, after in zip(original["Example"], rows["Example"]):
+            self.assertEqual(before["metric_values"], after["metric_values"])
+            self.assertEqual(before["ranking"], after["ranking"])
+            self.assertEqual(before["claim_eligibility"], after["claim_eligibility"])
+
     def test_feed_row_pins_profile_index_bytes(self) -> None:
         path = (
             manage_leaderboard.ROOT

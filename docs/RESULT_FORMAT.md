@@ -56,7 +56,8 @@ identifiers. See [`OPEN_REPRODUCIBILITY.md`](../OPEN_REPRODUCIBILITY.md) for the
 
 Every schema-v3 package includes the same structured methodology record covering architecture components, exact total and
 submitter-trainable parameter counts, inputs and outputs, data handling, training stages, checkpoint selection, and measured
-compute. Each dataset's `methodology-contract.json` names only that benchmark's existing required outputs; it does not change the
+compute, including the shared [hardware identity and allocation fields](../METHODOLOGY.md#hardware-and-compute).
+Each dataset's `methodology-contract.json` names only that benchmark's existing required outputs; it does not change the
 prediction or scoring process. A SHA-256 digest is required for every checkpoint file actually loaded by a parameterized method so
 the result has an exact model identity; publishing those checkpoint bytes, source code, or a model archive remains optional. See
 the repository-wide [`methodology guide`](../METHODOLOGY.md) and, for the native-mesh workflow, the

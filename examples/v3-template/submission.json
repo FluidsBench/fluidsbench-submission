@@ -46,7 +46,9 @@
       "key_hyperparameters": [
         {
           "id": "hidden-width",
-          "component_ids": ["coordinate-network"],
+          "component_ids": [
+            "coordinate-network"
+          ],
           "name": "hidden_width",
           "value": 16,
           "description": "Illustrative hidden width for the fictional network."
@@ -55,7 +57,9 @@
       "input_features": [
         {
           "id": "coordinates",
-          "component_ids": ["coordinate-network"],
+          "component_ids": [
+            "coordinate-network"
+          ],
           "name": "coordinates",
           "domain": "mesh",
           "component_count": 2,
@@ -67,7 +71,9 @@
           "field_id": "synthetic-support.pressure",
           "domain": "domain",
           "component_count": 1,
-          "component_ids": ["coordinate-network"],
+          "component_ids": [
+            "coordinate-network"
+          ],
           "production": "direct_model_output",
           "description": "Direct scalar prediction for the synthetic support quantity."
         }
@@ -83,7 +89,9 @@
         {
           "id": "fixture-training",
           "status": "performed_by_submitter",
-          "component_ids": ["coordinate-network"],
+          "component_ids": [
+            "coordinate-network"
+          ],
           "description": "Fictional end-to-end training stage for the format fixture.",
           "procedure": {
             "kind": "gradient_based",
@@ -110,13 +118,21 @@
           },
           "run_count": 1,
           "stochastic": true,
-          "random_seeds": [42],
+          "random_seeds": [
+            42
+          ],
           "compute": {
             "hardware": "Fictional single CPU",
             "max_concurrent_device_count": 1,
             "campaign_wall_time_hours": 0.01,
             "aggregate_device_hours": 0.01,
-            "measurement_notes": "Illustrative timing used only by the schema fixture."
+            "measurement_notes": "Illustrative timing used only by the schema fixture.",
+            "accelerator": {
+              "type": "cpu",
+              "vendor": null,
+              "model": null
+            },
+            "devices_per_job": 1
           }
         }
       ]
@@ -124,7 +140,9 @@
     "checkpoints": [
       {
         "id": "coordinate-network-checkpoint",
-        "component_ids": ["coordinate-network"],
+        "component_ids": [
+          "coordinate-network"
+        ],
         "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "digest_scope": "raw_loaded_file",
         "bytes_description": "Fictional raw checkpoint bytes for the format fixture.",
@@ -141,7 +159,13 @@
       "aggregate_device_time_seconds": 0.02,
       "includes_preprocessing": true,
       "includes_mapping": true,
-      "measurement_notes": "Illustrative end-to-end timing for both synthetic cases."
+      "measurement_notes": "Illustrative end-to-end timing for both synthetic cases.",
+      "accelerator": {
+        "type": "cpu",
+        "vendor": null,
+        "model": null
+      },
+      "devices_per_job": 1
     }
   },
   "submitter_name": "Example Researcher",

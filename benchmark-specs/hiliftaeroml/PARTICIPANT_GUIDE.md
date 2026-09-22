@@ -10,6 +10,9 @@ No private leaderboard is part of this work. The commands below create and
 validate local files only. They do not upload a result or make it visible in a
 public or private leaderboard.
 
+Use the shared [hardware and compute fields](../../METHODOLOGY.md#hardware-and-compute)
+for each training stage and inference campaign, including GPU model and allocation counts.
+
 ## Before you start
 
 Run packaging commands from the repository root with the [validation dependencies](../../SUBMITTING.md#4-validate-locally).

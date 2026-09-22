@@ -15,6 +15,9 @@ of every checkpoint named by the methodology record.
 
 <a id="inputs"></a>
 
+Use the shared [hardware and compute fields](../../METHODOLOGY.md#hardware-and-compute)
+for each training stage and inference campaign, including GPU model and allocation counts.
+
 ## Inputs and blockers
 
 Copy `package-config.template.json` outside the repository and replace every

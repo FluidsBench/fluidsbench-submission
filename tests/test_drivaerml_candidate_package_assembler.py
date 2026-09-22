@@ -630,6 +630,38 @@ class DrivAerMLCandidatePackageAssemblerTests(unittest.TestCase):
                 "\n".join(inconsistent_errors),
             )
 
+    def test_gpu_metadata_survives_assembly_without_changing_evaluator_products(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            paths = self.make_fixture(Path(temporary))
+            arguments = dict(
+                config_path=paths["config"],
+                specification_path=paths["specification"],
+                case_metrics_path=paths["case_metrics"],
+                profiles_path=paths["profiles"],
+                discretization_cases_path=paths["discretization_cases"],
+            )
+            assembler.assemble_package(**arguments, output_path=paths["output"])
+            original = load_json(paths["output"] / "submission.json")
+            config = load_json(paths["config"])
+            method = config["participant"]["methodology"]
+            for compute in [s["compute"] for s in method["training"]["stages"]] + [method["inference_compute"]]:
+                compute.update(
+                    accelerator={"type": "gpu", "vendor": "NVIDIA", "model": "H200"},
+                    devices_per_job=4,
+                    max_concurrent_device_count=40,
+                )
+            write_json(paths["config"], config)
+            updated_output = Path(temporary) / "with-gpu-metadata"
+            assembler.assemble_package(**arguments, output_path=updated_output)
+            updated = load_json(updated_output / "submission.json")
+            self.assertEqual(updated["methodology"], method)
+            for field in ("metric_values", "case_metrics", "profile_data", "spatial_discretization", "parameter_count_millions"):
+                self.assertEqual(updated[field], original[field], field)
+            for relative in ("metrics/cases.json", "profiles/index.json", "profiles/chunk-000.json", "discretization.json"):
+                self.assertEqual((updated_output / relative).read_bytes(), (paths["output"] / relative).read_bytes(), relative)
+            self.assertNotEqual(submission_validator.canonical_json_sha256(updated),
+                                submission_validator.canonical_json_sha256(original))
+
     def test_methodology_is_required_hash_bound_and_semantically_consistent(self) -> None:
         for mutation, message in (
             ("missing", "methodology must be an object"),
