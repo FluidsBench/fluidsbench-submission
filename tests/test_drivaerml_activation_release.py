@@ -355,7 +355,10 @@ class DrivAerMLActivationReleaseTests(unittest.TestCase):
                 "\n".join(errors),
             )
 
-    def build_release(self, root: Path, *, active: bool) -> tuple[dict, Path]:
+    def build_release(
+        self, root: Path, *, active: bool,
+        repository_url: str = "https://github.com/neilashton/fluidsbench-submission",
+    ) -> tuple[dict, Path]:
         retained_files = [
             Path("schemas/v1/drivaerml-relative-profile-chunk.schema.json"),
             DATASET_PREFIX / "proposal/native-source-pin.json",
@@ -533,10 +536,7 @@ class DrivAerMLActivationReleaseTests(unittest.TestCase):
                     "dataset_id": "drivaerml",
                     "dataset_revision": source_revision,
                     "evaluator": {
-                        "repository": (
-                            "https://github.com/neilashton/"
-                            "fluidsbench-submission"
-                        ),
+                        "repository": repository_url,
                         "git_revision": evaluator_revision,
                         "reference_version": (
                             "drivaerml-evaluator-v3-candidate"
@@ -585,9 +585,7 @@ class DrivAerMLActivationReleaseTests(unittest.TestCase):
                 "status": "passed",
                 "dataset_revision": source_revision,
                 "evaluator": {
-                    "repository": (
-                        "https://github.com/neilashton/fluidsbench-submission"
-                    ),
+                    "repository": repository_url,
                     "git_revision": evaluator_revision,
                     "reference_version": "drivaerml-evaluator-v3-candidate",
                 },
@@ -673,7 +671,7 @@ class DrivAerMLActivationReleaseTests(unittest.TestCase):
                 "remote",
                 "add",
                 "origin",
-                "https://github.com/neilashton/fluidsbench-submission.git",
+                repository_url + ".git",
             )
             run_git(
                 root,
@@ -720,9 +718,7 @@ class DrivAerMLActivationReleaseTests(unittest.TestCase):
             "bindings": bindings,
             "evaluator": {
                 "status": "frozen",
-                "repository": (
-                    "https://github.com/neilashton/fluidsbench-submission"
-                ),
+                "repository": repository_url,
                 "git_revision": evaluator_revision,
                 "reference_version": "drivaerml-evaluator-v3-candidate",
             },
@@ -762,9 +758,7 @@ class DrivAerMLActivationReleaseTests(unittest.TestCase):
             "scoring_support": {
                 "dataset_evaluator_binding": {
                     "status": "frozen" if active else "pending_frozen_release",
-                    "repository_url": (
-                        "https://github.com/neilashton/fluidsbench-submission"
-                    ),
+                    "repository_url": repository_url,
                     "evaluator_reference_version": (
                         "drivaerml-evaluator-v3-candidate"
                     ),
@@ -1093,6 +1087,30 @@ class DrivAerMLActivationReleaseTests(unittest.TestCase):
                 "approved owner_approval must bind a committed approval record",
                 "\n".join(errors),
             )
+
+    def test_transfer_keeps_historical_approval_and_accepts_new_repository(self) -> None:
+        canonical = "https://github.com/FluidsBench/fluidsbench-submission"
+        for owner in ("neilashton", "FluidsBench"):
+            with self.subTest(owner=owner), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                spec, record_path = self.build_release(
+                    root, active=True,
+                    repository_url=f"https://github.com/{owner}/fluidsbench-submission",
+                )
+                run_git(root, "remote", "set-url", "origin", canonical + ".git")
+                errors: list[str] = []
+                self.assertTrue(
+                    self.validate_synthetic_active_fixture(errors, spec, record_path, root),
+                    "\n".join(errors),
+                )
+                run_git(
+                    root, "remote", "set-url", "origin",
+                    "https://github.com/unrelated-owner/fluidsbench-submission.git",
+                )
+                errors = []
+                self.assertFalse(
+                    self.validate_synthetic_active_fixture(errors, spec, record_path, root)
+                )
 
     def test_false_record_digest_and_incomplete_gate_fail(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

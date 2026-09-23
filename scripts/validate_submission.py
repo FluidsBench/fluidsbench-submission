@@ -601,7 +601,12 @@ DRIVAERML_RELATIVE_OWNER_APPROVAL_SCHEMA = (
     "drivaerml-relative-diagnostics-owner-approval-v1"
 )
 DRIVAERML_EVALUATOR_REPOSITORY = (
-    "https://github.com/neilashton/fluidsbench-submission"
+    "https://github.com/FluidsBench/fluidsbench-submission"
+)
+# Existing immutable evidence retains the pre-transfer repository URL.
+DRIVAERML_EVALUATOR_REPOSITORIES = (
+    DRIVAERML_EVALUATOR_REPOSITORY,
+    "https://github.com/neilashton/fluidsbench-submission",
 )
 DRIVAERML_RELATIVE_OWNER_APPROVERS = frozenset({"neilashton"})
 DRIVAERML_RELATIVE_APPROVAL_TRUSTED_REF = "refs/remotes/origin/dev"
@@ -1510,8 +1515,8 @@ def _drivaerml_git_commit_is_on_trusted_dev(
     if (
         parsed.scheme != "https"
         or (parsed.hostname or "").lower() != "github.com"
-        or parsed.path.rstrip("/").removesuffix(".git")
-        != "/neilashton/fluidsbench-submission"
+        or parsed.path.rstrip("/").removesuffix(".git").lower()
+        not in {"/fluidsbench/fluidsbench-submission", "/neilashton/fluidsbench-submission"}
     ):
         return False
     return _drivaerml_git_commit_is_ancestor(
@@ -2435,7 +2440,7 @@ def validate_drivaerml_relative_activation_release(
     evaluator_revision = evaluator.get("git_revision")
     if evaluator.get("status") != "frozen":
         problem("record evaluator status must be frozen")
-    if evaluator.get("repository") != DRIVAERML_EVALUATOR_REPOSITORY:
+    if evaluator.get("repository") not in DRIVAERML_EVALUATOR_REPOSITORIES:
         problem("record evaluator repository is invalid")
     if (
         not isinstance(evaluator_revision, str)
