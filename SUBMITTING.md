@@ -95,6 +95,10 @@ You may generate equivalent JSON in Python, MATLAB, Julia, C++, or another langu
 Public code, model weights, environments, artifact documentation, and full prediction fields remain optional. When supplied,
 their links, revisions, hashes, and licences must pass the [reproducibility contract](OPEN_REPRODUCIBILITY.md).
 
+To request the optional blue **Metrics verified** badge, tick the separate verification request in your PR and link complete,
+versioned scored predictions. A maintainer must recompute the metrics across the full split before the badge can appear.
+See the [short verification guide](docs/OPTIONAL_VERIFICATION.md); model weights and training code remain optional.
+
 ## 4. Validate locally
 
 Run commands from the repository root. Dataset-native evaluators may require additional pinned dependencies or Linux; check the

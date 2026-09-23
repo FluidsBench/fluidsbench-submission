@@ -132,6 +132,10 @@ later perform an accessibility, format, or metric-recomputation check and record
 `prediction-artifact-checks.json`. The public claim states whether predictions were shared and whether a check was recorded, but
 neither the presence nor outcome of that optional check changes result eligibility.
 
+For the optional **Metrics verified** badge, [request a full-split metric check](docs/OPTIONAL_VERIFICATION.md) in the submission PR.
+Accessibility, metadata, format-only, and partial checks do not qualify. The badge describes recomputation from shared predictions;
+it does not certify model execution or training-data use. Required approval and the public evaluation-data policy remain unchanged.
+
 ## Maintainer validation and approval
 
 Maintainers review the submission and run the repository validator over the submitter-supplied files. Required validation covers:
