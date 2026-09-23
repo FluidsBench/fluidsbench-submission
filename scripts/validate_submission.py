@@ -1022,7 +1022,10 @@ def validate_drivaerml_relative_activation_release(
     evaluator_revision = evaluator.get("git_revision")
     if evaluator.get("status") != "frozen":
         problem("record evaluator status must be frozen")
-    if evaluator.get("repository") != "https://github.com/neilashton/fluidsbench-submission":
+    if evaluator.get("repository") not in (
+        "https://github.com/FluidsBench/fluidsbench-submission",
+        "https://github.com/neilashton/fluidsbench-submission",
+    ):
         problem("record evaluator repository is invalid")
     if (
         not isinstance(evaluator_revision, str)
@@ -1146,7 +1149,7 @@ def validate_drivaerml_relative_activation_release(
             problem("owner_approval.approved_at must be an ISO date")
         pull_request_url = approval.get("pull_request_url")
         if isinstance(pull_request_url, str) and re.fullmatch(
-            r"https://github\.com/neilashton/fluidsbench-submission/pull/[1-9][0-9]*",
+            r"https://github\.com/(?:FluidsBench|fluidsbench|neilashton)/fluidsbench-submission/pull/[1-9][0-9]*",
             pull_request_url,
         ) is None:
             problem("owner_approval.pull_request_url must identify the approving repository PR")

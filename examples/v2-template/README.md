@@ -32,7 +32,7 @@ three hashes it binds. Once validated, the maintainer adds this object to `submi
   "status": "approved",
   "approved_by": "FluidsBench maintainer",
   "approved_at": "2026-07-21",
-  "pull_request_url": "https://github.com/neilashton/fluidsbench-submission/pull/123",
+  "pull_request_url": "https://github.com/FluidsBench/fluidsbench-submission/pull/123",
   "validation": {
     "evidence_file": "maintainer-validation.json",
     "evidence_sha256": "caf117e59d24aae822358afe03c7b7518a92e512bfc65f8170b5f94743f32696"
