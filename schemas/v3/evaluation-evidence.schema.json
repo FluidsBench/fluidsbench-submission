@@ -44,6 +44,19 @@
     "compact_profile_implementation_binding": {
       "$ref": "#/$defs/compact_profile_implementation_binding"
     },
+    "dimensional_unit_conversion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract_id", "contract_sha256", "stage", "input_basis", "output_basis", "application_count"],
+      "properties": {
+        "contract_id": { "const": "hiliftaeroml-dimensional-export-si-v1" },
+        "contract_sha256": { "$ref": "#/$defs/sha256" },
+        "stage": { "const": "fluidsbench_package_export" },
+        "input_basis": { "const": "solver_native_dimensional" },
+        "output_basis": { "const": "SI" },
+        "application_count": { "const": 1 }
+      }
+    },
     "command": { "type": "string", "minLength": 1, "maxLength": 2000 },
     "generated_at": { "type": "string", "format": "date-time" },
     "status": { "const": "submitted_evaluation" },

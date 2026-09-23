@@ -60,6 +60,10 @@ validated case/support counts, reviewer, timestamp, and approving pull request.
 
 ## Common equations
 
+Pressure uses the dataset-specific quantity in the [pressure-reference audit](../docs/PRESSURE_REFERENCES.md).
+Undo training normalization and preserve the prescribed reference. A shared unit scaling cancels from relative L1/L2;
+subtracting an offset changes their denominators. Do not fit away a prediction's pressure bias.
+
 For ground truth \(y_i\), prediction \(\hat y_i\), and non-negative weights \(w_i\):
 
 \[

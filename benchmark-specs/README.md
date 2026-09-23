@@ -6,6 +6,9 @@
 Each `submission-spec.json` defines the accepted splits, exact native fields and associations, support identities, metrics,
 units, weights, profiles, evaluator version, and lifecycle gates consumed by the validator.
 
+For pressure fields, check the [dataset pressure references](../docs/PRESSURE_REFERENCES.md): native units, prescribed offsets,
+coefficient conversions, and remaining source ambiguities. This audit documents the current contracts; it does not change scoring.
+
 | Dataset      | Instructions / specification                                                                                | Candidate package                                          |
 | ------------ | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | AhmedML      | [Evaluator guide](ahmedml/README.md) · [Specification](ahmedml/submission-spec.json)                        | [Example](../examples/ahmedml-v3-candidate/README.md)      |

@@ -74,6 +74,12 @@ from reference.ahmedml.pre_release import (
     build_registry_entry as build_ahmedml_pre_release_registry_entry,
 )
 from reference.methodology import methodology_errors
+from reference.hiliftaeroml.dimensional_units import (
+    CORRECTION_PATH as HILIFT_SI_CORRECTION_PATH,
+    corrected_registration_view as hilift_corrected_registration_view,
+    export_binding as hilift_dimensional_export_binding,
+    validate_contract as validate_hilift_dimensional_export_contract,
+)
 
 try:
     from jsonschema import Draft202012Validator, FormatChecker
@@ -875,6 +881,16 @@ def manifest_with_benchmark_contract(manifest: dict[str, Any]) -> dict[str, Any]
             for key in ("unit", "direction", "kind", "equation"):
                 if key in metric:
                     definition[key] = deepcopy(metric[key])
+            # These four shared metrics use equal entity weights in every
+            # dataset. Preserve their explicit scalar/vector display formula
+            # when rebuilding; the generic weighted formula is equivalent but
+            # obscures that convention. Dataset scoring contracts stay intact.
+            if metric["id"] in {
+                "volume_velocity_rel_l2", "volume_pressure_rel_l2",
+                "surface_pressure_equal_entity_rel_l2",
+                "surface_wall_shear_equal_entity_rel_l2",
+            } and str(metric.get("weighting", "")).endswith("_equal"):
+                definition["equation"] = '100\\sqrt{\\frac{\\sum_i\\lVert\\hat{y}_i-y_i\\rVert_2^2}{\\sum_i\\lVert y_i\\rVert_2^2}}'
     return updated
 
 
@@ -941,6 +957,17 @@ def registered_hiliftaeroml_preview(
     if configuration is None:
         return None
     binding = configuration["binding"]
+    registration_path = path
+    registration_evidence_path = None
+    corrected_binding = None
+    if (effective_root / HILIFT_SI_CORRECTION_PATH).exists():
+        try:
+            registration_path, registration_evidence_path, corrected_binding = (
+                hilift_corrected_registration_view(effective_root, path, submission, binding)
+            )
+            submission = load_json(registration_path)
+        except (OSError, ValueError, KeyError, TypeError):
+            return None
     if manifest.get("data_release", {}).get("status") != "prototype_dummy_data":
         return None
     if (
@@ -957,7 +984,7 @@ def registered_hiliftaeroml_preview(
     ):
         return None
     try:
-        if sha256_file(path) != binding["submission_json_sha256"]:
+        if sha256_file(registration_path) != binding["submission_json_sha256"]:
             return None
         receipt = load_json(
             effective_root / configuration["validation_record_path"]
@@ -1016,7 +1043,7 @@ def registered_hiliftaeroml_preview(
     metric_values = receipt.get("metric_values", {})
     evaluation = submission.get("evaluation", {})
     profile_data = submission.get("profile_data", {})
-    evidence_path = path.parent / str(evaluation.get("evidence_file", ""))
+    evidence_path = registration_evidence_path or path.parent / str(evaluation.get("evidence_file", ""))
     profile_index_path = path.parent / str(profile_data.get("index_file", ""))
     try:
         evidence = load_json(evidence_path)
@@ -1069,7 +1096,7 @@ def registered_hiliftaeroml_preview(
         )
     ):
         return None
-    return deepcopy(binding)
+    return deepcopy(corrected_binding or binding)
 
 
 def registered_ahmedml_development_fixture(
@@ -5968,6 +5995,12 @@ def validate_evaluation_evidence(
             if evidence.get(key) != expected:
                 add(f"evaluation-evidence.json {key} must equal {expected!r}")
         if submission.get("dataset_id") == "hiliftaeroml":
+            try:
+                validate_hilift_dimensional_export_contract()
+                if evidence.get("dimensional_unit_conversion") != hilift_dimensional_export_binding():
+                    add("HiLiftAeroML evidence must bind the current native-to-SI dimensional export exactly once")
+            except (OSError, ValueError) as error:
+                add(str(error))
             _validate_hiliftaeroml_dataset_evaluator_binding(
                 add,
                 submission=submission,

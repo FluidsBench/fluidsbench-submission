@@ -6,6 +6,8 @@ from pathlib import Path
 
 import numpy as np
 
+from scripts.validate_submission import manifest_with_benchmark_contract
+
 from reference.evaluate_predictions import (
     relative_l2_from_sufficient_statistics,
     relative_l2_sufficient_statistics,
@@ -41,6 +43,16 @@ class DisplayEquationTests(unittest.TestCase):
                     self.assertTrue(metric["weighting"].endswith("_equal"))
                     self.assertEqual(metric["aggregation"], "per_geometry_then_macro_average")
         self.assertEqual(matched, METRIC_IDS)
+
+    def test_feed_rebuild_preserves_the_unweighted_display_equations(self):
+        manifest = json.loads((ROOT / "leaderboard/manifest.json").read_text())
+        original = {d["id"]: d["equation"] for d in manifest["metric_definitions"]}
+        rebuilt = manifest_with_benchmark_contract(manifest)
+        for definition in rebuilt["metric_definitions"]:
+            if definition["id"] in METRIC_IDS:
+                self.assertEqual(definition["equation"], original[definition["id"]])
+                self.assertNotIn("w_i", definition["equation"])
+                self.assertIn(r"\lVert", definition["equation"])
 
     def test_uniform_scalar_and_vector_errors_ignore_physical_weights(self):
         for truth, prediction in [
