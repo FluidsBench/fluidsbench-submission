@@ -302,6 +302,41 @@ class DrivAerMLActivationReleaseTests(unittest.TestCase):
             self.assertTrue(ready, "\n".join(errors))
             self.assertEqual(errors, [])
 
+    def test_transferred_repository_approval_url_is_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            spec, record_path = self.build_release(root, active=True)
+            record = json.loads(record_path.read_text())
+            canonical = "https://github.com/FluidsBench/fluidsbench-submission"
+            record["evaluator"]["repository"] = canonical
+            record["owner_approval"]["pull_request_url"] = canonical + "/pull/99"
+            spec["scoring_support"]["dataset_evaluator_binding"]["repository_url"] = canonical
+            spec["relative_diagnostics"]["activation_release"]["sha256"] = write_json(
+                record_path, record
+            )
+            errors: list[str] = []
+            self.assertTrue(
+                validate_drivaerml_relative_activation_release(
+                    errors.append, spec, spec["relative_diagnostics"],
+                    repository_root=root, require_active=True,
+                ),
+                "\n".join(errors),
+            )
+            record["owner_approval"]["pull_request_url"] = (
+                "https://github.com/unrelated-owner/fluidsbench-submission/pull/99"
+            )
+            spec["relative_diagnostics"]["activation_release"]["sha256"] = write_json(
+                record_path, record
+            )
+            errors = []
+            self.assertFalse(
+                validate_drivaerml_relative_activation_release(
+                    errors.append, spec, spec["relative_diagnostics"],
+                    repository_root=root, require_active=True,
+                )
+            )
+            self.assertIn("approving repository PR", "\n".join(errors))
+
     def test_false_record_digest_and_incomplete_gate_fail(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
