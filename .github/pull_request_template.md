@@ -34,6 +34,15 @@
       `python3 scripts/validate_submission.py --contributor-stage <submission-directory>` and retained the calculation evidence
       that maintainers may request before approval.
 
+## Optional metric verification
+
+- [ ] **Request optional metric verification:** I have linked complete scored predictions in `submission.json` and would like a
+      maintainer to recompute the metrics. This request is optional and does not affect scoring or eligibility.
+
+Prediction artifact ID(s), total download size, and replay instructions (if requesting):
+
+See [how verification works](../docs/OPTIONAL_VERIFICATION.md). Leave maintainer check records to the reviewer.
+
 ## Notes
 
 Describe preprocessing, dimensionalisation, external pretraining, unusual metric handling, and reproducibility limitations.
