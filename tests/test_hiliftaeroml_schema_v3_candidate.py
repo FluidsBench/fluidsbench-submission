@@ -272,8 +272,10 @@ def test_primary_l2_policy_and_activation_gate_are_explicit() -> None:
     bases = specification["scoring_support"]["field_metric_value_bases"]
     assert bases["relative_l1_l2"]["surface_pressure"] == "(P-p_inf)/q_inf"
     assert bases["relative_l1_l2"]["volume_velocity"] == "U/|U_inf|"
-    assert "q_inf into Pa" in bases["dimensional_mae_rmse"]["surface_pressure"]
-    assert "|U_inf| into m/s" in bases["dimensional_mae_rmse"]["volume_velocity"]
+    assert "q_inf" in bases["dimensional_mae_rmse"]["surface_pressure"]
+    assert "574.5631077637795 into Pa" in bases["dimensional_mae_rmse"]["surface_pressure"]
+    assert "|U_inf|" in bases["dimensional_mae_rmse"]["volume_velocity"]
+    assert "0.0254 into m/s" in bases["dimensional_mae_rmse"]["volume_velocity"]
     assert "three-component" in bases["vector_reduction"]["relative_l2"]
     assert "per-component" in bases["vector_reduction"]["mae_rmse"]
     assert "selected split" in bases["relative_l1_l2"]["aggregation"]

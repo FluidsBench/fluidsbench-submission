@@ -1,0 +1,393 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/submission.schema.json",
+  "schema_version": "3.0",
+  "submission_id": "hiliftaeroml-transolver-ood-stall-candidate-v1",
+  "result_revision": {
+    "series_id": "hiliftaeroml-transolver-ood-stall-candidate",
+    "version": 1,
+    "supersedes": null,
+    "change_summary": "Initial maintainer-local schema-v3 replay of the retained OOD Stall Transolver result (epoch 1000)."
+  },
+  "model": "Transolver surface and volume, OOD Stall, epoch 1000",
+  "model_type": "Transformer neural operator",
+  "model_types": [
+    "Transformer neural operator"
+  ],
+  "training_regime": "from_scratch",
+  "target_data_used": "official_train",
+  "external_pretraining": false,
+  "pretraining_data": [],
+  "methodology": {
+    "format": "fluidsbench-method-v1",
+    "record_kind": "submitter_reported",
+    "record_note": "Candidate mechanics replay from the retained OOD Stall resolved training configurations, raw loaded checkpoint hashes, training logs, and complete native-support Slurm inference. Training timing uses conservative retained calendar envelopes; inference timing uses the recorded campaign allocation ledger. This local record is not an accepted submission.",
+    "architecture": {
+      "description": "Two independently trained PhysicsNeMo Transolver models: one predicts nine native surface channels and one predicts six native flow-domain channels. Both use 16 Transolver layers, hidden width 320, eight attention heads, MLP ratio four, and 256 slices.",
+      "total_parameter_count": 37087183,
+      "parameter_count_basis": "exact",
+      "submitter_trainable_parameter_count": 37087183,
+      "components": [
+        {
+          "id": "surface-transolver",
+          "family": "PhysicsNeMo Transolver",
+          "role": "Surface-field predictor",
+          "description": "Six-input, nine-output, 16-layer Transolver for native surface points.",
+          "parameter_count": 18543753
+        },
+        {
+          "id": "volume-transolver",
+          "family": "PhysicsNeMo Transolver",
+          "role": "Flow-domain predictor",
+          "description": "Seven-input, six-output, 16-layer Transolver for retained valid native flow-domain points.",
+          "parameter_count": 18543430
+        }
+      ],
+      "key_hyperparameters": [
+        {
+          "id": "surface-architecture",
+          "component_ids": [
+            "surface-transolver"
+          ],
+          "name": "Transolver architecture",
+          "value": "layers=16,width=320,heads=8,mlp_ratio=4,slices=256",
+          "description": "Exact resolved surface model configuration."
+        },
+        {
+          "id": "volume-architecture",
+          "component_ids": [
+            "volume-transolver"
+          ],
+          "name": "Transolver architecture",
+          "value": "layers=16,width=320,heads=8,mlp_ratio=4,slices=256",
+          "description": "Exact resolved volume model configuration."
+        },
+        {
+          "id": "training-query-count",
+          "component_ids": [
+            "surface-transolver",
+            "volume-transolver"
+          ],
+          "name": "Training sampling resolution",
+          "value": 200000,
+          "description": "Maximum sampled native points per case during training."
+        }
+      ],
+      "input_features": [
+        {
+          "id": "surface-local-input",
+          "component_ids": [
+            "surface-transolver"
+          ],
+          "name": "Surface coordinates and normals",
+          "domain": "surface",
+          "component_count": 6,
+          "description": "Three native point coordinates and three vehicle surface-normal components."
+        },
+        {
+          "id": "surface-global-input",
+          "component_ids": [
+            "surface-transolver"
+          ],
+          "name": "Freestream velocity",
+          "domain": "global",
+          "component_count": 3,
+          "description": "The case freestream velocity expanded at queried surface points."
+        },
+        {
+          "id": "volume-local-input",
+          "component_ids": [
+            "volume-transolver"
+          ],
+          "name": "Volume coordinates, signed distance, and signed-distance normals",
+          "domain": "volume",
+          "component_count": 7,
+          "description": "Three native point coordinates, scalar signed distance, and three signed-distance-normal components."
+        },
+        {
+          "id": "volume-global-input",
+          "component_ids": [
+            "volume-transolver"
+          ],
+          "name": "Freestream velocity",
+          "domain": "global",
+          "component_count": 3,
+          "description": "The case freestream velocity expanded at queried volume points."
+        }
+      ],
+      "predicted_fields": [
+        {
+          "field_id": "surface-native.pressure",
+          "domain": "surface",
+          "component_count": 1,
+          "component_ids": [
+            "surface-transolver"
+          ],
+          "production": "direct_model_output",
+          "description": "Surface pressure is a direct output channel."
+        },
+        {
+          "field_id": "surface-native.wall_shear_stress",
+          "domain": "surface",
+          "component_count": 3,
+          "component_ids": [
+            "surface-transolver"
+          ],
+          "production": "direct_model_output",
+          "description": "The three wall-shear-stress components are direct output channels."
+        },
+        {
+          "field_id": "flow-domain-native.velocity",
+          "domain": "volume",
+          "component_count": 3,
+          "component_ids": [
+            "volume-transolver"
+          ],
+          "production": "direct_model_output",
+          "description": "The three nondimensional velocity components are direct output channels."
+        },
+        {
+          "field_id": "flow-domain-native.pressure",
+          "domain": "volume",
+          "component_count": 1,
+          "component_ids": [
+            "volume-transolver"
+          ],
+          "production": "direct_model_output",
+          "description": "Nondimensional flow-domain pressure is a direct output channel."
+        }
+      ]
+    },
+    "data_handling": {
+      "normalization": "Dataset transforms nondimensionalize fields from case metadata; fixed training-set channel centering/scaling is applied by the retained training pipeline. Inference reverses model normalization before scoring nondimensional pressure, wall shear, and velocity.",
+      "preprocessing": "Surface inputs use native coordinates and vehicle normals. Volume inputs are centered native coordinates augmented with signed distance and signed-distance normals; the freestream vector is expanded per query.",
+      "sampling": "Training samples at most 200000 native points per case. OOD Stall inference deterministically traverses every retained native support point in bounded chunks and scores immediately without retaining dense prediction fields."
+    },
+    "training": {
+      "stages": [
+        {
+          "id": "surface-training",
+          "status": "performed_by_submitter",
+          "component_ids": [
+            "surface-transolver"
+          ],
+          "description": "From-scratch distributed training on the official OOD Stall surface training split. Retained logs cover 1000 complete epochs.",
+          "procedure": {
+            "kind": "gradient_based",
+            "loss": {
+              "description": "Huber loss over predicted surface fields.",
+              "weighting": "pressure=2.0, temperature=0.25, density=0.5, velocity=0.5, wall shear=1.0"
+            },
+            "optimizers": [
+              {
+                "name": "CombinedOptimizer (Muon and AdamW)",
+                "learning_rate": 0.001,
+                "schedule": "StepLR every 150 epochs with gamma 0.5"
+              }
+            ],
+            "batch": {
+              "value": 1,
+              "unit": "case per rank",
+              "gradient_accumulation_steps": 1
+            },
+            "duration": {
+              "epochs": 1000,
+              "optimizer_steps": 29000
+            }
+          },
+          "run_count": 1,
+          "stochastic": true,
+          "random_seeds": [
+            42
+          ],
+          "compute": {
+            "hardware": "Four-GPU NVIDIA Slurm training allocations recorded by the retained rank logs; exact accelerator SKU requires owner metadata confirmation",
+            "max_concurrent_device_count": 4,
+            "campaign_wall_time_hours": 877.193392,
+            "aggregate_device_hours": 3508.773568,
+            "measurement_notes": "Conservative calendar envelope from the first through final retained optimizer-step timestamps, multiplied by the four recorded ranks; it includes any restart gaps and must be replaced by summed Slurm allocation time before an official release."
+          }
+        },
+        {
+          "id": "volume-training",
+          "status": "performed_by_submitter",
+          "component_ids": [
+            "volume-transolver"
+          ],
+          "description": "From-scratch distributed training on the official OOD Stall flow-domain training split. Retained logs cover 1000 complete epochs.",
+          "procedure": {
+            "kind": "gradient_based",
+            "loss": {
+              "description": "Huber loss over predicted flow-domain fields.",
+              "weighting": "Unweighted configured field loss across pressure, temperature, density, and velocity outputs."
+            },
+            "optimizers": [
+              {
+                "name": "CombinedOptimizer (Muon and AdamW)",
+                "learning_rate": 0.001,
+                "schedule": "StepLR every 150 epochs with gamma 0.5"
+              }
+            ],
+            "batch": {
+              "value": 1,
+              "unit": "case per rank",
+              "gradient_accumulation_steps": 1
+            },
+            "duration": {
+              "epochs": 1000,
+              "optimizer_steps": 29000
+            }
+          },
+          "run_count": 1,
+          "stochastic": true,
+          "random_seeds": [
+            42
+          ],
+          "compute": {
+            "hardware": "Four-GPU NVIDIA Slurm training allocations recorded by the retained rank logs; exact accelerator SKU requires owner metadata confirmation",
+            "max_concurrent_device_count": 4,
+            "campaign_wall_time_hours": 55.926796,
+            "aggregate_device_hours": 223.707184,
+            "measurement_notes": "Conservative calendar envelope from the first through final retained optimizer-step timestamps, multiplied by the four recorded ranks; it includes any restart gaps and must be replaced by summed Slurm allocation time before an official release."
+          }
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "surface-epoch-1000",
+        "component_ids": [
+          "surface-transolver"
+        ],
+        "sha256": "9896b8fdd8bcfbaa026b8c550df53b8fcacf8d1eaad4c84df28dad4a75330cd1",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw 74283869-byte Transolver.0.1000.mdlus model-state file loaded by inference.",
+        "role": "Surface prediction checkpoint used for every OOD Stall evaluation case.",
+        "selection_rule": "Epoch 1000 checkpoint from the retained OOD Stall training run; fixed before this submission replay."
+      },
+      {
+        "id": "volume-epoch-1000",
+        "component_ids": [
+          "volume-transolver"
+        ],
+        "sha256": "bd6cbdfa445e19fcfd7d444e70a439019039e14cac69790b1919fc70460068a3",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw 74282589-byte Transolver.0.1000.mdlus model-state file loaded by inference.",
+        "role": "Flow-domain prediction checkpoint used for every OOD Stall evaluation case.",
+        "selection_rule": "Epoch 1000 checkpoint from the retained OOD Stall training run; fixed before this submission replay."
+      }
+    ],
+    "inference_compute": {
+      "status": "measured",
+      "hardware": "Slurm GPU nodes: interrupted multi-node wide-lane attempts followed by four-GPU targeted paired recovery tasks; exact accelerator SKU requires owner metadata confirmation",
+      "max_concurrent_device_count": 96,
+      "case_count": 723,
+      "campaign_wall_time_seconds": 26473.0,
+      "aggregate_device_time_seconds": 1007976.0,
+      "includes_preprocessing": true,
+      "includes_mapping": true,
+      "measurement_notes": "Exact allocation-envelope and allocated-GPU time include the interrupted wide-lane attempts as well as the successful four-GPU recovery tasks. A full post-recovery all-case output audit is retained; no incomplete output contributes to this candidate result. The allocation total includes discarded capacity and is not an inference-efficiency claim."
+    }
+  },
+  "submitter_name": "Neil Ashton",
+  "institution": "NVIDIA",
+  "paper_url": "",
+  "submitted_at": "2026-09-08",
+  "reproducibility": {
+    "contract_version": "open-reproducibility-3.0",
+    "access": "public",
+    "public_test_data_use": "evaluation_only",
+    "result_data_license_spdx": "CC-BY-4.0"
+  },
+  "note": "Maintainer-local OOD Stall candidate dry run only; not an accepted or owner-approved FluidsBench result.",
+  "dataset_id": "hiliftaeroml",
+  "prediction_scope": "surface_and_volume",
+  "parameter_count_millions": 37.087183,
+  "dataset": "HiLiftAeroML",
+  "dataset_version": "hiliftaeroml-native-v1-candidate",
+  "split": "Stall",
+  "split_id": "stall",
+  "case_set_id": "caseset-804491c8956e",
+  "split_sha256": "58418bb96655504591f8e02b906e633224c047dfe0ee0d7c0f07ba7292b0d8ff",
+  "evaluation": {
+    "reference_version": "hiliftaeroml-evaluator-v0.1-candidate",
+    "command": "python scripts/assemble_hiliftaeroml_schema_v3_candidate.py --config ../hiliftaeroml-transolver-submission-v1/release/all10_compact_support_rebind_nodecache_candidate_20260908/configs/finished/transolver-ood-stall-candidate-config.json --native-aggregate ../hiliftaeroml-transolver-submission-v1/aggregates/finished_splits_v1/stall/aggregate-a --native-surface-outputs ../hiliftaeroml-transolver-submission-v1/outputs/finished_splits_v1/stall --native-volume-outputs ../hiliftaeroml-transolver-submission-v1/outputs/finished_splits_v1/stall --native-receipts ../hiliftaeroml-transolver-submission-v1/outputs/finished_splits_v1_receipts/stall/receipts-a --candidate-compact-profile-support-release ../eval_runs/hilift_compact_profile_support_v2_all1355_candidate_20260907/release/hiliftaeroml-compact-profile-support-v2-candidate --output ../hiliftaeroml-transolver-submission-v1/release/all10_compact_support_rebind_nodecache_candidate_20260908/packages/stall/package-a",
+    "evidence_file": "evaluation-evidence.json",
+    "evidence_sha256": "361bc3e2345fe862e672796c3083294e28669c893c0560a33a3e842438098fcd"
+  },
+  "scoring_support": {
+    "status": "candidate",
+    "release_id": "hiliftaeroml-native-all-splits-support-v1-candidate",
+    "manifest_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/hiliftaeroml/scoring-support/hiliftaeroml-native-all-splits-support-v1-candidate/manifest.json",
+    "manifest_sha256": "98a9a8d015e42c80f5993e30da94201011bebf67ff44d5574a7ef68a8b5dfbee"
+  },
+  "spatial_discretization": {
+    "format": "fluidsbench-discretization-v1",
+    "file": "discretization.json",
+    "sha256": "0c9d9ca5b1af08905b17df01e69dadbede3f2064f0b52bfb790a9693355fddc9"
+  },
+  "case_metrics": {
+    "format": "fluidsbench-case-metrics-v1",
+    "file": "metrics/cases.json",
+    "sha256": "6ab0c6d48181de27b406d3c76b9ad79f4eaf3c830cb1076f122fa0ac693bf337",
+    "case_count": 723
+  },
+  "metric_values": {
+    "overall_score": 10.487622171177486,
+    "field_score": 0.0,
+    "force_score": 41.950488684709946,
+    "diagnostic_score": 0.0,
+    "surface_pressure_rel_l2": 38.962730801667824,
+    "surface_pressure_equal_entity_rel_l2": 55.46733863339763,
+    "surface_wall_shear_rel_l2": 31.647613981087027,
+    "surface_wall_shear_equal_entity_rel_l2": 40.30328755100667,
+    "volume_velocity_rel_l2": 38.060923306911846,
+    "volume_pressure_rel_l2": 54.50702138066404,
+    "surface_pressure_rel_l1": 19.11626125027241,
+    "surface_wall_shear_rel_l1": 20.149710743034174,
+    "volume_velocity_rel_l1": 29.958616056978602,
+    "volume_pressure_rel_l1": 28.90964615056067,
+    "velocity_profile_r2": -19.624142091546883,
+    "cp_cut_r2": -1.8115483465986801,
+    "surface_pressure_mae": 0.42806260593137324,
+    "surface_wall_shear_mae": 0.00160672862298042,
+    "volume_velocity_mae": 261.349722254792,
+    "volume_pressure_mae": 1.1748271239340324,
+    "surface_pressure_rmse": 1.3112213641606654,
+    "surface_wall_shear_rmse": 0.004267399973329211,
+    "volume_velocity_rmse": 502.1583892048154,
+    "volume_pressure_rmse": 2.9966279548172006,
+    "cd_r2": 0.6991748114118325,
+    "cl_r2": -0.05789665669185684,
+    "c_drag_mae": 0.04196580945399767,
+    "c_lift_mae": 0.17066121879360668,
+    "c_pitch_mae": 0.10997166195947566
+  },
+  "profile_data": {
+    "format": "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate",
+    "index_file": "profiles/index.json",
+    "case_count": 723,
+    "case_set_id": "caseset-804491c8956e",
+    "profile_ground_truth_release_id": "hiliftaeroml-native-profile-truth-v1-candidate",
+    "profile_ground_truth_manifest_sha256": "3e20b857e12055e16f1d248d125b8df62a3669c604411dc67322fe98d9ab4477",
+    "evaluator_support_release_id": "hiliftaeroml-compact-profile-support-v2-candidate",
+    "evaluator_support_manifest_sha256": "7f946510cf8f63d05adaff4c91980d74f29c45ed7209b5a8f7e604e521cb823b",
+    "compact_profile_implementation_binding": {
+      "status": "unbound_worktree_candidate",
+      "activation_effect": "none",
+      "code_revision": null,
+      "implementation_manifest_sha256": null,
+      "base_dataset_evaluator_scope": "native_v1_base_field_force_and_noncompact_scoring_only"
+    }
+  },
+  "regional_diagnostics": {
+    "format": "hiliftaeroml-regional-diagnostics-aggregate-v2",
+    "file": "regional-diagnostics.json",
+    "sha256": "7c843cf3648126f2888bfe8bf13a8ca14927dcaa1f75c6e21310ea6006bcd020",
+    "contract_sha256": "8cf926d06706b8cc7fd58d821f395bf8cb6565ef1f3aabe6be18e0a279101da4",
+    "definition_id": "hiliftaeroml-native-geometric-regions-v1",
+    "case_count": 723,
+    "role": "report_only",
+    "weight": 0.0,
+    "official_score_changed": false
+  }
+}

@@ -59,6 +59,11 @@ from reference.methodology import (
 )
 from reference.scores import composite_component_group_scores, composite_overall_score
 from reference.scoring_support import ScoringSupportError, load_support_release
+from reference.hiliftaeroml.dimensional_units import (
+    export_binding as dimensional_export_binding,
+    native_error_to_si,
+    validate_contract as validate_dimensional_export_contract,
+)
 from scripts.validate_scoring_supports import validate_candidate_manifest_release
 
 
@@ -1357,7 +1362,9 @@ def _field_support_record(
                 raise HiLiftPackageAssemblyError(
                     f"{case_id}/{metric_id} dimensional native metric is absent"
                 ) from error
-            metric_values[metric_id] = _finite(raw, f"{case_id}/{metric_id}")
+            metric_values[metric_id] = native_error_to_si(
+                metric_id, _finite(raw, f"{case_id}/{metric_id}")
+            )
         else:
             raise HiLiftPackageAssemblyError(
                 f"{case_id}/{support_id} has no native adapter for metric {metric_id!r}"
@@ -2768,6 +2775,12 @@ def assemble_package(
         evidence_notes = _profile_evidence_notes(
             evaluator_revision=evaluator["code_revision"],
         )
+        validate_dimensional_export_contract()
+        evidence_notes += (
+            " Dimensional field MAE/RMSE is converted from solver-native units to SI "
+            "by the separately versioned dimensional_unit_conversion export stage; "
+            "it is not covered by the earlier frozen native-evaluator binding."
+        )
         evidence = {
             "$schema": "https://fluidsbench.org/schemas/v3/evaluation-evidence.schema.json",
             "schema_version": "3.0",
@@ -2780,6 +2793,7 @@ def assemble_package(
             "prediction_scope": "surface_and_volume",
             "reference_version": evaluator["reference_version"],
             "dataset_evaluator_binding": _dataset_evaluator_evidence(evaluator),
+            "dimensional_unit_conversion": dimensional_export_binding(),
             "command": command,
             "generated_at": generated_at,
             "status": "submitted_evaluation",
