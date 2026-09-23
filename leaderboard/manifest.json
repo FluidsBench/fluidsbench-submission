@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-09-18T07:45:12Z",
+  "generated_at": "2026-09-23T11:15:50Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -19,13 +19,13 @@
     "rounding": "decimal_half_up"
   },
   "data_release": {
-    "id": "prototype-dev-2026-09-16-7702b02f0140",
+    "id": "prototype-dev-2026-09-16-deb0cb44c653",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-09-18T07:45:12Z",
+    "generated_at": "2026-09-23T11:15:50Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
-    "feed_sha256": "7702b02f01408b26e16d0d687ade3cebce4c4267a395dd803fa3f0d645dea572",
+    "feed_sha256": "deb0cb44c653c9895703f109139b9118f778092245d7cdfb45e696eaa3fda59f",
     "canonical_url": "https://fluidsbench.org/",
     "archive_url": null,
     "release_view_url": null,
@@ -51,14 +51,14 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "f9c6030677d8da142e721b3688add5a53d4e799eeccd644cb0f4fb9f95fb421c",
+      "index_sha256": "603eeb6d82c73a769dee5e2ddedf8b4ba399ef69dc507aac73c4d07910f0b685",
       "record_count": 58,
       "eligible_record_count": 0
     },
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "956d6328d26d5115234a24d8afc0ae55f79d366c919099c8a3725680c0ed8f67",
+      "sha256": "3c643e4eb9d948674b35407a329c77029c8b53b78cf0dea3ea469b69e465ba04",
       "record_count": 59,
       "series_count": 59
     }
@@ -2697,10 +2697,10 @@
             "aggregation": "form each complete-case ratio from additive sufficient statistics, then macro-average all cases in the selected split equally"
           },
           "dimensional_mae_rmse": {
-            "surface_pressure": "inverse-scale each case by q_inf into Pa",
-            "surface_wall_shear": "inverse-scale each case by q_inf into Pa",
-            "volume_pressure": "inverse-scale each case by q_inf into Pa",
-            "volume_velocity": "inverse-scale each case by |U_inf| into m/s",
+            "surface_pressure": "inverse-scale each case by its native evaluator q_inf, then multiply slug/(in*s^2) by 574.5631077637795 into Pa",
+            "surface_wall_shear": "inverse-scale each case by its native evaluator q_inf, then multiply slug/(in*s^2) by 574.5631077637795 into Pa",
+            "volume_pressure": "inverse-scale each case by its native evaluator q_inf, then multiply slug/(in*s^2) by 574.5631077637795 into Pa",
+            "volume_velocity": "inverse-scale each case by its native evaluator |U_inf|, then multiply in/s by 0.0254 into m/s",
             "aggregation": "derive each dimensional complete-case value before macro-averaging all cases in the selected split equally"
           },
           "vector_reduction": {

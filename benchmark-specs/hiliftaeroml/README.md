@@ -92,8 +92,12 @@ in the selected split. It is not a pooled all-point ratio and never an average
 of chunk-local metrics.
 
 Relative metrics use `(P-p_inf)/q_inf`, `tau_wall/q_inf`, and `U/|U_inf|`.
-The companion MAE and RMSE diagnostics are converted back to their dimensional
-bases per case before equal-case macro aggregation.
+For dimensional MAE/RMSE, the assembler preserves each case's native inverse
+scale, then converts pressure and wall shear from `slug/(in*s²)` to Pa
+(`× 574.5631077637795`) and velocity from in/s to m/s (`× 0.0254`) before
+equal-case macro aggregation. Supply the frozen evaluator's native outputs;
+do not preconvert them. This SI export is recorded separately in the evidence.
+See the [versioned correction](DIMENSIONAL_EXPORT_CORRECTION.md) for existing previews.
 
 ## Loads and composite score
 

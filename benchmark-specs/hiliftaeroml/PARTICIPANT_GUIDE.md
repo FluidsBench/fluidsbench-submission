@@ -106,6 +106,13 @@ is complete, macro-average its derived field metric equally across the selected
 case set; a 900-case split does not give larger native meshes more weight than
 smaller ones.
 
+The package assembler converts native dimensional field MAE/RMSE to SI once:
+pressure and wall shear `× 574.5631077637795` into Pa; velocity `× 0.0254` into
+m/s. Pass the frozen evaluator's native outputs without preconverting them.
+The conversion preserves per-case inverse scales and leaves relative errors,
+coefficients, profiles, regional diagnostics and scores unchanged. The evidence
+records [`hiliftaeroml-dimensional-export-si-v1`](dimensional-export-si-v1.json).
+
 Incomplete cases fail closed. Do not insert zeros, NaNs, imputed metrics, or
 copied truth to make an aggregate appear complete.
 

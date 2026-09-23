@@ -1037,10 +1037,10 @@ def update_specification(
                 ),
             },
             "dimensional_mae_rmse": {
-                "surface_pressure": "inverse-scale each case by q_inf into Pa",
-                "surface_wall_shear": "inverse-scale each case by q_inf into Pa",
-                "volume_pressure": "inverse-scale each case by q_inf into Pa",
-                "volume_velocity": "inverse-scale each case by |U_inf| into m/s",
+                "surface_pressure": "inverse-scale each case by its native evaluator q_inf, then multiply slug/(in*s^2) by 574.5631077637795 into Pa",
+                "surface_wall_shear": "inverse-scale each case by its native evaluator q_inf, then multiply slug/(in*s^2) by 574.5631077637795 into Pa",
+                "volume_pressure": "inverse-scale each case by its native evaluator q_inf, then multiply slug/(in*s^2) by 574.5631077637795 into Pa",
+                "volume_velocity": "inverse-scale each case by its native evaluator |U_inf|, then multiply in/s by 0.0254 into m/s",
                 "aggregation": (
                     "derive each dimensional complete-case value before "
                     "macro-averaging all cases in the selected split equally"

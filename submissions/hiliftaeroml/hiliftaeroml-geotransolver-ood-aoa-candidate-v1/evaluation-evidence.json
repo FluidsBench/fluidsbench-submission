@@ -34,14 +34,14 @@
     "volume_pressure_rel_l1": 36.79630698982308,
     "velocity_profile_r2": -12.361976222258052,
     "cp_cut_r2": -3.507816709268533,
-    "surface_pressure_mae": 0.7174031833106748,
-    "surface_wall_shear_mae": 0.0025847086966562425,
-    "volume_velocity_mae": 364.0961073340317,
-    "volume_pressure_mae": 1.5292356803409173,
-    "surface_pressure_rmse": 1.6867833158925354,
-    "surface_wall_shear_rmse": 0.005330541237128098,
-    "volume_velocity_rmse": 571.4965042122991,
-    "volume_pressure_rmse": 2.9887812250118118,
+    "surface_pressure_mae": 412.1934025226097,
+    "surface_wall_shear_mae": 1.4850782614148788,
+    "volume_velocity_mae": 9.248041126284402,
+    "volume_pressure_mae": 878.6424049999351,
+    "surface_pressure_rmse": 969.163464103308,
+    "surface_wall_shear_rmse": 3.062732339267302,
+    "volume_velocity_rmse": 14.516011206992397,
+    "volume_pressure_rmse": 1717.2434290688227,
     "cd_r2": 0.8081175795438276,
     "cl_r2": -2.8648057973217678,
     "c_drag_mae": 0.03619468362801997,
@@ -54,8 +54,8 @@
   "scoring_support_release_id": "hiliftaeroml-native-all-splits-support-v1-candidate",
   "scoring_support_manifest_sha256": "98a9a8d015e42c80f5993e30da94201011bebf67ff44d5574a7ef68a8b5dfbee",
   "discretization_sha256": "38e57c19f2956d64f798bab194c30e8008d27d8c6675348a60fcf7dae5465761",
-  "case_metrics_sha256": "20bc680d2af0ad9f986211ea9396160b3a86263e440bfcfe30aaf3288ef0d204",
-  "notes": "The frozen dataset-evaluator revision 68899f780d96b70f2badb5658971c87af0b17172 applies only to the native-v1 base field, force, and noncompact scoring implementation. The additive compact-v2 profile implementation is an unbound worktree candidate with no code revision or implementation-manifest SHA-256; its profile topology contract is b1fd29b2cb6c1c84c694ddffc5d85f6cd68fd175b79c3695a443aa78bf962c2f. Cp/velocity profile R2 was recomputed from prediction-only chunks against the explicitly supplied inactive local candidate evaluator-support release; this does not publish or activate profile intake.",
+  "case_metrics_sha256": "1ce217bbc15cc99591aa1d6f35f486e1b684cd6d6a168eba3a781acf5baca65a",
+  "notes": "The frozen dataset-evaluator revision 68899f780d96b70f2badb5658971c87af0b17172 applies only to the native-v1 base field, force, and noncompact scoring implementation. The additive compact-v2 profile implementation is an unbound worktree candidate with no code revision or implementation-manifest SHA-256; its profile topology contract is b1fd29b2cb6c1c84c694ddffc5d85f6cd68fd175b79c3695a443aa78bf962c2f. Cp/velocity profile R2 was recomputed from prediction-only chunks against the explicitly supplied inactive local candidate evaluator-support release; this does not publish or activate profile intake. Dimensional field MAE/RMSE is converted from solver-native units to SI by hiliftaeroml-dimensional-export-si-v1; this export stage is separate from the earlier frozen native-evaluator binding. Predictions, relative statistics, profiles, coefficients and composite scores are unchanged.",
   "regional_diagnostics_sha256": "cc01ba29ef612e5487adf892165abe6e97ac1074a4abbc095982ff6ee1bdd2c7",
   "compact_profile_implementation_binding": {
     "status": "unbound_worktree_candidate",
@@ -63,5 +63,13 @@
     "code_revision": null,
     "implementation_manifest_sha256": null,
     "base_dataset_evaluator_scope": "native_v1_base_field_force_and_noncompact_scoring_only"
+  },
+  "dimensional_unit_conversion": {
+    "contract_id": "hiliftaeroml-dimensional-export-si-v1",
+    "contract_sha256": "a25f25b24228b72b0798704a155745ea5aab40db928e3e27a01904ec868acc59",
+    "stage": "fluidsbench_package_export",
+    "input_basis": "solver_native_dimensional",
+    "output_basis": "SI",
+    "application_count": 1
   }
 }
