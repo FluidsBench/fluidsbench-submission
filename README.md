@@ -49,7 +49,7 @@ regenerate predictions, or recompute base metrics from full fields. Optional pre
 - [Metric equations and edge cases](reference/README.md)
 - [Examples: candidate configurations, synthetic demonstrations, and historical formats](examples/README.md)
 - [Maintainer approval, dataset activation, and release feeds](docs/MAINTAINERS.md)
-- [Questions and issues](https://github.com/neilashton/fluidsbench-submission/issues)
+- [Questions and issues](https://github.com/FluidsBench/fluidsbench-submission/issues)
 
 <a id="responsibilities"></a>
 <a id="submission-directory"></a>
