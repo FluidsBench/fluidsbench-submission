@@ -1,6 +1,6 @@
 # Pressure definitions and references
 
-Audited 2026-09-23 against submission revision `3205902f6754ea696a8f66ad58e5032a690c853e`.
+Audited 2026-09-23 against submission revision `7d39c697ab3b67be631590fd53e1ec47fce71cd5`.
 
 Source-backed documentation of pressure definitions and the separately versioned HiLiftAeroML SI export correction. This file is not evaluator configuration, owner approval, or a scoring-support release.
 
@@ -217,7 +217,7 @@ The catalog source snapshot is bbec30b; the field-support archive identity retai
 - [benchmark-specs/hiliftaeroml/dimensional-export-correction-v1.json](../benchmark-specs/hiliftaeroml/dimensional-export-correction-v1.json): Pins original and corrected metadata, evidence, case files and deterministic archives for 23 preview packages.
 - [reference/hiliftaeroml/dimensional_units.py](../reference/hiliftaeroml/dimensional_units.py): Converts only dimensional field errors, rejects repeated conversion and checks the immutable correction registry.
 - [scripts/assemble_hiliftaeroml_schema_v3_candidate.py](../scripts/assemble_hiliftaeroml_schema_v3_candidate.py): Applies the SI conversion to each completed native case before macro aggregation and records the separate export version.
-- [scripts/validate_submission.py](../scripts/validate_submission.py): Requires the SI export evidence and retains the original closed-candidate validation receipts when checking corrected packages.
+- [scripts/validate_submission.py](../scripts/validate_submission.py): Requires the SI export evidence and retains the original closed-candidate validation receipts when checking corrected packages. Rechecked after the FluidsBench repository transfer: only repository URL checks changed; HiLiftAeroML validation is unchanged.
 - [benchmark-specs/hiliftaeroml/dimensional-export-correction-v1/verification.json](../benchmark-specs/hiliftaeroml/dimensional-export-correction-v1/verification.json): Records the independent manuscript comparison and unchanged scores, ordering, case statistics and non-dimensional artifacts; states test limits.
 
 SHA-256 identities for these files and downloaded sources are recorded in the JSON inventory.
