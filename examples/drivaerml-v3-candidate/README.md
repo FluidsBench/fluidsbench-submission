@@ -79,6 +79,6 @@ python scripts/validate_submission.py --contributor-stage submissions/drivaerml/
 ```
 
 Commit only the generated `submissions/drivaerml/YOUR_SUBMISSION_ID/` directory
-and open a pull request against `dev`. Follow [Submitting a result](../../SUBMITTING.md).
+and open a pull request against `main`. Follow [Submitting a result](../../SUBMITTING.md).
 Maintainers review, approve and publish the result. Do not add approval records,
 registration files or generated leaderboard feeds to a participant pull request.

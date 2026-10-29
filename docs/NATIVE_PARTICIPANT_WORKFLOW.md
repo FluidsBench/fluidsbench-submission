@@ -131,9 +131,9 @@ attempt can be repeated without cleaning a partial output. `verify-package` also
 accepts an external package directory. Neither command registers or approves it.
 
 Commit only `submissions/<dataset>/<new-submission-id>/` and open a PR against
-**`dev`**. The normal contributor checks apply. After review, maintainer approval
-and feed generation publish the result on the leaderboard.
-Those are publication steps; the submitted package needs no manual repairs.
+**`main`**. The normal contributor checks apply. Maintainers review and approve the
+package; publication requires a separate official leaderboard release.
+The submitted package needs no manual repairs or maintainer-owned records.
 
 ## Pinned Linux container
 

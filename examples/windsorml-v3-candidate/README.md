@@ -7,8 +7,8 @@ per-case commands below remain available for existing pipelines.
 Use the current release checkout. This workflow packages genuine model
 inference for submission review. Read the
 [data, split and physics contract](../../benchmark-specs/windsorml/README.md)
-first. Daniel's end-to-end trial is to run this workflow with his own model and
-checkpoint on one complete declared split, then open a PR targeting `dev`.
+first. Run this workflow with your model and checkpoint on one complete declared
+split, then open a PR targeting `main`.
 
 ## 1. Configure the actual method
 
@@ -106,6 +106,6 @@ python scripts/validate_submission.py --contributor-stage submissions/windsorml/
 ```
 
 Commit only the generated `submissions/windsorml/YOUR_SUBMISSION_ID/` directory
-and open a pull request against `dev`. Follow [Submitting a result](../../SUBMITTING.md).
+and open a pull request against `main`. Follow [Submitting a result](../../SUBMITTING.md).
 Maintainers review, approve and publish the result. Do not add approval records,
 registration files or generated leaderboard feeds to a participant pull request.

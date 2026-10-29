@@ -19,8 +19,8 @@ contributor validator. Follow the [quickstart](QUICKSTART.md).
 - The leaderboard is empty and unreleased. Receiving or approving submissions
   does not publish an official ranking; that is a separate release step.
 
-The repository ownership move and production website deployment await Neil's
-review. Those operational steps do not change the scientific contract below.
+The authoritative repositories are owned by FluidsBench and the production
+website is live. Participant pull requests target `main`.
 
 ## Completed and scientifically approved
 

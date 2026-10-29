@@ -1,8 +1,9 @@
 # AhmedML prepared support distribution
 
-The `ahmedml-derived-cache-v1-dev` GitHub prerelease distributes an exact copy of
-the existing 316-case evaluator cache. It is development support, not official
-submission activation or approval. The public CFD dataset remains canonical.
+The [`ahmedml-derived-cache-v1` release](https://github.com/FluidsBench/fluidsbench-submission/releases/tag/ahmedml-derived-cache-v1)
+distributes the checksum-verified 316-case evaluator cache used by the open
+AhmedML benchmark. The public CFD dataset remains canonical; downloading support
+does not approve a participant result.
 
 Each ZIP contains the original `case-support.json`, `surface_area_vector_m2.npy`,
 `volume_cell_volume_m3.npy`, `volume_region_code.npy`, and
@@ -51,8 +52,8 @@ verification receipt is deliberately not bundled: its original machine paths
 are not required by participants. The output directory must be new.
 
 The current archives total 10,962,124,779 bytes; installed files total
-41,454,139,431 bytes including case manifests. Upload to a draft prerelease,
-check the uploaded asset sizes and SHA-256 digests, then publish the prerelease.
+41,454,139,431 bytes including case manifests. Upload to a draft release,
+check the uploaded asset sizes and SHA-256 digests, then publish the release.
 Commit the identical distribution index under `benchmark-specs/ahmedml/`.
 
 Run the complete public-download qualification on Linux:
@@ -70,7 +71,7 @@ or run model inference. Archive data is removed only from its own temporary
 directories. The verification receipt lists every checked case.
 
 `Verify AhmedML public support` runs this check for PRs changing the distribution
-index and can also be dispatched manually once available on the default branch.
+index and can also be dispatched manually from `main`.
 It also follows the contributor commands in a separate empty cache for the Full
 split, verifies offline reuse, and deeply verifies all 50 installed cases.
 Routine submission CI tests the installer using small fixtures; it does not
