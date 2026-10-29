@@ -1,0 +1,540 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/scoring-support/v1/manifest.schema.json",
+  "schema_version": "1.0",
+  "release_id": "windsorml-native-support-v1-candidate",
+  "status": "candidate",
+  "published_at": "2026-10-11T00:00:00Z",
+  "dataset_id": "windsorml",
+  "dataset_version": "windsorml-native-v1-candidate",
+  "evaluation_reference_version": "windsorml-evaluator-v0.1-candidate",
+  "coordinate_frame": {
+    "id": "windsorml-native-body-frame-v1",
+    "axis_order": [
+      "x",
+      "y",
+      "z"
+    ],
+    "handedness": "right",
+    "length_unit": "m",
+    "normalization": "native SI coordinates; dimensionless surface coefficients; +y vertical"
+  },
+  "supports": [
+    {
+      "id": "windsorml_surface_native_points",
+      "domain": "surface",
+      "location_definition": {
+        "mode": "native_entities",
+        "format": "vtk_xml_unstructured_grid",
+        "artifact_role": "public-boundary-vtu",
+        "entity": "point",
+        "selection": {
+          "kind": "all_entities"
+        },
+        "coordinate_rule": "source_point",
+        "ordering": "source_entity_index",
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "canonical_rule",
+          "rule_id": "windsorml-published-point-dual-area",
+          "rule_version": "1"
+        }
+      },
+      "quantities": [
+        {
+          "id": "cp",
+          "unit": "",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "cpavg",
+              "target_association": "point_data",
+              "prediction_field": "cpavg"
+            }
+          ]
+        },
+        {
+          "id": "cf",
+          "unit": "",
+          "components": [
+            {
+              "id": "x",
+              "target_field": "cfxavg",
+              "target_association": "point_data",
+              "prediction_field": "cfxavg"
+            },
+            {
+              "id": "y",
+              "target_field": "cfyavg",
+              "target_association": "point_data",
+              "prediction_field": "cfyavg"
+            },
+            {
+              "id": "z",
+              "target_field": "cfzavg",
+              "target_association": "point_data",
+              "prediction_field": "cfzavg"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "surface_pressure_rel_l2",
+          "quantity_id": "cp",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_equal_entity_rel_l2",
+          "quantity_id": "cp",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_rel_l2",
+          "quantity_id": "cf",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_equal_entity_rel_l2",
+          "quantity_id": "cf",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden"
+    },
+    {
+      "id": "windsorml_volume_native_cells",
+      "domain": "volume",
+      "location_definition": {
+        "mode": "native_entities",
+        "format": "vtk_xml_unstructured_grid",
+        "artifact_role": "public-volume-vtu",
+        "entity": "cell",
+        "selection": {
+          "kind": "all_entities"
+        },
+        "coordinate_rule": "cell_centres_v1",
+        "ordering": "source_entity_index",
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "pressure",
+          "unit": "native_export_units_unresolved",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "pressureavg",
+              "target_association": "cell_data",
+              "prediction_field": "pressureavg"
+            }
+          ]
+        },
+        {
+          "id": "velocity",
+          "unit": "m/s",
+          "components": [
+            {
+              "id": "x",
+              "target_field": "velocityxavg",
+              "target_association": "cell_data",
+              "prediction_field": "velocityxavg"
+            },
+            {
+              "id": "y",
+              "target_field": "velocityyavg",
+              "target_association": "cell_data",
+              "prediction_field": "velocityyavg"
+            },
+            {
+              "id": "z",
+              "target_field": "velocityzavg",
+              "target_association": "cell_data",
+              "prediction_field": "velocityzavg"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "volume_pressure_rel_l2",
+          "quantity_id": "pressure",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_velocity_rel_l2",
+          "quantity_id": "velocity",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden"
+    },
+    {
+      "id": "windsorml-force-coefficients-v1",
+      "domain": "scalar_case",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "windsorml-native-field-force-integration-v1",
+        "generator_version": "windsorml-evaluator-v0.1-candidate",
+        "parameters": {
+          "source_identity_sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+          "profile_definition_sha256": "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056",
+          "profile_support_manifest_sha256": "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376"
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "cd",
+          "unit": "",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "cd",
+              "target_association": "generated",
+              "prediction_field": "cd"
+            }
+          ]
+        },
+        {
+          "id": "cl",
+          "unit": "",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "cl",
+              "target_association": "generated",
+              "prediction_field": "cl"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "cd_r2",
+          "quantity_id": "cd",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "aggregate_only"
+        },
+        {
+          "metric_id": "cl_r2",
+          "quantity_id": "cl",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "aggregate_only"
+        },
+        {
+          "metric_id": "c_drag_mae",
+          "quantity_id": "cd",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "c_lift_mae",
+          "quantity_id": "cl",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden"
+    },
+    {
+      "id": "windsorml_velocity_constant_v1",
+      "domain": "line",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "windsorml_velocity_constant_v1",
+        "generator_version": "windsorml-evaluator-v0.1-candidate",
+        "parameters": {
+          "source_identity_sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+          "profile_definition_sha256": "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056",
+          "profile_support_manifest_sha256": "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376"
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "ux_over_uinf",
+          "unit": "",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "ux_over_uinf",
+              "target_association": "generated",
+              "prediction_field": "ux_over_uinf"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "velocity_profile_r2",
+          "quantity_id": "ux_over_uinf",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "samples_equal",
+          "aggregation": "flatten_all_required_profile_samples",
+          "case_evidence": "aggregate_only"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden"
+    },
+    {
+      "id": "windsorml_cp_constant_v1",
+      "domain": "line",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "windsorml_cp_constant_v1",
+        "generator_version": "windsorml-evaluator-v0.1-candidate",
+        "parameters": {
+          "source_identity_sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+          "profile_definition_sha256": "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056",
+          "profile_support_manifest_sha256": "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376"
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "cp",
+          "unit": "",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "cp",
+              "target_association": "generated",
+              "prediction_field": "cp"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "cp_cut_r2",
+          "quantity_id": "cp",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "samples_equal",
+          "aggregation": "flatten_all_required_profile_samples",
+          "case_evidence": "aggregate_only"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden"
+    },
+    {
+      "id": "windsorml_velocity_relative_v1",
+      "domain": "line",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "windsorml_velocity_relative_v1",
+        "generator_version": "windsorml-evaluator-v0.1-candidate",
+        "parameters": {
+          "source_identity_sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+          "profile_definition_sha256": "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056",
+          "profile_support_manifest_sha256": "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376"
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "ux_over_uinf",
+          "unit": "",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "ux_over_uinf",
+              "target_association": "generated",
+              "prediction_field": "ux_over_uinf"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "velocity_profile_relative_r2",
+          "quantity_id": "ux_over_uinf",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "samples_equal",
+          "aggregation": "flatten_all_required_profile_samples",
+          "case_evidence": "aggregate_only"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden"
+    },
+    {
+      "id": "windsorml_cp_relative_v1",
+      "domain": "line",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "windsorml_cp_relative_v1",
+        "generator_version": "windsorml-evaluator-v0.1-candidate",
+        "parameters": {
+          "source_identity_sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+          "profile_definition_sha256": "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056",
+          "profile_support_manifest_sha256": "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376"
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "cp",
+          "unit": "",
+          "components": [
+            {
+              "id": "value",
+              "target_field": "cp",
+              "target_association": "generated",
+              "prediction_field": "cp"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "cp_cut_relative_r2",
+          "quantity_id": "cp",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "samples_equal",
+          "aggregation": "flatten_all_required_profile_samples",
+          "case_evidence": "aggregate_only"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden"
+    }
+  ],
+  "case_sets": [
+    {
+      "id": "baseline-test",
+      "case_count": 35,
+      "index_file": "case-sets/baseline-test/index.json",
+      "index_sha256": "6a36930ab4a4104e1c116ba9c990cdf2158e2de8b9d644edb815e82e5dae7b76"
+    },
+    {
+      "id": "geometry-test",
+      "case_count": 71,
+      "index_file": "case-sets/geometry-test/index.json",
+      "index_sha256": "77431e7e692518caaeb876637e97d6eced80e5383b55e30a6fb6be8bfd1864f2"
+    },
+    {
+      "id": "high_drag-test",
+      "case_count": 70,
+      "index_file": "case-sets/high_drag-test/index.json",
+      "index_sha256": "d8569250229e499a19e20baf297f9b9f48b6586db4c1a9bb249598d0037be33a"
+    },
+    {
+      "id": "low_drag-test",
+      "case_count": 70,
+      "index_file": "case-sets/low_drag-test/index.json",
+      "index_sha256": "1d8b7fc4901f47184223665d67bc70f1bceb8098cf203a1feaeb479cbd9eefd2"
+    },
+    {
+      "id": "image_wake-test",
+      "case_count": 71,
+      "index_file": "case-sets/image_wake-test/index.json",
+      "index_sha256": "257fcaa2629683f328aa470ff97cc92d51032b383dc1f0bf7293e61f57672100"
+    }
+  ],
+  "notes": "Closed dev-only candidate. Published point dual areas are canonical; volume uses equal-cell weighting. Fixed profiles contribute to scoring; relative profiles are report-only."
+}

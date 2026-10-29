@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/v1/drivaerml-relative-profile-chunk.schema.json",
+  "title": "Candidate DrivAerML constant and relative diagnostic profile chunk",
+  "description": "A DrivAerML-only, report-only extension. It does not replace or activate fluidsbench-profile-chunks-v1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "contract_id", "contract_sha256", "cases"],
+  "properties": {
+    "schema_version": {"const": "3.0-drivaerml-relative-candidate"},
+    "contract_id": {"const": "drivaerml-relative-diagnostics-v3-candidate"},
+    "contract_sha256": {"$ref": "#/$defs/sha256"},
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case_id", "series"],
+        "properties": {
+          "case_id": {"type": "string", "pattern": "^run_([1-9][0-9]*)$"},
+          "series": {
+            "type": "array",
+            "minItems": 40,
+            "maxItems": 40,
+            "items": {
+              "oneOf": [
+                {"$ref": "#/$defs/materializedSeries"},
+                {"$ref": "#/$defs/sharedAliasSeries"}
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "materializedSeries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "panel_id",
+        "family_id",
+        "placement_mode",
+        "station_id",
+        "quantity_id",
+        "scoring_role",
+        "representation",
+        "coordinate_id",
+        "coordinate_unit",
+        "coordinate",
+        "prediction",
+        "support_identity_sha256",
+        "placement_receipt_identity_sha256"
+      ],
+      "properties": {
+        "panel_id": {"enum": ["velocity_profiles", "pressure_profiles"]},
+        "family_id": {
+          "enum": [
+            "drivaerml-autocfd5-constant-v1",
+            "drivaerml-velocity-relative-v3",
+            "drivaerml_cp_constant_v1",
+            "drivaerml_cp_relative_v1"
+          ]
+        },
+        "placement_mode": {"enum": ["constant", "relative"]},
+        "station_id": {"type": "string", "minLength": 1},
+        "quantity_id": {"enum": ["velocity_ratio", "cp"]},
+        "scoring_role": {"enum": ["inherits_parent_candidate", "report_only"]},
+        "representation": {"const": "materialized"},
+        "coordinate_id": {"enum": ["distance_m", "normalized_arc_length", "arc_length_m"]},
+        "coordinate_unit": {"enum": ["1", "m"]},
+        "coordinate": {"type": "array", "minItems": 2, "items": {"type": "number"}},
+        "prediction": {"type": "array", "minItems": 2, "items": {"type": "number"}},
+        "support_identity_sha256": {"$ref": "#/$defs/sha256"},
+        "placement_receipt_identity_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "family_id": {"enum": ["drivaerml-velocity-relative-v3", "drivaerml_cp_relative_v1"]}
+            },
+            "required": ["family_id"]
+          },
+          "then": {
+            "properties": {
+              "placement_mode": {"const": "relative"},
+              "scoring_role": {"const": "report_only"}
+            }
+          },
+          "else": {
+            "properties": {
+              "placement_mode": {"const": "constant"},
+              "scoring_role": {"const": "inherits_parent_candidate"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"panel_id": {"const": "velocity_profiles"}},
+            "required": ["panel_id"]
+          },
+          "then": {
+            "properties": {
+              "family_id": {"enum": ["drivaerml-autocfd5-constant-v1", "drivaerml-velocity-relative-v3"]},
+              "quantity_id": {"const": "velocity_ratio"}
+            }
+          },
+          "else": {
+            "properties": {
+              "family_id": {"enum": ["drivaerml_cp_constant_v1", "drivaerml_cp_relative_v1"]},
+              "quantity_id": {"const": "cp"}
+            }
+          }
+        }
+      ]
+    },
+    "sharedAliasSeries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "panel_id",
+        "family_id",
+        "placement_mode",
+        "station_id",
+        "quantity_id",
+        "scoring_role",
+        "representation",
+        "shared_support_ref",
+        "placement_receipt_identity_sha256"
+      ],
+      "properties": {
+        "panel_id": {"const": "pressure_profiles"},
+        "family_id": {"const": "drivaerml_cp_relative_v1"},
+        "placement_mode": {"const": "relative"},
+        "station_id": {"enum": ["upperbody_centerline", "underbody_centerline"]},
+        "quantity_id": {"const": "cp"},
+        "scoring_role": {"const": "report_only"},
+        "representation": {"const": "shared_alias"},
+        "shared_support_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "shared_support_id",
+            "canonical_family_id",
+            "canonical_station_id",
+            "canonical_support_identity_sha256"
+          ],
+          "properties": {
+            "shared_support_id": {
+              "enum": [
+                "drivaerml-cp-upperbody-centerline-y0-v1",
+                "drivaerml-cp-underbody-centerline-y0-v1"
+              ]
+            },
+            "canonical_family_id": {"const": "drivaerml_cp_constant_v1"},
+            "canonical_station_id": {"enum": ["upperbody_centerline", "underbody_centerline"]},
+            "canonical_support_identity_sha256": {"$ref": "#/$defs/sha256"}
+          }
+        },
+        "placement_receipt_identity_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    }
+  }
+}

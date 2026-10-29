@@ -1,0 +1,46 @@
+name: Verify DrivAerNet++ participant runtime
+on:
+  pull_request:
+    paths:
+      - 'reference/drivaernetplusplus/**'
+      - 'scripts/*drivaernetplusplus*'
+      - 'benchmark-specs/drivaernetplusplus/**'
+      - 'tests/test_drivaernetplusplus*'
+      - 'requirements-drivaernetplusplus-participant.txt'
+      - 'Dockerfile.drivaernetplusplus*'
+      - '.github/workflows/verify-drivaernetplusplus-participant.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: docker build -f Dockerfile.drivaernetplusplus -t fluidsbench-drivaernetplusplus .
+      - name: Verify frozen Linux runtime
+        run: >-
+          docker run --rm --entrypoint python fluidsbench-drivaernetplusplus -c
+          "import platform,numpy,vtk; assert platform.python_version() == '3.12.13'; assert numpy.__version__ == '2.2.6'; assert vtk.vtkVersion.GetVTKVersion() == '9.5.2'"
+      - run: docker run --rm fluidsbench-drivaernetplusplus --help
+      - name: Plan the official support download without fetching it
+        run: docker run --rm fluidsbench-drivaernetplusplus fetch-support --destination /support --dry-run
+      - name: Download one published archive into the persistent participant cache
+        run: |
+          mkdir -p support/drivaernetplusplus work
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$PWD:/work" -v "$PWD/support/drivaernetplusplus:/support" -w /work \
+            --entrypoint python fluidsbench-drivaernetplusplus \
+            scripts/check_drivaernetplusplus_container_cache.py fetch --support-root /support
+      - name: Score synthetic smoke predictions in a fresh container with the same cache
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$PWD:/work" -v "$PWD/support/drivaernetplusplus:/support" -w /work \
+            --entrypoint python fluidsbench-drivaernetplusplus \
+            scripts/check_drivaernetplusplus_container_cache.py check --support-root /support
+      - name: Test pinned runtime, evaluator, recovery, packaging and dev intake
+        run: >-
+          docker run --rm -v "$PWD:/work" -w /work --entrypoint sh fluidsbench-drivaernetplusplus -c
+          'git config --global --add safe.directory /work && python -m pip install pytest==8.4.2 && python -m pytest -q tests/test_drivaernetplusplus_support.py tests/test_drivaernetplusplus_workflow.py'

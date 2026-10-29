@@ -1,0 +1,26 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/methodology-contract-v1.schema.json",
+  "format": "fluidsbench-methodology-contract-v1",
+  "dataset_id": "airfrans",
+  "allow_additional_predicted_fields": true,
+  "required_predicted_fields": [
+    {
+      "field_id": "two-dimensional-domain-native.U",
+      "domain": "domain",
+      "component_count": 2,
+      "description": "Cartesian velocity on every official two-dimensional flow-domain point."
+    },
+    {
+      "field_id": "two-dimensional-domain-native.p",
+      "domain": "domain",
+      "component_count": 1,
+      "description": "Kinematic pressure on every official two-dimensional flow-domain point."
+    },
+    {
+      "field_id": "airfoil-curve-native.p",
+      "domain": "curve",
+      "component_count": 1,
+      "description": "Kinematic pressure on the official airfoil boundary curve; this may be derived by selecting the corresponding model output."
+    }
+  ]
+}

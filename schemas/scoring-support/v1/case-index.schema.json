@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/scoring-support/v1/case-index.schema.json",
+  "title": "FluidsBench scoring-support case index",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_version", "release_id", "dataset_id", "case_set_id", "case_count", "chunks"],
+  "properties": {
+    "$schema": {
+      "const": "https://fluidsbench.org/schemas/scoring-support/v1/case-index.schema.json"
+    },
+    "schema_version": { "const": "1.0" },
+    "release_id": { "$ref": "#/$defs/safe_id" },
+    "dataset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "case_set_id": { "$ref": "#/$defs/safe_id" },
+    "case_count": { "type": "integer", "minimum": 1 },
+    "chunks": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/chunk" }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,159}$"
+    },
+    "relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+    },
+    "chunk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "sha256", "case_count", "case_ids"],
+      "properties": {
+        "file": { "$ref": "#/$defs/relative_path" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "case_count": { "type": "integer", "minimum": 1 },
+        "case_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 240 }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,369 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/scoring-support/v1/manifest.schema.json",
+  "schema_version": "1.0",
+  "release_id": "airfrans-native-support-v1",
+  "status": "official",
+  "published_at": "2026-10-07T19:02:21Z",
+  "dataset_id": "airfrans",
+  "dataset_version": "airfrans-native-v1",
+  "evaluation_reference_version": "airfrans-scoring-v2",
+  "coordinate_frame": {
+    "id": "airfrans-native-physical-v1",
+    "axis_order": [
+      "x",
+      "y"
+    ],
+    "handedness": "not_applicable",
+    "length_unit": "m",
+    "normalization": "none"
+  },
+  "supports": [
+    {
+      "id": "two-dimensional-domain-native",
+      "domain": "volume",
+      "location_definition": {
+        "mode": "materialized_table",
+        "format": "npz",
+        "artifact_role": "ground_truth_table",
+        "support_id_rule": {
+          "kind": "artifact_field",
+          "field": "support_id"
+        },
+        "coordinate_fields": [
+          "x",
+          "y"
+        ],
+        "weight_rule": {
+          "kind": "artifact_field",
+          "artifact_role": "ground_truth_table",
+          "field": "weight"
+        },
+        "ordering": "support_id_ascending"
+      },
+      "quantities": [
+        {
+          "id": "velocity",
+          "unit": "m/s",
+          "components": [
+            {
+              "id": "velocity_x",
+              "target_field": "velocity_x",
+              "target_association": "table_field",
+              "prediction_field": "velocity_x_pred"
+            },
+            {
+              "id": "velocity_y",
+              "target_field": "velocity_y",
+              "target_association": "table_field",
+              "prediction_field": "velocity_y_pred"
+            }
+          ]
+        },
+        {
+          "id": "pressure",
+          "unit": "m^2/s^2",
+          "components": [
+            {
+              "id": "pressure",
+              "target_field": "pressure",
+              "target_association": "table_field",
+              "prediction_field": "pressure_pred"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "flow_domain_velocity_rel_l2",
+          "quantity_id": "velocity",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "interior_nodes_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "flow_domain_velocity_physical_rel_l2",
+          "quantity_id": "velocity",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "interior_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "flow_domain_velocity_rel_l1",
+          "quantity_id": "velocity",
+          "reduction": "relative_l1_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "interior_nodes_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "flow_domain_pressure_rel_l2",
+          "quantity_id": "pressure",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "interior_nodes_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "flow_domain_pressure_physical_rel_l2",
+          "quantity_id": "pressure",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "interior_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "flow_domain_pressure_rel_l1",
+          "quantity_id": "pressure",
+          "reduction": "relative_l1_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "interior_nodes_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden",
+      "notes": "Physical weight is mass-lumped dual cell area (equal-share lumping of pyvista.compute_cell_sizes Area); the official primary metric for this support is equal-entity (interior_nodes_equal), the dual-area weighting is the declared secondary/diagnostic variant."
+    },
+    {
+      "id": "airfoil-curve-native",
+      "domain": "line",
+      "location_definition": {
+        "mode": "materialized_table",
+        "format": "npz",
+        "artifact_role": "ground_truth_table",
+        "support_id_rule": {
+          "kind": "artifact_field",
+          "field": "support_id"
+        },
+        "coordinate_fields": [
+          "x",
+          "y"
+        ],
+        "weight_rule": {
+          "kind": "artifact_field",
+          "artifact_role": "ground_truth_table",
+          "field": "weight"
+        },
+        "ordering": "support_id_ascending"
+      },
+      "quantities": [
+        {
+          "id": "pressure",
+          "unit": "m^2/s^2",
+          "components": [
+            {
+              "id": "pressure",
+              "target_field": "pressure",
+              "target_association": "table_field",
+              "prediction_field": "pressure_pred"
+            }
+          ]
+        },
+        {
+          "id": "wall_shear_stress",
+          "unit": "m^2/s^2",
+          "components": [
+            {
+              "id": "wall_shear_stress_x",
+              "target_field": "wall_shear_stress_x",
+              "target_association": "table_field",
+              "prediction_field": "wall_shear_stress_x_pred"
+            },
+            {
+              "id": "wall_shear_stress_y",
+              "target_field": "wall_shear_stress_y",
+              "target_association": "table_field",
+              "prediction_field": "wall_shear_stress_y_pred"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "surface_pressure_rel_l2",
+          "quantity_id": "pressure",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "boundary_point_dual_length",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_equal_entity_rel_l2",
+          "quantity_id": "pressure",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "boundary_nodes_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_rel_l1",
+          "quantity_id": "pressure",
+          "reduction": "relative_l1_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "boundary_point_dual_length",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_rel_l2",
+          "quantity_id": "wall_shear_stress",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "boundary_point_dual_length",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_equal_entity_rel_l2",
+          "quantity_id": "wall_shear_stress",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "boundary_nodes_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_rel_l1",
+          "quantity_id": "wall_shear_stress",
+          "reduction": "relative_l1_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "boundary_point_dual_length",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden",
+      "notes": "Physical weight is mass-lumped dual segment length (equal-share lumping of pyvista.compute_cell_sizes Length); this is the declared PRIMARY weighting for surface/curve metrics, boundary_nodes_equal is secondary. wall_shear_stress is the full 2-component vector reorganized onto the native _aerofoil.vtp point order via airfrans.reorganize, matching Simulation.wallshearstress(over_airfoil=True); it is NOT reduced to a scalar magnitude, per the dataset's vector_rule (one weight multiplies the squared vector magnitude)."
+    },
+    {
+      "id": "airfoil-force-coefficients-native",
+      "domain": "scalar_case",
+      "location_definition": {
+        "mode": "materialized_table",
+        "format": "json",
+        "artifact_role": "ground_truth_table",
+        "support_id_rule": {
+          "kind": "artifact_field",
+          "field": "support_id"
+        },
+        "coordinate_fields": [
+          "case_ordinal"
+        ],
+        "weight_rule": {
+          "kind": "uniform"
+        },
+        "ordering": "support_id_ascending"
+      },
+      "quantities": [
+        {
+          "id": "drag_coefficient",
+          "unit": "dimensionless",
+          "components": [
+            {
+              "id": "cd",
+              "target_field": "cd",
+              "target_association": "table_field",
+              "prediction_field": "cd_pred"
+            }
+          ]
+        },
+        {
+          "id": "lift_coefficient",
+          "unit": "dimensionless",
+          "components": [
+            {
+              "id": "cl",
+              "target_field": "cl",
+              "target_association": "table_field",
+              "prediction_field": "cl_pred"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "cd_r2",
+          "quantity_id": "drag_coefficient",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "aggregate_only"
+        },
+        {
+          "metric_id": "cl_r2",
+          "quantity_id": "lift_coefficient",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "aggregate_only"
+        },
+        {
+          "metric_id": "c_drag_mae",
+          "quantity_id": "drag_coefficient",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "c_lift_mae",
+          "quantity_id": "lift_coefficient",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden",
+      "notes": "One row per case (entity_count=1); force and force coefficients are derived by exact re-integration over the airfoil curve (Simulation.force / Simulation.force_coefficient), never submitted independently. coordinate_fields is a placeholder (case_ordinal=0): this support has no spatial coordinates."
+    }
+  ],
+  "case_sets": [
+    {
+      "id": "standard",
+      "case_count": 200,
+      "index_file": "case-sets/standard/index.json",
+      "index_sha256": "4fd24001a81b8b8c0f6ed6fd14368bf4baebc90f9ba8cd3095dca343ca1ffb70"
+    },
+    {
+      "id": "aoa_extrapolation",
+      "case_count": 196,
+      "index_file": "case-sets/aoa_extrapolation/index.json",
+      "index_sha256": "2a43b7aa72ec6e7f3344e0a042a751c1d5f5183ae8fc5440fb65034e7fa7342e"
+    }
+  ],
+  "notes": "Approved dev-only draft support for Full, Scarce and AoA. Public publication and intake remain pending. Native table bytes are unchanged from the verified public-CFD candidate handover; download URLs are reserved destinations, not published assets.",
+  "owner_approval": {
+    "approved_by": "Neil Ashton",
+    "approved_at": "2026-10-07",
+    "pull_request_url": "https://github.com/neilashton/fluidsbench-submission/pull/47"
+  }
+}

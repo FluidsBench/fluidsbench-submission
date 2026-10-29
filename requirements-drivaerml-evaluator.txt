@@ -1,0 +1,22 @@
+-r requirements.txt
+
+# Recommended interpreter for the complete reproducible evidence workflow:
+# Python 3.12.13 exactly. A requirements file cannot install or constrain the
+# interpreter itself. Velocity-assignment generation rejects Python, NumPy, or
+# VTK version mismatches. Native-surface and Cp readers reject a VTK version
+# other than 9.5.2 and record the dependencies exposed by their evidence paths.
+# Force replay records Python, NumPy, and VTK without rejecting a different
+# Python patch or NumPy version. The streaming XML equal-cell volume audit does
+# not use VTK or compute cell volumes; it records its Python/NumPy runtime
+# instead of enforcing those versions.
+#
+# Exact optional stack used to generate and replay DrivAerML native-cell
+# geometry evidence. Keep this separate from the repository-wide validator
+# requirements: most FluidsBench submissions do not need VTK.
+numpy==2.2.6
+vtk==9.5.2
+
+# Exact renderer used only for the candidate AutoCFD5 Cp owner-review atlas.
+# The atlas refuses to render under another version so PDF hashes remain
+# meaningful review evidence.
+matplotlib==3.11.1

@@ -1,0 +1,915 @@
+{
+  "schema_version": "0.1-scientific-review-proposal",
+  "dataset_id": "drivaerml",
+  "status": "owner_policy_recorded_activation_validation_required",
+  "submissions_open": false,
+  "non_activating": true,
+  "purpose": "Reviewed source proposal promoted into the active closed candidate submission specification; this evidence file does not itself open submissions or activate ranking.",
+  "prepared_date": "2026-08-19",
+  "scoring_policy_updated_date": "2026-08-21",
+  "source_release": {
+    "repository": "neashton/drivaerml",
+    "repository_type": "huggingface_dataset",
+    "git_revision": "7a5c0948ce27be709b1116a3a190f806e7a8f79f",
+    "public_case_count": 484,
+    "case_id_pattern": "run_<integer>",
+    "run_number_min": 1,
+    "run_number_max": 500,
+    "unavailable_or_held_back_run_numbers": [
+      167,
+      211,
+      218,
+      221,
+      248,
+      282,
+      291,
+      295,
+      316,
+      325,
+      329,
+      364,
+      370,
+      376,
+      403,
+      473
+    ],
+    "native_source_pin": {
+      "path": "native-source-pin.json",
+      "sha256": "4fc9077f8f23f4994c98f4d0e7a17aef7b998de4c996638e3a8a616b6d923fdd"
+    },
+    "owner_published_splits": {
+      "path": "owner-published-splits.json",
+      "sha256": "032a2e9f88926d9218a1943b51e650135cc78683cad6b0a38f3cf4f9dfba647d"
+    }
+  },
+  "canonical_track": {
+    "id": "canonical_cell_full_native_candidate_v1",
+    "role": "proposed_canonical_support_track",
+    "selection_principle": "fvm_aligned_raw_celldata_candidate_not_model_input_representation",
+    "provenance_status": "owner_confirmation_required_before_activation",
+    "coverage": {
+      "all_cases_in_selected_owner_published_split": true,
+      "all_entities_in_each_frozen_support": true,
+      "inference_may_be_chunked": true,
+      "chunking_changes_support": false,
+      "full_prediction_artifact_required": false,
+      "metric_evidence_requires_additive_sufficient_statistics": true
+    },
+    "supports": [
+      {
+        "id": "surface_native_cells",
+        "domain": "vehicle_surface",
+        "source": "run_<N>/boundary_<N>.vtp",
+        "format": "VTK_PolyData",
+        "association": "CellData",
+        "entities": "all_native_polygons",
+        "provenance": "native_released_surface_postprocessing_support",
+        "stable_id": [
+          "case_id",
+          "raw_vtk_cell_id"
+        ],
+        "coordinate": "benchmark_computed_polygon_cell_center",
+        "coordinate_is_identity": false,
+        "physical_weight": "polygon_area",
+        "physical_weight_contract_must_pin": [
+          "area_algorithm_and_version",
+          "numeric_tolerance",
+          "positive_and_finite_checks",
+          "source_tuple_count_check"
+        ],
+        "public_weight_manifest": {
+          "path_in_dataset": "surface_cell_areas/manifest.json",
+          "sha256": "1401c7e80bd86f3aa2d640289db9b088ce1e0825327e18eeb1ab2852de04323e",
+          "status": "public_complete",
+          "dataset_revision": "7a5c0948ce27be709b1116a3a190f806e7a8f79f",
+          "complete_case_count": 484,
+          "payload_file_count": 484,
+          "total_native_polygons": 4159517910,
+          "total_payload_bytes": 16638133592
+        },
+        "required_arrays": [
+          {
+            "target_id": "surface_pressure",
+            "array": "pMeanTrim",
+            "components": 1,
+            "quantity": "relative_kinematic_pressure",
+            "units": "m^2/s^2",
+            "units_policy": "kinematic_pressure_do_not_label_as_pascal_without_density_scaling"
+          },
+          {
+            "target_id": "surface_wall_shear",
+            "array": "wallShearStressMeanTrim",
+            "components": 3,
+            "quantity": "time_averaged_kinematic_wall_shear_stress_vector",
+            "units": "m^2/s^2",
+            "openfoam_patch_normal_convention": "normal_points_into_fluid_domain",
+            "dynamic_traction_conversion": "multiply_by_rho_inf",
+            "field_comparison_sign_transform": "none_use_raw_stored_vector"
+          }
+        ]
+      },
+      {
+        "id": "volume_native_celldata_candidate",
+        "domain": "flow_domain",
+        "source": "run_<N>/volume_<N>.vtu reconstructed by ordered byte concatenation of pinned parts",
+        "format": "VTK_UnstructuredGrid",
+        "association": "CellData",
+        "entities": "all_native_finite_volume_cells",
+        "provenance": "fvm_aligned_candidate_owner_must_confirm_uninterpolated_solver_carrier",
+        "stable_id": [
+          "case_id",
+          "raw_vtk_cell_id"
+        ],
+        "coordinate": "benchmark_computed_cell_center",
+        "coordinate_is_identity": false,
+        "metric_weighting": "one_per_native_cell",
+        "geometric_cell_volume_weights_required": false,
+        "required_arrays": [
+          {
+            "target_id": "volume_velocity",
+            "array": "UMeanTrim",
+            "components": 3,
+            "quantity": "mean_velocity_vector",
+            "units": "m/s"
+          },
+          {
+            "target_id": "volume_pressure",
+            "array": "pMeanTrim",
+            "components": 1,
+            "quantity": "relative_kinematic_pressure",
+            "units": "m^2/s^2",
+            "units_policy": "kinematic_pressure_do_not_label_as_pascal_without_density_scaling"
+          }
+        ]
+      }
+    ],
+    "metric_policy": {
+      "case_reduction": "calculate_complete_case_before_aggregation",
+      "case_aggregation": "arithmetic_macro_average_cases_equally",
+      "vector_error": "euclidean_norm_of_componentwise_error",
+      "vector_magnitude_difference_is_accepted_primary_metric": false,
+      "case_relative_l2_truth_denominator": "must_be_finite_and_strictly_positive_otherwise_hard_benchmark_support_error",
+      "required_valid_entity_nonfinite_prediction": "hard_submission_error_never_drop_or_impute",
+      "nonfinite_truth_coordinate_or_required_weight": "hard_benchmark_support_error_never_drop_or_impute",
+      "physical_measure_relative_l2": {
+        "required": true,
+        "domains": [
+          "surface_pressure",
+          "surface_wall_shear"
+        ],
+        "role": "continuum_norm_view",
+        "equation": "100*sqrt(sum_i(w_i*||prediction_i-truth_i||_2^2)/sum_i(w_i*||truth_i||_2^2))"
+      },
+      "equal_entity_relative_l2": {
+        "required": true,
+        "domains": [
+          "surface_pressure",
+          "surface_wall_shear",
+          "volume_velocity",
+          "volume_pressure"
+        ],
+        "role": "resolution_weighted_and_literature_continuity_view",
+        "equation": "100*sqrt(sum_i(||prediction_i-truth_i||_2^2)/sum_i(||truth_i||_2^2))"
+      },
+      "absolute_diagnostics": {
+        "required": true,
+        "weightings_by_domain": {
+          "surface": [
+            "physical_measure",
+            "equal_entity"
+          ],
+          "volume": [
+            "equal_entity"
+          ]
+        },
+        "scalar_entity_error": "abs(prediction_i-truth_i)",
+        "vector_entity_error": "euclidean_norm(prediction_i-truth_i)",
+        "mae_equation": "sum_i(w_i*entity_error_i)/sum_i(w_i)",
+        "rmse_equation": "sqrt(sum_i(w_i*entity_error_i^2)/sum_i(w_i))",
+        "units": {
+          "volume_velocity": "m/s",
+          "surface_pressure": "m^2/s^2",
+          "volume_pressure": "m^2/s^2",
+          "surface_wall_shear": "m^2/s^2"
+        },
+        "reason": "relative pressure norms can be small-denominator or gauge sensitive"
+      },
+      "ranking_priority": {
+        "status": "selected_for_owner_approved_composite_pending_baseline_sensitivity_review",
+        "current_repository_volume_default": "equal_entity_only",
+        "surface_composite_default": "physical_area_primary_equal_entity_secondary",
+        "proposal_overrides_repository_default": false
+      },
+      "chunk_rule": "sum_additive_numerators_denominators_counts_and_weights_over_all_chunks_before_nonlinear_reduction",
+      "forbidden_chunk_rule": "average_chunk_local_metrics",
+      "numeric_accumulation_status": "activation_blocked_until_binary64_accumulator_raw_entity_block_merge_order_and_full_case_vs_chunked_tolerance_are_pinned_and_replayed"
+    },
+    "pressure_quantities": {
+      "canonical_static_pressure_array": "pMeanTrim",
+      "static_pressure_coefficient_array": "CpMeanTrim",
+      "total_pressure_coefficient_array": "CptMeanTrim",
+      "pressure_reference": {
+        "value_pa": 0.0,
+        "location_m": [
+          80.0,
+          10.0,
+          10.0
+        ],
+        "boundary": "outlet",
+        "density_kg_per_m3": 1.0,
+        "all_case_audit_required": true
+      },
+      "rule": "distinct_physical_quantities_require_distinct_metric_ids",
+      "owner_verified_conversion_required_before_coefficient_metric": true
+    }
+  },
+  "split_contract": {
+    "source": "owner-published-splits.json",
+    "candidate_index_manifest": {
+      "path": "split-index-candidates/manifest.json",
+      "sha256": "cb1f7f091e6a9626fb67665d6d88ea12a7080076ae3b76107c89aebd30bd95d6"
+    },
+    "recommended_default_split": "full",
+    "splits": {
+      "full": {
+        "train": 400,
+        "validation": 34,
+        "test": 50
+      },
+      "medium": {
+        "train": 133,
+        "validation": 34,
+        "test": 50
+      },
+      "scarce": {
+        "train": 67,
+        "validation": 34,
+        "test": 50
+      },
+      "super_scarce": {
+        "train": 11,
+        "validation": 34,
+        "test": 50
+      },
+      "geometry": {
+        "train": 339,
+        "validation": 48,
+        "test": 97
+      },
+      "high_drag": {
+        "train": 339,
+        "validation": 48,
+        "test": 97
+      },
+      "low_drag": {
+        "train": 339,
+        "validation": 48,
+        "test": 97
+      },
+      "rear_separation": {
+        "train": 339,
+        "validation": 48,
+        "test": 97
+      }
+    },
+    "public_test_data_use": "evaluation_only",
+    "prohibited_test_uses": [
+      "fitting",
+      "checkpoint_selection",
+      "hyperparameter_selection",
+      "manual_tuning",
+      "preprocessing_statistics"
+    ]
+  },
+  "paper_parity_tracks": [
+    {
+      "id": "abupt_sampled_cell_parity",
+      "role": "published_reference_only",
+      "paper": "https://openreview.net/forum?id=nwQ8nitlTZ",
+      "code_revision": "2211068fd58600c52ed38de692f020e2d2b7c987",
+      "split": "owner_full_400_train_34_validation_50_test",
+      "surface_support": "all_raw_vtp_celldata_polygons",
+      "volume_support": "raw_vtu_cells_randomly_subsampled_to_surface_cell_count",
+      "volume_repetitions": 10,
+      "reduction": "unweighted_relative_l2_per_case_then_case_macro_average",
+      "volume_pressure_quantity": "CptMeanTrim_total_pressure_coefficient",
+      "executable_parity_status": "blocked_pending_rng_subsample_and_ten_repetition_aggregation_contract",
+      "directly_comparable_to_canonical_full_volume": false
+    },
+    {
+      "id": "geotransolver_pointdata_parity",
+      "role": "published_reference_only",
+      "paper": "https://arxiv.org/html/2512.20399",
+      "code_revision": "43de886be3e623758a1798d45fee5da44e21c335",
+      "split_revision": "0612ec4ed54484a47bfa134eda7b3b012a607624",
+      "split": "legacy_drag_aware_436_train_48_held_out",
+      "split_file_sha256": {
+        "train": "00086d73a232153610e409d63b9cf76e018f768033725df31ae00c24cc35a1db",
+        "held_out": "dff5297ade2bb179759bdb3d76bb943225769c8219b5bd644fca04eb43a82115"
+      },
+      "surface_support": "all_raw_vtp_celldata_polygons",
+      "volume_support": "all_raw_vtu_pointdata_vertices",
+      "volume_arrays": [
+        "UMeanTrim",
+        "pMeanTrim",
+        "nutMeanTrim"
+      ],
+      "reduction": "unweighted_relative_l1_per_case_then_case_macro_average",
+      "legacy_vector_implementation": "absolute_difference_of_vector_magnitudes",
+      "legacy_vector_implementation_required_for_published_number_reproduction": true,
+      "legacy_vector_implementation_is_canonical": false,
+      "directly_comparable_to_canonical_cell_volume": false
+    }
+  ],
+  "force_contract": {
+    "direct_scalar_prediction_and_field_integrated_force_are_distinct_tasks": true,
+    "direct_scalar_metric_status": "deferred_pending_target_columns_reductions_edge_behavior_and_ranking_decision",
+    "direct_scalar_default_status": "not_frozen_distinct_scientific_questions",
+    "candidate_direct_scalar_sources": [
+      {
+        "id": "geometry_specific_reference",
+        "path": "force_mom_all.csv",
+        "sha256": "360d0ea616ce5dec4c23f400e1d2e3436fcfab3837a5428688effd95f8f61dd8",
+        "reference_convention": "geometry_specific_area_and_length",
+        "interpretation": "aerodynamic_efficiency_and_abupt_compatibility"
+      },
+      {
+        "id": "constant_reference",
+        "path": "force_mom_constref_all.csv",
+        "sha256": "4e9e003da38ccdcacad359451079888361eae221d3c8dad7fd5682250d257865",
+        "reference_convention": "constant_Aref_2.17_m2_and_Lref_2.78618_m",
+        "interpretation": "retains_geometry_size_effects_under_one_normalization"
+      }
+    ],
+    "if_both_are_activated_report_with_distinct_metric_ids": true,
+    "direct_scalar_contract_must_pin": [
+      "exact_csv_columns",
+      "target_names_and_units",
+      "metric_equations_and_case_reduction",
+      "r2_zero_variance_and_nonfinite_edge_behavior",
+      "ranking_inclusion_or_exclusion"
+    ],
+    "freestream": {
+      "velocity_m_per_s": 38.889,
+      "density_kg_per_m3": 1.0,
+      "drag_axis": "+x",
+      "lift_axis": "+z"
+    },
+    "ranked_field_integrated_coefficients": {
+      "source_truth": "force_mom_constref_all.csv",
+      "source_truth_sha256": "4e9e003da38ccdcacad359451079888361eae221d3c8dad7fd5682250d257865",
+      "source_schema": {
+        "exact_header": [
+          "run",
+          "cd",
+          "cl",
+          "clf",
+          "clr",
+          "cs"
+        ],
+        "row_count": 484,
+        "case_key_column": "run",
+        "case_key_type": "base10_integer",
+        "case_id_join": "integer_N_maps_to_exact_case_id_run_N",
+        "ranked_columns": {
+          "Cd": "cd",
+          "Cl": "cl",
+          "CmPitch": "casewise_(clf-clr)/2"
+        },
+        "mandatory_report_only_columns": {
+          "Clf": "clf",
+          "Clr": "clr"
+        },
+        "available_unranked_column": {
+          "Cs": "cs"
+        },
+        "source_lift_closure": {
+          "equation": "cl=clf+clr",
+          "maximum_absolute_residual": 1e-07,
+          "rms_residual": 3.178935572765151e-08,
+          "interpretation": "seven_digit_csv_rounding"
+        },
+        "ranked_units": "dimensionless",
+        "coverage": "exactly_the_484_public_manifest_runs",
+        "hard_errors": [
+          "missing_run",
+          "duplicate_run",
+          "noninteger_run",
+          "nonfinite_ranked_value",
+          "unexpected_or_manifest_extraneous_run"
+        ]
+      },
+      "reference_area_m2": 2.17,
+      "reference_length_m": 2.78618,
+      "forces_centre_of_rotation_m": [
+        1.40009,
+        0.0,
+        -0.3176
+      ],
+      "pitch_axis": "+y",
+      "Cd_equation": "F_x/(0.5*rho_inf*U_inf^2*A_ref)",
+      "Cl_equation": "F_z/(0.5*rho_inf*U_inf^2*A_ref)",
+      "CmPitch_equation": "M_CoR_y/(0.5*rho_inf*U_inf^2*A_ref*L_ref)",
+      "Clf_equation": "Cl/2+CmPitch",
+      "Clr_equation": "Cl/2-CmPitch",
+      "front_rear_interpretation": "equivalent_axle_loads_from_whole_surface_force_and_pitch_moment_not_surface_partitions",
+      "ranked_metric_ids": [
+        "cd_r2",
+        "cl_r2",
+        "c_pitch_r2"
+      ],
+      "case_reduction": "separate_equal_case_R2_for_Cd_Cl_and_CmPitch",
+      "mandatory_report_only_reductions": "individual_equal_case_rmse_for_Cd_Cl_CmPitch_Clf_and_Clr_plus_maximum_predicted_casewise_Cl_minus_(Clf_plus_Clr)_closure_residual_and_published_source_truth_closure_audit",
+      "independent_lift_mode_rationale": "rank_Cl_and_CmPitch_once_each_to_measure_total_lift_and_axle_balance_without_double_counting_dependent_Clf_and_Clr",
+      "geometry_specific_reference_role": "separately_reported_unranked_abupt_aerodynamic_efficiency_diagnostic"
+    },
+    "field_integration": {
+      "surface_support": "every_native_boundary_polygon_exactly_once",
+      "polygon_vertex_order": "released_vtp_connectivity_order",
+      "polygon_vertex_mean_for_area_vector": "arithmetic_mean_of_polygon_vertices",
+      "oriented_area_vector_equation": "A_f=0.5*sum_i(cross(v_i-c_f,v_i_plus_1-c_f))",
+      "moment_application_point": "OpenFOAM_v2212_primitiveMeshTools_makeFaceCentresAndAreas_face_centre_C_f",
+      "moment_application_point_algorithm": "triangle_vertex_mean_else_triangle_area_magnitude_weighted_centroid_of_edge_vertex_mean_decomposition",
+      "moment_application_point_equation_nontriangle": "c_bar=mean_i(v_i); n_i=cross(v_i_plus_1-v_i,c_bar-v_i); a_i=norm(n_i); C_f=(1/3)*sum_i(a_i*(v_i+v_i_plus_1+c_bar))/sum_i(a_i)",
+      "zero_area_fallback_policy": "OpenFOAM_sum_a_below_ROOTVSMALL_fallback_is_a_hard_benchmark_support_error_because_scored_polygon_area_must_be_positive_and_finite",
+      "pressure_field": "CellData_pMeanTrim_relative_kinematic_pressure_m2_per_s2_used_as_released_without_offset",
+      "wall_shear_field": "CellData_wallShearStressMeanTrim_kinematic_traction_m2_per_s2_patch_normal_into_fluid_domain",
+      "body_force_equation": "F=rho_inf*sum_f(pMeanTrim_f*A_f-wallShearStressMeanTrim_f*norm(A_f))",
+      "body_pitch_moment_equation": "M_CoR=rho_inf*sum_f(cross(C_f-CoR,pMeanTrim_f*A_f-wallShearStressMeanTrim_f*norm(A_f)))",
+      "density_conversion": "the_single_outer_rho_inf_factor_converts_both_kinematic_fields_to_dynamic_force",
+      "pressure_reference": "p_ref_0_Pa_at_x80_y10_z10_m_outlet",
+      "run_1_replay": {
+        "source_boundary": {
+          "path_at_pinned_dataset_revision": "run_1/boundary_1.vtp",
+          "sha256": "01d388402dad7a783db9c666ddb18e6db745aac16a3193c275e0726dd108bb40"
+        },
+        "source_truth": {
+          "path_at_pinned_dataset_revision": "force_mom_constref_all.csv",
+          "sha256": "4e9e003da38ccdcacad359451079888361eae221d3c8dad7fd5682250d257865",
+          "row_selector": "integer_run_equals_1"
+        },
+        "source_geo_ref": {
+          "path_at_pinned_dataset_revision": "run_1/geo_ref_1.csv",
+          "sha256": "ff4439f3d49ae8bedad6f9407c2ae269b01cfcc9496e2189db127b8908da6660"
+        },
+        "native_polygon_count": 8828095,
+        "reconstructed_Cd": 0.31092465669905184,
+        "truth_Cd": 0.3109247,
+        "absolute_Cd_difference": 4.3300948160407415e-08,
+        "reconstructed_Cl": 0.06938221152817933,
+        "truth_Cl": 0.06938221,
+        "absolute_Cl_difference": 1.5281793330768068e-09,
+        "reconstructed_CmPitch": -0.08006275533898458,
+        "truth_CmPitch_derived_from_rounded_Clf_Clr": -0.080062775,
+        "reconstructed_Clf": -0.04537164957489491,
+        "truth_Clf": -0.04537165,
+        "absolute_Clf_difference": 4.2510509001836283e-10,
+        "reconstructed_Clr": 0.11475386110307424,
+        "truth_Clr": 0.1147539,
+        "absolute_Clr_difference": 3.88969257636429e-08,
+        "reconstructed_pitch_moment_N_m": -366.03531854720944,
+        "passed_proposed_absolute_tolerance": true
+      },
+      "all_case_activation_absolute_tolerance_per_coefficient": 1e-06,
+      "all_case_activation_coefficients": [
+        "Cd",
+        "Cl",
+        "Clf",
+        "Clr"
+      ],
+      "all_484_public_cases_must_pass": true,
+      "chunk_invariance_required": true
+    },
+    "field_integration_status": "force_and_pitch_moment_formula_selected_run_1_Cd_Cl_Clf_Clr_replay_passed_pending_all_484_replay",
+    "proposal_evidence": {
+      "all_484_definition_and_reference_audit": {
+        "path": "force-definition-audit-all484.json",
+        "sha256": "f4d68d7204a6c6473afe05c2037dcd2c568847610994879d350fc31e36a9d422",
+        "scope_caveat": "definition_closure_and_reference_translation_not_native_field_replay"
+      },
+      "run_1_native_field_force_and_axle_replay": {
+        "path": "run-1-force-axle-replay-summary.json",
+        "sha256": "acd52d458bdafeaca13f19ce60ee753566742ef5bc36c68b20c1f52fe15f0db5"
+      }
+    },
+    "must_validate": [
+      "all_484_public_cases_reproduce_Cd_Cl_Clf_and_Clr_within_absolute_1e-6",
+      "full_case_and_chunked_additive_reductions_are_identical_within_frozen_numeric_tolerance"
+    ],
+    "normative_definition_source": "OpenFOAM_v2212_forceCoeffs_Cl_front_rear_equals_0.5_Cl_plus_minus_CmPitch",
+    "dataset_paper_equation_warning": "Appendix_B_displayed_equations_appear_to_swap_pitch_and_yaw_axes_and_apply_an_extra_L_ref_division_to_already_dimensionless_CmPitch_do_not_implement_literally"
+  },
+  "validity_contract": {
+    "submitter_inferred_masks_allowed": false,
+    "zero_pressure_is_invalid_by_definition": false,
+    "all_case_finite_and_tuple_count_audit_required": true,
+    "owner_published_exclusion_fields_if_needed": [
+      "case_id",
+      "raw_entity_id",
+      "x",
+      "y",
+      "z",
+      "reason",
+      "construction_version",
+      "source_identity"
+    ]
+  },
+  "deferred_contracts": {
+    "profiles_and_cp_cuts": {
+      "status": "owner_policy_recorded_activation_validation_required",
+      "proposal_document": "AUTOCFD_DIAGNOSTICS_COMPOSITE_PROPOSAL.md",
+      "authoritative_autocfd_inputs": {
+        "case2_description_pdf": {
+          "url": "https://autocfd5.s3.eu-west-1.amazonaws.com/test-cases/case2/AutoCFD5_Case2_Intro_260223.pdf",
+          "sha256": "2308a7e11202eeadc4f4080b4d5703af89207ddf342ede86f16aeaf90e3f67a7"
+        },
+        "result_template_v8_xlsm": {
+          "url": "https://autocfd5.s3.eu-west-1.amazonaws.com/test-cases/case2/AutoCFD5_DrivAer_Result_Template_v8.xlsm",
+          "sha256": "5c7e04e5ccd7190b4f81173a3e5dcde09b9e25a9d91fdb866d48beab2e1e8960"
+        }
+      },
+      "velocity_profiles": {
+        "registry": {
+          "path": "autocfd_velocity_lines_nominal.csv",
+          "sha256": "6eb1528034e27a75ab1949551d58c8a161331bf6d343ca7fb4324f0800ca4d12"
+        },
+        "expanded_scoring_registry": "autocfd_velocity_samples_10mm.csv",
+        "expanded_scoring_registry_sha256": "5f1bcf84a633aa6bfdd776764c3295d5d624ef0b6c3649f67de446281ae5ba97",
+        "line_count": 16,
+        "ranked_line_count": 16,
+        "experimental_parity_subset_count": 11,
+        "experimental_parity_subset_profile_ids": [
+          "V1",
+          "V2",
+          "V3",
+          "V5",
+          "U1",
+          "U2",
+          "U3",
+          "U4",
+          "U5",
+          "U6",
+          "L1"
+        ],
+        "quantity": "magnitude(UMeanTrim)/38.889",
+        "association": "native_volume_CellData_containing_cell",
+        "containing_cell_semantics": "all_closure_containing_candidates_then_smallest_raw_vtk_cell_id",
+        "containing_cell_implementation_status": "activation_blocked_pending_published_reference_evaluator_and_golden_assignment_replay",
+        "containing_cell_activation_pins_required": [
+          "candidate_discovery_algorithm",
+          "closure_predicate_and_tolerance_application_for_hex_polyhedron_wedge_pyramid_and_tetrahedron",
+          "reference_evaluator_revision_and_dependency_versions",
+          "candidate_count_semantics",
+          "all_case_assignment_and_tolerance_sensitivity_hashes"
+        ],
+        "point_in_cell_closure_tolerance_m": 1e-06,
+        "tolerance_sensitivity_m": [
+          5e-07,
+          2e-06
+        ],
+        "face_tie_break": "smallest_raw_vtk_cell_id",
+        "validity_policy_id": "drivaerml-autocfd5-velocity-validity-v1",
+        "owner_mask_status": "pending_immutable_owner_release_no_exclusions_approved",
+        "allowed_owner_exclusion_reasons": [
+          "inside_morphed_solid",
+          "outside_released_fluid_domain"
+        ],
+        "unresolved_mapping_failure_rule": "unmapped_nonexcluded_sample_makes_case_line_and_complete_ranked_case_velocity_component_unavailable",
+        "invalid_gap_rule": "only_owner_excluded_endpoints_may_be_removed_and_trapezoid_edge_contributes_only_if_both_endpoints_owner_included_and_mapped_no_gap_bridging",
+        "minimum_case_line_support": "positive_owner_included_mapped_contributing_arc_length",
+        "polyhedron_solid_angle_absolute_tolerance_steradian": 0.001,
+        "polyhedron_ambiguous_action": "retain_explicit_unresolved_invalid_row_no_cell_assignment",
+        "case_line_error_id": "velocity_profile_uinf_rmse",
+        "case_line_error_equation": "sqrt(sum_owner_included_mapped_edges(ds_k*(e_k^2+e_kplus1^2)/2)/sum_owner_included_mapped_edges(ds_k)), where e=norm(U_pred)/U_inf-norm(U_truth)/U_inf",
+        "score_metric_id": "velocity_profile_r2",
+        "score_metric_equation": "one_minus_global_equal_case_equal_line_normalized_arc_weighted_prediction_SSE_divided_by_truth_SST",
+        "ranked_error_equation": "mean_cases(mean_16_lines(case_line_error))",
+        "ranked_error_equation_role": "report_only_loss_and_resolution_convergence_not_composite_scoring",
+        "experimental_subset_report_equation": "mean_cases(mean_11_declared_experimental_parity_lines(case_line_error))",
+        "scoring_spacing_m": 0.01,
+        "scoring_sample_count_per_case": 3756,
+        "reference_sample_count_per_case": 37416,
+        "resolution_convergence": {
+          "reference_spacing_m": 0.001,
+          "candidate_spacings_m": [
+            0.002,
+            0.005,
+            0.01
+          ],
+          "nested_reference_strides": [
+            2,
+            5,
+            10
+          ],
+          "sample_counts_per_case": {
+            "0.001": 37416,
+            "0.002": 18716,
+            "0.005": 7496,
+            "0.01": 3756
+          },
+          "relative_change_equation": "abs(L_h-L_1mm)/L_1mm",
+          "zero_reference_loss_rule": "if_L_1mm_lte_1e-12_require_absolute_agreement_lte_1e-12",
+          "aggregate_limit": 0.005,
+          "every_case_macro_limit": 0.01,
+          "every_case_line_limit": 0.02,
+          "method_order_statistic": "kendall_tau_b",
+          "method_order_ranking_quantity": "final_E_profile_not_nine_component_overall_score",
+          "method_order_minimum": 0.99,
+          "score_tie_absolute_tolerance": 1e-12,
+          "method_set": "pinned_before_study_including_physics_null_nearest_training_design_vector_control_and_at_least_three_distinct_trained_model_checkpoints",
+          "failure_rule": "diagnostic_remains_unranked_until_new_version_globally_adopts_coarsest_finer_passing_grid"
+        }
+      },
+      "activation_requirements": [
+        "published_containing_cell_reference_evaluator_and_all_case_assignment_replay",
+        "velocity_profile_resolution_convergence",
+        "immutable_native_surface_support_for_all_four_continuous_cp_cuts",
+        "all_case_cp_cut_truth_replay_and_chunk_invariance",
+        "golden_truth_hashes",
+        "deterministic_replay_tests"
+      ],
+      "cp_cuts": {
+        "status": "candidate_submission_component_pending_immutable_native_cut_support",
+        "discrete_cp_probe_count": 0,
+        "discrete_cp_probe_support_accepted": false,
+        "cut_count": 4,
+        "stations": [
+          {
+            "id": "upperbody_centerline",
+            "plane": {
+              "axis": "y",
+              "value_m": 0.0
+            },
+            "anatomical_scope": "upper_body_external_surface"
+          },
+          {
+            "id": "underbody_centerline",
+            "plane": {
+              "axis": "y",
+              "value_m": 0.0
+            },
+            "anatomical_scope": "underbody_external_surface"
+          },
+          {
+            "id": "sidewall_z_0_15",
+            "plane": {
+              "axis": "z",
+              "value_m": 0.15
+            },
+            "anatomical_scope": "vehicle_sidewall_external_surface"
+          },
+          {
+            "id": "front_left_wheelhouse_y_neg_0_6",
+            "plane": {
+              "axis": "y",
+              "value_m": -0.6
+            },
+            "anatomical_scope": "front_left_wheelhouse_surface"
+          }
+        ],
+        "quantity": "Cp=2*pMeanTrim/(38.889^2)",
+        "source_field": "native_surface_VTP_CellData_pMeanTrim",
+        "source_units": "m2/s2",
+        "coordinate": "arc_length_m_along_ordered_continuous_cut",
+        "candidate_extraction": {
+          "geometric_object": "continuous_intersection_of_the_named_anatomical_native_surface_scope_with_the_declared_plane",
+          "field_reconstruction": "piecewise_constant_native_CellData_pMeanTrim_on_each_intersected_polygon_segment",
+          "stable_segment_identity": [
+            "case_id",
+            "cut_id",
+            "zero_based_raw_vtk_polygon_id",
+            "polygon_local_intersection_segment_id"
+          ],
+          "segment_weight": "positive_finite_intersection_segment_length_m",
+          "ordering_branch_and_degeneracy_policy": "pending_immutable_owner_support_and_reference_evaluator",
+          "dependencies_and_numeric_tolerances": "pending_immutable_owner_support_and_reference_evaluator"
+        },
+        "case_cut_error_id": "cp_cut_rmse",
+        "case_cut_error_equation": "sqrt(sum_segments(ds*(Cp_prediction-Cp_truth)^2)/sum_segments(ds))",
+        "score_metric_id": "cp_cut_r2",
+        "score_metric_equation": "one_minus_global_equal_case_equal_cut_normalized_native_segment_length_weighted_prediction_SSE_divided_by_truth_SST",
+        "within_cut_weighting": "native_cut_intersection_segment_length",
+        "ranked_error_equation": "mean_cases(mean_4_cuts(case_cut_error))",
+        "ranked_error_equation_role": "report_only_loss_not_composite_scoring",
+        "availability_rule": "all_four_continuous_cuts_must_have_positive_finite_complete_support_for_every_ranked_case",
+        "failure_rule": "cp_cut_component_unavailable_no_cut_case_or_segment_omission",
+        "forbidden_fallbacks": [
+          "the_209_discrete_autocfd_taps",
+          "nearest_surface_probe_mapping",
+          "participant_defined_cut_mask",
+          "averaging_segment_local_rmse_values"
+        ],
+        "activation_requirements": [
+          "publish_all_case_cut_segment_support_counts_lengths_and_hashes",
+          "freeze_branch_selection_degeneracy_tolerances_dependency_versions_and_ordering",
+          "all_case_truth_replay_and_full_case_vs_chunked_metric_invariance",
+          "owner_visual_atlas_signoff_for_the_four_continuous_cuts"
+        ]
+      }
+    },
+    "overall_composite": {
+      "status": "bounded_equation_active_owner_replay_and_sensitivity_validation_pending",
+      "component_weights": {
+        "native_surface_pressure_field": 0.15,
+        "native_surface_wall_shear_field": 0.1,
+        "native_volume_velocity_field": 0.15,
+        "native_volume_pressure_field": 0.1,
+        "field_integrated_Cd": 0.15,
+        "field_integrated_Cl": 0.05,
+        "field_integrated_CmPitch": 0.05,
+        "autocfd_velocity_profiles": 0.15,
+        "fluidsbench_cp_cuts": 0.1
+      },
+      "branch_weights": {
+        "global_fields": 0.5,
+        "field_integrated_engineering_quantities": 0.25,
+        "local_diagnostics": 0.25
+      },
+      "component_metrics": {
+        "native_surface_pressure_field": "equal_case_mean_of_case_area_weighted_relative_l2",
+        "native_surface_wall_shear_field": "equal_case_mean_of_case_area_weighted_relative_l2",
+        "native_volume_velocity_field": "equal_case_mean_of_case_equal_native_cell_relative_l2",
+        "native_volume_pressure_field": "equal_case_mean_of_case_equal_native_cell_relative_l2",
+        "field_integrated_Cd": "equal_case_R2",
+        "field_integrated_Cl": "equal_case_R2",
+        "field_integrated_CmPitch": "equal_case_R2_of_casewise_(Clf-Clr)/2",
+        "autocfd_velocity_profiles": "global_equal_case_equal_line_normalized_arc_weighted_R2",
+        "fluidsbench_cp_cuts": "global_equal_case_equal_cut_normalized_native_intersection_segment_length_weighted_R2"
+      },
+      "ranked_force_reference": {
+        "convention": "constant_autocfd",
+        "reference_area_m2": 2.17,
+        "reference_length_m": 2.78618,
+        "forces_centre_of_rotation_m": [
+          1.40009,
+          0.0,
+          -0.3176
+        ],
+        "density_kg_per_m3": 1.0,
+        "velocity_m_per_s": 38.889,
+        "Cd_axis": "+x",
+        "Cl_axis": "+z",
+        "CmPitch_axis": "+y",
+        "source_truth": "force_mom_constref_all.csv",
+        "geometry_specific_reference_is_ranked": false,
+        "Clf_equation": "Cl/2+CmPitch",
+        "Clr_equation": "Cl/2-CmPitch",
+        "Clf_and_Clr_have_additional_composite_weight": false,
+        "mandatory_report_only_force_diagnostics": [
+          "individual_equal_case_RMSE_Clf",
+          "individual_equal_case_RMSE_Clr",
+          "maximum_predicted_casewise_Cl_minus_(Clf_plus_Clr)_closure_residual",
+          "source_truth_Cl_minus_(Clf_plus_Clr)_closure_audit"
+        ]
+      },
+      "bounded_error_equation": "clip(100*(1-error_percent/cap_percent),0,100)",
+      "bounded_R2_equation": "100*clip(R2,0,1)",
+      "component_transforms": {
+        "native_surface_pressure_field": {
+          "kind": "bounded_error",
+          "cap_percent": 15.0
+        },
+        "native_surface_wall_shear_field": {
+          "kind": "bounded_error",
+          "cap_percent": 20.0
+        },
+        "native_volume_velocity_field": {
+          "kind": "bounded_error",
+          "cap_percent": 12.0
+        },
+        "native_volume_pressure_field": {
+          "kind": "bounded_error",
+          "cap_percent": 15.0
+        },
+        "field_integrated_Cd": {
+          "kind": "bounded_R2"
+        },
+        "field_integrated_Cl": {
+          "kind": "bounded_R2"
+        },
+        "field_integrated_CmPitch": {
+          "kind": "bounded_R2"
+        },
+        "autocfd_velocity_profiles": {
+          "kind": "bounded_R2"
+        },
+        "fluidsbench_cp_cuts": {
+          "kind": "bounded_R2"
+        }
+      },
+      "branch_membership": {
+        "global_fields": [
+          "native_surface_pressure_field",
+          "native_surface_wall_shear_field",
+          "native_volume_velocity_field",
+          "native_volume_pressure_field"
+        ],
+        "field_integrated_engineering_quantities": [
+          "field_integrated_Cd",
+          "field_integrated_Cl",
+          "field_integrated_CmPitch"
+        ],
+        "local_diagnostics": [
+          "autocfd_velocity_profiles",
+          "fluidsbench_cp_cuts"
+        ]
+      },
+      "branch_score_equation": "sum_j_in_branch(w_j*S_j)/sum_j_in_branch(w_j)",
+      "overall_score_equation": "sum_all_components(w_j*S_j)",
+      "ranking_clips_R2_to_unit_interval": true,
+      "field_error_caps_status": "active_shared_fluidsbench_fixed_caps_not_fit_to_dummy_rows",
+      "sensitivity_controls": {
+        "nearest_training_design_vector": {
+          "role": "benchmark_owned_unranked_control_not_a_submission_method",
+          "descriptor_source": {
+            "path_at_pinned_dataset_revision": "geo_parameters_all.csv",
+            "dataset_revision": "7a5c0948ce27be709b1116a3a190f806e7a8f79f",
+            "git_blob_sha1": "dece27802392abf566e07fbcfb6b689485a0088a",
+            "sha256": "2d4e8b3f166d1facab2a38821af2c3cc1dbba47cfbb7bf0814e3e0bf1fe3e829",
+            "size_bytes": 77574,
+            "row_key_join": "case_id_run_N_to_integer_column_Run_equals_N",
+            "header_normalization": "strip_ascii_whitespace"
+          },
+          "descriptor_columns_in_order": [
+            "Vehicle_Length",
+            "Vehicle_Width",
+            "Vehicle_Height",
+            "Front_Overhang",
+            "Front_Planview",
+            "Hood_Angle",
+            "Approach_Angle",
+            "Windscreen_Angle",
+            "Greenhouse_Tapering",
+            "Backlight_Angle",
+            "Decklid_Height",
+            "Rearend_tapering",
+            "Rear_Overhang",
+            "Rear_Diffusor_Angle",
+            "Vehicle_Ride_Height",
+            "Vehicle_Pitch"
+          ],
+          "donor_pool": "exact_selected_split_train_list_only_never_validation_or_test",
+          "standardization": "training_pool_mean_and_population_standard_deviation_ddof_0_per_column",
+          "standardization_error": "missing_nonfinite_or_nonpositive_standard_deviation_is_hard_error",
+          "distance_squared_equation": "sum_j(((x_target_j-x_train_j)/sigma_train_j)^2)",
+          "selection": "minimum_distance_squared_then_smallest_integer_Run_on_exact_tie",
+          "forbidden_selection_inputs": [
+            "force",
+            "flow",
+            "geo_ref",
+            "validation_statistics",
+            "test_statistics"
+          ],
+          "required_donor_map_columns": [
+            "split_id",
+            "target_case_id",
+            "donor_case_id",
+            "distance_squared"
+          ],
+          "donor_map_must_be_published_and_hashed": true,
+          "field_transfer_status": "activation_blocked_pending_deterministic_donor_to_target_surface_and_volume_operator_support_validity_policy_and_golden_replay",
+          "raw_vtk_ids_may_be_copied_between_cases": false
+        }
+      },
+      "uncertainty": {
+        "method": "paired_equal_case_nonparametric_bootstrap_recomputing_component_metrics_and_bounded_transforms_per_replicate",
+        "replicates": 10000,
+        "seed": 20260819,
+        "interval": "two_sided_percentile_95_percent",
+        "case_order": "evaluated_case_ids_sorted_by_base10_integer_run_ascending",
+        "rng": "numpy_2.2.6_Generator_PCG64",
+        "index_generation": "rng.integers(0,n_cases,size=(10000,n_cases),dtype=numpy.int64,endpoint=false)_row_major",
+        "paired_rule": "one_resampled_case_index_vector_is_shared_by_every_method_and_component_within_each_replicate",
+        "percentile_endpoints": [
+          2.5,
+          97.5
+        ],
+        "percentile_interpolation": "numpy_percentile_method_linear_Hyndman_Fan_type_7",
+        "activation_artifact": "publish_generated_index_matrix_or_canonical_serialization_and_sha256"
+      },
+      "activation_requirements": [
+        "field_integrated_force_all_484_case_golden_replay_and_chunk_invariance",
+        "fixed_field_cap_and_bounded_R2_real_model_sensitivity",
+        "nearest_training_design_vector_donor_map_and_golden_field_transfer_control",
+        "real_model_sensitivity",
+        "equal_case_bootstrap_confidence_intervals"
+      ]
+    },
+    "single_metric_ranking": {
+      "status": "owner_structure_approved_pending_activation_validation"
+    }
+  },
+  "activation_blockers": [
+    "all_case_vtk_array_association_tuple_component_finiteness_units_gauge_sign_and_provenance_inventory",
+    "immutable_surface_stable_id_and_coordinate_support_plus_volume_equal_cell_identity_with_pinned_tolerances_and_qa",
+    "owner_approved_exclusion_policy_and_mask_if_needed",
+    "golden_scalar_and_vector_reductions_with_chunk_invariance_tests",
+    "all_484_case_explicit_force_formula_replay_and_chunk_invariance_against_constant_reference_truth",
+    "published_profile_containing_cell_reference_evaluator_all_case_assignments_and_resolution_convergence",
+    "immutable_native_surface_support_and_all_case_replay_for_the_four_continuous_cp_cuts",
+    "official_split_indexes_derived_from_pinned_owner_manifest",
+    "nearest_training_design_vector_donor_map_and_golden_donor_to_target_field_transfer_control",
+    "published_bootstrap_index_matrix_hash_and_fixed_cap_bounded_R2_sensitivity_review_before_any_composite_ranking",
+    "dataset_owner_approval_of_scoring_support_and_evaluator_release"
+  ]
+}

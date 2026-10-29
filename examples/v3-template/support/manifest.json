@@ -1,0 +1,120 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/scoring-support/v1/manifest.schema.json",
+  "schema_version": "1.0",
+  "release_id": "synthetic-support-v1",
+  "status": "official",
+  "published_at": "2026-07-27T00:00:00Z",
+  "dataset_id": "synthetic",
+  "dataset_version": "synthetic-1",
+  "evaluation_reference_version": "synthetic-evaluator-v1",
+  "coordinate_frame": {
+    "id": "synthetic-physical-v1",
+    "axis_order": ["x", "y", "z"],
+    "handedness": "right",
+    "length_unit": "m",
+    "normalization": "none"
+  },
+  "supports": [
+    {
+      "id": "volume-points-v1",
+      "domain": "volume",
+      "location_definition": {
+        "mode": "materialized_table",
+        "format": "json",
+        "artifact_role": "ground_truth_table",
+        "support_id_rule": {
+          "kind": "artifact_field",
+          "field": "support_id"
+        },
+        "coordinate_fields": ["x", "y", "z"],
+        "weight_rule": {
+          "kind": "artifact_field",
+          "artifact_role": "ground_truth_table",
+          "field": "weight"
+        },
+        "ordering": "support_id_ascending"
+      },
+      "quantities": [
+        {
+          "id": "pressure",
+          "unit": "Pa",
+          "components": [
+            {
+              "id": "pressure",
+              "target_field": "pressure_true",
+              "target_association": "table_field",
+              "prediction_field": "pressure_pred"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "pressure_rel_l1",
+          "quantity_id": "pressure",
+          "reduction": "relative_l1_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "synthetic_support_weights",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "pressure_equal_rel_l2",
+          "quantity_id": "pressure",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "pressure_physical_rel_l2",
+          "quantity_id": "pressure",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "synthetic_support_weights",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "pressure_mae",
+          "quantity_id": "pressure",
+          "reduction": "mae",
+          "weighting": "support_weights",
+          "dataset_weighting": "synthetic_support_weights",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "pressure_rmse",
+          "quantity_id": "pressure",
+          "reduction": "rmse",
+          "weighting": "support_weights",
+          "dataset_weighting": "synthetic_support_weights",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden"
+    }
+  ],
+  "case_sets": [
+    {
+      "id": "standard",
+      "case_count": 2,
+      "index_file": "case-sets/standard/index.json",
+      "index_sha256": "8b233ff5a53e37fa753203c4015db692c365f2061baddc7fadfc9188b87fa7e9"
+    }
+  ],
+  "owner_approval": {
+    "approved_by": "Synthetic fixture maintainer",
+    "approved_at": "2026-07-27",
+    "pull_request_url": "https://github.com/example/fluidsbench-submission/pull/1"
+  },
+  "notes": "Self-consistent synthetic contract only; it is not a recognized FluidsBench dataset."
+}

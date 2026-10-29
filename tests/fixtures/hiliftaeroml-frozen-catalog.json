@@ -1,0 +1,646 @@
+{
+  "name": "HiLiftAeroML",
+  "slug": "hiliftaeroml",
+  "file": "leaderboard/datasets/hiliftaeroml.json",
+  "submission_count": 8,
+  "updated_at": "2026-07-08",
+  "metrics": {
+    "dimensional_fields": [
+      "surface_pressure",
+      "surface_wall_shear",
+      "volume_velocity",
+      "volume_pressure"
+    ],
+    "coefficient_errors": [
+      "c_drag",
+      "c_lift",
+      "c_pitch"
+    ]
+  },
+  "splits": [
+    {
+      "id": "full",
+      "name": "Full",
+      "type": "in_distribution",
+      "train_count": 1260,
+      "validation_count": 180,
+      "test_count": 360,
+      "description": "Random case-level baseline split."
+    },
+    {
+      "id": "medium",
+      "name": "Medium",
+      "type": "in_distribution",
+      "train_count": 510,
+      "validation_count": 180,
+      "test_count": 360,
+      "description": "Intermediate data-efficiency split between Full and Scarce."
+    },
+    {
+      "id": "scarce",
+      "name": "Scarce",
+      "type": "in_distribution",
+      "train_count": 210,
+      "validation_count": 180,
+      "test_count": 360,
+      "description": "Data-efficiency split using one sixth of the Full training data."
+    },
+    {
+      "id": "super_scarce",
+      "name": "Super scarce",
+      "type": "in_distribution",
+      "train_count": 35,
+      "validation_count": 180,
+      "test_count": 360,
+      "description": "Extreme data-efficiency split using one thirty-sixth of the Full training data."
+    },
+    {
+      "id": "geometry",
+      "name": "Geometry",
+      "type": "in_distribution",
+      "train_count": 1260,
+      "validation_count": 180,
+      "test_count": 360,
+      "description": "Generalization to unseen geometries, with all 10 AoAs per selected geometry."
+    },
+    {
+      "id": "geometry_medium",
+      "name": "Geometry medium",
+      "type": "in_distribution",
+      "train_count": 510,
+      "validation_count": 180,
+      "test_count": 360,
+      "description": "Unseen-geometry generalization from 51 training geometries."
+    },
+    {
+      "id": "geometry_scarce",
+      "name": "Geometry scarce",
+      "type": "in_distribution",
+      "train_count": 210,
+      "validation_count": 180,
+      "test_count": 360,
+      "description": "Unseen-geometry generalization from 21 training geometries."
+    },
+    {
+      "id": "geometry_super_scarce",
+      "name": "Geometry super scarce",
+      "type": "in_distribution",
+      "train_count": 40,
+      "validation_count": 180,
+      "test_count": 360,
+      "description": "Unseen-geometry generalization from 4 training geometries."
+    },
+    {
+      "id": "single_aoa_4",
+      "name": "AoA 4",
+      "type": "in_distribution",
+      "train_count": 126,
+      "validation_count": 18,
+      "test_count": 36,
+      "description": "Single-AoA geometry generalization at 4 degrees."
+    },
+    {
+      "id": "single_aoa_12",
+      "name": "AoA 12",
+      "type": "in_distribution",
+      "train_count": 126,
+      "validation_count": 18,
+      "test_count": 36,
+      "description": "Single-AoA geometry generalization at 12 degrees."
+    },
+    {
+      "id": "single_aoa_22",
+      "name": "AoA 22",
+      "type": "in_distribution",
+      "train_count": 126,
+      "validation_count": 18,
+      "test_count": 36,
+      "description": "Single-AoA geometry generalization at 22 degrees."
+    },
+    {
+      "id": "aoa",
+      "name": "AoA extrapolation",
+      "type": "ood",
+      "train_count": 788,
+      "validation_count": 112,
+      "test_count": 900,
+      "description": "Train and validate on AoA <= 12 degrees, then test on AoA >= 14 degrees."
+    },
+    {
+      "id": "deflection",
+      "name": "Deflection",
+      "type": "ood",
+      "train_count": 1260,
+      "validation_count": 180,
+      "test_count": 360,
+      "description": "Geometry extrapolation from low mean deflection to high deflection settings."
+    },
+    {
+      "id": "stall",
+      "name": "Stall",
+      "type": "ood",
+      "train_count": 942,
+      "validation_count": 135,
+      "test_count": 723,
+      "description": "Flow-regime extrapolation from pre-stall training cases to post-stall test cases."
+    }
+  ],
+  "submission_format": "hiliftaeroml_native_candidate_v3",
+  "metric_ids": [
+    "overall_score",
+    "field_score",
+    "force_score",
+    "diagnostic_score",
+    "surface_pressure_rel_l2",
+    "surface_pressure_equal_entity_rel_l2",
+    "surface_wall_shear_rel_l2",
+    "surface_wall_shear_equal_entity_rel_l2",
+    "volume_velocity_rel_l2",
+    "volume_pressure_rel_l2",
+    "surface_pressure_rel_l1",
+    "surface_wall_shear_rel_l1",
+    "volume_velocity_rel_l1",
+    "volume_pressure_rel_l1",
+    "velocity_profile_r2",
+    "cp_cut_r2",
+    "surface_pressure_mae",
+    "surface_wall_shear_mae",
+    "volume_velocity_mae",
+    "volume_pressure_mae",
+    "surface_pressure_rmse",
+    "surface_wall_shear_rmse",
+    "volume_velocity_rmse",
+    "volume_pressure_rmse",
+    "cd_r2",
+    "cl_r2",
+    "c_drag_mae",
+    "c_lift_mae",
+    "c_pitch_mae"
+  ],
+  "metric_definition_overrides": {
+    "surface_pressure_rel_l2": {
+      "label": "Surface pressure rel. L2 (area-weighted)",
+      "description": "Area-weighted relative L2 error for surface pressure; each scored surface point is weighted by its benchmark-supplied represented area. Lower is better."
+    },
+    "surface_pressure_rel_l1": {
+      "description": "Area-weighted relative L1 error for surface pressure. Lower is better."
+    },
+    "surface_pressure_mae": {
+      "description": "Area-weighted mean absolute error for surface pressure. Lower is better."
+    },
+    "surface_pressure_rmse": {
+      "description": "Area-weighted root-mean-square error for surface pressure. Lower is better."
+    },
+    "surface_wall_shear_rel_l2": {
+      "label": "Surface wall shear rel. L2 (area-weighted)",
+      "description": "Area-weighted relative L2 error for surface wall shear; each scored surface point is weighted by its benchmark-supplied represented area. Lower is better."
+    },
+    "surface_wall_shear_rel_l1": {
+      "description": "Area-weighted relative L1 error for surface wall shear. Lower is better."
+    },
+    "surface_wall_shear_mae": {
+      "description": "Area-weighted mean absolute error for surface wall shear. Lower is better."
+    },
+    "surface_wall_shear_rmse": {
+      "description": "Area-weighted root-mean-square error for surface wall shear. Lower is better."
+    }
+  },
+  "ranking": {
+    "metric_id": "overall_score",
+    "direction": "higher",
+    "decimal_places": 1,
+    "rounding": "decimal_half_up",
+    "method": "competition"
+  },
+  "diagnostic_panels": [
+    {
+      "id": "pressure_profiles",
+      "title": "Pressure-coefficient profiles",
+      "description": "Reference and submitted pressure-coefficient traces at the selected station.",
+      "data_key": "cp_cuts",
+      "x_keys": [
+        "x",
+        "x_over_c",
+        "x_over_l"
+      ],
+      "quantities": [
+        {
+          "id": "cp",
+          "label": "Cp",
+          "y_label": "Pressure coefficient, Cp",
+          "y_keys": [
+            "cp"
+          ],
+          "unit": ""
+        }
+      ],
+      "stations": [
+        {
+          "id": "pressure_belt_a",
+          "label": "HLPW-5 pressure row A",
+          "x_label": "x (full-scale in) along HLPW-5 row A",
+          "dog_leg_x_in": 1126.61,
+          "elements": [
+            "slat",
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row A. It is one of the four belts plotted in Figure 15 of the HiLiftAeroML paper.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_b",
+          "label": "HLPW-5 pressure row B",
+          "x_label": "x (full-scale in) along HLPW-5 row B",
+          "dog_leg_x_in": 1199.86,
+          "elements": [
+            "slat",
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row B.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_c",
+          "label": "HLPW-5 pressure row C",
+          "x_label": "x (full-scale in) along HLPW-5 row C",
+          "dog_leg_x_in": 1266.16,
+          "elements": [
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row C. Row C has no deployed-slat cut in HLPW-5 Case 2.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_d",
+          "label": "HLPW-5 pressure row D",
+          "x_label": "x (full-scale in) along HLPW-5 row D",
+          "dog_leg_x_in": 1332.41,
+          "elements": [
+            "slat",
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row D. It is one of the four belts plotted in Figure 15 of the HiLiftAeroML paper.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_e",
+          "label": "HLPW-5 pressure row E",
+          "x_label": "x (full-scale in) along HLPW-5 row E",
+          "dog_leg_x_in": 1402.17,
+          "elements": [
+            "slat",
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row E.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_f",
+          "label": "HLPW-5 pressure row F",
+          "x_label": "x (full-scale in) along HLPW-5 row F",
+          "dog_leg_x_in": 1478.9,
+          "elements": [
+            "slat",
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row F.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_g",
+          "label": "HLPW-5 pressure row G",
+          "x_label": "x (full-scale in) along HLPW-5 row G",
+          "dog_leg_x_in": 1555.64,
+          "elements": [
+            "slat",
+            "main_wing",
+            "flap"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row G. It is one of the four belts plotted in Figure 15 of the HiLiftAeroML paper.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_h",
+          "label": "HLPW-5 pressure row H",
+          "x_label": "x (full-scale in) along HLPW-5 row H",
+          "dog_leg_x_in": 1621.91,
+          "elements": [
+            "slat",
+            "main_wing"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row H.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_i",
+          "label": "HLPW-5 pressure row I",
+          "x_label": "x (full-scale in) along HLPW-5 row I",
+          "dog_leg_x_in": 1709.11,
+          "elements": [
+            "slat",
+            "main_wing"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row I. It is one of the four belts plotted in Figure 15 of the HiLiftAeroML paper.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "pressure_belt_j",
+          "label": "HLPW-5 pressure row J",
+          "x_label": "x (full-scale in) along HLPW-5 row J",
+          "dog_leg_x_in": 1778.87,
+          "elements": [
+            "slat",
+            "main_wing"
+          ],
+          "description": "Official HLPW-5 CRM-HL wing pressure row J.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        }
+      ],
+      "required": true,
+      "required_series_fields": [
+        "case_id",
+        "station_id"
+      ],
+      "reverse_y": true
+    },
+    {
+      "id": "velocity_profiles",
+      "title": "Velocity profiles",
+      "description": "Reference and submitted normalized velocity traces at the selected station.",
+      "data_key": "velocity_profiles",
+      "x_keys": [
+        "x",
+        "offset",
+        "distance"
+      ],
+      "quantities": [
+        {
+          "id": "velocity_ratio",
+          "label": "Velocity",
+          "y_label": "Normalized velocity",
+          "y_keys": [
+            "u_over_u_inf",
+            "velocity_ratio"
+          ],
+          "unit": ""
+        }
+      ],
+      "stations": [
+        {
+          "id": "hlpw5_b_2",
+          "label": "HLPW-5 B.2",
+          "x_label": "z - z_surface (in)",
+          "x_in": 1203.7442,
+          "y_in": 374.8077,
+          "surface_z_in": 208.4231,
+          "description": "HLPW-5 velocity-profile station B.2 at the published full-scale x/y location.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "hlpw5_b_3",
+          "label": "HLPW-5 B.3",
+          "x_label": "z - z_surface (in)",
+          "x_in": 1398.1731,
+          "y_in": 360.8769,
+          "surface_z_in": 205.5577,
+          "description": "HLPW-5 velocity-profile station B.3 at the published full-scale x/y location.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "hlpw5_c_1",
+          "label": "HLPW-5 C.1",
+          "x_label": "z - z_surface (in)",
+          "x_in": 1699.5212,
+          "y_in": 964.3962,
+          "surface_z_in": 258.4827,
+          "description": "HLPW-5 velocity-profile station C.1 at the published full-scale x/y location.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "hlpw5_c_2",
+          "label": "HLPW-5 C.2",
+          "x_label": "z - z_surface (in)",
+          "x_in": 1730.9519,
+          "y_in": 956.0558,
+          "surface_z_in": 258.5019,
+          "description": "HLPW-5 velocity-profile station C.2 at the published full-scale x/y location.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        },
+        {
+          "id": "hlpw5_c_3",
+          "label": "HLPW-5 C.3",
+          "x_label": "z - z_surface (in)",
+          "x_in": 1762.35,
+          "y_in": 949.1462,
+          "surface_z_in": 255.5058,
+          "description": "HLPW-5 velocity-profile station C.3 at the published full-scale x/y location.",
+          "basis": "published_validation_trace",
+          "source_url": "https://aiaa-hlpw.org/HLPW/index-workshop5.html"
+        }
+      ],
+      "required": true,
+      "allow_unlisted_stations": false,
+      "required_series_fields": [
+        "case_id",
+        "station_id"
+      ]
+    }
+  ],
+  "scoring_support": {
+    "status": "owner_review_required",
+    "submissions_open": false,
+    "closed_reason": "Closed owner-review candidate: immutable public source-content pins, public profile-truth publication, and owner scientific approval remain pending. The immutable evaluator revision is frozen only for closed candidate dry runs and has no activation effect.",
+    "candidate_manifest": {
+      "status": "candidate",
+      "release_id": "hiliftaeroml-native-all-splits-support-v1-candidate",
+      "manifest_file": "scoring-support/hiliftaeroml-native-all-splits-support-v1-candidate/manifest.json",
+      "manifest_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/hiliftaeroml/scoring-support/hiliftaeroml-native-all-splits-support-v1-candidate/manifest.json",
+      "manifest_sha256": "98a9a8d015e42c80f5993e30da94201011bebf67ff44d5574a7ef68a8b5dfbee"
+    },
+    "dataset_evaluator_binding": {
+      "status": "frozen",
+      "repository_url": "https://github.com/neilashton/fluidsbench-submission",
+      "evaluator_reference_version": "hiliftaeroml-evaluator-v0.1-candidate",
+      "evaluator_code_revision": "68899f780d96b70f2badb5658971c87af0b17172",
+      "activation_rule": "This frozen revision may be used only for closed maintainer-local candidate dry runs; it does not publish profile truth, record owner approval, open submissions, or activate a public or private leaderboard."
+    },
+    "coverage_contract": {
+      "dimensionality": "3D surface and 3D flow domain",
+      "rule": "complete_original_public_release_entities",
+      "inference_may_be_chunked": true,
+      "chunk_metrics_must_use_additive_sufficient_statistics": true,
+      "complete_case_and_entity_coverage_required": true,
+      "full_prediction_artifact_required": false,
+      "case_aggregation": "calculate_each_case_then_macro_average_cases_equally",
+      "public_ground_truth": "Ground-truth fields are in the public dataset release."
+    },
+    "public_supports": [
+      {
+        "id": "surface-native",
+        "public_file": "geo_LHC<id>_AoA_<angle>/boundary_geo_LHC<id>_AoA_<angle>.vtu.tgz",
+        "format": "tar-gzipped VTK UnstructuredGrid boundary mesh",
+        "domain": "three_dimensional_aircraft_surface",
+        "association": "PointData",
+        "entities": "all_native_boundary_points",
+        "physical_weight": "mass_lumped_dual_surface_area",
+        "verification": "confirmed_in_public_release_documentation"
+      },
+      {
+        "id": "flow-domain-native",
+        "public_file": "geo_LHC<id>_AoA_<angle>/volume_geo_LHC<id>_AoA_<angle>.vtu.tgz",
+        "format": "tar-gzipped VTK UnstructuredGrid",
+        "domain": "three_dimensional_flow_domain",
+        "association": "PointData",
+        "entities": "retained_native_volume_points_with_raw_float32_avg(P)_not_equal_to_zero",
+        "verification": "confirmed_in_public_release_documentation",
+        "primary_weight": "one_per_retained_valid_native_point"
+      }
+    ],
+    "relative_l2_policy": {
+      "surface_or_curve_primary": "physical_measure_weighted",
+      "surface_or_curve_secondary": "equal_native_entity",
+      "flow_domain_primary": "equal_valid_native_entity",
+      "flow_domain_secondary": "not_part_of_closed_candidate",
+      "point_or_vertex_physical_weights": "surface_only_deterministic_mass_lumped_dual_area_from_the_exact_public_mesh",
+      "vector_rule": "one_entity_weight_multiplies_the_squared_vector_magnitude",
+      "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
+    },
+    "field_metric_value_bases": {
+      "relative_l1_l2": {
+        "surface_pressure": "(P-p_inf)/q_inf",
+        "surface_wall_shear": "tau_wall/q_inf",
+        "volume_pressure": "(P-p_inf)/q_inf",
+        "volume_velocity": "U/|U_inf|",
+        "aggregation": "form each complete-case ratio from additive sufficient statistics, then macro-average all cases in the selected split equally"
+      },
+      "dimensional_mae_rmse": {
+        "surface_pressure": "inverse-scale each case by q_inf into Pa",
+        "surface_wall_shear": "inverse-scale each case by q_inf into Pa",
+        "volume_pressure": "inverse-scale each case by q_inf into Pa",
+        "volume_velocity": "inverse-scale each case by |U_inf| into m/s",
+        "aggregation": "derive each dimensional complete-case value before macro-averaging all cases in the selected split equally"
+      },
+      "vector_reduction": {
+        "relative_l1": "component-flattened absolute numerator and denominator",
+        "relative_l2": "one nodal weight multiplies the squared three-component vector error and truth magnitude",
+        "mae_rmse": "current native-evaluator per-component convention over 3*N weighted scalar components"
+      }
+    },
+    "candidate_migration_notes": [
+      "The closed schema-v3 candidate removes the legacy diagnostic volume_velocity_physical_rel_l2 and volume_pressure_physical_rel_l2 requirements. The native Table-5 evaluator has never published or consumed volume dual-volume support; its frozen primary contract is equal valid native nodes. This candidate migration is not an activated public scoring change because submissions remain closed and unapproved.",
+      "Relative field metrics are bound to the frozen Table-5 nondimensional targets, while the existing paper-compatible MAE/RMSE metrics remain dimensional. A candidate aggregate must emit and audit both bases from the same per-case inference stream.",
+      "The closed candidate replaces the stale prototype 16-station velocity panel with the five frozen Table-5 stations B.2, B.3, C.1, C.2, and C.3. Velocity profiles use physical polyline arc length and within-station centering; Cp retains exact rows A-J with physical connected-cut arc length and independently centered connected graphs. This is not an activated public profile-contract change while submissions remain closed."
+    ],
+    "owner_decisions_required": [
+      "pin_exact_public_release_archive_and_extracted_member_content_sha256_for_all_1355_unique_evaluation_cases",
+      "confirm_public_source_array_names_associations_retained_volume_mask_and_raw_point_order",
+      "publish_and_approve_authoritative_surface_dual_area_support",
+      "approve_all_exact_split_bindings_and_candidate_scoring_support_release",
+      "exercise_and_audit_same_stream_nondimensional_relative_and_dimensional_absolute_field_aggregation",
+      "freeze_lossless_cp_connected_graph_and_five_station_velocity_profile_serialization_and_public_truth_release",
+      "owner_approve_the_frozen_dataset_evaluator_git_revision_without_public_activation",
+      "approve_the_zero_weight_regional_contract_and_complete_split_aggregator"
+    ]
+  },
+  "overall_score_composite": {
+    "metric_id": "overall_score",
+    "operation": "weighted_component_scores",
+    "components": [
+      {
+        "metric_id": "surface_pressure_rel_l2",
+        "weight": 0.15,
+        "transform": "bounded_error",
+        "cap": 15.0
+      },
+      {
+        "metric_id": "surface_wall_shear_rel_l2",
+        "weight": 0.1,
+        "transform": "bounded_error",
+        "cap": 20.0
+      },
+      {
+        "metric_id": "volume_velocity_rel_l2",
+        "weight": 0.15,
+        "transform": "bounded_error",
+        "cap": 12.0
+      },
+      {
+        "metric_id": "volume_pressure_rel_l2",
+        "weight": 0.1,
+        "transform": "bounded_error",
+        "cap": 15.0
+      },
+      {
+        "metric_id": "cd_r2",
+        "weight": 0.15,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "cl_r2",
+        "weight": 0.1,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "velocity_profile_r2",
+        "weight": 0.15,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "cp_cut_r2",
+        "weight": 0.1,
+        "transform": "bounded_quality"
+      }
+    ],
+    "tolerance": 1e-06
+  },
+  "component_score_groups": {
+    "operation": "normalized_weighted_component_scores",
+    "groups": [
+      {
+        "metric_id": "field_score",
+        "component_metric_ids": [
+          "surface_pressure_rel_l2",
+          "surface_wall_shear_rel_l2",
+          "volume_velocity_rel_l2",
+          "volume_pressure_rel_l2"
+        ]
+      },
+      {
+        "metric_id": "force_score",
+        "component_metric_ids": [
+          "cd_r2",
+          "cl_r2"
+        ]
+      },
+      {
+        "metric_id": "diagnostic_score",
+        "component_metric_ids": [
+          "velocity_profile_r2",
+          "cp_cut_r2"
+        ]
+      }
+    ],
+    "tolerance": 1e-06
+  },
+  "revision_count": 8
+}

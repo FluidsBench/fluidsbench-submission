@@ -1,0 +1,151 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/discretization.schema.json",
+  "schema_version": "1.0",
+  "submission_id": "synthetic-open-model-v1",
+  "dataset_id": "synthetic",
+  "split_id": "default",
+  "scoring_support_release_id": "synthetic-support-v1",
+  "scoring_support_manifest_sha256": "bec1a78c0bc6d572fda317ddbdb44ce0b6d16c3535ef96a68061f68c36c4d040",
+  "training": {
+    "surface_input": {
+      "used": true,
+      "case_record_id": "surface-geometry-input",
+      "representation": "synthetic point cloud",
+      "entity_counts": [
+        {
+          "entity": "points",
+          "count": {
+            "kind": "fixed",
+            "value": 3
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "fixed",
+        "method": "synthetic fixed selection"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "surface_supervision": {
+      "used": false
+    },
+    "volume_input": {
+      "used": false
+    },
+    "volume_supervision": {
+      "used": true,
+      "representation": "synthetic query points",
+      "entity_counts": [
+        {
+          "entity": "points",
+          "count": {
+            "kind": "fixed",
+            "value": 3
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "fixed",
+        "method": "synthetic fixed selection"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    }
+  },
+  "inference": {
+    "geometry_dependency": "surface_geometry",
+    "surface_input": {
+      "used": true,
+      "representation": "synthetic point cloud",
+      "entity_counts": [
+        {
+          "entity": "points",
+          "count": {
+            "kind": "fixed",
+            "value": 3
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "fixed",
+        "method": "synthetic fixed selection"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "volume_input": {
+      "used": false
+    },
+    "direct_outputs": [
+      {
+        "id": "volume-query-output",
+        "domain": "volume",
+        "representation": {
+          "used": true,
+          "representation": "direct coordinate queries",
+          "entity_counts": [
+            {
+              "entity": "points",
+              "count": {
+                "kind": "fixed",
+                "value": 3
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "not_applicable"
+          },
+          "sampling": {
+            "kind": "fixed",
+            "method": "canonical scoring points"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "none"
+        },
+        "queries_per_forward_pass": {
+          "kind": "fixed",
+          "value": 3
+        }
+      }
+    ],
+    "mappings": [
+      {
+        "support_id": "volume-points-v1",
+        "source_output_id": "volume-query-output",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "reference/evaluate_predictions.py",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      }
+    ]
+  },
+  "case_manifest": {
+    "format": "jsonl",
+    "file": "discretization/cases.jsonl",
+    "sha256": "e955882a0e3ba5966154388eec9ddfd4d547e8d0cd4cd99a08426b2ddf0a40dc",
+    "case_count": 2
+  },
+  "notes": "Synthetic structure example only."
+}

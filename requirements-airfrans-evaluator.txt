@@ -1,0 +1,17 @@
+-r requirements.txt
+
+# Exact optional stack used to build the AirfRANS scoring-support release
+# (scripts/build_airfrans_scoring_support.py) and, later, the per-submission
+# derived-quantities step. Keep this separate from the repository-wide
+# validator requirements: most FluidsBench submissions do not need
+# PyVista/VTK/airfrans, and the light evaluator in reference/airfrans/
+# consumes only the pre-extracted arrays this stack produces, never these
+# libraries directly.
+#
+# Same pin as examples/airfrans-profile-extraction/requirements.txt, so the
+# profile-extraction contract and the field/force/wall-shear scoring-support
+# build always run under one identical, reproducible environment.
+airfrans==0.1.5.1
+numpy==2.5.2
+pyvista==0.48.4
+vtk==9.6.2

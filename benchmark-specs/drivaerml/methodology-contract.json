@@ -1,0 +1,74 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/methodology-contract-v1.schema.json",
+  "format": "fluidsbench-methodology-contract-v1",
+  "dataset_id": "drivaerml",
+  "allow_additional_predicted_fields": true,
+  "required_predicted_fields": [
+    {
+      "field_id": "surface_native_cells.pMeanTrim",
+      "domain": "surface",
+      "component_count": 1,
+      "description": "Kinematic mean pressure for every official native surface cell."
+    },
+    {
+      "field_id": "surface_native_cells.wallShearStressMeanTrim",
+      "domain": "surface",
+      "component_count": 3,
+      "description": "Kinematic mean wall-shear-stress vector for every official native surface cell."
+    },
+    {
+      "field_id": "volume_native_cells.pMeanTrim",
+      "domain": "volume",
+      "component_count": 1,
+      "description": "Kinematic mean pressure for every official native finite-volume cell."
+    },
+    {
+      "field_id": "volume_native_cells.UMeanTrim",
+      "domain": "volume",
+      "component_count": 3,
+      "description": "Mean velocity vector for every official native finite-volume cell."
+    }
+  ],
+  "required_predicted_fields_by_prediction_scope": {
+    "surface_and_volume": [
+      {
+        "field_id": "surface_native_cells.pMeanTrim",
+        "domain": "surface",
+        "component_count": 1,
+        "description": "Kinematic mean pressure for every official native surface cell."
+      },
+      {
+        "field_id": "surface_native_cells.wallShearStressMeanTrim",
+        "domain": "surface",
+        "component_count": 3,
+        "description": "Kinematic mean wall-shear-stress vector for every official native surface cell."
+      },
+      {
+        "field_id": "volume_native_cells.pMeanTrim",
+        "domain": "volume",
+        "component_count": 1,
+        "description": "Kinematic mean pressure for every official native finite-volume cell."
+      },
+      {
+        "field_id": "volume_native_cells.UMeanTrim",
+        "domain": "volume",
+        "component_count": 3,
+        "description": "Mean velocity vector for every official native finite-volume cell."
+      }
+    ],
+    "surface_only": [
+      {
+        "field_id": "surface_native_cells.pMeanTrim",
+        "domain": "surface",
+        "component_count": 1,
+        "description": "Kinematic mean pressure for every official native surface cell."
+      },
+      {
+        "field_id": "surface_native_cells.wallShearStressMeanTrim",
+        "domain": "surface",
+        "component_count": 3,
+        "description": "Kinematic mean wall-shear-stress vector for every official native surface cell."
+      }
+    ]
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/scoring-support/v1/manifest.schema.json",
+  "schema_version": "1.0",
+  "release_id": "drivaernetplusplus-native-pressure-support-v1",
+  "status": "official",
+  "published_at": "2026-10-29T03:40:48+00:00",
+  "dataset_id": "drivaernetplusplus",
+  "dataset_version": "drivaernetplusplus-native-pressure-v1-candidate",
+  "evaluation_reference_version": "drivaernetplusplus-evaluator-v0.1-candidate",
+  "coordinate_frame": {
+    "id": "drivaernetplusplus-physical-v1",
+    "axis_order": [
+      "x",
+      "y",
+      "z"
+    ],
+    "handedness": "right",
+    "length_unit": "m",
+    "normalization": "none for scoring; profile coordinates use x/L and z/L per design"
+  },
+  "supports": [
+    {
+      "id": "drivaernetplusplus-surface-native-points-v1",
+      "domain": "surface",
+      "location_definition": {
+        "mode": "native_entities",
+        "format": "vtk_legacy",
+        "artifact_role": "candidate-support-arrays",
+        "entity": "point",
+        "selection": {
+          "kind": "all_entities"
+        },
+        "coordinate_rule": "source_point",
+        "ordering": "source_entity_index",
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "artifact_field",
+          "artifact_role": "candidate-support-arrays",
+          "field": "dual_area_m2"
+        }
+      },
+      "quantities": [
+        {
+          "id": "surface_pressure",
+          "unit": "m2/s2",
+          "components": [
+            {
+              "id": "p",
+              "target_field": "p",
+              "target_association": "point_data",
+              "prediction_field": "p"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "surface_pressure_rel_l2",
+          "quantity_id": "surface_pressure",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_equal_entity_rel_l2",
+          "quantity_id": "surface_pressure",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_points_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_rel_l1",
+          "quantity_id": "surface_pressure",
+          "reduction": "relative_l1_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_point_dual_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_r2",
+          "quantity_id": "surface_pressure",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_points_equal",
+          "aggregation": "flatten_all_aligned_field_values",
+          "case_evidence": "aggregate_only"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden"
+    }
+  ],
+  "case_sets": [
+    {
+      "id": "official_test",
+      "case_count": 1154,
+      "index_file": "case-sets/official_test/index.json",
+      "index_sha256": "b62cd996c8c298da8f7fdd21f74c01afe59666667ad919a4665f3e82e57bb99d"
+    }
+  ],
+  "notes": "Owner-approved official support. Scientific artifact bytes and metric definitions are unchanged from the validated candidate; this release renews the support identity and metadata hash chain.",
+  "owner_approval": {
+    "approved_by": "Neil Ashton",
+    "approved_at": "2026-10-28",
+    "pull_request_url": "https://github.com/neilashton/fluidsbench-submission/pull/78"
+  }
+}

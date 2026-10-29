@@ -1,0 +1,51 @@
+{
+  "schema": "airfrans-native-profile-truth-provenance-v1",
+  "schema_version": 1,
+  "status": "official",
+  "dataset_id": "airfrans",
+  "release_id": "airfrans-native-profile-truth-v1",
+  "source_dataset": {
+    "dataset_release": "AirfRANS NeurIPS 2022 public release",
+    "archive_url": "https://data.isir.upmc.fr/extrality/NeurIPS_2022/Dataset.zip",
+    "archive_size_bytes": 10029067577,
+    "archive_last_modified": "2022-08-11T15:01:09Z",
+    "manifest_member": "Dataset/manifest.json",
+    "manifest_sha256": "3d1320005bcf3d94df80df2bf8338dd6ce6d394c6beafa14849b4ce1de7def13"
+  },
+  "profile_definition": {
+    "id": "airfrans-boundary-layer-v1",
+    "file": "benchmark-specs/airfrans/velocity-profiles-v1.json",
+    "sha256": "2d662d89a133dd9329ee6540325883825907f5a1ff771af3904e1dc477a2753c"
+  },
+  "extractor": {
+    "file": "examples/airfrans-profile-extraction/extract.py",
+    "sha256": "1b3e3bbe8189d584ce3e8de2b72736d97559f582943e140b77ca17260796752d",
+    "code_commit": "5f69ea140b061ec39b6827686a51c88d3ad657cd",
+    "command": "python3 examples/airfrans-profile-extraction/extract.py --dataset-root <AirfRANS>/Dataset --case-name <case_id> --output <case_id>.json"
+  },
+  "runtime": {
+    "versions": {
+      "airfrans_distribution": "0.1.5.1",
+      "airfrans_module": "0.1.2",
+      "numpy": "2.5.2",
+      "pyvista": "0.48.4",
+      "vtk": "9.6.2"
+    },
+    "airfrans_runtime_source_file_sha256": "2b67599af2080535eff718ca42798ddf1c6b002472ded5859d890637a678c922",
+    "requirements_file": "examples/airfrans-profile-extraction/requirements.txt"
+  },
+  "case_universe_sha256": "fd3e34f516bfa76e8e495dcd267a85806468aebcc86492d7993829054e013858",
+  "truth_method": {
+    "source": "U from each case's native _internal.vtu, sampled by airfrans.Simulation.boundary_layer",
+    "mode": "ground_truth_reference: every value is checked as an exact copy of the sampled CFD field",
+    "case_deduplication": "one artifact per unique case; case-set indexes are references only",
+    "artifact_format": "the extractor's JSON, byte-identical to the files used for scoring"
+  },
+  "participant_artifacts_remain_prediction_only": true,
+  "promotion": {
+    "candidate_release_id": "airfrans-native-profile-truth-v1-candidate",
+    "candidate_manifest_sha256": "7e4320cd3a62b7f8577bb1f73c80850d8b0d37e3af6f885a41da0763088bc7ac",
+    "truth_payload_bytes_changed": false,
+    "source_replay_performed": false
+  }
+}

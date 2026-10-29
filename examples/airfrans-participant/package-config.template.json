@@ -1,0 +1,94 @@
+{
+  "_comment": "Use scripts/airfrans.py package. Fill actual participant and spatial records; release bindings are automatic. Public code, weights and environment links are optional and may be omitted.",
+  "split_id": "full",
+  "submission_id": "__REPLACE_WITH_SUBMISSION_ID__",
+  "result_revision": {
+    "series_id": "__REPLACE_WITH_RESULT_SERIES_ID__",
+    "version": 1,
+    "supersedes": null,
+    "change_summary": "__REPLACE_WITH_CHANGE_SUMMARY__"
+  },
+  "participant": {
+    "model": "__REPLACE_WITH_MODEL_DISPLAY_NAME__",
+    "model_type": "__REPLACE_WITH_MODEL_TYPE__",
+    "model_types": [
+      "__REPLACE_WITH_MODEL_TYPE__"
+    ],
+    "training_regime": "__REPLACE_WITH_TRAINING_REGIME__",
+    "target_data_used": "__REPLACE_WITH_TARGET_DATA_USED__",
+    "external_pretraining": "__REPLACE_WITH_BOOLEAN__",
+    "pretraining_data": [],
+    "methodology": {
+      "record_kind": "submitter_reported",
+      "record_note": "__REPLACE_WITH_RECORD_NOTE__",
+      "architecture": {
+        "description": "__REPLACE_WITH_ARCHITECTURE_DESCRIPTION__",
+        "total_parameter_count": "__REPLACE_WITH_INTEGER__",
+        "parameter_count_basis": "__REPLACE_WITH_exact_OR_rounded_from_reported_millions__",
+        "submitter_trainable_parameter_count": "__REPLACE_WITH_INTEGER__",
+        "components": "__REPLACE_WITH_ARRAY_OF_[{id,family,role,description,parameter_count}]__",
+        "key_hyperparameters": "__REPLACE_WITH_ARRAY_OF_[{id,component_ids,name,value,description}]__",
+        "input_features": "__REPLACE_WITH_ARRAY_OF_[{id,component_ids,name,domain,component_count,description}]__",
+        "predicted_fields": [
+          {
+            "field_id": "two-dimensional-domain-native.U",
+            "domain": "domain",
+            "component_count": 2,
+            "component_ids": "__REPLACE_WITH_COMPONENT_IDS__",
+            "production": "direct_model_output",
+            "description": "Cartesian velocity (Ux, Uy) on every native 2D flow-domain point."
+          },
+          {
+            "field_id": "two-dimensional-domain-native.p",
+            "domain": "domain",
+            "component_count": 1,
+            "component_ids": "__REPLACE_WITH_COMPONENT_IDS__",
+            "production": "direct_model_output",
+            "description": "Kinematic pressure on every native 2D flow-domain point."
+          },
+          {
+            "field_id": "airfoil-curve-native.p",
+            "domain": "curve",
+            "component_count": 1,
+            "component_ids": "__REPLACE_WITH_COMPONENT_IDS__",
+            "production": "derived_from_model_output",
+            "description": "Airfoil-curve pressure, selected from the domain pressure prediction at the native surface points and reorganized onto the airfoil's native point order (methodology-contract.json explicitly allows this: 'may be derived by selecting the corresponding output')."
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "__REPLACE_WITH_NORMALIZATION_DESCRIPTION__",
+        "preprocessing": "__REPLACE_WITH_PREPROCESSING_DESCRIPTION__",
+        "sampling": "__REPLACE_WITH_SAMPLING_DESCRIPTION__"
+      },
+      "training": {
+        "stages": "__REPLACE_WITH_ARRAY_OF_TRAINING_STAGES__"
+      },
+      "checkpoints": "__REPLACE_WITH_ARRAY_OF_[{id,component_ids,sha256,digest_scope:'raw_loaded_file',bytes_description,role,selection_rule}]__",
+      "inference_compute": {
+        "status": "measured",
+        "hardware": "__REPLACE_WITH_HARDWARE_DESCRIPTION__",
+        "max_concurrent_device_count": "__REPLACE_WITH_INTEGER__",
+        "case_count": 200,
+        "campaign_wall_time_seconds": "__REPLACE_WITH_NUMBER__",
+        "aggregate_device_time_seconds": "__REPLACE_WITH_NUMBER__",
+        "includes_preprocessing": "__REPLACE_WITH_BOOLEAN__",
+        "includes_mapping": "__REPLACE_WITH_BOOLEAN__",
+        "measurement_notes": "__REPLACE_WITH_MEASUREMENT_NOTES__"
+      }
+    },
+    "submitter_name": "__REPLACE_WITH_SUBMITTER_NAME__",
+    "institution": "__REPLACE_WITH_INSTITUTION__",
+    "paper_url": "__REPLACE_WITH_PAPER_URL_OR_EMPTY_STRING__"
+  },
+  "reproducibility": {
+    "contract_version": "open-reproducibility-3.0",
+    "access": "public",
+    "public_test_data_use": "evaluation_only",
+    "result_data_license_spdx": "__REPLACE_WITH_SPDX_LICENSE_ID__"
+  },
+  "spatial_discretization": {
+    "training": "__REPLACE_WITH_ACTUAL_TRAINING_OBJECT_FROM_DISCRETIZATION_SCHEMA__",
+    "inference": "__REPLACE_WITH_ACTUAL_INFERENCE_OBJECT_INCLUDING_SAMPLING_CHUNKING_AND_MAPPINGS__"
+  }
+}

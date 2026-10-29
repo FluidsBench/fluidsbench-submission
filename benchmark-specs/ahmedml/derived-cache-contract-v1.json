@@ -1,0 +1,112 @@
+{
+  "schema": "fluidsbench-ahmedml-derived-cache-contract-v1",
+  "schema_version": 1,
+  "status": "candidate",
+  "dataset_id": "ahmedml",
+  "purpose": "Bind the deterministic evaluator cache derived from the immutable public AhmedML meshes without treating that cache as canonical source data.",
+  "canonical_source": {
+    "kind": "huggingface_dataset_revision",
+    "repository_id": "neashton/ahmedml",
+    "revision": "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+    "source_identity_file": "public-source-identity/ahmedml-public-source-identity-v1.json",
+    "source_identity_sha256": "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44",
+    "public_case_count": 500,
+    "required_public_artifacts": [
+      {
+        "role": "surface_mesh_fields_and_orientation",
+        "path_rule": "run_<N>/boundary_<N>.vtp",
+        "canonical": true
+      },
+      {
+        "role": "surface_scalar_polygon_area",
+        "path_rule": "run_<N>/boundary_cell_area_<N>.npy",
+        "canonical": true,
+        "dtype": "<f4",
+        "association": "native_boundary_polygon_order"
+      },
+      {
+        "role": "volume_mesh_and_fields",
+        "path_rule": "run_<N>/volume_<N>.vtu",
+        "canonical": true
+      },
+      {
+        "role": "geometry_parameters",
+        "path_rule": "run_<N>/geo_parameters_<N>.csv",
+        "canonical": true
+      },
+      {
+        "role": "published_force_audit",
+        "path_rule": "run_<N>/force_mom_<N>.csv",
+        "canonical": true
+      }
+    ]
+  },
+  "cache_policy": {
+    "classification": "deterministic_rebuildable_evaluator_cache",
+    "canonical_source_data": false,
+    "remote_payload_required": false,
+    "runtime_rebuild_during_submission_scoring": false,
+    "production_requirement": "preinstall_and_verify_before_accepting_submissions",
+    "distribution_policy": "The cache may remain evaluator-local because every artifact is reproducible from hash-pinned public source files; a separately hosted copy would be an optional convenience mirror only.",
+    "accepted_installation_states": [
+      "locally_rebuilt_then_hash_verified",
+      "copied_from_a_trusted_cache_then_hash_verified"
+    ]
+  },
+  "derivation_implementation": {
+    "repository": "neilashton/fluidsbench-submission",
+    "git_revision_with_exact_builder": "0b7e2b6f416357e038233f618b73c9a2bb0e5c86",
+    "builder_file": "scripts/build_ahmedml_case_support.py",
+    "builder_sha256": "4ee557c35d9444d80e1972b5312582849439866f756e14a8a77c823f85ade84d",
+    "requirements_file": "requirements-ahmedml-support-builder.txt",
+    "requirements_sha256": "ccca61d9a570acf6383bda162b20048d9653aa8dfe40bb565d0b1ad07762b2d9",
+    "runtime": {
+      "python": "3.12.3",
+      "numpy": "2.5.2",
+      "vtk": "9.5.2",
+      "byte_order": "little_endian"
+    }
+  },
+  "derived_artifacts": [
+    {
+      "role": "surface_area_vector",
+      "file": "surface_area_vector_m2.npy",
+      "dtype": "<f8",
+      "shape_rule": "[surface_native_polygon_count, 3]",
+      "derivation": "one oriented polygon area vector from public VTP point coordinates, connectivity, and polygon winding",
+      "source_validation": "the magnitude of every vector must reproduce the corresponding public boundary_cell_area value within relative tolerance 2e-6",
+      "metric_use": "pressure-force direction and magnitude"
+    },
+    {
+      "role": "volume_cell_volume",
+      "file": "volume_cell_volume_m3.npy",
+      "dtype": "<f4",
+      "shape_rule": "[volume_native_cell_count]",
+      "derivation": "vtkCellSizeFilter ComputeVolumeOn over the public native VTU under VTK 9.5.2",
+      "metric_use": "secondary physical-volume-weighted metrics only",
+      "primary_ranked_volume_weighting": "equal_native_cell"
+    },
+    {
+      "role": "volume_region_code",
+      "file": "volume_region_code.npy",
+      "dtype": "|u1",
+      "shape_rule": "[volume_native_cell_count]",
+      "derivation": "deterministic near-body, wake, and farfield classification from public cell centres and pinned geometry rules",
+      "metric_use": "zero-weight regional diagnostics"
+    },
+    {
+      "role": "profile_mapping_and_truth",
+      "file": "profile_mapping_and_truth.npz",
+      "derivation": "frozen native-cell mappings and native-CFD profile truth from public meshes and fields",
+      "metric_use": "three 128-point Cp cuts and four 128-point velocity profiles"
+    }
+  ],
+  "expected_outputs": {
+    "official_test_case_union_count": 316,
+    "artifacts_per_case": 4,
+    "candidate_manifest_file": "scoring-support/ahmedml-native-all-splits-support-v1-candidate/manifest.json",
+    "candidate_manifest_sha256": "c727bad2ca2566dfed44920cc334af136f2fbe32f3c8886b2fcb130f495fd124",
+    "per_case_binding": "Each compact candidate case-support manifest pins the exact source files, generated artifact byte sizes, dtypes, shapes, and SHA-256 digests.",
+    "verification_command": "python scripts/verify_ahmedml_derived_cache.py --cache-root /path/to/preinstalled/cache --deep --output /path/to/verification-receipt.json"
+  }
+}

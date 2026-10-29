@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0",
+  "profile_definition_id": "airfrans-boundary-layer-v1",
+  "dataset_id": "airfrans",
+  "status": "owner_review_required",
+  "source_library": {
+    "name": "airfrans",
+    "version": "0.1.5.1",
+    "repository": "https://github.com/Extrality/airfrans_lib",
+    "commit": "d35d4035d8ba6fa98c1a6662be925c2fc777610b",
+    "source_file": "src/airfrans/simulation.py",
+    "source_file_sha256": "77a74740ad482fa99adf8829ebdc4c4fe38b85de24d30d30a0c07806b1306c17",
+    "routine": "airfrans.Simulation.boundary_layer"
+  },
+  "sampling_runtime": {
+    "airfrans_distribution_version": "0.1.5.1",
+    "airfrans_module_version": "0.1.2",
+    "airfrans_runtime_source_file_sha256": "2b67599af2080535eff718ca42798ddf1c6b002472ded5859d890637a678c922",
+    "numpy_version": "2.5.2",
+    "pyvista_version": "0.48.4",
+    "vtk_version": "9.6.2",
+    "requirements_file": "examples/airfrans-profile-extraction/requirements.txt",
+    "requirements_sha256": "82d7db0a0dd99fc8975fc89d051d539d72d5b6917cbc6fa5865ab2565d1f0749",
+    "status": "owner_review_required"
+  },
+  "extraction": {
+    "source_array": "U",
+    "surface": "extrados",
+    "frame": "cartesian",
+    "line_direction": "outward_airfoil_surface_normal",
+    "source_normal_orientation": "inward_since_airfrans_0.1.4",
+    "normal_transform": "negate_inward_normal_then_l2_normalize",
+    "line_length_m": 0.1,
+    "resolution_segments": 1000,
+    "sample_count": 1001,
+    "include_endpoints": true,
+    "ground_truth_call_arguments": {
+      "y": 0.1,
+      "extrado": true,
+      "direction": "normals",
+      "local_frame": false,
+      "resolution": 1000,
+      "compressible": false,
+      "reference": true
+    },
+    "prediction_call_arguments": {
+      "y": 0.1,
+      "extrado": true,
+      "direction": "normals",
+      "local_frame": false,
+      "resolution": 1000,
+      "compressible": false,
+      "reference": false
+    },
+    "prediction_state_rule": "Replace Simulation.velocity with the submitted Cartesian U values on every native internal-mesh point. The helper's pressure and nut arrays are retained only because the pinned routine samples all arrays; their returned values are ignored and do not enter this metric.",
+    "surface_origin_rule": "Use the pinned routine's nearest geometric-extrados airfoil point at the requested x_over_c. AirfRANS 0.1.5.1 stores inward-pointing normals, so negate and L2-normalize the selected normal before sampling.",
+    "coordinate_rule": "Ignore the routine's returned yc value. Preserve sample_over_line order and publish wall-normal line arclength s = linspace(0.0, 0.1, 1001) in metres. This avoids treating the Cartesian y-coordinate difference as distance when the surface normal is inclined."
+  },
+  "coordinate": {
+    "id": "wall_normal_arclength_m",
+    "unit": "m",
+    "interval": [
+      0.0,
+      0.1
+    ],
+    "spacing": "uniform",
+    "sample_count": 1001
+  },
+  "stations": [
+    {
+      "id": "upper_x_0_25c",
+      "x_over_c": 0.25
+    },
+    {
+      "id": "upper_x_0_50c",
+      "x_over_c": 0.5
+    },
+    {
+      "id": "upper_x_0_75c",
+      "x_over_c": 0.75
+    },
+    {
+      "id": "upper_x_0_95c",
+      "x_over_c": 0.95
+    }
+  ],
+  "quantities": [
+    {
+      "id": "velocity_x_ratio",
+      "routine_output_index": 1,
+      "definition": "U_x / U_infinity"
+    },
+    {
+      "id": "velocity_y_ratio",
+      "routine_output_index": 2,
+      "definition": "U_y / U_infinity"
+    }
+  ],
+  "metric_binding": {
+    "panel_id": "velocity_profiles",
+    "metric_id": "velocity_profile_r2",
+    "aggregation": "equal_station_equal_quantity_mean_bounded_r2_across_split",
+    "grouping": "calculate_one_r2_for_each_station_quantity_pair_across_all_cases_and_samples",
+    "r2_bounds_before_averaging": [
+      0.0,
+      1.0
+    ],
+    "station_weighting": "equal",
+    "quantity_weighting": "equal",
+    "sample_weighting_within_group": "equal",
+    "case_coverage": "all_cases_in_selected_official_split",
+    "series_coverage": "both_quantities_at_all_four_stations_for_every_case"
+  },
+  "validation": {
+    "vtk_valid_point_mask_rule": "all_1001_samples_must_equal_one_for_every_station",
+    "perfect_copy_absolute_tolerance": 1e-12
+  },
+  "reference_fixture": {
+    "file": "examples/airfrans-profile-extraction/example_extraction.json",
+    "sha256": "b18a2fb46c661fac49923dde252cafba1de74c8477e4be7267a777516495610d",
+    "case_id": "airFoil2D_SST_31.812_1.334_0.371_3.287_0.0_19.548",
+    "mode": "ground_truth_reference"
+  },
+  "prototype_fixture_policy": {
+    "abridged_sample_count": 3,
+    "coordinate_m": [
+      0.0,
+      0.05,
+      0.1
+    ],
+    "scope": "repository_dummy_submissions_only",
+    "note": "Abridged arrays exercise packaging and hash validation only. Approved submissions must use the 1001-point contract."
+  }
+}

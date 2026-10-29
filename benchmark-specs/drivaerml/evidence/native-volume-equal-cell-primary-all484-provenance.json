@@ -1,0 +1,97 @@
+{
+  "schema": "drivaerml-native-volume-equal-cell-primary-provenance-v1",
+  "schema_version": 1,
+  "status": "complete_path_free_candidate_provenance",
+  "aggregate": {
+    "file": "native-volume-equal-cell-primary-all484.json",
+    "size_bytes": 1155856,
+    "sha256": "bda42a125ffb4d6484756e77ac7e495974f39d4bce3e663154322e9e560827c7",
+    "strict_reaggregation_reproduced_byte_identically": true
+  },
+  "case_receipts": {
+    "storage": "external_campaign_receipts_not_bundled_in_git",
+    "campaign": "drivaerml_fluidsbench_pr4_candidate_20260820",
+    "relative_pattern": "native_volume_primary_all484_v1/run_N.json",
+    "case_count": 484,
+    "total_size_bytes": 10717655,
+    "identity_binding": "The ordered cases array in the aggregate records every canonical case_id and the SHA-256 of its strict case receipt.",
+    "ordered_identity_digest": {
+      "sha256": "7bdc82674d03aaa709f9df144052d60768c18d3d0f9902d174d20945e26150a6",
+      "definition": "SHA-256 of UTF-8 jq -cS output plus LF for [.cases[]|{case_id,receipt_sha256}] from the aggregate"
+    }
+  },
+  "implementation": {
+    "repository_url": "https://github.com/neilashton/fluidsbench-submission",
+    "git_revision": "7067ba927195c9983a06c2c69264fdcf0c1d4f59",
+    "case_generator_snapshot": {
+      "campaign": "drivaerml_fluidsbench_pr4_candidate_20260820",
+      "relative_root": "code_native_primary_audit_v2",
+      "files": [
+        {
+          "file": "scripts/audit_drivaerml_native_volume_case.py",
+          "sha256": "80d0e1f599cb1b0ffc3a9bc18a9d2a4f86145e0ebf4e5e776359fc55ee8aac71"
+        },
+        {
+          "file": "reference/drivaerml/native_fields.py",
+          "sha256": "d0cc7a986a01e3f63465609fa3c0a5e5eed13f9d94373fc8870e5e405be83e66"
+        },
+        {
+          "file": "reference/drivaerml/source.py",
+          "sha256": "715cede3be4d590da3f4d2e1875ab0715055a09ad0b800688e03fba72d5bebe6"
+        },
+        {
+          "file": "reference/drivaerml/accumulators.py",
+          "sha256": "595079a4d88d059cdd25ebd7b2810bf7d3a44542197d84b489138e315dbbea9b"
+        },
+        {
+          "file": "benchmark-specs/drivaerml/proposal/native-source-pin.json",
+          "sha256": "4fc9077f8f23f4994c98f4d0e7a17aef7b998de4c996638e3a8a616b6d923fdd"
+        }
+      ],
+      "all_listed_files_match_git_revision": true
+    },
+    "strict_aggregator": {
+      "file": "scripts/aggregate_drivaerml_native_volume_audits.py",
+      "sha256": "26949865394834a0214eb8f8a786b279f802e6c7d13759db0f4041a8ae965e4a",
+      "matches_git_revision": true
+    },
+    "runtime": {
+      "python": "3.12.13",
+      "numpy": "2.2.6",
+      "vtk_used_by_this_audit": false
+    },
+    "launcher": {
+      "storage": "external_campaign_file_not_bundled_in_git",
+      "campaign": "drivaerml_fluidsbench_pr4_candidate_20260820",
+      "file": "run_native_volume_primary_audit_all484.sbatch",
+      "size_bytes": 1467,
+      "sha256": "9966d60e439dca5e7912be5bc4f5a89f8f33d3e765665864f466edb1a4a3e846"
+    }
+  },
+  "execution": {
+    "scheduler_job_id": "6361675",
+    "array_scope": "0-483",
+    "account": "coreai_modulus_cae",
+    "partition": "cpu",
+    "qos": "cpu-free",
+    "cpus_per_task": 1,
+    "memory_per_task": "16G",
+    "time_limit": "00:30:00",
+    "all_484_final_task_states_completed_exit_zero": true,
+    "reference_chunk_cells": 1000003,
+    "comparison_chunk_cells": 777779,
+    "source_verification_chunk_bytes": 16777216,
+    "case_command_template": "python scripts/audit_drivaerml_native_volume_case.py --case-id {case_id} --pin benchmark-specs/drivaerml/proposal/native-source-pin.json --dataset-root {pinned_dataset_root} --monolithic-vtu {case_monolithic_vtu} --output {case_receipt} --reference-chunk-cells 1000003 --comparison-chunk-cells 777779 --io-chunk-bytes 16777216",
+    "aggregate_command_template": "python scripts/aggregate_drivaerml_native_volume_audits.py --native-source-pin benchmark-specs/drivaerml/proposal/native-source-pin.json --primary-only-all-case-audit --output {aggregate_output} {484_ordered_case_receipts}"
+  },
+  "scientific_scope": {
+    "equal_native_cell_primary_metrics": true,
+    "physical_volume_secondary_weights_exercised": false,
+    "zero_prediction_is_only_a_chunk_invariance_fixture": true,
+    "physics_null_baseline": false,
+    "model_result": false,
+    "public_scoring_support_eligible": false,
+    "official_submission_scoring_enabled": false,
+    "owner_scientific_approval": false
+  }
+}

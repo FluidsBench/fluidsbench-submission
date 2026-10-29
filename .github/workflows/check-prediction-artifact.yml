@@ -1,0 +1,35 @@
+name: Check optional prediction artifact metadata
+
+on:
+  workflow_dispatch:
+    inputs:
+      submission_directory:
+        description: submissions/<dataset-id>/<submission-id>
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  metadata-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Validate package and prediction declaration
+        env:
+          SUBMISSION_DIRECTORY: ${{ inputs.submission_directory }}
+          TARGET_BRANCH: ${{ github.ref_name }}
+        run: |
+          intake_args=()
+          python scripts/validate_submission.py --prediction-check metadata "${intake_args[@]}" "$SUBMISSION_DIRECTORY"
+      - name: Explain scope
+        run: |
+          echo "Metadata mode validates the optional declaration and local hash bindings only."
+          echo "It does not download predictions, execute the model, or recompute metrics."

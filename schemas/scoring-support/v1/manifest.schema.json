@@ -1,0 +1,552 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/scoring-support/v1/manifest.schema.json",
+  "title": "FluidsBench canonical scoring-support manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "release_id",
+    "status",
+    "published_at",
+    "dataset_id",
+    "dataset_version",
+    "evaluation_reference_version",
+    "coordinate_frame",
+    "supports",
+    "case_sets"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://fluidsbench.org/schemas/scoring-support/v1/manifest.schema.json"
+    },
+    "schema_version": { "const": "1.0" },
+    "release_id": { "$ref": "#/$defs/safe_id" },
+    "status": {
+      "enum": ["prototype", "candidate", "owner_review_required", "official", "retired"]
+    },
+    "published_at": { "type": "string", "format": "date-time" },
+    "dataset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "dataset_version": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "evaluation_reference_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "coordinate_frame": { "$ref": "#/$defs/coordinate_frame" },
+    "supports": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/support" }
+    },
+    "case_sets": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/case_set" }
+    },
+    "owner_approval": { "$ref": "#/$defs/owner_approval" },
+    "notes": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "official" } },
+        "required": ["status"]
+      },
+      "then": { "required": ["owner_approval"] }
+    },
+    {
+      "if": {
+        "properties": { "status": { "const": "candidate" } },
+        "required": ["status"]
+      },
+      "then": { "not": { "required": ["owner_approval"] } }
+    }
+  ],
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,159}$"
+    },
+    "relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+    },
+    "coordinate_frame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "axis_order", "handedness", "length_unit", "normalization"],
+      "properties": {
+        "id": { "$ref": "#/$defs/safe_id" },
+        "axis_order": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$" }
+        },
+        "handedness": { "enum": ["right", "left", "not_applicable"] },
+        "length_unit": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "normalization": { "type": "string", "minLength": 1, "maxLength": 160 }
+      }
+    },
+    "owner_approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approved_by", "approved_at", "pull_request_url"],
+      "properties": {
+        "approved_by": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "approved_at": { "type": "string", "format": "date" },
+        "pull_request_url": {
+          "type": "string",
+          "pattern": "^https://github\\.com/[^/]+/[^/]+/pull/[0-9]+$"
+        }
+      }
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "target_field", "target_association", "prediction_field"],
+      "properties": {
+        "id": { "$ref": "#/$defs/safe_id" },
+        "target_field": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "target_association": {
+          "enum": ["table_field", "point_data", "cell_data", "external_artifact", "generated"]
+        },
+        "prediction_field": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        }
+      }
+    },
+    "quantity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "unit", "components"],
+      "properties": {
+        "id": { "$ref": "#/$defs/safe_id" },
+        "unit": { "type": "string", "maxLength": 40 },
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/component" }
+        }
+      }
+    },
+    "metric_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metric_id", "quantity_id", "reduction", "weighting", "dataset_weighting", "aggregation", "case_evidence"],
+      "properties": {
+        "metric_id": { "$ref": "#/$defs/safe_id" },
+        "quantity_id": { "$ref": "#/$defs/safe_id" },
+        "reduction": {
+          "enum": ["relative_l1_percent", "relative_l2_percent", "mae", "mse", "rmse", "r2", "maximum", "dataset_reference"]
+        },
+        "weighting": { "enum": ["uniform", "support_weights"] },
+        "dataset_weighting": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "aggregation": {
+          "enum": [
+            "per_geometry_then_macro_average",
+            "flatten_all_aligned_field_values",
+            "flatten_all_required_profile_samples",
+            "all_test_cases",
+            "benchmark_field_rrmse_across_cases",
+            "benchmark_scalar_rrmse_across_cases"
+          ]
+        },
+        "case_evidence": { "enum": ["metric_value", "aggregate_only"] },
+        "reference_rule": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "version"],
+          "properties": {
+            "id": { "$ref": "#/$defs/safe_id" },
+            "version": { "type": "string", "minLength": 1, "maxLength": 160 }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "reduction": { "const": "dataset_reference" } },
+            "required": ["reduction"]
+          },
+          "then": { "required": ["reference_rule"] }
+        },
+        {
+          "if": {
+            "properties": {
+              "reduction": { "enum": ["r2", "dataset_reference"] }
+            },
+            "required": ["reduction"]
+          },
+          "then": {
+            "properties": { "case_evidence": { "const": "aggregate_only" } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "reduction": { "const": "dataset_reference" } },
+            "required": ["reduction"]
+          },
+          "then": {
+            "oneOf": [
+              {
+                "properties": {
+                  "aggregation": {
+                    "const": "benchmark_field_rrmse_across_cases"
+                  },
+                  "reference_rule": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "const": "benchmark_field_rrmse_across_cases"
+                      }
+                    },
+                    "required": ["id"]
+                  }
+                },
+                "required": ["aggregation", "reference_rule"]
+              },
+              {
+                "properties": {
+                  "aggregation": {
+                    "const": "benchmark_scalar_rrmse_across_cases"
+                  },
+                  "reference_rule": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "const": "benchmark_scalar_rrmse_across_cases"
+                      }
+                    },
+                    "required": ["id"]
+                  }
+                },
+                "required": ["aggregation", "reference_rule"]
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "aggregation": {
+                "enum": ["benchmark_field_rrmse_across_cases", "benchmark_scalar_rrmse_across_cases"]
+              }
+            },
+            "required": ["aggregation"]
+          },
+          "then": {
+            "properties": { "reduction": { "const": "dataset_reference" } }
+          }
+        }
+      ]
+    },
+    "required_coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count_fraction", "weight_fraction", "unmapped_count"],
+      "properties": {
+        "count_fraction": { "const": 1.0 },
+        "weight_fraction": { "const": 1.0 },
+        "unmapped_count": { "const": 0 }
+      }
+    },
+    "support_id_rule": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": { "kind": { "const": "source_entity_index" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "field"],
+          "properties": {
+            "kind": { "const": "artifact_field" },
+            "field": { "type": "string", "minLength": 1, "maxLength": 160 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "ordering"],
+          "properties": {
+            "kind": { "const": "structured_linear_index" },
+            "ordering": { "enum": ["c_order", "fortran_order"] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "rule_id", "rule_version"],
+          "properties": {
+            "kind": { "const": "canonical_rule" },
+            "rule_id": { "$ref": "#/$defs/safe_id" },
+            "rule_version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          }
+        }
+      ]
+    },
+    "weight_rule": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": { "kind": { "const": "uniform" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "field", "association"],
+          "properties": {
+            "kind": { "const": "named_array" },
+            "field": { "type": "string", "minLength": 1, "maxLength": 160 },
+            "association": { "enum": ["point_data", "cell_data"] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "measure", "rule_id", "rule_version"],
+          "properties": {
+            "kind": { "const": "geometric" },
+            "measure": {
+              "enum": ["face_area", "cell_area", "cell_volume", "line_length"]
+            },
+            "rule_id": { "$ref": "#/$defs/safe_id" },
+            "rule_version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "artifact_role", "field"],
+          "properties": {
+            "kind": { "const": "artifact_field" },
+            "artifact_role": { "$ref": "#/$defs/safe_id" },
+            "field": { "type": "string", "minLength": 1, "maxLength": 160 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "rule_id", "rule_version"],
+          "properties": {
+            "kind": { "const": "canonical_rule" },
+            "rule_id": { "$ref": "#/$defs/safe_id" },
+            "rule_version": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          }
+        }
+      ]
+    },
+    "selection": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": { "kind": { "const": "all_entities" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "artifact_role"],
+          "properties": {
+            "kind": { "const": "explicit_entity_ids" },
+            "artifact_role": { "$ref": "#/$defs/safe_id" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "array", "values"],
+          "properties": {
+            "kind": { "const": "array_values" },
+            "array": { "type": "string", "minLength": 1, "maxLength": 160 },
+            "values": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": ["string", "integer"] }
+            }
+          }
+        }
+      ]
+    },
+    "native_entities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "format", "artifact_role", "entity", "selection", "coordinate_rule", "ordering", "support_id_rule", "weight_rule"],
+      "properties": {
+        "mode": { "const": "native_entities" },
+        "format": {
+          "enum": ["vtk_xml_polydata", "vtk_xml_unstructured_grid", "vtk_legacy", "stl_ascii", "stl_binary"]
+        },
+        "artifact_role": { "$ref": "#/$defs/safe_id" },
+        "entity": { "enum": ["point", "cell", "surface_face", "triangle"] },
+        "selection": { "$ref": "#/$defs/selection" },
+        "coordinate_rule": {
+          "enum": ["source_point", "cell_centres_v1", "face_centres_v1", "triangle_centres_v1"]
+        },
+        "ordering": { "const": "source_entity_index" },
+        "support_id_rule": { "$ref": "#/$defs/support_id_rule" },
+        "weight_rule": { "$ref": "#/$defs/weight_rule" }
+      }
+    },
+    "materialized_table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "format", "artifact_role", "support_id_rule", "coordinate_fields", "weight_rule", "ordering"],
+      "properties": {
+        "mode": { "const": "materialized_table" },
+        "format": { "enum": ["json", "csv", "npz", "parquet"] },
+        "artifact_role": { "$ref": "#/$defs/safe_id" },
+        "support_id_rule": { "$ref": "#/$defs/support_id_rule" },
+        "coordinate_fields": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 160 }
+        },
+        "weight_rule": { "$ref": "#/$defs/weight_rule" },
+        "ordering": { "const": "support_id_ascending" }
+      }
+    },
+    "structured_axis": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "kind", "origin", "spacing", "count"],
+          "properties": {
+            "name": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$" },
+            "kind": { "const": "linear" },
+            "origin": { "type": "number" },
+            "spacing": { "type": "number", "exclusiveMinimum": 0 },
+            "count": { "type": "integer", "minimum": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "kind", "artifact_role", "field"],
+          "properties": {
+            "name": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]*$" },
+            "kind": { "const": "explicit" },
+            "artifact_role": { "$ref": "#/$defs/safe_id" },
+            "field": { "type": "string", "minLength": 1, "maxLength": 160 }
+          }
+        }
+      ]
+    },
+    "structured_grid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "target_artifact_role", "axes", "ordering", "support_id_rule", "weight_rule"],
+      "properties": {
+        "mode": { "const": "structured_grid" },
+        "target_artifact_role": { "$ref": "#/$defs/safe_id" },
+        "axes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": { "$ref": "#/$defs/structured_axis" }
+        },
+        "ordering": { "enum": ["c_order", "fortran_order"] },
+        "support_id_rule": { "$ref": "#/$defs/support_id_rule" },
+        "weight_rule": { "$ref": "#/$defs/weight_rule" }
+      }
+    },
+    "reference_generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "generator_id", "generator_version", "parameters", "support_id_rule", "weight_rule"],
+      "properties": {
+        "mode": { "const": "reference_generator" },
+        "generator_id": { "$ref": "#/$defs/safe_id" },
+        "generator_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "parameters": { "type": "object", "additionalProperties": true },
+        "target_artifact_role": { "$ref": "#/$defs/safe_id" },
+        "support_id_rule": { "$ref": "#/$defs/support_id_rule" },
+        "weight_rule": { "$ref": "#/$defs/weight_rule" }
+      }
+    },
+    "support": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "domain", "location_definition", "quantities", "metric_bindings", "required_coverage", "extrapolation_policy"],
+      "properties": {
+        "id": { "$ref": "#/$defs/safe_id" },
+        "domain": {
+          "enum": ["surface", "volume", "line", "plane", "scalar_case"]
+        },
+        "location_definition": {
+          "oneOf": [
+            { "$ref": "#/$defs/native_entities" },
+            { "$ref": "#/$defs/materialized_table" },
+            { "$ref": "#/$defs/structured_grid" },
+            { "$ref": "#/$defs/reference_generator" }
+          ]
+        },
+        "quantities": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/quantity" }
+        },
+        "metric_bindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/metric_binding" }
+        },
+        "required_coverage": { "$ref": "#/$defs/required_coverage" },
+        "extrapolation_policy": {
+          "enum": ["forbidden", "allowed_and_reported"]
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "case_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "case_count", "index_file", "index_sha256"],
+      "properties": {
+        "id": { "$ref": "#/$defs/safe_id" },
+        "case_count": { "type": "integer", "minimum": 1 },
+        "index_file": { "$ref": "#/$defs/relative_path" },
+        "index_sha256": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}

@@ -1,0 +1,93 @@
+name: Validate submissions
+
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      TARGET_BRANCH: ${{ github.base_ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Complete test suite
+        run: python -m pytest -q
+      - name: Check pressure-reference audit inputs and documentation
+        run: python scripts/render_pressure_reference_docs.py --check
+      - name: Validate dataset scoring-support publication gates
+        run: python scripts/validate_scoring_supports.py
+      - name: Validate approved AirfRANS release bindings
+        run: python scripts/validate_airfrans_official_release.py
+      - name: Validate source submissions
+        run: |
+          intake_args=()
+          python scripts/validate_submission.py "${intake_args[@]}"
+      - name: Enforce external contributor pull-request scope
+        if: >-
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name != github.repository &&
+          !contains(github.event.pull_request.labels.*.name, 'trusted-maintenance')
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mapfile -t changed_files < <(
+            git diff --no-renames --name-only "$BASE_SHA" "$HEAD_SHA"
+          )
+          mapfile -t changed_submissions < <(
+            printf '%s\n' "${changed_files[@]}" |
+              awk -F/ '$1 == "submissions" && NF >= 4 { print $1 "/" $2 "/" $3 }' |
+              sort -u
+          )
+          if ((${#changed_submissions[@]} != 1)); then
+            echo "External contributor pull requests must add exactly one submission directory." >&2
+            exit 1
+          fi
+          submission_dir="${changed_submissions[0]}"
+          for changed_file in "${changed_files[@]}"; do
+            if [[ "$changed_file" != "$submission_dir/"* ]]; then
+              echo "External contributor pull requests may change only $submission_dir; found $changed_file" >&2
+              exit 1
+            fi
+          done
+          if git cat-file -e "$BASE_SHA:$submission_dir/submission.json" 2>/dev/null; then
+            echo "Contributor pull requests must use a new globally unique submission ID." >&2
+            exit 1
+          fi
+          intake_args=()
+          python scripts/validate_submission.py --contributor-stage "${intake_args[@]}" "$submission_dir"
+      - name: Verify generated feeds
+        run: |
+          intake_args=()
+          python scripts/manage_leaderboard.py check "${intake_args[@]}"
+
+  history-free-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - name: Verify source works without inherited Git history
+        run: |
+          mkdir "$RUNNER_TEMP/fluidsbench-history-free"
+          git archive HEAD | tar -x -C "$RUNNER_TEMP/fluidsbench-history-free"
+          cd "$RUNNER_TEMP/fluidsbench-history-free"
+          python -m pytest -q
+          python scripts/validate_scoring_supports.py
+          python scripts/validate_submission.py
+          python scripts/manage_leaderboard.py check

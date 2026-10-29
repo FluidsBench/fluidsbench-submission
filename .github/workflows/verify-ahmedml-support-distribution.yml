@@ -1,0 +1,54 @@
+name: Verify AhmedML public support
+
+on:
+  pull_request:
+    paths:
+      - 'benchmark-specs/ahmedml/support-distribution-v1.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-full-split:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select an empty runner-local cache
+        run: echo "FLUIDSBENCH_AHMEDML_SUPPORT_ROOT=$RUNNER_TEMP/ahmedml-full-support" >> "$GITHUB_ENV"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Follow the contributor's Full split download instructions
+        run: python scripts/fetch_ahmedml_support.py --split full
+      - name: Verify the same cache can be reused offline
+        run: python scripts/fetch_ahmedml_support.py --split full --offline
+      - name: Deeply verify the selected split with the native support loader
+        run: >-
+          python scripts/verify_ahmedml_derived_cache.py
+          --cache-root "$FLUIDSBENCH_AHMEDML_SUPPORT_ROOT"
+          --split full --deep --output verification/ahmedml-full-support.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ahmedml-full-support-verification
+          path: verification/ahmedml-full-support.json
+          if-no-files-found: error
+
+  verify-public-support:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt
+      - name: Download every case into an empty cache and verify the native arrays
+        run: python scripts/verify_ahmedml_support_distribution.py --output verification/ahmedml-public-support.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ahmedml-public-support-verification
+          path: verification/ahmedml-public-support.json
+          if-no-files-found: error

@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/v3/discretization-case.schema.json",
+  "title": "FluidsBench per-case discretization record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_version", "submission_id", "dataset_id", "split_id", "case_id", "inference"],
+  "properties": {
+    "$schema": { "const": "https://fluidsbench.org/schemas/v3/discretization-case.schema.json" },
+    "schema_version": { "const": "1.0" },
+    "submission_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$" },
+    "dataset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "split_id": { "$ref": "#/$defs/safe_id" },
+    "case_id": { "type": "string", "minLength": 1, "maxLength": 240 },
+    "inference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inputs", "direct_outputs", "mappings"],
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/case_representation" }
+        },
+        "direct_outputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/case_representation" }
+        },
+        "mappings": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/mapping" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,159}$"
+    },
+    "entity_count": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity", "count"],
+      "properties": {
+        "entity": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "count": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "domain": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": { "kind": { "const": "full_dataset_domain" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "coordinate_frame", "length_unit", "minimum", "maximum", "boundary_inclusion"],
+          "properties": {
+            "kind": { "const": "axis_aligned_box" },
+            "coordinate_frame": { "$ref": "#/$defs/safe_id" },
+            "length_unit": { "type": "string", "minLength": 1, "maxLength": 40 },
+            "minimum": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "items": { "type": "number" }
+            },
+            "maximum": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "items": { "type": "number" }
+            },
+            "boundary_inclusion": { "enum": ["closed", "open", "dataset_rule"] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "rule_id"],
+          "properties": {
+            "kind": { "const": "dataset_rule" },
+            "rule_id": { "$ref": "#/$defs/safe_id" }
+          }
+        }
+      ]
+    },
+    "case_representation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "entity_counts"],
+      "properties": {
+        "id": { "$ref": "#/$defs/safe_id" },
+        "entity_counts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/entity_count" }
+        },
+        "native_entity_counts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/entity_count" }
+        },
+        "native_fractions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/case_native_fraction" }
+        },
+        "domain": { "$ref": "#/$defs/domain" }
+      }
+    },
+    "case_native_fraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity", "fraction"],
+      "properties": {
+        "entity": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "fraction": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "support_id",
+        "source_output_id",
+        "support_count",
+        "scored_count",
+        "unmapped_count",
+        "extrapolated_count",
+        "final_coverage_fraction"
+      ],
+      "properties": {
+        "support_id": { "$ref": "#/$defs/safe_id" },
+        "source_output_id": { "$ref": "#/$defs/safe_id" },
+        "support_count": { "type": "integer", "minimum": 1 },
+        "scored_count": { "type": "integer", "minimum": 1 },
+        "unmapped_count": { "const": 0 },
+        "extrapolated_count": { "type": "integer", "minimum": 0 },
+        "final_coverage_fraction": { "const": 1.0 }
+      }
+    }
+  }
+}

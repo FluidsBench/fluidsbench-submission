@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/scoring-support/v1/case-chunk.schema.json",
+  "title": "FluidsBench scoring-support case chunk",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schema_version", "release_id", "dataset_id", "case_set_id", "cases"],
+  "properties": {
+    "$schema": {
+      "const": "https://fluidsbench.org/schemas/scoring-support/v1/case-chunk.schema.json"
+    },
+    "schema_version": { "const": "1.0" },
+    "release_id": { "$ref": "#/$defs/safe_id" },
+    "dataset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "case_set_id": { "$ref": "#/$defs/safe_id" },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/case" }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,159}$"
+    },
+    "relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "sha256", "format"],
+      "properties": {
+        "role": { "$ref": "#/$defs/safe_id" },
+        "path": { "$ref": "#/$defs/relative_path" },
+        "url": { "type": "string", "pattern": "^https://", "format": "uri" },
+        "archive": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["url", "sha256", "member"],
+          "properties": {
+            "url": { "type": "string", "pattern": "^https://", "format": "uri" },
+            "sha256": { "$ref": "#/$defs/sha256" },
+            "member": { "$ref": "#/$defs/relative_path" }
+          }
+        },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "byte_size": { "type": "integer", "minimum": 1 },
+        "format": {
+          "enum": ["json", "csv", "npz", "parquet", "vtk_xml_polydata", "vtk_xml_unstructured_grid", "vtk_legacy", "stl_ascii", "stl_binary"]
+        }
+      },
+      "oneOf": [
+        { "required": ["path"], "not": { "anyOf": [{ "required": ["url"] }, { "required": ["archive"] }] } },
+        { "required": ["url"], "not": { "anyOf": [{ "required": ["path"] }, { "required": ["archive"] }] } },
+        { "required": ["archive"], "not": { "anyOf": [{ "required": ["path"] }, { "required": ["url"] }] } }
+      ]
+    },
+    "support_instance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["support_id", "entity_count", "artifacts"],
+      "properties": {
+        "support_id": { "$ref": "#/$defs/safe_id" },
+        "entity_count": { "type": "integer", "minimum": 1 },
+        "artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/artifact" }
+        },
+        "parameters": { "type": "object", "additionalProperties": true },
+        "expected_support_sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_id", "support_instances"],
+      "properties": {
+        "case_id": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "support_instances": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/support_instance" }
+        }
+      }
+    }
+  }
+}

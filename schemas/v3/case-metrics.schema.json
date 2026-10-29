@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/v3/case-metrics.schema.json",
+  "title": "FluidsBench per-case scoring metrics",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "submission_id",
+    "dataset_id",
+    "split_id",
+    "case_set_id",
+    "scoring_support_release_id",
+    "scoring_support_manifest_sha256",
+    "case_count",
+    "cases",
+    "metric_values"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://fluidsbench.org/schemas/v3/case-metrics.schema.json"
+    },
+    "schema_version": { "const": "1.0" },
+    "submission_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"
+    },
+    "dataset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "split_id": { "$ref": "#/$defs/safe_id" },
+    "case_set_id": { "$ref": "#/$defs/safe_id" },
+    "scoring_support_release_id": { "$ref": "#/$defs/safe_id" },
+    "scoring_support_manifest_sha256": { "$ref": "#/$defs/sha256" },
+    "case_count": { "type": "integer", "minimum": 1 },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/case" }
+    },
+    "metric_values": { "$ref": "#/$defs/metric_values" },
+    "generated_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,159}$"
+    },
+    "metric_values": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "number" }
+    },
+    "support_metric_values": {
+      "type": "object",
+      "additionalProperties": { "type": "number" }
+    },
+    "support": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "support_id",
+        "support_count",
+        "scored_count",
+        "coverage_fraction",
+        "weight_coverage_fraction",
+        "unmapped_count",
+        "extrapolated_count",
+        "metric_values",
+        "metric_sufficient_statistics"
+      ],
+      "properties": {
+        "support_id": { "$ref": "#/$defs/safe_id" },
+        "support_count": { "type": "integer", "minimum": 1 },
+        "scored_count": { "type": "integer", "minimum": 1 },
+        "coverage_fraction": { "const": 1.0 },
+        "weight_coverage_fraction": { "const": 1.0 },
+        "unmapped_count": { "const": 0 },
+        "extrapolated_count": { "type": "integer", "minimum": 0 },
+        "metric_values": { "$ref": "#/$defs/support_metric_values" },
+        "metric_sufficient_statistics": {
+          "$ref": "#/$defs/metric_sufficient_statistics"
+        }
+      }
+    },
+    "metric_sufficient_statistics": {
+      "type": "object",
+      "propertyNames": { "$ref": "#/$defs/safe_id" },
+      "additionalProperties": {
+        "$ref": "#/$defs/relative_l2_sufficient_statistics"
+      }
+    },
+    "relative_l2_sufficient_statistics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reduction",
+        "weighting",
+        "dataset_weighting",
+        "numerator",
+        "denominator",
+        "entity_count",
+        "total_weight"
+      ],
+      "properties": {
+        "reduction": { "const": "relative_l2_percent" },
+        "weighting": { "enum": ["uniform", "support_weights"] },
+        "dataset_weighting": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "numerator": { "type": "number", "minimum": 0 },
+        "denominator": { "type": "number", "exclusiveMinimum": 0 },
+        "entity_count": { "type": "integer", "minimum": 1 },
+        "total_weight": { "type": "number", "exclusiveMinimum": 0 }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_id", "supports"],
+      "properties": {
+        "case_id": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "supports": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/support" }
+        },
+        "nonspatial_metric_values": {
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        },
+        "force_coefficients": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": { "$ref": "#/$defs/safe_id" },
+          "additionalProperties": { "type": "number" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,498 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/scoring-support/v1/manifest.schema.json",
+  "schema_version": "1.0",
+  "release_id": "drivaerml-native-support-v3",
+  "status": "official",
+  "published_at": "2026-10-29T03:40:48+00:00",
+  "dataset_id": "drivaerml",
+  "dataset_version": "drivaerml-native-v3-candidate",
+  "evaluation_reference_version": "drivaerml-evaluator-v3-candidate",
+  "coordinate_frame": {
+    "id": "drivaerml-native-frame-v1",
+    "axis_order": [
+      "x",
+      "y",
+      "z"
+    ],
+    "handedness": "right",
+    "length_unit": "m",
+    "normalization": "Native metres; published polygon areas; equal volume cells"
+  },
+  "supports": [
+    {
+      "id": "surface_native_cells",
+      "domain": "surface",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "drivaerml-pinned-native-surface",
+        "generator_version": "drivaerml-evaluator-v3-candidate",
+        "parameters": {
+          "source_pin_sha256": "4fc9077f8f23f4994c98f4d0e7a17aef7b998de4c996638e3a8a616b6d923fdd"
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "canonical_rule",
+          "rule_id": "published-native-polygon-area",
+          "rule_version": "1"
+        }
+      },
+      "quantities": [
+        {
+          "id": "pressure",
+          "unit": "m^2/s^2",
+          "components": [
+            {
+              "id": "p",
+              "target_field": "pMeanTrim",
+              "prediction_field": "pMeanTrim",
+              "target_association": "cell_data"
+            }
+          ]
+        },
+        {
+          "id": "wall_shear",
+          "unit": "m^2/s^2",
+          "components": [
+            {
+              "id": "x",
+              "target_field": "wallShearStressMeanTrim[0]",
+              "prediction_field": "wallShearStressMeanTrim[0]",
+              "target_association": "cell_data"
+            },
+            {
+              "id": "y",
+              "target_field": "wallShearStressMeanTrim[1]",
+              "prediction_field": "wallShearStressMeanTrim[1]",
+              "target_association": "cell_data"
+            },
+            {
+              "id": "z",
+              "target_field": "wallShearStressMeanTrim[2]",
+              "prediction_field": "wallShearStressMeanTrim[2]",
+              "target_association": "cell_data"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "surface_pressure_rel_l2",
+          "quantity_id": "pressure",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_pressure_equal_entity_rel_l2",
+          "quantity_id": "pressure",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_rel_l2",
+          "quantity_id": "wall_shear",
+          "reduction": "relative_l2_percent",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "surface_wall_shear_equal_entity_rel_l2",
+          "quantity_id": "wall_shear",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "drivaerml_surface_pressure_area_mae",
+          "quantity_id": "pressure",
+          "reduction": "mae",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "drivaerml_surface_pressure_area_rmse",
+          "quantity_id": "pressure",
+          "reduction": "rmse",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "drivaerml_surface_pressure_equal_entity_mae",
+          "quantity_id": "pressure",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "drivaerml_surface_pressure_equal_entity_rmse",
+          "quantity_id": "pressure",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "drivaerml_surface_wall_shear_area_mae",
+          "quantity_id": "wall_shear",
+          "reduction": "mae",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "drivaerml_surface_wall_shear_area_rmse",
+          "quantity_id": "wall_shear",
+          "reduction": "rmse",
+          "weighting": "support_weights",
+          "dataset_weighting": "surface_face_area",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "drivaerml_surface_wall_shear_equal_entity_mae",
+          "quantity_id": "wall_shear",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "drivaerml_surface_wall_shear_equal_entity_rmse",
+          "quantity_id": "wall_shear",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "surface_entities_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden"
+    },
+    {
+      "id": "volume_native_cells",
+      "domain": "volume",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "drivaerml-pinned-native-volume",
+        "generator_version": "drivaerml-evaluator-v3-candidate",
+        "parameters": {
+          "source_pin_sha256": "4fc9077f8f23f4994c98f4d0e7a17aef7b998de4c996638e3a8a616b6d923fdd"
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "pressure",
+          "unit": "m^2/s^2",
+          "components": [
+            {
+              "id": "p",
+              "target_field": "pMeanTrim",
+              "prediction_field": "pMeanTrim",
+              "target_association": "cell_data"
+            }
+          ]
+        },
+        {
+          "id": "velocity",
+          "unit": "m/s",
+          "components": [
+            {
+              "id": "x",
+              "target_field": "UMeanTrim[0]",
+              "prediction_field": "UMeanTrim[0]",
+              "target_association": "cell_data"
+            },
+            {
+              "id": "y",
+              "target_field": "UMeanTrim[1]",
+              "prediction_field": "UMeanTrim[1]",
+              "target_association": "cell_data"
+            },
+            {
+              "id": "z",
+              "target_field": "UMeanTrim[2]",
+              "prediction_field": "UMeanTrim[2]",
+              "target_association": "cell_data"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "volume_velocity_rel_l2",
+          "quantity_id": "velocity",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "volume_pressure_rel_l2",
+          "quantity_id": "pressure",
+          "reduction": "relative_l2_percent",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "drivaerml_volume_velocity_equal_entity_mae",
+          "quantity_id": "velocity",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "drivaerml_volume_velocity_equal_entity_rmse",
+          "quantity_id": "velocity",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "drivaerml_volume_pressure_equal_entity_mae",
+          "quantity_id": "pressure",
+          "reduction": "mae",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "drivaerml_volume_pressure_equal_entity_rmse",
+          "quantity_id": "pressure",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "volume_cells_equal",
+          "aggregation": "per_geometry_then_macro_average",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden"
+    },
+    {
+      "id": "drivaerml-force-coefficients-v1",
+      "domain": "scalar_case",
+      "location_definition": {
+        "mode": "reference_generator",
+        "generator_id": "drivaerml-native-force-integration",
+        "generator_version": "drivaerml-evaluator-v3-candidate",
+        "parameters": {
+          "source_pin_sha256": "4fc9077f8f23f4994c98f4d0e7a17aef7b998de4c996638e3a8a616b6d923fdd"
+        },
+        "support_id_rule": {
+          "kind": "source_entity_index"
+        },
+        "weight_rule": {
+          "kind": "uniform"
+        }
+      },
+      "quantities": [
+        {
+          "id": "forces",
+          "unit": "1",
+          "components": [
+            {
+              "id": "cd",
+              "target_field": "cd",
+              "prediction_field": "cd",
+              "target_association": "generated"
+            },
+            {
+              "id": "cl",
+              "target_field": "cl",
+              "prediction_field": "cl",
+              "target_association": "generated"
+            },
+            {
+              "id": "cm_pitch",
+              "target_field": "cm_pitch",
+              "prediction_field": "cm_pitch",
+              "target_association": "generated"
+            },
+            {
+              "id": "clf",
+              "target_field": "clf",
+              "prediction_field": "clf",
+              "target_association": "generated"
+            },
+            {
+              "id": "clr",
+              "target_field": "clr",
+              "prediction_field": "clr",
+              "target_association": "generated"
+            }
+          ]
+        }
+      ],
+      "metric_bindings": [
+        {
+          "metric_id": "cd_r2",
+          "quantity_id": "forces",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "aggregate_only"
+        },
+        {
+          "metric_id": "cl_r2",
+          "quantity_id": "forces",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "aggregate_only"
+        },
+        {
+          "metric_id": "c_pitch_r2",
+          "quantity_id": "forces",
+          "reduction": "r2",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "aggregate_only"
+        },
+        {
+          "metric_id": "field_integrated_cd_rmse",
+          "quantity_id": "forces",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "field_integrated_cl_rmse",
+          "quantity_id": "forces",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "field_integrated_cmpitch_rmse",
+          "quantity_id": "forces",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "field_integrated_clf_rmse",
+          "quantity_id": "forces",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "field_integrated_clr_rmse",
+          "quantity_id": "forces",
+          "reduction": "rmse",
+          "weighting": "uniform",
+          "dataset_weighting": "cases_equal",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        },
+        {
+          "metric_id": "field_integrated_lift_closure_max_abs",
+          "quantity_id": "forces",
+          "reduction": "maximum",
+          "weighting": "uniform",
+          "dataset_weighting": "maximum_case_residual",
+          "aggregation": "all_test_cases",
+          "case_evidence": "metric_value"
+        }
+      ],
+      "required_coverage": {
+        "count_fraction": 1.0,
+        "weight_fraction": 1.0,
+        "unmapped_count": 0
+      },
+      "extrapolation_policy": "forbidden"
+    }
+  ],
+  "case_sets": [
+    {
+      "id": "standard",
+      "case_count": 50,
+      "index_file": "case-sets/standard/index.json",
+      "index_sha256": "57032a11f0e47fb184314a9c935554c9fb08588702ec29609a123e715890d9b7"
+    },
+    {
+      "id": "geometry",
+      "case_count": 97,
+      "index_file": "case-sets/geometry/index.json",
+      "index_sha256": "3e2c31a1830dec257fba06b2e3fcab47aa90569f01e0aa8be3f2e072548c0a60"
+    },
+    {
+      "id": "high_drag",
+      "case_count": 97,
+      "index_file": "case-sets/high_drag/index.json",
+      "index_sha256": "1549048fdd060f577e95ed4144cca6496faa20e78b40bfa1b3c1eb4a37d3e749"
+    },
+    {
+      "id": "low_drag",
+      "case_count": 97,
+      "index_file": "case-sets/low_drag/index.json",
+      "index_sha256": "b92951d1ba9c46dc091fe0ef627ee4916f7dafd6c4b73ee0b04a9216e3b15c40"
+    },
+    {
+      "id": "rear_separation",
+      "case_count": 97,
+      "index_file": "case-sets/rear_separation/index.json",
+      "index_sha256": "854c761e0f8a95f531167ce1700b481d23a8d5e4b2abd5dccafa10f25a8861ca"
+    }
+  ],
+  "notes": "Owner-approved official support. Scientific artifact bytes and metric definitions are unchanged from the validated candidate; this release renews the support identity and metadata hash chain.",
+  "owner_approval": {
+    "approved_by": "Neil Ashton",
+    "approved_at": "2026-10-28",
+    "pull_request_url": "https://github.com/neilashton/fluidsbench-submission/pull/78"
+  }
+}

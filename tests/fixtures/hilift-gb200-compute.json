@@ -1,0 +1,141 @@
+{
+  "_provenance": {
+    "source_submission_id": "hiliftaeroml-geotransolver-aoa4-candidate-v1",
+    "source_submission_sha256": "333e0867424115c5a3675374597d7bcd193ab7ef2aa0cf16e66e1a3333fc7996",
+    "source_status": "Archived local candidate; regression fixture only, not a leaderboard submission.",
+    "hardware_confirmation_date": "2026-09-27",
+    "campaign_timing_basis": "Package-reported measurement; raw scheduler ledger not located.",
+    "precision_basis": "Matched archived prediction provenance, not an independently identified later campaign runtime."
+  },
+  "prediction_scope": "surface_and_volume",
+  "methodology": {
+    "record_kind": "submitter_reported",
+    "inference_compute": {
+      "status": "measured",
+      "hardware": "NVIDIA GB200, confirmed by Neil Ashton on 2026-09-27; four devices per paired two-case job; eight maximum concurrent devices. Memory variant not recorded.",
+      "max_concurrent_device_count": 8,
+      "case_count": 36,
+      "campaign_wall_time_seconds": 14351.0,
+      "aggregate_device_time_seconds": 53880.0,
+      "includes_preprocessing": true,
+      "includes_mapping": true,
+      "measurement_notes": "Exact campaign envelope and summed four-GPU allocation time from the recorded successful pilot and production Slurm tasks. Package-reported totals; raw scheduler ledger was not located in the archive audit. Historical allocation-envelope scope is not complete-case-v1. The separate archived chunk-loop timers include evaluation and exclude setup and persistence; do not substitute them for these campaign totals.",
+      "accelerator": {
+        "type": "gpu",
+        "vendor": "NVIDIA",
+        "model": "GB200"
+      },
+      "hardware_identity_basis": "owner_confirmed",
+      "devices_per_job": 4,
+      "timing_protocol": "legacy_reported",
+      "execution": {
+        "precision": "fp32",
+        "batch_size": null,
+        "batch_unit": null,
+        "warmup_cases": null,
+        "software": null,
+        "notes": "All 72 archived surface/volume provenance records matching the candidate case IDs, checkpoint hashes and primary metrics specify float32. Exact software and batching for the later packaged campaign are not established."
+      }
+    },
+    "training": {
+      "stages": [
+        {
+          "id": "surface-training",
+          "status": "performed_by_submitter",
+          "component_ids": ["surface-geotransolver"],
+          "description": "From-scratch distributed training on the official AoA 4 surface training split. Retained logs cover 1000 complete epochs.",
+          "procedure": {
+            "kind": "gradient_based",
+            "loss": {
+              "description": "Huber loss over predicted surface fields.",
+              "weighting": "pressure=2.0, temperature=0.25, density=0.5, velocity=0.5, wall shear=1.0"
+            },
+            "optimizers": [
+              {
+                "name": "CombinedOptimizer (Muon and AdamW)",
+                "learning_rate": 0.001,
+                "schedule": "StepLR every 150 epochs with gamma 0.5"
+              }
+            ],
+            "batch": {
+              "value": 1,
+              "unit": "case per rank",
+              "gradient_accumulation_steps": 1
+            },
+            "duration": {
+              "epochs": 1000,
+              "optimizer_steps": 31000
+            }
+          },
+          "run_count": 1,
+          "stochastic": true,
+          "random_seeds": [42],
+          "compute": {
+            "hardware": "Four NVIDIA GB200 devices; GPU model confirmed by Neil Ashton on 2026-09-27. Memory variant not recorded.",
+            "max_concurrent_device_count": 4,
+            "campaign_wall_time_hours": 59.932933,
+            "aggregate_device_hours": 239.731732,
+            "measurement_notes": "Conservative calendar envelope from the first through final retained optimizer-step timestamps, multiplied by the recorded global-rank count; it includes any restart gaps and must be replaced by summed Slurm allocation time before an official release.",
+            "accelerator": {
+              "type": "gpu",
+              "vendor": "NVIDIA",
+              "model": "GB200"
+            },
+            "hardware_identity_basis": "owner_confirmed",
+            "devices_per_job": 4,
+            "measurement_basis": "estimated",
+            "cost_scope": "final_training"
+          }
+        },
+        {
+          "id": "volume-training",
+          "status": "performed_by_submitter",
+          "component_ids": ["volume-geotransolver"],
+          "description": "From-scratch distributed training on the official AoA 4 flow-domain training split. Retained logs cover 1000 complete epochs.",
+          "procedure": {
+            "kind": "gradient_based",
+            "loss": {
+              "description": "Huber loss over predicted flow-domain fields.",
+              "weighting": "Unweighted configured field loss across pressure, temperature, density, and velocity outputs."
+            },
+            "optimizers": [
+              {
+                "name": "CombinedOptimizer (Muon and AdamW)",
+                "learning_rate": 0.001,
+                "schedule": "StepLR every 150 epochs with gamma 0.5"
+              }
+            ],
+            "batch": {
+              "value": 1,
+              "unit": "case per rank",
+              "gradient_accumulation_steps": 1
+            },
+            "duration": {
+              "epochs": 1000,
+              "optimizer_steps": 31000
+            }
+          },
+          "run_count": 1,
+          "stochastic": true,
+          "random_seeds": [42],
+          "compute": {
+            "hardware": "Four NVIDIA GB200 devices; GPU model confirmed by Neil Ashton on 2026-09-27. Memory variant not recorded.",
+            "max_concurrent_device_count": 4,
+            "campaign_wall_time_hours": 66.454188,
+            "aggregate_device_hours": 265.816752,
+            "measurement_notes": "Conservative calendar envelope from the first through final retained optimizer-step timestamps, multiplied by the recorded global-rank count; it includes any restart gaps and must be replaced by summed Slurm allocation time before an official release.",
+            "accelerator": {
+              "type": "gpu",
+              "vendor": "NVIDIA",
+              "model": "GB200"
+            },
+            "hardware_identity_basis": "owner_confirmed",
+            "devices_per_job": 4,
+            "measurement_basis": "estimated",
+            "cost_scope": "final_training"
+          }
+        }
+      ]
+    }
+  }
+}

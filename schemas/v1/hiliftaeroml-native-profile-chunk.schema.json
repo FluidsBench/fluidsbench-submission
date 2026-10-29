@@ -1,0 +1,326 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/v1/hiliftaeroml-native-profile-chunk.schema.json",
+  "title": "HiLiftAeroML lossless native profile prediction chunk",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "schema_version",
+    "format",
+    "contract_id",
+    "contract_sha256",
+    "submission_id",
+    "dataset_id",
+    "split_id",
+    "case_set_id",
+    "cases"
+  ],
+  "properties": {
+    "schema": {
+      "const": "hiliftaeroml-native-profile-chunk-v1-candidate"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "format": {
+      "const": "fluidsbench-hiliftaeroml-native-profile-chunks-v1-candidate"
+    },
+    "contract_id": {
+      "const": "hiliftaeroml-native-profile-predictions-v1-candidate"
+    },
+    "contract_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "submission_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"
+    },
+    "dataset_id": {
+      "const": "hiliftaeroml"
+    },
+    "split_id": {
+      "$ref": "#/$defs/safe_id"
+    },
+    "case_set_id": {
+      "$ref": "#/$defs/safe_id"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,159}$"
+    },
+    "positive_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "file",
+        "sha256",
+        "byte_size",
+        "source_native_npz_sha256",
+        "ground_truth_included"
+      ],
+      "properties": {
+        "format": {
+          "const": "numpy-npz-v1"
+        },
+        "file": {
+          "type": "string",
+          "pattern": "^artifacts/geo_LHC[0-9]{3}_AoA_(?:4|6|8|10|12|14|16|18|20|22)/(?:surface-cp|volume-velocity)-predictions\\.npz$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "byte_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_native_npz_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "ground_truth_included": {
+          "const": false
+        }
+      }
+    },
+    "string_catalog": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "surface_cp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact",
+        "source_npz_sha256",
+        "source_metrics_sha256",
+        "source_metrics_schema",
+        "run_fingerprint",
+        "stencil_content_sha256",
+        "stencil_payload_sha256",
+        "stencil_semantic_sha256",
+        "vertex_count",
+        "segment_count",
+        "branch_count",
+        "graph_count",
+        "code_catalogs",
+        "station_rows",
+        "topology"
+      ],
+      "properties": {
+        "artifact": {
+          "$ref": "#/$defs/artifact"
+        },
+        "source_npz_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "source_metrics_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "source_metrics_schema": {
+          "const": "hilift_native_cp_line_metrics_v3"
+        },
+        "run_fingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "stencil_content_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "stencil_payload_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "stencil_semantic_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "vertex_count": {
+          "$ref": "#/$defs/positive_count"
+        },
+        "segment_count": {
+          "$ref": "#/$defs/positive_count"
+        },
+        "branch_count": {
+          "$ref": "#/$defs/positive_count"
+        },
+        "graph_count": {
+          "$ref": "#/$defs/positive_count"
+        },
+        "code_catalogs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "components",
+            "plane_pieces",
+            "rows",
+            "sides",
+            "topology_patches"
+          ],
+          "properties": {
+            "components": {
+              "$ref": "#/$defs/string_catalog"
+            },
+            "plane_pieces": {
+              "$ref": "#/$defs/string_catalog"
+            },
+            "rows": {
+              "$ref": "#/$defs/station_rows"
+            },
+            "sides": {
+              "$ref": "#/$defs/string_catalog"
+            },
+            "topology_patches": {
+              "$ref": "#/$defs/string_catalog"
+            }
+          }
+        },
+        "station_rows": {
+          "$ref": "#/$defs/station_rows"
+        },
+        "topology": {
+          "const": "disconnected_graphs_with_branch_and_segment_offsets"
+        }
+      }
+    },
+    "station_rows": {
+      "const": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J"
+      ]
+    },
+    "station_order": {
+      "const": [
+        "B.2",
+        "B.3",
+        "C.1",
+        "C.2",
+        "C.3"
+      ]
+    },
+    "volume_velocity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact",
+        "source_npz_sha256",
+        "source_metrics_sha256",
+        "source_metrics_schema",
+        "run_fingerprint",
+        "capture_plan_fingerprint",
+        "stencil_record_sha256",
+        "ref_values_csv_sha256",
+        "station_order",
+        "station_row_offsets",
+        "row_count",
+        "valid_row_count",
+        "invalid_row_count",
+        "native_support_point_count",
+        "validity"
+      ],
+      "properties": {
+        "artifact": {
+          "$ref": "#/$defs/artifact"
+        },
+        "source_npz_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "source_metrics_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "source_metrics_schema": {
+          "const": "hilift_native_velocity_profile_metrics_v2"
+        },
+        "run_fingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "capture_plan_fingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "stencil_record_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "ref_values_csv_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "station_order": {
+          "$ref": "#/$defs/station_order"
+        },
+        "station_row_offsets": {
+          "const": [
+            0,
+            801,
+            1602,
+            2403,
+            3204,
+            4005
+          ]
+        },
+        "row_count": {
+          "const": 4005
+        },
+        "valid_row_count": {
+          "$ref": "#/$defs/positive_count"
+        },
+        "invalid_row_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "native_support_point_count": {
+          "$ref": "#/$defs/positive_count"
+        },
+        "validity": {
+          "const": "explicit_valid_mask_with_unfilled_invalid_rows"
+        }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "surface_cp",
+        "volume_velocity"
+      ],
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "pattern": "^geo_LHC[0-9]{3}_AoA_(?:4|6|8|10|12|14|16|18|20|22)$"
+        },
+        "surface_cp": {
+          "$ref": "#/$defs/surface_cp"
+        },
+        "volume_velocity": {
+          "$ref": "#/$defs/volume_velocity"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+name: Verify AirfRANS participant workflow
+on:
+  pull_request:
+    paths:
+      - 'reference/airfrans/**'
+      - 'reference/airfrans_profiles.py'
+      - 'reference/native_participant.py'
+      - 'reference/evaluate_predictions.py'
+      - 'reference/scoring_support.py'
+      - 'reference/scoring.py'
+      - 'scripts/*airfrans*'
+      - 'scripts/validate_submission.py'
+      - 'benchmark-specs/airfrans/**'
+      - 'examples/airfrans*/**'
+      - 'tests/test_airfrans*'
+      - 'requirements-airfrans*'
+      - 'requirements.txt'
+      - 'schemas/v3/**'
+      - 'tests/test_finalize_airfrans_metrics.py'
+      - 'Dockerfile.airfrans*'
+      - '.github/workflows/verify-airfrans-participant.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  airfrans-participant:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: docker build -f Dockerfile.airfrans -t fluidsbench-airfrans .
+      - name: Verify the pinned runtime and AirfRANS source hash
+        run: docker run --rm fluidsbench-airfrans -c 'from reference.airfrans.participant import check_runtime; print(check_runtime())'
+      - name: Verify CLI and offline download plan
+        run: |
+          docker run --rm fluidsbench-airfrans scripts/airfrans.py --help
+          docker run --rm fluidsbench-airfrans scripts/airfrans.py fetch-support --destination /support --dry-run
+      - name: Test policy, recovery, numerical reductions and complete packaging
+        run: >-
+          docker run --rm -v "$PWD:/work" -w /work --entrypoint sh fluidsbench-airfrans -c
+          'git config --global --add safe.directory /work &&
+          python -m pytest -q tests/test_airfrans_participant*.py tests/test_airfrans_geometry.py
+          tests/test_airfrans_profile_scoring.py tests/test_airfrans_contract.py
+          tests/test_airfrans_candidate_assembler.py tests/test_launch_contract.py
+          tests/test_finalize_airfrans_metrics.py tests/test_airfrans_official_release.py'

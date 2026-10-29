@@ -1,0 +1,172 @@
+{
+  "schema": "drivaerml-volume-cell-weight-failure-diagnostic-v1",
+  "schema_version": 1,
+  "status": "candidate_algorithm_rejected_fail_closed",
+  "scope": {
+    "case_id": "run_1",
+    "official_case_count_covered": 1,
+    "official_case_count_total": 484,
+    "native_cell_count": 147449586,
+    "logical_volume": {
+      "path": "run_1/volume_1.vtu",
+      "total_size_bytes": 49052296843,
+      "ordered_parts": [
+        {
+          "part_index": 0,
+          "size_bytes": 26843545600,
+          "sha256": "3de2dcafeffa0811e6fd9c6ed28adf40d70bd5c67b42b08ad778cffd4509ade2"
+        },
+        {
+          "part_index": 1,
+          "size_bytes": 22208751243,
+          "sha256": "a47d18db175a496d2228cce930b5fceec97c0369165a88565a2cc98b8043d2a4"
+        }
+      ]
+    }
+  },
+  "native_source_binding": {
+    "pin_file": "proposal/native-source-pin.json",
+    "pin_sha256": "4fc9077f8f23f4994c98f4d0e7a17aef7b998de4c996638e3a8a616b6d923fdd",
+    "repository_id": "neashton/drivaerml",
+    "repository_revision": "7a5c0948ce27be709b1116a3a190f806e7a8f79f"
+  },
+  "candidate_algorithm": {
+    "reader": {
+      "class": "vtkXMLUnstructuredGridReader",
+      "point_data_arrays": "all_disabled_after_UpdateInformation",
+      "cell_data_arrays": "all_disabled_after_UpdateInformation",
+      "geometry_only": true
+    },
+    "raw_cell_ids": {
+      "array_name": "__fluidsbench_raw_cell_id",
+      "dtype": "int64",
+      "definition": "zero_based_raw_vtk_cell_order"
+    },
+    "filter": {
+      "class": "vtkCellSizeFilter",
+      "ComputeVertexCount": false,
+      "ComputeLength": false,
+      "ComputeArea": false,
+      "ComputeVolume": true,
+      "ComputeSum": false,
+      "volume_array_name": "__fluidsbench_cell_volume_m3",
+      "volume_dtype": "float64",
+      "units": "m^3"
+    },
+    "acceptance": {
+      "preserve_cell_count": true,
+      "preserve_int64_raw_cell_ids": true,
+      "one_strictly_positive_finite_volume_per_native_cell": true,
+      "absolute_value": false,
+      "masking": false,
+      "epsilon_replacement": false,
+      "reordering": false
+    },
+    "copy_chunk_size": 1000000,
+    "source_verification_chunk_bytes": 67108864
+  },
+  "implementation_binding": {
+    "source_snapshot": {
+      "storage": "external_campaign_snapshot_not_bundled_in_git",
+      "campaign": "drivaerml_fluidsbench_pr4_candidate_20260820",
+      "file": "code_weights_detailed/reference/drivaerml/volume_weights.py",
+      "sha256": "47da6f131e3648712f0f1bcbf8da1a36d878db6feb613e6ee21921e50c3e32b2"
+    },
+    "source_reader_snapshot": {
+      "storage": "external_campaign_snapshot_not_bundled_in_git",
+      "campaign": "drivaerml_fluidsbench_pr4_candidate_20260820",
+      "file": "code_weights_detailed/reference/drivaerml/source.py",
+      "sha256": "715cede3be4d590da3f4d2e1875ab0715055a09ad0b800688e03fba72d5bebe6"
+    },
+    "launcher": {
+      "storage": "external_campaign_file_not_bundled_in_git",
+      "campaign": "drivaerml_fluidsbench_pr4_candidate_20260820",
+      "file": "run_volume_weights_detailed.sbatch",
+      "size_bytes": 1600,
+      "sha256": "b4b8209a1c7c3b6017d90bf36d32944f0b33133041972c57319b640ee599519e"
+    }
+  },
+  "environment_recheck": {
+    "method": "same external campaign virtual environment rechecked after the job",
+    "python": "3.12.13",
+    "numpy": "2.2.6",
+    "vtk": "9.5.2",
+    "vtk_source": "vtk version 9.5.2",
+    "matplotlib": "3.11.1"
+  },
+  "scheduler_execution": {
+    "job_id": "6360522",
+    "account": "coreai_modulus_cae",
+    "partition": "cpu",
+    "requested_cpus": 8,
+    "requested_memory": "48G",
+    "elapsed": "01:26:59",
+    "state": "FAILED",
+    "exit_code": "2:0",
+    "interpretation": "expected fail-closed rejection at the positivity acceptance gate"
+  },
+  "checks": {
+    "passed": {
+      "ordered_source_segments_verified_before_vtk": true,
+      "vtk_filter_completed": true,
+      "native_cell_count_preserved": true,
+      "raw_cell_ids_preserved_in_exact_zero_based_order": true,
+      "volume_tuple_count": 147449586,
+      "volume_component_count": 1,
+      "volume_dtype": "float64",
+      "nonfinite_count": 0,
+      "zero_count": 0
+    },
+    "failed": {
+      "one_strictly_positive_finite_volume_per_native_cell": false,
+      "negative_count": 1,
+      "first_invalid": [
+        {
+          "raw_cell_id": 124707859,
+          "value_m3": -9.740389723427085e-13,
+          "vtk_cell_type_id": 13,
+          "vtk_cell_type_name": "vtkWedge"
+        }
+      ]
+    },
+    "not_completed_after_fail_closed_rejection": {
+      "post_vtk_source_fstat": false,
+      "output_npy_validation": false,
+      "chunk_invariance_golden_test": false,
+      "all_484_case_replay": false
+    }
+  },
+  "published_outputs": {
+    "volume_weight_array": false,
+    "success_receipt": false,
+    "reason": "The implementation removed any destination and emitted no success receipt after the strict positivity gate failed."
+  },
+  "external_execution_logs": {
+    "bundled_in_git": false,
+    "campaign": "drivaerml_fluidsbench_pr4_candidate_20260820",
+    "stderr": {
+      "file": "logs/volume_weights_detailed_normal_6360522_0.err",
+      "size_bytes": 1128,
+      "sha256": "3b12b09fce1d548435ae08355ffbdce76c919a6204f6e3409e91aa96df52b26b"
+    },
+    "stdout": {
+      "file": "logs/volume_weights_detailed_normal_6360522_0.out",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "scientific_disposition": {
+    "candidate_algorithm_accepted": false,
+    "physical_volume_scoring_support_exists": false,
+    "owner_scientific_decision_required": true,
+    "prohibited_silent_fallbacks": [
+      "absolute_value",
+      "masking",
+      "epsilon_replacement"
+    ],
+    "decision_required": "Approve a scientifically justified native-cell volume definition and raw-order mapping before physical-volume-weighted secondary metrics can be frozen."
+  },
+  "public_scoring_support_eligible": false,
+  "official_submission_scoring_enabled": false,
+  "owner_scientific_approval": false
+}

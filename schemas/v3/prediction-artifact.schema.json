@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/v3/prediction-artifact.schema.json",
+  "title": "FluidsBench optional prediction artifact manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "format",
+    "artifact_id",
+    "kind",
+    "submission_id",
+    "dataset_id",
+    "split_id",
+    "case_set_id",
+    "support_release_id",
+    "support_manifest_sha256",
+    "case_count",
+    "cases"
+  ],
+  "properties": {
+    "$schema": { "const": "https://fluidsbench.org/schemas/v3/prediction-artifact.schema.json" },
+    "schema_version": { "const": "1.0" },
+    "format": { "const": "fluidsbench-prediction-artifact-v1" },
+    "artifact_id": { "$ref": "#/$defs/safe_id" },
+    "kind": { "enum": ["scored_predictions", "direct_model_outputs"] },
+    "submission_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$" },
+    "dataset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "split_id": { "$ref": "#/$defs/safe_id" },
+    "case_set_id": { "$ref": "#/$defs/safe_id" },
+    "support_release_id": { "$ref": "#/$defs/safe_id" },
+    "support_manifest_sha256": { "$ref": "#/$defs/sha256" },
+    "case_count": { "type": "integer", "minimum": 1 },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/case" }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,159}$"
+    },
+    "relative_path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["support_id", "file", "sha256", "format", "row_count"],
+      "properties": {
+        "support_id": { "$ref": "#/$defs/safe_id" },
+        "file": { "$ref": "#/$defs/relative_path" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "format": { "enum": ["json", "csv", "npz", "parquet"] },
+        "row_count": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case_id", "files"],
+      "properties": {
+        "case_id": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/file" }
+        }
+      }
+    }
+  }
+}

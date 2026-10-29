@@ -1,0 +1,385 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/v3/discretization.schema.json",
+  "title": "FluidsBench spatial discretization report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "submission_id",
+    "dataset_id",
+    "split_id",
+    "scoring_support_release_id",
+    "scoring_support_manifest_sha256",
+    "training",
+    "inference",
+    "case_manifest"
+  ],
+  "properties": {
+    "$schema": { "const": "https://fluidsbench.org/schemas/v3/discretization.schema.json" },
+    "schema_version": { "const": "1.0" },
+    "submission_id": { "$ref": "#/$defs/submission_id" },
+    "dataset_id": { "$ref": "#/$defs/dataset_id" },
+    "split_id": { "$ref": "#/$defs/safe_id" },
+    "scoring_support_release_id": { "$ref": "#/$defs/safe_id" },
+    "scoring_support_manifest_sha256": { "$ref": "#/$defs/sha256" },
+    "training": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["surface_input", "surface_supervision", "volume_input", "volume_supervision"],
+      "properties": {
+        "surface_input": { "$ref": "#/$defs/representation" },
+        "surface_supervision": { "$ref": "#/$defs/representation" },
+        "volume_input": { "$ref": "#/$defs/representation" },
+        "volume_supervision": { "$ref": "#/$defs/representation" }
+      }
+    },
+    "inference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["geometry_dependency", "surface_input", "volume_input", "direct_outputs", "mappings"],
+      "properties": {
+        "geometry_dependency": {
+          "enum": ["cad_only", "surface_geometry", "participant_volume_mesh", "native_cfd_mesh", "other"]
+        },
+        "geometry_dependency_explanation": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "surface_input": { "$ref": "#/$defs/representation" },
+        "volume_input": { "$ref": "#/$defs/representation" },
+        "direct_outputs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/direct_output" }
+        },
+        "mappings": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/mapping" }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "geometry_dependency": { "const": "other" } },
+            "required": ["geometry_dependency"]
+          },
+          "then": { "required": ["geometry_dependency_explanation"] }
+        }
+      ]
+    },
+    "case_manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "file", "sha256", "case_count"],
+      "properties": {
+        "format": { "const": "jsonl" },
+        "file": { "const": "discretization/cases.jsonl" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "case_count": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "notes": { "type": "string" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "submission_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"
+    },
+    "dataset_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "safe_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,159}$"
+    },
+    "count": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": { "const": "fixed" },
+            "value": { "type": "integer", "minimum": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "minimum", "median", "maximum"],
+          "properties": {
+            "kind": { "const": "per_case" },
+            "minimum": { "type": "integer", "minimum": 1 },
+            "median": { "type": "number", "exclusiveMinimum": 0 },
+            "maximum": { "type": "integer", "minimum": 1 }
+          }
+        }
+      ]
+    },
+    "fraction": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": { "const": "fixed" },
+            "value": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "minimum", "median", "maximum"],
+          "properties": {
+            "kind": { "const": "per_case" },
+            "minimum": { "type": "number", "minimum": 0, "maximum": 1 },
+            "median": { "type": "number", "minimum": 0, "maximum": 1 },
+            "maximum": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        }
+      ]
+    },
+    "sampling": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": { "kind": { "const": "none" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "method"],
+          "properties": {
+            "kind": { "const": "fixed" },
+            "method": { "type": "string", "minLength": 1, "maxLength": 160 },
+            "seed": { "type": ["integer", "null"] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "method"],
+          "properties": {
+            "kind": { "const": "resampled_each_epoch" },
+            "method": { "type": "string", "minLength": 1, "maxLength": 160 },
+            "seed": { "type": ["integer", "null"] }
+          }
+        }
+      ]
+    },
+    "domain": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": { "kind": { "const": "full_dataset_domain" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "coordinate_frame", "length_unit", "minimum", "maximum", "boundary_inclusion"],
+          "properties": {
+            "kind": { "const": "axis_aligned_box" },
+            "coordinate_frame": { "$ref": "#/$defs/safe_id" },
+            "length_unit": { "type": "string", "minLength": 1, "maxLength": 40 },
+            "minimum": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "items": { "type": "number" }
+            },
+            "maximum": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "items": { "type": "number" }
+            },
+            "boundary_inclusion": { "enum": ["closed", "open", "dataset_rule"] }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "rule_id"],
+          "properties": {
+            "kind": { "const": "dataset_rule" },
+            "rule_id": { "$ref": "#/$defs/safe_id" }
+          }
+        }
+      ]
+    },
+    "entity_count": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity", "count"],
+      "properties": {
+        "entity": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "count": { "$ref": "#/$defs/count" }
+      }
+    },
+    "native_fraction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity", "fraction"],
+      "properties": {
+        "entity": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "fraction": { "$ref": "#/$defs/fraction" }
+      }
+    },
+    "native_comparison": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "native_entity_counts", "fractions"],
+          "properties": {
+            "status": { "const": "reported" },
+            "native_entity_counts": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/entity_count" }
+            },
+            "fractions": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/native_fraction" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status"],
+          "properties": { "status": { "const": "not_applicable" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "explanation"],
+          "properties": {
+            "status": { "const": "unknown_with_explanation" },
+            "explanation": { "type": "string", "minLength": 1, "maxLength": 2000 }
+          }
+        }
+      ]
+    },
+    "representation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["used"],
+      "properties": {
+        "used": { "type": "boolean" },
+        "case_record_id": { "$ref": "#/$defs/safe_id" },
+        "representation": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "entity_counts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/entity_count" }
+        },
+        "native_comparison": { "$ref": "#/$defs/native_comparison" },
+        "sampling": { "$ref": "#/$defs/sampling" },
+        "domain": { "$ref": "#/$defs/domain" },
+        "connectivity": { "enum": ["none", "native", "participant_generated", "regular"] },
+        "notes": { "type": "string", "maxLength": 2000 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "used": { "const": true } },
+            "required": ["used"]
+          },
+          "then": {
+            "required": ["representation", "entity_counts", "native_comparison", "sampling", "domain", "connectivity"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "used": { "const": false } },
+            "required": ["used"]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                { "required": ["representation"] },
+                { "required": ["entity_counts"] },
+                { "required": ["native_comparison"] },
+                { "required": ["sampling"] },
+                { "required": ["domain"] },
+                { "required": ["connectivity"] }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "direct_output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "domain", "representation", "queries_per_forward_pass"],
+      "properties": {
+        "id": { "$ref": "#/$defs/safe_id" },
+        "domain": { "enum": ["surface", "volume", "line", "plane", "scalar_case"] },
+        "representation": {
+          "allOf": [
+            { "$ref": "#/$defs/representation" },
+            {
+              "type": "object",
+              "properties": { "used": { "const": true } },
+              "required": ["used"]
+            }
+          ]
+        },
+        "queries_per_forward_pass": { "$ref": "#/$defs/count" }
+      }
+    },
+    "mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "support_id",
+        "source_output_id",
+        "method",
+        "implementation",
+        "extrapolation_policy",
+        "unmapped_fraction",
+        "extrapolated_fraction",
+        "final_coverage_fraction"
+      ],
+      "properties": {
+        "support_id": { "$ref": "#/$defs/safe_id" },
+        "source_output_id": { "$ref": "#/$defs/safe_id" },
+        "method": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind"],
+              "properties": {
+                "kind": {
+                  "enum": ["identity", "nearest", "linear", "barycentric", "trilinear", "conservative"]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "rule_id", "rule_version"],
+              "properties": {
+                "kind": { "const": "reference_rule" },
+                "rule_id": { "$ref": "#/$defs/safe_id" },
+                "rule_version": { "type": "string", "minLength": 1, "maxLength": 160 }
+              }
+            }
+          ]
+        },
+        "implementation": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "extrapolation_policy": { "enum": ["forbidden", "allowed_and_reported"] },
+        "unmapped_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
+        "extrapolated_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
+        "final_coverage_fraction": { "const": 1.0 }
+      }
+    }
+  }
+}

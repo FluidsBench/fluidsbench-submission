@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/v1/submission.schema.json",
+  "title": "FluidsBench submission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "submission_id",
+    "model",
+    "model_type",
+    "model_types",
+    "training_regime",
+    "target_data_used",
+    "external_pretraining",
+    "pretraining_data",
+    "dataset",
+    "dataset_id",
+    "dataset_version",
+    "split",
+    "split_id",
+    "case_set_id",
+    "split_sha256",
+    "parameter_count_millions",
+    "submitter_name",
+    "institution",
+    "paper_url",
+    "code_url",
+    "submitted_at",
+    "evaluation",
+    "metric_values",
+    "profile_data"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "format": "uri-reference"},
+    "schema_version": {"const": "1.0"},
+    "submission_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,79}$"},
+    "model": {"type": "string", "minLength": 1, "maxLength": 120},
+    "model_type": {"type": "string", "minLength": 1},
+    "model_types": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "training_regime": {"enum": ["from_scratch", "pretrained_zero_shot", "pretrained_official_train", "other"]},
+    "training_regime_explanation": {"type": "string", "minLength": 1},
+    "target_data_used": {"enum": ["none", "official_train", "other"]},
+    "external_pretraining": {"type": "boolean"},
+    "pretraining_data": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "oneOf": [
+          {"type": "string", "minLength": 1},
+          {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["name"],
+            "properties": {"name": {"type": "string", "minLength": 1}}
+          }
+        ]
+      }
+    },
+    "dataset": {"type": "string", "minLength": 1},
+    "dataset_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "dataset_version": {"type": "string", "minLength": 1},
+    "split": {"type": "string", "minLength": 1},
+    "split_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_]*$"},
+    "case_set_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_]*$"},
+    "split_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "parameter_count_millions": {"type": ["number", "null"], "minimum": 0},
+    "methodology": {"type": "object"},
+    "submitter_name": {"type": "string", "minLength": 1},
+    "institution": {"type": "string", "minLength": 1},
+    "paper_url": {"type": "string", "pattern": "^$|^https?://"},
+    "code_url": {"type": "string", "pattern": "^$|^https?://"},
+    "submitted_at": {"type": "string", "format": "date"},
+    "record_type": {"enum": ["pre_release_reference"]},
+    "note": {"type": "string"},
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reference_version", "code_revision", "command", "evidence_file", "evidence_sha256"],
+      "properties": {
+        "reference_version": {"type": "string", "minLength": 1, "maxLength": 80},
+        "code_revision": {"type": "string", "minLength": 1, "maxLength": 160},
+        "command": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "evidence_file": {"const": "evaluation-evidence.json"},
+        "evidence_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "reproducibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "access",
+        "public_test_data_use",
+        "result_data_license_spdx",
+        "code",
+        "model_artifact",
+        "environment",
+        "replay_instructions_url"
+      ],
+      "properties": {
+        "contract_version": {"const": "open-reproducibility-1.0"},
+        "access": {"const": "public"},
+        "public_test_data_use": {"const": "evaluation_only"},
+        "result_data_license_spdx": {"type": "string", "minLength": 1, "maxLength": 120},
+        "code": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["repository_url", "commit", "license_spdx"],
+          "properties": {
+            "repository_url": {"type": "string", "pattern": "^https://", "format": "uri"},
+            "commit": {"type": "string", "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$"},
+            "license_spdx": {"type": "string", "minLength": 1, "maxLength": 120}
+          }
+        },
+        "model_artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["url", "sha256", "license_spdx"],
+          "properties": {
+            "url": {"type": "string", "pattern": "^https://", "format": "uri"},
+            "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+            "license_spdx": {"type": "string", "minLength": 1, "maxLength": 120}
+          }
+        },
+        "environment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "url", "sha256"],
+          "properties": {
+            "kind": {"enum": ["container", "lockfile"]},
+            "url": {"type": "string", "pattern": "^https://", "format": "uri"},
+            "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          }
+        },
+        "replay_instructions_url": {"type": "string", "pattern": "^https://", "format": "uri"}
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {"enum": ["prototype", "approved"]},
+        "approved_by": {"type": "string", "minLength": 1},
+        "approved_at": {"type": "string", "format": "date"},
+        "pull_request_url": {"type": "string", "pattern": "^https://github\\.com/[^/]+/[^/]+/pull/[0-9]+$"},
+        "replay": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["evidence_file", "evidence_sha256"],
+          "properties": {
+            "evidence_file": {"const": "maintainer-replay.json"},
+            "evidence_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+          }
+        },
+        "note": {"type": "string"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "approved"}}, "required": ["status"]},
+          "then": {"required": ["approved_by", "approved_at", "pull_request_url", "replay"]}
+        }
+      ]
+    },
+    "metric_values": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "number"}
+    },
+    "profile_data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "index_file", "case_count", "case_set_id"],
+      "properties": {
+        "format": {
+          "enum": [
+            "fluidsbench-profile-chunks-v1",
+            "fluidsbench-drivaerml-physical-profile-chunks-v1",
+            "fluidsbench-drivaerml-relative-profile-chunks-v3-candidate"
+          ]
+        },
+        "index_file": {"const": "profiles/index.json"},
+        "case_count": {"type": "integer", "minimum": 1},
+        "case_set_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "regional_diagnostics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "file", "sha256", "contract_sha256", "case_count", "role", "weight", "official_score_changed"],
+      "properties": {
+        "format": {"const": "drivaerml-regional-aggregate-v2"},
+        "file": {"const": "regional-diagnostics.json"},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "contract_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "case_count": {"type": "integer", "minimum": 1},
+        "role": {"const": "report_only"},
+        "weight": {"const": 0.0},
+        "official_score_changed": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "approval": {
+            "properties": {"status": {"const": "approved"}},
+            "required": ["status"]
+          }
+        },
+        "required": ["approval"]
+      },
+      "then": {"required": ["reproducibility"]}
+    },
+    {
+      "if": {
+        "properties": {
+          "profile_data": {
+            "properties": {
+              "format": {
+                "const": "fluidsbench-drivaerml-relative-profile-chunks-v3-candidate"
+              }
+            },
+            "required": ["format"]
+          }
+        },
+        "required": ["profile_data"]
+      },
+      "then": {
+        "required": ["record_type", "approval"],
+        "properties": {
+          "record_type": {"const": "pre_release_reference"},
+          "approval": {
+            "properties": {"status": {"const": "prototype"}},
+            "required": ["status"]
+          }
+        }
+      }
+    }
+  ]
+}

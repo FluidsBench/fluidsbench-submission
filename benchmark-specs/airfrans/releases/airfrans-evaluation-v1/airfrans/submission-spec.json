@@ -1,0 +1,444 @@
+{
+  "schema_version": "1.1",
+  "dataset_id": "airfrans",
+  "dataset_name": "AirfRANS",
+  "dataset_version": "airfrans-native-v1",
+  "status": "official",
+  "scoring_support": {
+    "status": "official",
+    "submissions_open": false,
+    "closed_reason": "Approved dev-only draft. Public publication and the contributor/approval trial remain pending. Reynolds is outside this release.",
+    "coverage_contract": {
+      "dimensionality": "2D flow domain and 1D airfoil curve",
+      "rule": "complete_original_public_release_entities",
+      "inference_may_be_chunked": true,
+      "chunk_metrics_must_use_additive_sufficient_statistics": true,
+      "complete_case_and_entity_coverage_required": true,
+      "full_prediction_artifact_required": false,
+      "case_aggregation": "calculate_each_case_then_macro_average_cases_equally",
+      "public_ground_truth": "Ground-truth fields are in the public dataset release."
+    },
+    "public_supports": [
+      {
+        "id": "two-dimensional-domain-native",
+        "public_file": "Dataset/<case>/<case>_internal.vtu",
+        "format": "VTK UnstructuredGrid",
+        "domain": "two_dimensional_flow_domain",
+        "association": "PointData",
+        "entities": "all_nodes_in_the_released_cropped_domain_mesh",
+        "arrays": [
+          "U",
+          "p"
+        ],
+        "units_note": "p is kinematic pressure in m^2/s^2",
+        "physical_weight": "mass_lumped_dual_cell_area",
+        "verification": "confirmed_by_official_loader"
+      },
+      {
+        "id": "airfoil-curve-native",
+        "public_file": "Dataset/<case>/<case>_aerofoil.vtp",
+        "format": "VTK PolyData line mesh",
+        "domain": "one_dimensional_airfoil_curve",
+        "association": "PointData",
+        "entities": "all_native_airfoil_curve_nodes",
+        "arrays": [
+          "p"
+        ],
+        "derived_quantities": [
+          "wall shear from the submitted velocity field and official evaluator"
+        ],
+        "physical_weight": "mass_lumped_dual_segment_length",
+        "verification": "confirmed_by_official_loader"
+      }
+    ],
+    "relative_l2_policy": {
+      "surface_or_curve_primary": "physical_measure_weighted",
+      "surface_or_curve_secondary": "equal_native_entity",
+      "flow_domain_primary": "equal_native_entity",
+      "flow_domain_secondary": "physical_measure_weighted",
+      "point_or_vertex_physical_weights": "deterministic_mass_lumped_dual_measure_from_the_exact_public_mesh",
+      "vector_rule": "one_entity_weight_multiplies_the_squared_vector_magnitude",
+      "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
+    },
+    "release_id": "airfrans-native-support-v1",
+    "manifest_file": "scoring-support/airfrans-native-support-v1/manifest.json",
+    "manifest_url": "https://github.com/neilashton/fluidsbench-submission/releases/download/airfrans-native-support-v1/manifest.json",
+    "manifest_sha256": "18231e558012d74c39ed4df4083ee2d5a60e7b9c6492ed3c10496a3ca70fd606",
+    "owner_approval": {
+      "approved_by": "Neil Ashton",
+      "approved_at": "2026-10-07",
+      "pull_request_url": "https://github.com/neilashton/fluidsbench-submission/pull/47"
+    },
+    "publication_validation": {
+      "status": "passed",
+      "validated_by": "Codex automated artifact validation",
+      "validated_at": "2026-10-07T19:02:21Z",
+      "validator_file": "publication-validator.py",
+      "validator_sha256": "3438dc41cdb6b9ac23d015d17152679885be009a41c829426a21ea90b90b01ec",
+      "case_count": 396,
+      "unique_case_count": 355,
+      "support_instance_count": 1188,
+      "normalized_support_sha256": "4473f04ad692b3d4151585bac024987e389599d369837b348860890b8d5cd1fb",
+      "manifest_sha256": "18231e558012d74c39ed4df4083ee2d5a60e7b9c6492ed3c10496a3ca70fd606",
+      "pull_request_url": "https://github.com/neilashton/fluidsbench-submission/pull/47"
+    }
+  },
+  "profile_definition": {
+    "id": "airfrans-boundary-layer-v1",
+    "file": "velocity-profiles-v1.json",
+    "sha256": "2d662d89a133dd9329ee6540325883825907f5a1ff771af3904e1dc477a2753c",
+    "status": "official",
+    "profile_ground_truth": {
+      "status": "prepared_dev_only",
+      "release_id": "airfrans-native-profile-truth-v1",
+      "manifest_sha256": "a0d752e9d92fc7ad78cbfcf065c939a817d64a068cc8e83cc2a91d02c2aba805",
+      "manifest_url": "https://github.com/neilashton/fluidsbench-submission/releases/download/airfrans-native-profile-truth-v1/manifest.json"
+    }
+  },
+  "evaluation_reference_version": "airfrans-scoring-v2",
+  "default_field_reduction": "per_geometry_then_macro_average",
+  "ranking": {
+    "metric_id": "overall_score",
+    "direction": "higher",
+    "decimal_places": 1,
+    "rounding": "decimal_half_up",
+    "method": "competition"
+  },
+  "overall_score_composite": {
+    "metric_id": "overall_score",
+    "operation": "weighted_component_scores",
+    "components": [
+      {
+        "metric_id": "surface_pressure_rel_l2",
+        "weight": 0.15,
+        "transform": "bounded_error",
+        "cap": 15.0
+      },
+      {
+        "metric_id": "surface_wall_shear_rel_l2",
+        "weight": 0.1,
+        "transform": "bounded_error",
+        "cap": 20.0
+      },
+      {
+        "metric_id": "flow_domain_velocity_rel_l2",
+        "weight": 0.15,
+        "transform": "bounded_error",
+        "cap": 12.0
+      },
+      {
+        "metric_id": "flow_domain_pressure_rel_l2",
+        "weight": 0.1,
+        "transform": "bounded_error",
+        "cap": 15.0
+      },
+      {
+        "metric_id": "cd_r2",
+        "weight": 0.15,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "cl_r2",
+        "weight": 0.1,
+        "transform": "bounded_quality"
+      },
+      {
+        "metric_id": "velocity_profile_r2",
+        "weight": 0.25,
+        "transform": "bounded_quality"
+      }
+    ],
+    "tolerance": 1e-06
+  },
+  "component_score_groups": {
+    "operation": "normalized_weighted_component_scores",
+    "groups": [
+      {
+        "metric_id": "field_score",
+        "component_metric_ids": [
+          "surface_pressure_rel_l2",
+          "surface_wall_shear_rel_l2",
+          "flow_domain_velocity_rel_l2",
+          "flow_domain_pressure_rel_l2"
+        ]
+      },
+      {
+        "metric_id": "force_score",
+        "component_metric_ids": [
+          "cd_r2",
+          "cl_r2"
+        ]
+      },
+      {
+        "metric_id": "diagnostic_score",
+        "component_metric_ids": [
+          "velocity_profile_r2"
+        ]
+      }
+    ],
+    "tolerance": 1e-06
+  },
+  "metrics": [
+    {
+      "id": "overall_score",
+      "unit": "",
+      "direction": "higher",
+      "kind": "score",
+      "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+      "aggregation": "derived_score_equation",
+      "weighting": "dataset_declared_component_weights"
+    },
+    {
+      "id": "field_score",
+      "unit": "",
+      "direction": "higher",
+      "kind": "score",
+      "equation": "\\frac{\\sum_{j\\in F}\\alpha_j S_j}{\\sum_{j\\in F}\\alpha_j}",
+      "aggregation": "derived_score_equation",
+      "weighting": "dataset_declared_component_weights"
+    },
+    {
+      "id": "force_score",
+      "unit": "",
+      "direction": "higher",
+      "kind": "score",
+      "equation": "\\frac{\\sum_{j\\in C}\\alpha_j S_j}{\\sum_{j\\in C}\\alpha_j}",
+      "aggregation": "derived_score_equation",
+      "weighting": "dataset_declared_component_weights"
+    },
+    {
+      "id": "diagnostic_score",
+      "unit": "",
+      "direction": "higher",
+      "kind": "score",
+      "equation": "\\frac{\\sum_{j\\in D}\\alpha_j S_j}{\\sum_{j\\in D}\\alpha_j}",
+      "aggregation": "derived_score_equation",
+      "weighting": "dataset_declared_component_weights"
+    },
+    {
+      "id": "surface_pressure_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "boundary_point_dual_length",
+      "domain_label": "one_dimensional_airfoil_curve"
+    },
+    {
+      "id": "surface_pressure_equal_entity_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "boundary_nodes_equal",
+      "domain_label": "one_dimensional_airfoil_curve"
+    },
+    {
+      "id": "surface_wall_shear_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "boundary_point_dual_length",
+      "domain_label": "one_dimensional_airfoil_curve"
+    },
+    {
+      "id": "surface_wall_shear_equal_entity_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "boundary_nodes_equal",
+      "domain_label": "one_dimensional_airfoil_curve"
+    },
+    {
+      "id": "flow_domain_velocity_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "interior_nodes_equal",
+      "domain_label": "two_dimensional_flow_domain"
+    },
+    {
+      "id": "flow_domain_velocity_physical_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "interior_point_dual_area",
+      "domain_label": "two_dimensional_flow_domain"
+    },
+    {
+      "id": "flow_domain_pressure_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "interior_nodes_equal",
+      "domain_label": "two_dimensional_flow_domain"
+    },
+    {
+      "id": "flow_domain_pressure_physical_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "interior_point_dual_area",
+      "domain_label": "two_dimensional_flow_domain"
+    },
+    {
+      "id": "surface_pressure_rel_l1",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "boundary_point_dual_length",
+      "domain_label": "one_dimensional_airfoil_curve"
+    },
+    {
+      "id": "surface_wall_shear_rel_l1",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "boundary_point_dual_length",
+      "domain_label": "one_dimensional_airfoil_curve"
+    },
+    {
+      "id": "flow_domain_velocity_rel_l1",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "interior_nodes_equal",
+      "domain_label": "two_dimensional_flow_domain"
+    },
+    {
+      "id": "flow_domain_pressure_rel_l1",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "interior_nodes_equal",
+      "domain_label": "two_dimensional_flow_domain"
+    },
+    {
+      "id": "velocity_profile_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "\\frac{1}{|S||Q|}\\sum_{s\\in S}\\sum_{q\\in Q}\\operatorname{clip}_{[0,1]}\\left(1-\\frac{\\sum_{c,i}(y_{c,s,q,i}-\\hat{y}_{c,s,q,i})^2}{\\sum_{c,i}(y_{c,s,q,i}-\\bar{y}_{s,q})^2}\\right)",
+      "aggregation": "equal_station_equal_quantity_mean_bounded_r2_across_split",
+      "weighting": "stations_equal_quantities_equal_samples_within_each_station_quantity_group"
+    },
+    {
+      "id": "cd_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "cl_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "c_drag_mae",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "c_lift_mae",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    }
+  ],
+  "profile_panels": [
+    {
+      "id": "velocity_profiles",
+      "metric_id": "velocity_profile_r2",
+      "profile_definition_id": "airfrans-boundary-layer-v1",
+      "required": true,
+      "allow_unlisted_stations": false,
+      "minimum_points": 2,
+      "sample_count": 1001,
+      "coordinate_order": "strictly_increasing",
+      "coordinate_id": "wall_normal_arclength_m",
+      "coordinate_unit": "m",
+      "coordinate_interval": [
+        0.0,
+        0.1
+      ],
+      "coordinate_spacing": "uniform",
+      "station_ids": [
+        "upper_x_0_25c",
+        "upper_x_0_50c",
+        "upper_x_0_75c",
+        "upper_x_0_95c"
+      ],
+      "quantity_ids": [
+        "velocity_x_ratio",
+        "velocity_y_ratio"
+      ],
+      "note": "Required Cartesian velocity profiles on the extrados at x/c = 0.25, 0.50, 0.75, and 0.95. One R2 is calculated for each of the eight station/quantity groups across the complete split, bounded to [0, 1], and averaged equally into the overall profile score. The complete extraction contract is pinned by profile_definition."
+    }
+  ],
+  "splits": [
+    {
+      "id": "full",
+      "label": "Full",
+      "index_file": "splits/full.json",
+      "case_count": 200,
+      "case_set_id": "standard",
+      "case_id_status": "official",
+      "sha256": "b300910d8eb27c11652064ba1c72a669fe4539addd76222f03af072f2f169e9f"
+    },
+    {
+      "id": "scarce",
+      "label": "Scarce",
+      "index_file": "splits/scarce.json",
+      "case_count": 200,
+      "case_set_id": "standard",
+      "case_id_status": "official",
+      "sha256": "c63cb0e1ccc480623ab2fb953335e37086b5203350a7ab4b9563ea4872cf9ebb"
+    },
+    {
+      "id": "aoa_extrapolation",
+      "label": "AoA extrapolation",
+      "index_file": "splits/aoa_extrapolation.json",
+      "case_count": 196,
+      "case_set_id": "aoa_extrapolation",
+      "case_id_status": "official",
+      "sha256": "58621bbd012d3d14f45f49783696ddb4f03766bd2db144624c2d77711b17961b"
+    }
+  ],
+  "publication_status": "prepared_dev_only"
+}

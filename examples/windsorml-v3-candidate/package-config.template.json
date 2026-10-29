@@ -1,0 +1,281 @@
+{
+  "schema": "windsorml-fluidsbench-schema-v3-package-config-v1",
+  "split_id": "__REPLACE_WITH_OFFICIAL_SPLIT_ID__",
+  "profile_cases_per_chunk": 10,
+  "inference_attestation": {
+    "actual_model_inference": true,
+    "evaluation_truth_generated_predictions": false,
+    "scope": "all_declared_cases_and_surface_volume_fields"
+  },
+  "participant": {
+    "submission_id": "__REPLACE_WITH_NEW_SUBMISSION_ID__",
+    "result_revision": {
+      "series_id": "__REPLACE_WITH_RESULT_SERIES_ID__",
+      "version": 1,
+      "supersedes": null,
+      "change_summary": "Initial submitted result."
+    },
+    "model": "__REPLACE_WITH_MODEL_NAME__",
+    "model_type": "__REPLACE_WITH_PRIMARY_MODEL_TYPE__",
+    "model_types": [
+      "__REPLACE_WITH_PRIMARY_MODEL_TYPE__"
+    ],
+    "training_regime": "from_scratch",
+    "target_data_used": "official_train",
+    "external_pretraining": false,
+    "pretraining_data": [],
+    "methodology": {
+      "format": "fluidsbench-method-v1",
+      "record_kind": "submitter_reported",
+      "record_note": "__REPLACE_WITH_METHOD_RECORD_SCOPE_AND_INTERPRETATION_NOTES__",
+      "architecture": {
+        "description": "__REPLACE_WITH_ARCHITECTURE_DESCRIPTION__",
+        "total_parameter_count": "__REPLACE_WITH_EXACT_TOTAL_LEARNED_PARAMETER_COUNT__",
+        "parameter_count_basis": "exact",
+        "submitter_trainable_parameter_count": "__REPLACE_WITH_EXACT_SUBMITTER_TRAINABLE_PARAMETER_COUNT__",
+        "components": [
+          {
+            "id": "__REPLACE_WITH_ARCHITECTURE_COMPONENT_ID__",
+            "family": "__REPLACE_WITH_COMPONENT_FAMILY__",
+            "role": "__REPLACE_WITH_COMPONENT_ROLE__",
+            "description": "__REPLACE_WITH_COMPONENT_DESCRIPTION__",
+            "parameter_count": "__REPLACE_WITH_COMPONENT_PARAMETER_COUNT__"
+          }
+        ],
+        "key_hyperparameters": [
+          {
+            "id": "__REPLACE_WITH_HYPERPARAMETER_ID__",
+            "component_ids": [
+              "__REPLACE_WITH_ARCHITECTURE_COMPONENT_ID__"
+            ],
+            "name": "__REPLACE_WITH_HYPERPARAMETER_NAME__",
+            "value": "__REPLACE_WITH_HYPERPARAMETER_VALUE__",
+            "description": "__REPLACE_WITH_HYPERPARAMETER_DESCRIPTION__"
+          }
+        ],
+        "input_features": [
+          {
+            "id": "__REPLACE_WITH_INPUT_FEATURE_ID__",
+            "component_ids": [
+              "__REPLACE_WITH_ARCHITECTURE_COMPONENT_ID__"
+            ],
+            "name": "__REPLACE_WITH_INPUT_FEATURE_NAME__",
+            "domain": "__REPLACE_WITH_CASE_SURFACE_VOLUME_OR_GLOBAL__",
+            "component_count": "__REPLACE_WITH_INPUT_COMPONENT_COUNT__",
+            "description": "__REPLACE_WITH_INPUT_FEATURE_DESCRIPTION__"
+          }
+        ],
+        "predicted_fields": [
+          {
+            "field_id": "surface-native.cpavg",
+            "domain": "surface",
+            "component_count": 1,
+            "description": "Mean surface pressure coefficient on every official WindsorML boundary point.",
+            "component_ids": [
+              "__REPLACE_WITH_SURFACE_PREDICTOR_COMPONENT_ID__"
+            ],
+            "production": "__REPLACE_WITH_DIRECT_OR_DERIVED_MODEL_OUTPUT__"
+          },
+          {
+            "field_id": "surface-native.cfxavg",
+            "domain": "surface",
+            "component_count": 1,
+            "description": "Mean x skin-friction-coefficient component on every official boundary point.",
+            "component_ids": [
+              "__REPLACE_WITH_SURFACE_PREDICTOR_COMPONENT_ID__"
+            ],
+            "production": "__REPLACE_WITH_DIRECT_OR_DERIVED_MODEL_OUTPUT__"
+          },
+          {
+            "field_id": "surface-native.cfyavg",
+            "domain": "surface",
+            "component_count": 1,
+            "description": "Mean y skin-friction-coefficient component on every official boundary point.",
+            "component_ids": [
+              "__REPLACE_WITH_SURFACE_PREDICTOR_COMPONENT_ID__"
+            ],
+            "production": "__REPLACE_WITH_DIRECT_OR_DERIVED_MODEL_OUTPUT__"
+          },
+          {
+            "field_id": "surface-native.cfzavg",
+            "domain": "surface",
+            "component_count": 1,
+            "description": "Mean z skin-friction-coefficient component on every official boundary point.",
+            "component_ids": [
+              "__REPLACE_WITH_SURFACE_PREDICTOR_COMPONENT_ID__"
+            ],
+            "production": "__REPLACE_WITH_DIRECT_OR_DERIVED_MODEL_OUTPUT__"
+          },
+          {
+            "field_id": "flow-domain-native.velocityxavg",
+            "domain": "volume",
+            "component_count": 1,
+            "description": "Mean x velocity component on every official WindsorML volume cell.",
+            "component_ids": [
+              "__REPLACE_WITH_VOLUME_PREDICTOR_COMPONENT_ID__"
+            ],
+            "production": "__REPLACE_WITH_DIRECT_OR_DERIVED_MODEL_OUTPUT__"
+          },
+          {
+            "field_id": "flow-domain-native.velocityyavg",
+            "domain": "volume",
+            "component_count": 1,
+            "description": "Mean y velocity component on every official WindsorML volume cell.",
+            "component_ids": [
+              "__REPLACE_WITH_VOLUME_PREDICTOR_COMPONENT_ID__"
+            ],
+            "production": "__REPLACE_WITH_DIRECT_OR_DERIVED_MODEL_OUTPUT__"
+          },
+          {
+            "field_id": "flow-domain-native.velocityzavg",
+            "domain": "volume",
+            "component_count": 1,
+            "description": "Mean z velocity component on every official WindsorML volume cell.",
+            "component_ids": [
+              "__REPLACE_WITH_VOLUME_PREDICTOR_COMPONENT_ID__"
+            ],
+            "production": "__REPLACE_WITH_DIRECT_OR_DERIVED_MODEL_OUTPUT__"
+          },
+          {
+            "field_id": "flow-domain-native.pressureavg",
+            "domain": "volume",
+            "component_count": 1,
+            "description": "Mean pressure on every official WindsorML volume cell.",
+            "component_ids": [
+              "__REPLACE_WITH_VOLUME_PREDICTOR_COMPONENT_ID__"
+            ],
+            "production": "__REPLACE_WITH_DIRECT_OR_DERIVED_MODEL_OUTPUT__"
+          }
+        ]
+      },
+      "data_handling": {
+        "normalization": "__REPLACE_WITH_NORMALIZATION_DESCRIPTION__",
+        "preprocessing": "__REPLACE_WITH_PREPROCESSING_DESCRIPTION__",
+        "sampling": "__REPLACE_WITH_SAMPLING_OR_DOWNSAMPLING_DESCRIPTION__"
+      },
+      "training": {
+        "stages": [
+          {
+            "id": "__REPLACE_WITH_TRAINING_STAGE_ID__",
+            "status": "performed_by_submitter",
+            "component_ids": [
+              "__REPLACE_WITH_TRAINED_COMPONENT_ID__"
+            ],
+            "description": "__REPLACE_WITH_TRAINING_STAGE_DESCRIPTION__",
+            "procedure": {
+              "kind": "gradient_based",
+              "loss": {
+                "description": "__REPLACE_WITH_TRAINING_LOSS_DESCRIPTION__",
+                "weighting": "__REPLACE_WITH_LOSS_TERM_WEIGHTING__"
+              },
+              "optimizers": [
+                {
+                  "name": "__REPLACE_WITH_OPTIMIZER_NAME__",
+                  "learning_rate": "__REPLACE_WITH_INITIAL_OR_PEAK_LEARNING_RATE__",
+                  "schedule": "__REPLACE_WITH_LEARNING_RATE_SCHEDULE__"
+                }
+              ],
+              "batch": {
+                "value": "__REPLACE_WITH_INTEGER_BATCH_VALUE__",
+                "unit": "__REPLACE_WITH_BATCH_UNIT__",
+                "gradient_accumulation_steps": "__REPLACE_WITH_GRADIENT_ACCUMULATION_STEPS__"
+              },
+              "duration": {
+                "epochs": "__REPLACE_WITH_TRAINING_EPOCHS__",
+                "optimizer_steps": "__REPLACE_WITH_OPTIMIZER_STEPS__"
+              }
+            },
+            "run_count": "__REPLACE_WITH_TRAINING_RUN_COUNT__",
+            "stochastic": "__REPLACE_WITH_TRUE_OR_FALSE__",
+            "random_seeds": [
+              "__REPLACE_WITH_ONE_SEED_PER_STOCHASTIC_TRAINING_RUN__"
+            ],
+            "compute": {
+              "hardware": "__REPLACE_WITH_TRAINING_HARDWARE__",
+              "max_concurrent_device_count": "__REPLACE_WITH_MAX_CONCURRENT_TRAINING_DEVICE_COUNT__",
+              "campaign_wall_time_hours": "__REPLACE_WITH_TRAINING_CAMPAIGN_WALL_TIME_HOURS__",
+              "aggregate_device_hours": "__REPLACE_WITH_TOTAL_TRAINING_DEVICE_HOURS__",
+              "measurement_notes": "__REPLACE_WITH_TRAINING_TIMING_SCOPE__",
+              "accelerator": {
+                "type": "__REPLACE_WITH_DEVICE_TYPE__",
+                "vendor": "__REPLACE_WITH_VENDOR_OR_NULL__",
+                "model": "__REPLACE_WITH_EXACT_MODEL_OR_NULL__"
+              },
+              "devices_per_job": "__REPLACE_WITH_DEVICES_PER_JOB_OR_NULL__"
+            }
+          }
+        ]
+      },
+      "checkpoints": [
+        {
+          "id": "__REPLACE_WITH_CHECKPOINT_ID__",
+          "component_ids": [
+            "__REPLACE_WITH_CHECKPOINT_COMPONENT_ID__"
+          ],
+          "sha256": "__REPLACE_WITH_EXACT_LOADED_CHECKPOINT_SHA256__",
+          "digest_scope": "raw_loaded_file",
+          "bytes_description": "__REPLACE_WITH_EXACT_HASHED_BYTES_DESCRIPTION__",
+          "role": "__REPLACE_WITH_CHECKPOINT_ROLE__",
+          "selection_rule": "__REPLACE_WITH_PRE_EVALUATION_SELECTION_RULE__"
+        }
+      ],
+      "inference_compute": {
+        "status": "measured",
+        "hardware": "__REPLACE_WITH_INFERENCE_HARDWARE__",
+        "max_concurrent_device_count": "__REPLACE_WITH_MAX_CONCURRENT_INFERENCE_DEVICE_COUNT__",
+        "case_count": "__REPLACE_WITH_MEASURED_OFFICIAL_CASE_COUNT__",
+        "campaign_wall_time_seconds": "__REPLACE_WITH_INFERENCE_CAMPAIGN_WALL_TIME_SECONDS__",
+        "aggregate_device_time_seconds": "__REPLACE_WITH_TOTAL_INFERENCE_DEVICE_TIME_SECONDS__",
+        "includes_preprocessing": "__REPLACE_WITH_TRUE_OR_FALSE__",
+        "includes_mapping": "__REPLACE_WITH_TRUE_OR_FALSE__",
+        "measurement_notes": "__REPLACE_WITH_INFERENCE_TIMING_SCOPE_AND_CHUNK_NOTES__",
+        "accelerator": {
+          "type": "__REPLACE_WITH_DEVICE_TYPE__",
+          "vendor": "__REPLACE_WITH_VENDOR_OR_NULL__",
+          "model": "__REPLACE_WITH_EXACT_MODEL_OR_NULL__"
+        },
+        "devices_per_job": "__REPLACE_WITH_DEVICES_PER_JOB_OR_NULL__"
+      }
+    },
+    "submitter_name": "__REPLACE_WITH_SUBMITTER_NAME__",
+    "institution": "__REPLACE_WITH_INSTITUTION__",
+    "paper_url": "",
+    "submitted_at": "__REPLACE_WITH_YYYY_MM_DD__",
+    "reproducibility": {
+      "contract_version": "open-reproducibility-3.0",
+      "access": "public",
+      "public_test_data_use": "evaluation_only",
+      "result_data_license_spdx": "CC-BY-4.0"
+    },
+    "note": "Candidate dry-run package from genuine model inference; not accepted or owner-approved."
+  },
+  "evaluation": {
+    "command": "__REPLACE_WITH_EXACT_EVALUATOR_AND_ASSEMBLY_COMMAND__",
+    "generated_at": "__REPLACE_WITH_RFC3339_DATE_TIME__"
+  },
+  "spatial_discretization": {
+    "training": "__REPLACE_WITH_SCHEMA_V3_TRAINING_REPRESENTATIONS_OBJECT__",
+    "inference": "__REPLACE_WITH_SCHEMA_V3_INFERENCE_REPRESENTATIONS_OBJECT__",
+    "notes": "__REPLACE_WITH_DISCRETIZATION_NOTES__"
+  },
+  "release_bindings": {
+    "candidate_manifest": {
+      "status": "candidate",
+      "release_id": "windsorml-native-support-v1-candidate",
+      "manifest_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/windsorml/scoring-support-candidate/manifest.json",
+      "manifest_sha256": "0e24e419c158133a7b9c9cc47634d278d2b94f713a2bbeedfd91959d7dce7b5b"
+    },
+    "evaluator": {
+      "reference_version": "windsorml-evaluator-v0.1-candidate"
+    },
+    "profile_definition": {
+      "id": "windsorml-profile-definition-v2",
+      "file": "profile-definition-v2.json",
+      "sha256": "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056"
+    },
+    "profile_ground_truth": {
+      "release_id": "prototype-profile-ground-truth-2026-09-04",
+      "manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
+    }
+  }
+}

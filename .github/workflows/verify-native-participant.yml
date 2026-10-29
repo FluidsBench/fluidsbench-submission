@@ -1,0 +1,47 @@
+name: Verify AhmedML and WindsorML participant workflows
+on:
+  pull_request:
+    paths:
+      - 'reference/native_participant*.py'
+      - 'reference/ahmedml/**'
+      - 'reference/windsorml/**'
+      - 'reference/drivaerml/accumulators.py'
+      - 'reference/drivaerml/prediction_chunks.py'
+      - 'reference/drivaerml/retained_file.py'
+      - 'reference/drivaerml/source.py'
+      - 'scripts/*ahmedml*'
+      - 'scripts/*windsorml*'
+      - 'benchmark-specs/ahmedml/**'
+      - 'benchmark-specs/windsorml/**'
+      - 'tests/test_native_participant*'
+      - 'tests/test_ahmedml*'
+      - 'tests/test_windsorml*'
+      - 'requirements-native-participant.txt'
+      - 'Dockerfile.native-participant*'
+      - '.github/workflows/verify-native-participant.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-participant:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: docker build -f Dockerfile.native-participant -t fluidsbench-native .
+      - name: Verify the pinned Linux runtime
+        run: docker run --rm fluidsbench-native -c 'from reference.native_participant import check_runtime; check_runtime()'
+      - name: Verify both command lines and offline download plans
+        run: |
+          for dataset in ahmedml windsorml; do
+            docker run --rm fluidsbench-native scripts/$dataset.py --help
+            docker run --rm fluidsbench-native scripts/$dataset.py fetch-data --split-id full --destination /data --dry-run
+          done
+      - name: Native evaluator, precision, recovery and packaging tests
+        run: >-
+          docker run --rm -v "$PWD:/work" -w /work --entrypoint sh fluidsbench-native -c
+          'git config --global --add safe.directory /work && python -m pip install pytest==8.4.2 &&
+          python -m pytest -q tests/test_ahmedml_evaluator.py tests/test_windsorml_evaluator.py
+          tests/test_ahmedml_regional_precision.py tests/test_native_participant.py
+          tests/test_native_participant_packages.py tests/test_ahmedml_candidate_package_assembler.py'

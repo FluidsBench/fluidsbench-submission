@@ -1,0 +1,3384 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/scoring-support/v1/case-chunk.schema.json",
+  "schema_version": "1.0",
+  "release_id": "windsorml-native-support-v1",
+  "dataset_id": "windsorml",
+  "case_set_id": "high_drag-test",
+  "cases": [
+    {
+      "case_id": "run_123",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2235757,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_123/boundary_123.vtu",
+              "sha256": "40e0f6134697b6fa1a9707032cbcbc0ba54f4e57976d9eea2b4869873fb3482c",
+              "byte_size": 363624608,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_123/boundary_dual_area_123.npy",
+            "dual_area_sha256": "11b29794c698ff8bb85497d738c6459563e742190d36d5f9a6105ae9abcaedd3",
+            "dual_area_size_bytes": 8943156,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 288248862,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_123/volume_123.vtu",
+              "sha256": "c9efcf1741d075d9345ece9533a2027660b3c0c2edf835f6c1f401b42d9b84b4",
+              "byte_size": 21995060747,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_123.json",
+              "sha256": "fd942d5650ba088b513f3cba25be7cb08653a1211abc44e2b3c8c54680642600",
+              "byte_size": 107314,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "fd942d5650ba088b513f3cba25be7cb08653a1211abc44e2b3c8c54680642600"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_123.json",
+              "sha256": "fd942d5650ba088b513f3cba25be7cb08653a1211abc44e2b3c8c54680642600",
+              "byte_size": 107314,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "fd942d5650ba088b513f3cba25be7cb08653a1211abc44e2b3c8c54680642600"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_123.json",
+              "sha256": "fd942d5650ba088b513f3cba25be7cb08653a1211abc44e2b3c8c54680642600",
+              "byte_size": 107314,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "fd942d5650ba088b513f3cba25be7cb08653a1211abc44e2b3c8c54680642600"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_123.json",
+              "sha256": "fd942d5650ba088b513f3cba25be7cb08653a1211abc44e2b3c8c54680642600",
+              "byte_size": 107314,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "fd942d5650ba088b513f3cba25be7cb08653a1211abc44e2b3c8c54680642600"
+        }
+      ]
+    },
+    {
+      "case_id": "run_127",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2274300,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_127/boundary_127.vtu",
+              "sha256": "0771742c0723c34be2cf62dc910c882332a5c1fde27a0270aa38fddd31058881",
+              "byte_size": 369896596,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_127/boundary_dual_area_127.npy",
+            "dual_area_sha256": "f88eb170b50422d1a3d55de62463bf0d9cb553f24939f103daf5175c3ac73a07",
+            "dual_area_size_bytes": 9097328,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 285734982,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_127/volume_127.vtu",
+              "sha256": "9a2b04a12cce47ecbe221633420d9e5b6bf9eea58e224a6c695e3fc858135a13",
+              "byte_size": 21842718356,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_127.json",
+              "sha256": "40d0ab35e5c0266d418f7743bda546c4d4dc56bba45307536e5b9a008200e3f6",
+              "byte_size": 107168,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "40d0ab35e5c0266d418f7743bda546c4d4dc56bba45307536e5b9a008200e3f6"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_127.json",
+              "sha256": "40d0ab35e5c0266d418f7743bda546c4d4dc56bba45307536e5b9a008200e3f6",
+              "byte_size": 107168,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "40d0ab35e5c0266d418f7743bda546c4d4dc56bba45307536e5b9a008200e3f6"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_127.json",
+              "sha256": "40d0ab35e5c0266d418f7743bda546c4d4dc56bba45307536e5b9a008200e3f6",
+              "byte_size": 107168,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "40d0ab35e5c0266d418f7743bda546c4d4dc56bba45307536e5b9a008200e3f6"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_127.json",
+              "sha256": "40d0ab35e5c0266d418f7743bda546c4d4dc56bba45307536e5b9a008200e3f6",
+              "byte_size": 107168,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "40d0ab35e5c0266d418f7743bda546c4d4dc56bba45307536e5b9a008200e3f6"
+        }
+      ]
+    },
+    {
+      "case_id": "run_128",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2476831,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_128/boundary_128.vtu",
+              "sha256": "b1831c43548e8e4ced209a7a97c12485b5c12033de20f42bd500845bd001a9a4",
+              "byte_size": 402839415,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_128/boundary_dual_area_128.npy",
+            "dual_area_sha256": "275e10a32993c3cc5d644af582ada8b69ce91ebb503746d59f8d9f3255bd7498",
+            "dual_area_size_bytes": 9907452,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 294465196,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_128/volume_128.vtu",
+              "sha256": "55276a554b6283a1290a0d74fdb5d32610436da91e74cb81bbc7ec6458857c04",
+              "byte_size": 22365575720,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_128.json",
+              "sha256": "9c357b7528e38fdb56392dff36caf398b0cd6283dbe546d5ab69b2f28dbd49eb",
+              "byte_size": 107194,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9c357b7528e38fdb56392dff36caf398b0cd6283dbe546d5ab69b2f28dbd49eb"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_128.json",
+              "sha256": "9c357b7528e38fdb56392dff36caf398b0cd6283dbe546d5ab69b2f28dbd49eb",
+              "byte_size": 107194,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9c357b7528e38fdb56392dff36caf398b0cd6283dbe546d5ab69b2f28dbd49eb"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_128.json",
+              "sha256": "9c357b7528e38fdb56392dff36caf398b0cd6283dbe546d5ab69b2f28dbd49eb",
+              "byte_size": 107194,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9c357b7528e38fdb56392dff36caf398b0cd6283dbe546d5ab69b2f28dbd49eb"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_128.json",
+              "sha256": "9c357b7528e38fdb56392dff36caf398b0cd6283dbe546d5ab69b2f28dbd49eb",
+              "byte_size": 107194,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9c357b7528e38fdb56392dff36caf398b0cd6283dbe546d5ab69b2f28dbd49eb"
+        }
+      ]
+    },
+    {
+      "case_id": "run_139",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2093782,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_139/boundary_139.vtu",
+              "sha256": "0004a7a2243e6475b310b46519836867ee57564cc8b9b2966ab15619bd5b75d4",
+              "byte_size": 340527398,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_139/boundary_dual_area_139.npy",
+            "dual_area_sha256": "ef9fd8a011d9bc24d78368728d8bf908c3d21bd7cdb2938ab36e0cf01f1af8bf",
+            "dual_area_size_bytes": 8375256,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 299657888,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_139/volume_139.vtu",
+              "sha256": "f842809e14e0fc3767755ce84336c50f1af90efb08b10de00035d71ebf13fc39",
+              "byte_size": 22585259555,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_139.json",
+              "sha256": "e6fc2b027368b6f32a2c37296e6397ea14d1347cc1077bacd1331e2323306215",
+              "byte_size": 106902,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "e6fc2b027368b6f32a2c37296e6397ea14d1347cc1077bacd1331e2323306215"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_139.json",
+              "sha256": "e6fc2b027368b6f32a2c37296e6397ea14d1347cc1077bacd1331e2323306215",
+              "byte_size": 106902,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "e6fc2b027368b6f32a2c37296e6397ea14d1347cc1077bacd1331e2323306215"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_139.json",
+              "sha256": "e6fc2b027368b6f32a2c37296e6397ea14d1347cc1077bacd1331e2323306215",
+              "byte_size": 106902,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "e6fc2b027368b6f32a2c37296e6397ea14d1347cc1077bacd1331e2323306215"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_139.json",
+              "sha256": "e6fc2b027368b6f32a2c37296e6397ea14d1347cc1077bacd1331e2323306215",
+              "byte_size": 106902,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "e6fc2b027368b6f32a2c37296e6397ea14d1347cc1077bacd1331e2323306215"
+        }
+      ]
+    },
+    {
+      "case_id": "run_140",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2357548,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_140/boundary_140.vtu",
+              "sha256": "10d14a31625e60899727f66509653f1bdf6e93d0f78d4c5106f0fc7fafe53253",
+              "byte_size": 383436483,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_140/boundary_dual_area_140.npy",
+            "dual_area_sha256": "250d7b4caac6402bc2e139fb4bf5211f31e6fe54010925381b6f612904f24b08",
+            "dual_area_size_bytes": 9430320,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 309222155,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_140/volume_140.vtu",
+              "sha256": "c6ae805e2dd4ac65e424c065643f29eaa66eac228704138ab54db1af4b17075f",
+              "byte_size": 23607112029,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_140.json",
+              "sha256": "9db5d653a2b5d08c4952552a81b9a0a90dfb41a429ecf58b5f463b60cda2a054",
+              "byte_size": 106970,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9db5d653a2b5d08c4952552a81b9a0a90dfb41a429ecf58b5f463b60cda2a054"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_140.json",
+              "sha256": "9db5d653a2b5d08c4952552a81b9a0a90dfb41a429ecf58b5f463b60cda2a054",
+              "byte_size": 106970,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9db5d653a2b5d08c4952552a81b9a0a90dfb41a429ecf58b5f463b60cda2a054"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_140.json",
+              "sha256": "9db5d653a2b5d08c4952552a81b9a0a90dfb41a429ecf58b5f463b60cda2a054",
+              "byte_size": 106970,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9db5d653a2b5d08c4952552a81b9a0a90dfb41a429ecf58b5f463b60cda2a054"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_140.json",
+              "sha256": "9db5d653a2b5d08c4952552a81b9a0a90dfb41a429ecf58b5f463b60cda2a054",
+              "byte_size": 106970,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9db5d653a2b5d08c4952552a81b9a0a90dfb41a429ecf58b5f463b60cda2a054"
+        }
+      ]
+    },
+    {
+      "case_id": "run_149",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2243896,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_149/boundary_149.vtu",
+              "sha256": "e69491d9763126a1a5c4f407d6d15419ac7356d4aaf54159158cb90b30c25b8e",
+              "byte_size": 364948657,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_149/boundary_dual_area_149.npy",
+            "dual_area_sha256": "be3c3b49ae4b0b9ca4ad20ae9081f18707529cb324763ce54edcd5bfd4f0b671",
+            "dual_area_size_bytes": 8975712,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 305458473,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_149/volume_149.vtu",
+              "sha256": "85f356420a6af2d6adf2604719e96541b465c62c18c141333bcdcd59737ca5e9",
+              "byte_size": 23099632581,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_149.json",
+              "sha256": "2f6db9d0d1edb075bc97ae2685e973c388147ce3fe1ad2fdb707fbec27e20770",
+              "byte_size": 106872,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "2f6db9d0d1edb075bc97ae2685e973c388147ce3fe1ad2fdb707fbec27e20770"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_149.json",
+              "sha256": "2f6db9d0d1edb075bc97ae2685e973c388147ce3fe1ad2fdb707fbec27e20770",
+              "byte_size": 106872,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "2f6db9d0d1edb075bc97ae2685e973c388147ce3fe1ad2fdb707fbec27e20770"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_149.json",
+              "sha256": "2f6db9d0d1edb075bc97ae2685e973c388147ce3fe1ad2fdb707fbec27e20770",
+              "byte_size": 106872,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "2f6db9d0d1edb075bc97ae2685e973c388147ce3fe1ad2fdb707fbec27e20770"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_149.json",
+              "sha256": "2f6db9d0d1edb075bc97ae2685e973c388147ce3fe1ad2fdb707fbec27e20770",
+              "byte_size": 106872,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "2f6db9d0d1edb075bc97ae2685e973c388147ce3fe1ad2fdb707fbec27e20770"
+        }
+      ]
+    },
+    {
+      "case_id": "run_151",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2345197,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_151/boundary_151.vtu",
+              "sha256": "7d1c9e40dfbbe5449e28d4c069f0eaf4d891bd6937bff119afe748b85c1450e9",
+              "byte_size": 381426453,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_151/boundary_dual_area_151.npy",
+            "dual_area_sha256": "075af84c1c3cd73ca8f2aa29df95406d9f7a763018eac7c98fcf9e88dd7c5c3b",
+            "dual_area_size_bytes": 9380916,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 283453149,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_151/volume_151.vtu",
+              "sha256": "786e7d5e3e984b3b434c23eb8797babed5a5fa26a958d7f9290ed7e45a6766f6",
+              "byte_size": 21370756031,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_151.json",
+              "sha256": "e8f2172516d94527ce92f5de215508640349c51c9d09e2f2bd0ee8819c620ba0",
+              "byte_size": 107305,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "e8f2172516d94527ce92f5de215508640349c51c9d09e2f2bd0ee8819c620ba0"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_151.json",
+              "sha256": "e8f2172516d94527ce92f5de215508640349c51c9d09e2f2bd0ee8819c620ba0",
+              "byte_size": 107305,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "e8f2172516d94527ce92f5de215508640349c51c9d09e2f2bd0ee8819c620ba0"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_151.json",
+              "sha256": "e8f2172516d94527ce92f5de215508640349c51c9d09e2f2bd0ee8819c620ba0",
+              "byte_size": 107305,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "e8f2172516d94527ce92f5de215508640349c51c9d09e2f2bd0ee8819c620ba0"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_151.json",
+              "sha256": "e8f2172516d94527ce92f5de215508640349c51c9d09e2f2bd0ee8819c620ba0",
+              "byte_size": 107305,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "e8f2172516d94527ce92f5de215508640349c51c9d09e2f2bd0ee8819c620ba0"
+        }
+      ]
+    },
+    {
+      "case_id": "run_163",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2284169,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_163/boundary_163.vtu",
+              "sha256": "874c4c2db493da8465829607de375e0c3b4e5d7dc5f14d6b3de87b6882310b88",
+              "byte_size": 371499985,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_163/boundary_dual_area_163.npy",
+            "dual_area_sha256": "4ab22ab48dfa947fefdb60e5c27fd006ec8687deaa19d00c4d877f3941ff68c9",
+            "dual_area_size_bytes": 9136804,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 299133852,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_163/volume_163.vtu",
+              "sha256": "47fd67bc5de7a8104272603b9eae050f30cd26f7dffc29f8df460930bd40efa2",
+              "byte_size": 22838893898,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_163.json",
+              "sha256": "afd1b29e1f6b7c486a212c1d88b6254d2c72a14b1438b4ab3760da396addaedd",
+              "byte_size": 107066,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "afd1b29e1f6b7c486a212c1d88b6254d2c72a14b1438b4ab3760da396addaedd"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_163.json",
+              "sha256": "afd1b29e1f6b7c486a212c1d88b6254d2c72a14b1438b4ab3760da396addaedd",
+              "byte_size": 107066,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "afd1b29e1f6b7c486a212c1d88b6254d2c72a14b1438b4ab3760da396addaedd"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_163.json",
+              "sha256": "afd1b29e1f6b7c486a212c1d88b6254d2c72a14b1438b4ab3760da396addaedd",
+              "byte_size": 107066,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "afd1b29e1f6b7c486a212c1d88b6254d2c72a14b1438b4ab3760da396addaedd"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_163.json",
+              "sha256": "afd1b29e1f6b7c486a212c1d88b6254d2c72a14b1438b4ab3760da396addaedd",
+              "byte_size": 107066,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "afd1b29e1f6b7c486a212c1d88b6254d2c72a14b1438b4ab3760da396addaedd"
+        }
+      ]
+    },
+    {
+      "case_id": "run_167",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2063674,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_167/boundary_167.vtu",
+              "sha256": "7ae88242003b44cd7fb5b472c40ea48724d9d9f5115758076d5c22d904d1750c",
+              "byte_size": 335628939,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_167/boundary_dual_area_167.npy",
+            "dual_area_sha256": "14238fc30039abfc7de72e226459e21ff915e0bbf1e09b66bff2c0ba8c211c2d",
+            "dual_area_size_bytes": 8254824,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 287143159,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_167/volume_167.vtu",
+              "sha256": "90973d87bcc3e88a2b3cdc107fbce695721028fa79a248809684e5a9187a4ddc",
+              "byte_size": 21263288528,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_167.json",
+              "sha256": "9ff940ca8b81e5247ebebfdcab6717662be43e94fc2ab8d32aaaf6eba9d655f2",
+              "byte_size": 106894,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9ff940ca8b81e5247ebebfdcab6717662be43e94fc2ab8d32aaaf6eba9d655f2"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_167.json",
+              "sha256": "9ff940ca8b81e5247ebebfdcab6717662be43e94fc2ab8d32aaaf6eba9d655f2",
+              "byte_size": 106894,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9ff940ca8b81e5247ebebfdcab6717662be43e94fc2ab8d32aaaf6eba9d655f2"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_167.json",
+              "sha256": "9ff940ca8b81e5247ebebfdcab6717662be43e94fc2ab8d32aaaf6eba9d655f2",
+              "byte_size": 106894,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9ff940ca8b81e5247ebebfdcab6717662be43e94fc2ab8d32aaaf6eba9d655f2"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_167.json",
+              "sha256": "9ff940ca8b81e5247ebebfdcab6717662be43e94fc2ab8d32aaaf6eba9d655f2",
+              "byte_size": 106894,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9ff940ca8b81e5247ebebfdcab6717662be43e94fc2ab8d32aaaf6eba9d655f2"
+        }
+      ]
+    },
+    {
+      "case_id": "run_169",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2220465,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_169/boundary_169.vtu",
+              "sha256": "c11b09709dad2d7cc49d3913e6247004f6ab989576d204457f920994c8211300",
+              "byte_size": 361137909,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_169/boundary_dual_area_169.npy",
+            "dual_area_sha256": "21f8ec1a4deb966ade7147b2c3b107fbd8baeea1efcaccf17dfcc10f08288cd9",
+            "dual_area_size_bytes": 8881988,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 306624738,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_169/volume_169.vtu",
+              "sha256": "cd5ced7d8d7571e7aba4ddd073597836c2e5e9422a8a5e51ef71c897eba03816",
+              "byte_size": 23252893676,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_169.json",
+              "sha256": "1b5d6b6c2ed0744a00246e3dded17af4c11b81ebebd9a53a6cdeab52dcb771b4",
+              "byte_size": 107021,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "1b5d6b6c2ed0744a00246e3dded17af4c11b81ebebd9a53a6cdeab52dcb771b4"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_169.json",
+              "sha256": "1b5d6b6c2ed0744a00246e3dded17af4c11b81ebebd9a53a6cdeab52dcb771b4",
+              "byte_size": 107021,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "1b5d6b6c2ed0744a00246e3dded17af4c11b81ebebd9a53a6cdeab52dcb771b4"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_169.json",
+              "sha256": "1b5d6b6c2ed0744a00246e3dded17af4c11b81ebebd9a53a6cdeab52dcb771b4",
+              "byte_size": 107021,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "1b5d6b6c2ed0744a00246e3dded17af4c11b81ebebd9a53a6cdeab52dcb771b4"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_169.json",
+              "sha256": "1b5d6b6c2ed0744a00246e3dded17af4c11b81ebebd9a53a6cdeab52dcb771b4",
+              "byte_size": 107021,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "1b5d6b6c2ed0744a00246e3dded17af4c11b81ebebd9a53a6cdeab52dcb771b4"
+        }
+      ]
+    },
+    {
+      "case_id": "run_170",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2362123,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_170/boundary_170.vtu",
+              "sha256": "92242b31e977a10e808b5eb340964de58c048a530f686c9bdcea74061cafbf6f",
+              "byte_size": 384181080,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_170/boundary_dual_area_170.npy",
+            "dual_area_sha256": "86be6a8bd2289413e645556e46226621aedd26df74bfd5260c4bed15c64b90ca",
+            "dual_area_size_bytes": 9448620,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 299350174,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_170/volume_170.vtu",
+              "sha256": "1c13f6d02de45cd0e2876204d71b61120e9dd865438ab171105d08719c0faef2",
+              "byte_size": 22878782196,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_170.json",
+              "sha256": "10852de1be27e2babed31df2320e864415cfd55e50cd745a7a24fd71134a99f5",
+              "byte_size": 107090,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "10852de1be27e2babed31df2320e864415cfd55e50cd745a7a24fd71134a99f5"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_170.json",
+              "sha256": "10852de1be27e2babed31df2320e864415cfd55e50cd745a7a24fd71134a99f5",
+              "byte_size": 107090,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "10852de1be27e2babed31df2320e864415cfd55e50cd745a7a24fd71134a99f5"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_170.json",
+              "sha256": "10852de1be27e2babed31df2320e864415cfd55e50cd745a7a24fd71134a99f5",
+              "byte_size": 107090,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "10852de1be27e2babed31df2320e864415cfd55e50cd745a7a24fd71134a99f5"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_170.json",
+              "sha256": "10852de1be27e2babed31df2320e864415cfd55e50cd745a7a24fd71134a99f5",
+              "byte_size": 107090,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "10852de1be27e2babed31df2320e864415cfd55e50cd745a7a24fd71134a99f5"
+        }
+      ]
+    },
+    {
+      "case_id": "run_171",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2478557,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_171/boundary_171.vtu",
+              "sha256": "e2f3a08c3f442db22f9573c349f04117342b08aa59d5037bec8dbb586e64b966",
+              "byte_size": 403120780,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_171/boundary_dual_area_171.npy",
+            "dual_area_sha256": "66332cb7b875f902631c8232ffd2d85ca902ab4991716c62337a4eb26c801db5",
+            "dual_area_size_bytes": 9914356,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 288523224,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_171/volume_171.vtu",
+              "sha256": "ae40c5ce858c9834d8cc4c093206f64b8da6bd408940e8d15317337841113a0e",
+              "byte_size": 21985582633,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_171.json",
+              "sha256": "08e3ac265e0b73b8d63d273afde72c54732dd75d8a6549ec018a2030cc55f255",
+              "byte_size": 107418,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "08e3ac265e0b73b8d63d273afde72c54732dd75d8a6549ec018a2030cc55f255"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_171.json",
+              "sha256": "08e3ac265e0b73b8d63d273afde72c54732dd75d8a6549ec018a2030cc55f255",
+              "byte_size": 107418,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "08e3ac265e0b73b8d63d273afde72c54732dd75d8a6549ec018a2030cc55f255"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_171.json",
+              "sha256": "08e3ac265e0b73b8d63d273afde72c54732dd75d8a6549ec018a2030cc55f255",
+              "byte_size": 107418,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "08e3ac265e0b73b8d63d273afde72c54732dd75d8a6549ec018a2030cc55f255"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_171.json",
+              "sha256": "08e3ac265e0b73b8d63d273afde72c54732dd75d8a6549ec018a2030cc55f255",
+              "byte_size": 107418,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "08e3ac265e0b73b8d63d273afde72c54732dd75d8a6549ec018a2030cc55f255"
+        }
+      ]
+    },
+    {
+      "case_id": "run_181",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2359929,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_181/boundary_181.vtu",
+              "sha256": "61660d92a0fec88ee548bbfd5aef33635311553dc67e4e5fec387577f3d3618f",
+              "byte_size": 383825382,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_181/boundary_dual_area_181.npy",
+            "dual_area_sha256": "337c73f69966d16312f8646cdda2c19680a708d183b64d34368c0fc0d2b30b49",
+            "dual_area_size_bytes": 9439844,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 300252181,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_181/volume_181.vtu",
+              "sha256": "d1d3d3f967179785fffe4d880fa265869d732e4a5b522d0992fcd11bc7b5686b",
+              "byte_size": 22965719938,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_181.json",
+              "sha256": "b40bbe35ae23e09f7b3ce8cab0d3c36d66bd3ca5b2951b311cb82e6c34b5a954",
+              "byte_size": 107189,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "b40bbe35ae23e09f7b3ce8cab0d3c36d66bd3ca5b2951b311cb82e6c34b5a954"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_181.json",
+              "sha256": "b40bbe35ae23e09f7b3ce8cab0d3c36d66bd3ca5b2951b311cb82e6c34b5a954",
+              "byte_size": 107189,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "b40bbe35ae23e09f7b3ce8cab0d3c36d66bd3ca5b2951b311cb82e6c34b5a954"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_181.json",
+              "sha256": "b40bbe35ae23e09f7b3ce8cab0d3c36d66bd3ca5b2951b311cb82e6c34b5a954",
+              "byte_size": 107189,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "b40bbe35ae23e09f7b3ce8cab0d3c36d66bd3ca5b2951b311cb82e6c34b5a954"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_181.json",
+              "sha256": "b40bbe35ae23e09f7b3ce8cab0d3c36d66bd3ca5b2951b311cb82e6c34b5a954",
+              "byte_size": 107189,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "b40bbe35ae23e09f7b3ce8cab0d3c36d66bd3ca5b2951b311cb82e6c34b5a954"
+        }
+      ]
+    },
+    {
+      "case_id": "run_192",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2176158,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_192/boundary_192.vtu",
+              "sha256": "ef141199909e0fa0b591a12334cbb7d876f30b7a8bf8a968679a275d3d6f9ffb",
+              "byte_size": 353932257,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_192/boundary_dual_area_192.npy",
+            "dual_area_sha256": "b3aa7c321ec64fc7a1f9e7b9f9ff988c1146f17b880e5ecb885ea85211c96025",
+            "dual_area_size_bytes": 8704760,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 306963485,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_192/volume_192.vtu",
+              "sha256": "7b2c2af68ff13fdae3b21c60c0f6dbe82aaf04f051b09e47eafe2a96b245c00c",
+              "byte_size": 23410958478,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_192.json",
+              "sha256": "d5476cd3446399b9a28b07772555f94d226ebaa39ace726788bfff669dc19dd5",
+              "byte_size": 106965,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "d5476cd3446399b9a28b07772555f94d226ebaa39ace726788bfff669dc19dd5"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_192.json",
+              "sha256": "d5476cd3446399b9a28b07772555f94d226ebaa39ace726788bfff669dc19dd5",
+              "byte_size": 106965,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "d5476cd3446399b9a28b07772555f94d226ebaa39ace726788bfff669dc19dd5"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_192.json",
+              "sha256": "d5476cd3446399b9a28b07772555f94d226ebaa39ace726788bfff669dc19dd5",
+              "byte_size": 106965,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "d5476cd3446399b9a28b07772555f94d226ebaa39ace726788bfff669dc19dd5"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_192.json",
+              "sha256": "d5476cd3446399b9a28b07772555f94d226ebaa39ace726788bfff669dc19dd5",
+              "byte_size": 106965,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "d5476cd3446399b9a28b07772555f94d226ebaa39ace726788bfff669dc19dd5"
+        }
+      ]
+    },
+    {
+      "case_id": "run_193",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2315135,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_193/boundary_193.vtu",
+              "sha256": "b4bceb4e3e2c2b3d3ca10d7e87da1a4447b8eed8ecfc5bd599eae2279bfbbc0c",
+              "byte_size": 376538801,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_193/boundary_dual_area_193.npy",
+            "dual_area_sha256": "c284a339660aa113bbf5840acf4d1c63a55fb947d893a6dd55c9a6e28af11e35",
+            "dual_area_size_bytes": 9260668,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 300603298,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_193/volume_193.vtu",
+              "sha256": "f655d0a0163f90d4a1e469adfcf814d0157d02d6bf9a981485944bb96e9afe41",
+              "byte_size": 22888287832,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_193.json",
+              "sha256": "60fbacd602a2488690622e3abc7d45364aed8dd15f5e09252415224f3d7c6c8f",
+              "byte_size": 106901,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "60fbacd602a2488690622e3abc7d45364aed8dd15f5e09252415224f3d7c6c8f"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_193.json",
+              "sha256": "60fbacd602a2488690622e3abc7d45364aed8dd15f5e09252415224f3d7c6c8f",
+              "byte_size": 106901,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "60fbacd602a2488690622e3abc7d45364aed8dd15f5e09252415224f3d7c6c8f"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_193.json",
+              "sha256": "60fbacd602a2488690622e3abc7d45364aed8dd15f5e09252415224f3d7c6c8f",
+              "byte_size": 106901,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "60fbacd602a2488690622e3abc7d45364aed8dd15f5e09252415224f3d7c6c8f"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_193.json",
+              "sha256": "60fbacd602a2488690622e3abc7d45364aed8dd15f5e09252415224f3d7c6c8f",
+              "byte_size": 106901,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "60fbacd602a2488690622e3abc7d45364aed8dd15f5e09252415224f3d7c6c8f"
+        }
+      ]
+    },
+    {
+      "case_id": "run_194",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2160797,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_194/boundary_194.vtu",
+              "sha256": "7d79bc767d3a24728bbfb9db769f01d87e4520d82ee7b8de8ada9aeefe22c88b",
+              "byte_size": 351430291,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_194/boundary_dual_area_194.npy",
+            "dual_area_sha256": "c7ade75a204a6438080fb384a8b68ed475ec24f2c1d9322b5fea9f1f2699c313",
+            "dual_area_size_bytes": 8643316,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 288745049,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_194/volume_194.vtu",
+              "sha256": "d0f9e4e08ab115e2df659276745c11f9f13df623cfd34aed55763af9be1d1050",
+              "byte_size": 21983145561,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_194.json",
+              "sha256": "11b80bd02d5832bb8e4479c2f9df38a272bb1562d725b50297111f08ad921952",
+              "byte_size": 107174,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "11b80bd02d5832bb8e4479c2f9df38a272bb1562d725b50297111f08ad921952"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_194.json",
+              "sha256": "11b80bd02d5832bb8e4479c2f9df38a272bb1562d725b50297111f08ad921952",
+              "byte_size": 107174,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "11b80bd02d5832bb8e4479c2f9df38a272bb1562d725b50297111f08ad921952"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_194.json",
+              "sha256": "11b80bd02d5832bb8e4479c2f9df38a272bb1562d725b50297111f08ad921952",
+              "byte_size": 107174,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "11b80bd02d5832bb8e4479c2f9df38a272bb1562d725b50297111f08ad921952"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_194.json",
+              "sha256": "11b80bd02d5832bb8e4479c2f9df38a272bb1562d725b50297111f08ad921952",
+              "byte_size": 107174,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "11b80bd02d5832bb8e4479c2f9df38a272bb1562d725b50297111f08ad921952"
+        }
+      ]
+    },
+    {
+      "case_id": "run_196",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2174035,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_196/boundary_196.vtu",
+              "sha256": "3686996e2fcda577fd6ee721b69994c61e1e37e4c10286f69e5effce3a560380",
+              "byte_size": 353577493,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_196/boundary_dual_area_196.npy",
+            "dual_area_sha256": "08f247f43d2f08a5cb6cbf99755f62963652092b1cfefe65bcc17621ca0e89fe",
+            "dual_area_size_bytes": 8696268,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 287961326,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_196/volume_196.vtu",
+              "sha256": "6abb13c21482bae708593d8bfa7c264b12674e68f8f68bc36edafebb5673cc59",
+              "byte_size": 21885073327,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_196.json",
+              "sha256": "c5e236513cf7689926bee6f2864043c38dad0dd88ee669071c9266db46f6caa9",
+              "byte_size": 107128,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "c5e236513cf7689926bee6f2864043c38dad0dd88ee669071c9266db46f6caa9"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_196.json",
+              "sha256": "c5e236513cf7689926bee6f2864043c38dad0dd88ee669071c9266db46f6caa9",
+              "byte_size": 107128,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "c5e236513cf7689926bee6f2864043c38dad0dd88ee669071c9266db46f6caa9"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_196.json",
+              "sha256": "c5e236513cf7689926bee6f2864043c38dad0dd88ee669071c9266db46f6caa9",
+              "byte_size": 107128,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "c5e236513cf7689926bee6f2864043c38dad0dd88ee669071c9266db46f6caa9"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_196.json",
+              "sha256": "c5e236513cf7689926bee6f2864043c38dad0dd88ee669071c9266db46f6caa9",
+              "byte_size": 107128,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "c5e236513cf7689926bee6f2864043c38dad0dd88ee669071c9266db46f6caa9"
+        }
+      ]
+    },
+    {
+      "case_id": "run_199",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2396512,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_199/boundary_199.vtu",
+              "sha256": "daca41cbe7fae7a150d365c72877f0b180dd574e15cfe98bea1a0003135c204e",
+              "byte_size": 389776454,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_199/boundary_dual_area_199.npy",
+            "dual_area_sha256": "a68663a48bc1297b7b85cd57a683ce2efddcb4991c1b3d62e8d75e8be4954fce",
+            "dual_area_size_bytes": 9586176,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 290519741,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_199/volume_199.vtu",
+              "sha256": "ab66a8193ea2540f25c7fba254cc82695c7b2b646874a81b55d2653a957e7d27",
+              "byte_size": 22181268075,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_199.json",
+              "sha256": "f8fbb1276023ba1311c499b9fe472a7cd532b1dd542133f280da0308b62f6151",
+              "byte_size": 107145,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "f8fbb1276023ba1311c499b9fe472a7cd532b1dd542133f280da0308b62f6151"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_199.json",
+              "sha256": "f8fbb1276023ba1311c499b9fe472a7cd532b1dd542133f280da0308b62f6151",
+              "byte_size": 107145,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "f8fbb1276023ba1311c499b9fe472a7cd532b1dd542133f280da0308b62f6151"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_199.json",
+              "sha256": "f8fbb1276023ba1311c499b9fe472a7cd532b1dd542133f280da0308b62f6151",
+              "byte_size": 107145,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "f8fbb1276023ba1311c499b9fe472a7cd532b1dd542133f280da0308b62f6151"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_199.json",
+              "sha256": "f8fbb1276023ba1311c499b9fe472a7cd532b1dd542133f280da0308b62f6151",
+              "byte_size": 107145,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "f8fbb1276023ba1311c499b9fe472a7cd532b1dd542133f280da0308b62f6151"
+        }
+      ]
+    },
+    {
+      "case_id": "run_212",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2303215,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_212/boundary_212.vtu",
+              "sha256": "19f1b8ef89c00b12f446680e9870a47bb4e6e8ac2b6c10c607478fda9efe5cb7",
+              "byte_size": 374599154,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_212/boundary_dual_area_212.npy",
+            "dual_area_sha256": "f5be6e74aa214f00e8227f2b951eb2b7a713c86245cabd444d5ed13ef5c63320",
+            "dual_area_size_bytes": 9212988,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 292432647,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_212/volume_212.vtu",
+              "sha256": "5f6c66f46c32ad560c33e677fe05b7dce2b66ec46fdce6969fff430306842472",
+              "byte_size": 22330013467,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_212.json",
+              "sha256": "b03db7852166980a8df63d817334fee09c6c5bcb9134acfa775d2bbebf830c8a",
+              "byte_size": 107130,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "b03db7852166980a8df63d817334fee09c6c5bcb9134acfa775d2bbebf830c8a"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_212.json",
+              "sha256": "b03db7852166980a8df63d817334fee09c6c5bcb9134acfa775d2bbebf830c8a",
+              "byte_size": 107130,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "b03db7852166980a8df63d817334fee09c6c5bcb9134acfa775d2bbebf830c8a"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_212.json",
+              "sha256": "b03db7852166980a8df63d817334fee09c6c5bcb9134acfa775d2bbebf830c8a",
+              "byte_size": 107130,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "b03db7852166980a8df63d817334fee09c6c5bcb9134acfa775d2bbebf830c8a"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_212.json",
+              "sha256": "b03db7852166980a8df63d817334fee09c6c5bcb9134acfa775d2bbebf830c8a",
+              "byte_size": 107130,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "b03db7852166980a8df63d817334fee09c6c5bcb9134acfa775d2bbebf830c8a"
+        }
+      ]
+    },
+    {
+      "case_id": "run_221",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2160205,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_221/boundary_221.vtu",
+              "sha256": "2f164d45351a71c8b34eb9c89605bf24705da91b6b926c45d8d963fab17f3f36",
+              "byte_size": 351335848,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_221/boundary_dual_area_221.npy",
+            "dual_area_sha256": "ef1c97c038c6038a6e02aeeaf9ec90e1aa10bd7c04c1d06e6b8838976f53ff3f",
+            "dual_area_size_bytes": 8640948,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 314868639,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_221/volume_221.vtu",
+              "sha256": "165de94af52e5aece29d1cc045ecf05ea7a76812ebd5d24cb918c81502938804",
+              "byte_size": 23986241565,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_221.json",
+              "sha256": "178bc470195928848fd79cfaea1b26ade136dafaf57ebbddc5146433e867e7d2",
+              "byte_size": 107100,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "178bc470195928848fd79cfaea1b26ade136dafaf57ebbddc5146433e867e7d2"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_221.json",
+              "sha256": "178bc470195928848fd79cfaea1b26ade136dafaf57ebbddc5146433e867e7d2",
+              "byte_size": 107100,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "178bc470195928848fd79cfaea1b26ade136dafaf57ebbddc5146433e867e7d2"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_221.json",
+              "sha256": "178bc470195928848fd79cfaea1b26ade136dafaf57ebbddc5146433e867e7d2",
+              "byte_size": 107100,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "178bc470195928848fd79cfaea1b26ade136dafaf57ebbddc5146433e867e7d2"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_221.json",
+              "sha256": "178bc470195928848fd79cfaea1b26ade136dafaf57ebbddc5146433e867e7d2",
+              "byte_size": 107100,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "178bc470195928848fd79cfaea1b26ade136dafaf57ebbddc5146433e867e7d2"
+        }
+      ]
+    },
+    {
+      "case_id": "run_222",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2303124,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_222/boundary_222.vtu",
+              "sha256": "2e99593436d6d61874a38a580a1ed992b5f6c57b37a63cfe58cc7e73b3ff3291",
+              "byte_size": 374583920,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_222/boundary_dual_area_222.npy",
+            "dual_area_sha256": "54fa6c692430ff9e56d6554a9052b0c733206ddc0d1c952fdc373b3b5020cfb3",
+            "dual_area_size_bytes": 9212624,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 291429975,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_222/volume_222.vtu",
+              "sha256": "27482091d0cdf6a54b6d1b2742fe5f929399ca8cc10c2e3faef1d7cab13fd871",
+              "byte_size": 22157338856,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_222.json",
+              "sha256": "9cf33cf9321775de6076dcce2a3748737d256c09fcce241e26cf5ded72dbb061",
+              "byte_size": 107447,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9cf33cf9321775de6076dcce2a3748737d256c09fcce241e26cf5ded72dbb061"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_222.json",
+              "sha256": "9cf33cf9321775de6076dcce2a3748737d256c09fcce241e26cf5ded72dbb061",
+              "byte_size": 107447,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9cf33cf9321775de6076dcce2a3748737d256c09fcce241e26cf5ded72dbb061"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_222.json",
+              "sha256": "9cf33cf9321775de6076dcce2a3748737d256c09fcce241e26cf5ded72dbb061",
+              "byte_size": 107447,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9cf33cf9321775de6076dcce2a3748737d256c09fcce241e26cf5ded72dbb061"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_222.json",
+              "sha256": "9cf33cf9321775de6076dcce2a3748737d256c09fcce241e26cf5ded72dbb061",
+              "byte_size": 107447,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "9cf33cf9321775de6076dcce2a3748737d256c09fcce241e26cf5ded72dbb061"
+        }
+      ]
+    },
+    {
+      "case_id": "run_224",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2147895,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_224/boundary_224.vtu",
+              "sha256": "1246139f943d22e997c22638dfc98070489a5b58810c688a540ae8e8687fd9b1",
+              "byte_size": 349334717,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_224/boundary_dual_area_224.npy",
+            "dual_area_sha256": "3ecf3c8770f3ff5e9bfa2966c62eded191b23f1e2d4df9d9aa762d90a7383e39",
+            "dual_area_size_bytes": 8591708,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 287843412,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_224/volume_224.vtu",
+              "sha256": "a4782f4b89a0e6b758a4e61a0d80a42a4a8e54bd09c30c07763a698220959a96",
+              "byte_size": 21956562865,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_224.json",
+              "sha256": "a753de9703c109ecaa4dd962176a41302e4fc029404ee24a14eda56552c76b15",
+              "byte_size": 107386,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "a753de9703c109ecaa4dd962176a41302e4fc029404ee24a14eda56552c76b15"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_224.json",
+              "sha256": "a753de9703c109ecaa4dd962176a41302e4fc029404ee24a14eda56552c76b15",
+              "byte_size": 107386,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "a753de9703c109ecaa4dd962176a41302e4fc029404ee24a14eda56552c76b15"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_224.json",
+              "sha256": "a753de9703c109ecaa4dd962176a41302e4fc029404ee24a14eda56552c76b15",
+              "byte_size": 107386,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "a753de9703c109ecaa4dd962176a41302e4fc029404ee24a14eda56552c76b15"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_224.json",
+              "sha256": "a753de9703c109ecaa4dd962176a41302e4fc029404ee24a14eda56552c76b15",
+              "byte_size": 107386,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "a753de9703c109ecaa4dd962176a41302e4fc029404ee24a14eda56552c76b15"
+        }
+      ]
+    },
+    {
+      "case_id": "run_240",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2212843,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_240/boundary_240.vtu",
+              "sha256": "94907600ae95dc96dc953f6948074afcf4427bd75cb58d8d91777365f80450d2",
+              "byte_size": 359898889,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_240/boundary_dual_area_240.npy",
+            "dual_area_sha256": "2ca6b4843200a0c5d8b713584bae3d35793b12221c878b0c94e562b3f2801e94",
+            "dual_area_size_bytes": 8851500,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 304991745,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_240/volume_240.vtu",
+              "sha256": "22c946a0559978418b4b8d77c4cc8c0fd14e60e69f67eb875d95fc06d21db8f8",
+              "byte_size": 23250651262,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_240.json",
+              "sha256": "bf1db7fcde19bf21c721884a89720a289683ce43db59c55af74cd33a59496d01",
+              "byte_size": 107348,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "bf1db7fcde19bf21c721884a89720a289683ce43db59c55af74cd33a59496d01"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_240.json",
+              "sha256": "bf1db7fcde19bf21c721884a89720a289683ce43db59c55af74cd33a59496d01",
+              "byte_size": 107348,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "bf1db7fcde19bf21c721884a89720a289683ce43db59c55af74cd33a59496d01"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_240.json",
+              "sha256": "bf1db7fcde19bf21c721884a89720a289683ce43db59c55af74cd33a59496d01",
+              "byte_size": 107348,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "bf1db7fcde19bf21c721884a89720a289683ce43db59c55af74cd33a59496d01"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_240.json",
+              "sha256": "bf1db7fcde19bf21c721884a89720a289683ce43db59c55af74cd33a59496d01",
+              "byte_size": 107348,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "bf1db7fcde19bf21c721884a89720a289683ce43db59c55af74cd33a59496d01"
+        }
+      ]
+    },
+    {
+      "case_id": "run_243",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2185969,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_243/boundary_243.vtu",
+              "sha256": "dc1e7599369db4385319976c27541ae26bb222e0300cf7980277fa16a3a3f5eb",
+              "byte_size": 355522261,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_243/boundary_dual_area_243.npy",
+            "dual_area_sha256": "2354c3e9f8ba6cae0bebc6c9a6aa18a41289f4f7a31c0c176f82e99edb62ce7c",
+            "dual_area_size_bytes": 8744004,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 271968914,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_243/volume_243.vtu",
+              "sha256": "4019b0439e566ef8a13866f6df3ff8b69086806aab96b9435053ab1e260b8ff3",
+              "byte_size": 20451597718,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_243.json",
+              "sha256": "ee719aa9027036a9321cdeace10615cec48d9986fe2649c9bd511fcc799a2535",
+              "byte_size": 107739,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "ee719aa9027036a9321cdeace10615cec48d9986fe2649c9bd511fcc799a2535"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_243.json",
+              "sha256": "ee719aa9027036a9321cdeace10615cec48d9986fe2649c9bd511fcc799a2535",
+              "byte_size": 107739,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "ee719aa9027036a9321cdeace10615cec48d9986fe2649c9bd511fcc799a2535"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_243.json",
+              "sha256": "ee719aa9027036a9321cdeace10615cec48d9986fe2649c9bd511fcc799a2535",
+              "byte_size": 107739,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "ee719aa9027036a9321cdeace10615cec48d9986fe2649c9bd511fcc799a2535"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_243.json",
+              "sha256": "ee719aa9027036a9321cdeace10615cec48d9986fe2649c9bd511fcc799a2535",
+              "byte_size": 107739,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "ee719aa9027036a9321cdeace10615cec48d9986fe2649c9bd511fcc799a2535"
+        }
+      ]
+    },
+    {
+      "case_id": "run_252",
+      "support_instances": [
+        {
+          "support_id": "windsorml_surface_native_points",
+          "entity_count": 2077069,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-boundary-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_252/boundary_252.vtu",
+              "sha256": "56171f9d45db9aae38f70e8abe5e9b2a36b195994f493288fe1455e6a4e771f2",
+              "byte_size": 337805592,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "PointData",
+            "dual_area_path": "run_252/boundary_dual_area_252.npy",
+            "dual_area_sha256": "2b7d856b8b37d86bd636f4252782c79daae8ea6b2335b494745d4582d7fff36d",
+            "dual_area_size_bytes": 8308404,
+            "weight_rule": "published_npy_in_native_point_order_no_regeneration"
+          }
+        },
+        {
+          "support_id": "windsorml_volume_native_cells",
+          "entity_count": 309735749,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            },
+            {
+              "role": "public-volume-vtu",
+              "url": "https://huggingface.co/datasets/neashton/windsorml/resolve/8a6ca32ae22c94f54df2186d1b0ccf9662a294c2/run_252/volume_252.vtu",
+              "sha256": "5d8443633aa1b43950f8ee149456971947a0141921b2fb3b52edb6bc6ec7d7bc",
+              "byte_size": 22788504528,
+              "format": "vtk_xml_unstructured_grid"
+            }
+          ],
+          "parameters": {
+            "association": "CellData",
+            "weight_rule": "equal_native_cell"
+          }
+        },
+        {
+          "support_id": "windsorml-force-coefficients-v1",
+          "entity_count": 1,
+          "artifacts": [
+            {
+              "role": "public-source-identity",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/public-source-identity/windsorml-public-source-identity-v1.json",
+              "sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+              "byte_size": 455161,
+              "format": "json"
+            }
+          ],
+          "parameters": {
+            "reference_area_m2": 0.112,
+            "axes": {
+              "drag": "+x",
+              "lift": "+y",
+              "side": "+z"
+            },
+            "truth": "native_field_integration",
+            "published_csv": "audit_only"
+          }
+        },
+        {
+          "support_id": "windsorml_velocity_constant_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_252.json",
+              "sha256": "77f9b27ccd0eccf01afd15d92692fe085c0914f1d9eaa35704d038b1a49be604",
+              "byte_size": 106382,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "77f9b27ccd0eccf01afd15d92692fe085c0914f1d9eaa35704d038b1a49be604"
+        },
+        {
+          "support_id": "windsorml_cp_constant_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_252.json",
+              "sha256": "77f9b27ccd0eccf01afd15d92692fe085c0914f1d9eaa35704d038b1a49be604",
+              "byte_size": 106382,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "77f9b27ccd0eccf01afd15d92692fe085c0914f1d9eaa35704d038b1a49be604"
+        },
+        {
+          "support_id": "windsorml_velocity_relative_v1",
+          "entity_count": 640,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_252.json",
+              "sha256": "77f9b27ccd0eccf01afd15d92692fe085c0914f1d9eaa35704d038b1a49be604",
+              "byte_size": 106382,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "77f9b27ccd0eccf01afd15d92692fe085c0914f1d9eaa35704d038b1a49be604"
+        },
+        {
+          "support_id": "windsorml_cp_relative_v1",
+          "entity_count": 384,
+          "artifacts": [
+            {
+              "role": "profile-support",
+              "url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/8a8c4a052c4aa1e2739753ceaaf8575058da344f/benchmark-specs/windsorml/profile-support/run_252.json",
+              "sha256": "77f9b27ccd0eccf01afd15d92692fe085c0914f1d9eaa35704d038b1a49be604",
+              "byte_size": 106382,
+              "format": "json"
+            }
+          ],
+          "expected_support_sha256": "77f9b27ccd0eccf01afd15d92692fe085c0914f1d9eaa35704d038b1a49be604"
+        }
+      ]
+    }
+  ]
+}

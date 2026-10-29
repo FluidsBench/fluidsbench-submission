@@ -1,0 +1,16 @@
+# HiLiftAeroML candidate evaluator runtime closure.
+#
+# Observed and tested with CPython 3.12.13 on Linux aarch64/glibc 2.39.
+# Install into a fresh isolated environment with --no-deps: every runtime
+# dependency of numpy and jsonschema used by the evaluator is listed here.
+# Test-only packages (pytest, pluggy, iniconfig, Pygments, packaging) and pip
+# itself are deliberately outside this minimal evaluator runtime lock.
+# Native GPU inference has a separate container/runtime boundary recorded in
+# the implementation manifest; it is not represented by this Python lock.
+attrs==26.1.0
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+numpy==2.5.2
+referencing==0.37.0
+rpds-py==2026.6.3
+typing_extensions==4.16.0

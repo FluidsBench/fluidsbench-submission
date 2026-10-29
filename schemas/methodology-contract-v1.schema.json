@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/methodology-contract-v1.schema.json",
+  "title": "FluidsBench dataset methodology contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "format",
+    "dataset_id",
+    "allow_additional_predicted_fields",
+    "required_predicted_fields"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://fluidsbench.org/schemas/methodology-contract-v1.schema.json"
+    },
+    "format": {
+      "const": "fluidsbench-methodology-contract-v1"
+    },
+    "dataset_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "allow_additional_predicted_fields": {
+      "type": "boolean"
+    },
+    "required_predicted_fields": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field_id", "domain", "component_count", "description"],
+        "properties": {
+          "field_id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,239}$"
+          },
+          "domain": {
+            "enum": ["case", "curve", "surface", "volume", "domain", "global"]
+          },
+          "component_count": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1200
+          }
+        }
+      }
+    },
+    "required_predicted_fields_by_prediction_scope": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["field_id", "domain", "component_count", "description"],
+          "properties": {
+            "field_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,239}$"
+            },
+            "domain": {
+              "enum": ["case", "curve", "surface", "volume", "domain", "global"]
+            },
+            "component_count": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1200
+            }
+          }
+        }
+      }
+    }
+  }
+}

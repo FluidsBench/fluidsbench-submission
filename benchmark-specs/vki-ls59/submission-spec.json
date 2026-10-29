@@ -1,0 +1,569 @@
+{
+  "schema_version": "1.1",
+  "dataset_id": "vki-ls59",
+  "dataset_name": "VKI-LS59",
+  "dataset_version": "prototype-1",
+  "status": "prototype_dummy_data",
+  "scoring_support": {
+    "status": "owner_review_required",
+    "submissions_open": false,
+    "closed_reason": "Submissions are currently closed.",
+    "coverage_contract": {
+      "dimensionality": "2D flow domain and separate 1D blade curve",
+      "rule": "complete_original_public_release_entities",
+      "inference_may_be_chunked": true,
+      "chunk_metrics_must_use_additive_sufficient_statistics": true,
+      "complete_case_and_entity_coverage_required": true,
+      "full_prediction_artifact_required": false,
+      "case_aggregation": "calculate_each_case_then_macro_average_cases_equally",
+      "public_ground_truth": "The published PLAID test rows omit targets. An open FluidsBench case set must either use newly public test targets or be frozen from output-complete public rows 0-670; it must not be called the PLAID test split."
+    },
+    "public_supports": [
+      {
+        "id": "two-dimensional-domain-native",
+        "public_file": "PLAID Sample CGNS path /Base_2_2/Zone in the public Parquet release",
+        "format": "PLAID Sample containing a CGNS tree",
+        "domain": "two_dimensional_quad_flow_domain",
+        "association": "CGNS GridLocation Vertex",
+        "entities": "all_native_domain_vertices",
+        "arrays": [
+          "ro",
+          "rou",
+          "rov",
+          "roe",
+          "nut",
+          "mach"
+        ],
+        "physical_weight": "mass_lumped_dual_quad_cell_area",
+        "verification": "confirmed_from_public_samples"
+      },
+      {
+        "id": "blade-curve-native",
+      "public_file": "PLAID Sample CGNS path /Base_1_2/Zone in the public Parquet release",
+        "format": "one-dimensional BAR_2 curve inside the PLAID Sample",
+        "domain": "one_dimensional_blade_curve",
+        "association": "CGNS GridLocation Vertex",
+        "entities": "all_native_curve_vertices",
+        "arrays": [
+          "M_iso"
+        ],
+        "physical_weight": "mass_lumped_dual_segment_length",
+        "verification": "confirmed_from_public_samples"
+      }
+    ],
+    "relative_l2_policy": {
+      "surface_or_curve_primary": "physical_measure_weighted",
+      "surface_or_curve_secondary": "equal_native_entity",
+      "flow_domain_primary": "equal_native_entity",
+      "flow_domain_secondary": "physical_measure_weighted",
+      "point_or_vertex_physical_weights": "deterministic_mass_lumped_dual_measure_from_the_exact_public_mesh",
+      "vector_rule": "one_entity_weight_multiplies_the_squared_vector_magnitude",
+      "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
+    },
+    "owner_decisions_required": [
+      "pin_exact_public_release_files_revisions_and_hashes",
+      "confirm_array_names_entity_associations_masks_and_order",
+      "publish_authoritative_physical_weights_and_stable_entity_ids",
+      "approve_public_ground_truth_case_set_and_split_bindings",
+      "approve_loader_evaluator_and_immutable_scoring_support_manifest"
+    ]
+  },
+  "evaluation_reference_version": "prototype-1",
+  "default_field_reduction": "per_geometry_then_macro_average",
+  "ranking": {
+    "metric_id": "overall_score",
+    "direction": "higher",
+    "decimal_places": 1,
+    "rounding": "decimal_half_up",
+    "method": "competition"
+  },
+  "overall_score_composite": {
+    "metric_id": "overall_score",
+    "operation": "weighted_component_scores",
+    "components": [
+      {
+        "metric_id": "vki_mach_rrmse",
+        "weight": 0.125,
+        "transform": "bounded_error",
+        "cap": 1.0
+      },
+      {
+        "metric_id": "vki_nut_rrmse",
+        "weight": 0.125,
+        "transform": "bounded_error",
+        "cap": 1.0
+      },
+      {
+        "metric_id": "vki_q_rrmse",
+        "weight": 0.125,
+        "transform": "bounded_error",
+        "cap": 1.0
+      },
+      {
+        "metric_id": "vki_power_rrmse",
+        "weight": 0.125,
+        "transform": "bounded_error",
+        "cap": 1.0
+      },
+      {
+        "metric_id": "vki_pr_rrmse",
+        "weight": 0.125,
+        "transform": "bounded_error",
+        "cap": 1.0
+      },
+      {
+        "metric_id": "vki_tr_rrmse",
+        "weight": 0.125,
+        "transform": "bounded_error",
+        "cap": 1.0
+      },
+      {
+        "metric_id": "vki_eth_is_rrmse",
+        "weight": 0.125,
+        "transform": "bounded_error",
+        "cap": 1.0
+      },
+      {
+        "metric_id": "vki_angle_out_rrmse",
+        "weight": 0.125,
+        "transform": "bounded_error",
+        "cap": 1.0
+      }
+    ],
+    "tolerance": 1e-06
+  },
+  "metrics": [
+    {
+      "id": "overall_score",
+      "unit": "",
+      "direction": "higher",
+      "kind": "score",
+      "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+      "aggregation": "derived_score_equation",
+      "weighting": "dataset_declared_component_weights"
+    },
+    {
+      "id": "total_error",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{m}\\sum_{j=1}^{m}\\operatorname{RRMSE}_j",
+      "aggregation": "derived_arithmetic_mean",
+      "weighting": "source_metrics_equal"
+    },
+    {
+      "id": "vki_mach_rrmse",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lVert \\hat{y}_i-y_i\\rVert_2^2/N_i}{\\lVert y_i\\rVert_\\infty^2}}",
+      "aggregation": "benchmark_field_rrmse_across_cases",
+      "weighting": "equation_normalized"
+    },
+    {
+      "id": "vki_nut_rrmse",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lVert \\hat{y}_i-y_i\\rVert_2^2/N_i}{\\lVert y_i\\rVert_\\infty^2}}",
+      "aggregation": "benchmark_field_rrmse_across_cases",
+      "weighting": "equation_normalized"
+    },
+    {
+      "id": "vki_mach_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "domain_vertices_equal"
+    },
+    {
+      "id": "vki_mach_area_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "interior_point_dual_area"
+    },
+    {
+      "id": "vki_nut_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "domain_vertices_equal"
+    },
+    {
+      "id": "vki_nut_area_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "interior_point_dual_area"
+    },
+    {
+      "id": "vki_m_iso_line_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "boundary_point_dual_length"
+    },
+    {
+      "id": "vki_m_iso_equal_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "curve_vertices_equal"
+    },
+    {
+      "id": "vki_mach_rel_l1",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "points_equal_within_case_cases_equal"
+    },
+    {
+      "id": "vki_nut_rel_l1",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "points_equal_within_case_cases_equal"
+    },
+    {
+      "id": "vki_mach_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "flatten_all_aligned_field_values",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_nut_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "flatten_all_aligned_field_values",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_q_rrmse",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+      "aggregation": "benchmark_scalar_rrmse_across_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_power_rrmse",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+      "aggregation": "benchmark_scalar_rrmse_across_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_pr_rrmse",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+      "aggregation": "benchmark_scalar_rrmse_across_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_tr_rrmse",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+      "aggregation": "benchmark_scalar_rrmse_across_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_eth_is_rrmse",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+      "aggregation": "benchmark_scalar_rrmse_across_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_angle_out_rrmse",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+      "aggregation": "benchmark_scalar_rrmse_across_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_q_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_power_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_pr_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_tr_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_eth_is_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_angle_out_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_q_rel_l1",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_power_rel_l1",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_pr_rel_l1",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_tr_rel_l1",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_eth_is_rel_l1",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_angle_out_rel_l1",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_q_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_power_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_pr_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_tr_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_eth_is_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "vki_angle_out_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    }
+  ],
+  "profile_panels": [
+    {
+      "id": "surface_mach",
+      "required": true,
+      "allow_unlisted_stations": false,
+      "minimum_points": 2,
+      "coordinate_order": "strictly_increasing",
+      "station_ids": [
+        "pressure_side",
+        "suction_side"
+      ],
+      "quantity_ids": [
+        "m_iso"
+      ]
+    }
+  ],
+  "splits": [
+    {
+      "id": "train",
+      "label": "train",
+      "index_file": "splits/train.json",
+      "case_count": 168,
+      "case_set_id": "source_evaluation_prototype",
+      "case_id_status": "prototype_generated",
+      "sha256": "54b2eeaa765eb6ece75de092a665d769fc4ff0acb483cdc3e8b5b46cef931991"
+    },
+    {
+      "id": "train_500",
+      "label": "train_500",
+      "index_file": "splits/train_500.json",
+      "case_count": 168,
+      "case_set_id": "source_evaluation_prototype",
+      "case_id_status": "prototype_generated",
+      "sha256": "79aafa7d9550b689532e48790d963de19e355348eb02a3efbfa2d2268f82044d"
+    },
+    {
+      "id": "train_250",
+      "label": "train_250",
+      "index_file": "splits/train_250.json",
+      "case_count": 168,
+      "case_set_id": "source_evaluation_prototype",
+      "case_id_status": "prototype_generated",
+      "sha256": "2d53917f918a50afc4061f277bd94289ad0b58610c464a8d512ab29b63686e2f"
+    },
+    {
+      "id": "train_125",
+      "label": "train_125",
+      "index_file": "splits/train_125.json",
+      "case_count": 168,
+      "case_set_id": "source_evaluation_prototype",
+      "case_id_status": "prototype_generated",
+      "sha256": "371e5155d64ed48190b937aff749de9a0b2255bff52b904112ef36279e6c040a"
+    },
+    {
+      "id": "train_64",
+      "label": "train_64",
+      "index_file": "splits/train_64.json",
+      "case_count": 168,
+      "case_set_id": "source_evaluation_prototype",
+      "case_id_status": "prototype_generated",
+      "sha256": "4096a48bae43c535609aa507d979e6bf9db062f370c3a3c0a509149ca4999522"
+    },
+    {
+      "id": "train_32",
+      "label": "train_32",
+      "index_file": "splits/train_32.json",
+      "case_count": 168,
+      "case_set_id": "source_evaluation_prototype",
+      "case_id_status": "prototype_generated",
+      "sha256": "0bae1b656667ba5e83b2b6384f5e0c1012f614e9ae08c3665af20d88b5016634"
+    },
+    {
+      "id": "train_16",
+      "label": "train_16",
+      "index_file": "splits/train_16.json",
+      "case_count": 168,
+      "case_set_id": "source_evaluation_prototype",
+      "case_id_status": "prototype_generated",
+      "sha256": "4d933f3ae90ef71b3bd06135dcf282fed23caac7f1805d1956102e61ca5cc711"
+    },
+    {
+      "id": "train_8",
+      "label": "train_8",
+      "index_file": "splits/train_8.json",
+      "case_count": 168,
+      "case_set_id": "source_evaluation_prototype",
+      "case_id_status": "prototype_generated",
+      "sha256": "aa001e960a86aab8f80945fcb967f18f1089e64f4ba4af7fe7662080475f6594"
+    }
+  ]
+}

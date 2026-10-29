@@ -1,0 +1,121 @@
+{
+  "activation_status": "does_not_activate_scoring_contract",
+  "algorithm_candidate": {
+    "absolute_value": false,
+    "algorithm_settings_sha256": "50e03167890af6a8450bc04cdeb671deb0dbfcea173ae2e3c0b71689ffca874b",
+    "cell_size_filter_module": "vtkmodules.vtkFiltersVerdict",
+    "class": "vtkCellSizeFilter",
+    "compute_area": false,
+    "compute_length": false,
+    "compute_sum": false,
+    "compute_vertex_count": false,
+    "compute_volume": true,
+    "masking": false,
+    "reordering": false,
+    "native_cell_type_dispatch": {
+      "vtkHexahedron": "vtkMeshQuality::HexVolume",
+      "vtkPolyhedron": "vtkCell::TriangulateIds(1)_then_signed_vtkMeshQuality::TetVolume_sum",
+      "vtkPyramid": "vtkMeshQuality::PyramidVolume",
+      "vtkTetra": "vtkMeshQuality::TetVolume",
+      "vtkWedge": "vtkMeshQuality::WedgeVolume_with_VTK_to_Verdict_reorder"
+    },
+    "zero_or_epsilon_replacement": false
+  },
+  "external_artifacts": {
+    "numpy_wheel": {
+      "file": "numpy-2.2.6-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl",
+      "sha256": "f2618db89be1b4e05f7a1a847a9c1c0abd63e63a1607d892dd54668dd92faf87"
+    },
+    "probe_json": {
+      "file": "vtk96-wedge-probe.json",
+      "sha256": "1b4816b1aeb1bee5c5696b22200f82d71826435ce1dc53e644c742e3ae94f6d8"
+    },
+    "probe_script": {
+      "file": "probe_vtk96_wedges.py",
+      "sha256": "299ad963a0b36dad7edfc514ce54112c75a924f8533bd10cf1179dd0c5f41b8a"
+    },
+    "vtk_cell_size_filter_source": {
+      "file": "vtk96-vtkCellSizeFilter.cxx",
+      "sha256": "813374b29d7555a3fa022652eb660c771f30f2832dd1bcf40608dfdb2c400b69"
+    },
+    "vtk_cell_size_filter_header": {
+      "file": "vtk96-vtkCellSizeFilter.h",
+      "sha256": "782854714af5ef4a72d4e2a2e77159eaa8cbb6dee07c1fcbbef84c466cb2ee0e"
+    },
+    "vtk_mesh_quality_source": {
+      "file": "vtk96-vtkMeshQuality.cxx",
+      "sha256": "1e0523a8e907b354b692c817e4d1e24e8d203079aac2da2eadc1b1ce2f5dc989"
+    },
+    "vtk_wheel": {
+      "file": "vtk-9.6.0-cp312-cp312-manylinux_2_28_aarch64.whl",
+      "sha256": "1b1f0537c7886d671bd3cb3c09409e2a6565444ccee96dc5a12d19252a1755bf"
+    }
+  },
+  "freeze_gates": {
+    "all_484_positive_finite_raw_order_weights": false,
+    "full_run_1_and_run_44_native_source_replay": false,
+    "real_mixed_cell_type_goldens": false,
+    "synthetic_mixed_cell_unit_golden_passed": true,
+    "synthetic_mixed_cell_unit_npy_sha256": "999b66b5b9b425d4019ba96ec431e6a6d3c92457d1e964de495a74c482b67c66",
+    "owner_scientific_approval": false,
+    "polyhedron_path_native_pilot_audit": false,
+    "public_weight_arrays_published": false,
+    "run_1_warped_wedge_golden_test": true
+  },
+  "interpretation": {
+    "accepted_weight_artifact_exists": false,
+    "claim": "VTK 9.6.0 is a replacement candidate that gives a positive signed candidate volume for the isolated run_1 wedge while retaining negative signed-orientation controls; physical authority is not established by this probe",
+    "isolated_probe_only": true,
+    "public_scoring_support_eligible": false
+  },
+  "probe": {
+    "case_id": "run_1",
+    "cell_type": 13,
+    "cell_type_name": "vtkWedge",
+    "points_canonical_json_sha256": "64609185356b0f027b87b7c608e1fdfbb3d9be87a0212e4db4f0b4896fae7633",
+    "points_m": [
+      [2.853458881378174, -0.6911346912384033, 0.2862381041049957],
+      [2.8534789085388184, -0.6911271810531616, 0.2862693667411804],
+      [2.8531076908111572, -0.691166877746582, 0.28628215193748474],
+      [2.853198766708374, -0.6906293630599976, 0.2867734432220459],
+      [2.8532962799072266, -0.6907302141189575, 0.286699503660202],
+      [2.8529064655303955, -0.6907230615615845, 0.28664684295654297]
+    ],
+    "raw_cell_id": 124707859,
+    "vtk_9_5_2_cell_size_filter_volume_m3": -9.740389723427085e-13,
+    "vtk_9_5_2_mesh_quality_wedge_volume_m3": -2.073401809774423e-12,
+    "vtk_9_6_0_cell_size_filter_volume_m3": 2.073401809774423e-12,
+    "vtk_9_6_0_mesh_quality": {
+      "distortion": 0.04506676220404371,
+      "jacobian": 1.8688279683530887e-13,
+      "scaled_jacobian": 0.002714097791817204,
+      "volume_m3": 2.073401809774423e-12
+    }
+  },
+  "runtime": {
+    "numpy": "2.2.6",
+    "platform": "Linux aarch64, manylinux_2_28 VTK wheel",
+    "python": "3.12.13",
+    "vtk": "9.6.0",
+    "vtk_annotated_tag_object": "7da224dcf0a3f2f2157405772c7598aa179f035d",
+    "vtk_peeled_source_commit": "edd2a192de28f042a548ef8f8663c255aadd6b08",
+    "vtk_source": "vtk version 9.6.0",
+    "vtk_tag": "v9.6.0"
+  },
+  "schema": "drivaerml-volume-weight-vtk96-isolated-wedge-probe-v1",
+  "schema_version": 1,
+  "signed_controls": {
+    "connectivity_permutation_relative_to_raw_wedge": [0, 2, 1, 3, 5, 4],
+    "folded_unit_wedge_volume_m3": -0.16666666666666666,
+    "raw_wedge_both_triangles_reversed_volume_m3": -2.073401809774423e-12,
+    "regular_unit_wedge_both_triangles_reversed_volume_m3": 0.5,
+    "regular_unit_wedge_canonical_coordinate_order_volume_m3": -0.5,
+    "proves_candidate_does_not_blindly_take_absolute_value": true
+  },
+  "source": {
+    "source_diagnostic_external_sha256": "ead62d3eb7620bc234cf29f9a89b3a09883865ad63990cfee711c76b5c961958",
+    "source_failure_evidence_file": "volume-weight-vtk-run_1-failure-diagnostic.json",
+    "source_failure_evidence_sha256": "aa2a209cafbd598930bfbe2dd1a73e8c06108188aff69c30841bfc46bfe7927e"
+  },
+  "status": "passed_isolated_wedge_probe_full_native_case_validation_pending"
+}

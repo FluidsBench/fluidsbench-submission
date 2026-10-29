@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluidsbench.org/schemas/v2/evaluation-evidence.schema.json",
+  "title": "FluidsBench submitter evaluation evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "submission_id",
+    "dataset_id",
+    "dataset_version",
+    "split_id",
+    "split_sha256",
+    "case_set_id",
+    "reference_version",
+    "code_revision",
+    "command",
+    "generated_at",
+    "status",
+    "metric_values",
+    "profile_index_sha256",
+    "profile_ground_truth_release_id",
+    "profile_ground_truth_manifest_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "2.0"},
+    "submission_id": {"type": "string", "minLength": 1},
+    "dataset_id": {"type": "string", "minLength": 1},
+    "dataset_version": {"type": "string", "minLength": 1},
+    "split_id": {"type": "string", "minLength": 1},
+    "split_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "case_set_id": {"type": "string", "minLength": 1},
+    "reference_version": {"type": "string", "minLength": 1},
+    "code_revision": {"type": "string", "minLength": 1},
+    "command": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "status": {"const": "submitted_evaluation"},
+    "metric_values": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "number"}
+    },
+    "profile_index_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "profile_ground_truth_release_id": {"type": "string", "minLength": 1, "maxLength": 160},
+    "profile_ground_truth_manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "notes": {"type": "string"}
+  }
+}
