@@ -67,7 +67,7 @@ cache products replaces or extends the canonical dataset.
 revision and file digest, exact Python/NumPy/VTK environment, generated
 artifact rules, and compact per-case hash manifest. The approximately 41.45 GB
 payload is available as an optional, byte-identical public mirror in the
-[`ahmedml-derived-cache-v1-dev` prerelease](https://github.com/neilashton/fluidsbench-submission/releases/tag/ahmedml-derived-cache-v1-dev).
+[`ahmedml-derived-cache-v1` release](https://github.com/FluidsBench/fluidsbench-submission/releases/tag/ahmedml-derived-cache-v1).
 `support-distribution-v1.json` pins one compressed archive per case. The mirror
 does not replace the canonical dataset or change the scientific cache contract.
 An evaluator installs or reuses verified support before evaluation; it never

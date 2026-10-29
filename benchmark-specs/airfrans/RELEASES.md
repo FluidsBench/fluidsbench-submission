@@ -10,8 +10,8 @@ set; AoA uses 196 cases. The native support and lossless profile truth cover
 
 ## Downloads
 
-- [Native support](https://github.com/neilashton/fluidsbench-submission/releases/tag/airfrans-native-support-v1)
-- [Lossless profile truth](https://github.com/neilashton/fluidsbench-submission/releases/tag/airfrans-native-profile-truth-v1)
+- [Native support](https://github.com/FluidsBench/fluidsbench-submission/releases/tag/airfrans-native-support-v1)
+- [Lossless profile truth](https://github.com/FluidsBench/fluidsbench-submission/releases/tag/airfrans-native-profile-truth-v1)
 
 The [submission specification](submission-spec.json) selects the release IDs,
 manifest URLs and SHA-256 digests. The [approval binding](official-release-binding.json)
@@ -25,8 +25,8 @@ For example, with GitHub CLI:
 
 ```bash
 mkdir support-download truth-download
-gh release download airfrans-native-support-v1 --repo neilashton/fluidsbench-submission --dir support-download
-gh release download airfrans-native-profile-truth-v1 --repo neilashton/fluidsbench-submission --dir truth-download
+gh release download airfrans-native-support-v1 --repo FluidsBench/fluidsbench-submission --dir support-download
+gh release download airfrans-native-profile-truth-v1 --repo FluidsBench/fluidsbench-submission --dir truth-download
 ```
 
 In each download directory, run `shasum -a 256 -c SHA256SUMS` (macOS) or

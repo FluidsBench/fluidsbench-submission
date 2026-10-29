@@ -21,7 +21,7 @@ for each training stage and inference campaign, including GPU model and allocati
 
 ## First-time setup
 
-Update your fork from upstream `dev`. Use Linux and Python 3.12 for native
+Update your fork from upstream `main`. Use Linux and Python 3.12 for native
 evaluation; the native-array protections use Linux descriptor semantics.
 Install the evaluator dependencies from the repository root:
 
@@ -119,6 +119,6 @@ python scripts/validate_submission.py --contributor-stage submissions/ahmedml/YO
 ```
 
 Commit only the generated `submissions/ahmedml/YOUR_SUBMISSION_ID/` directory
-and open a pull request against `dev`. Follow [Submitting a result](../../SUBMITTING.md).
+and open a pull request against `main`. Follow [Submitting a result](../../SUBMITTING.md).
 Maintainers review, approve and publish the result. Do not add approval records,
 registration files or generated leaderboard feeds to a participant pull request.
