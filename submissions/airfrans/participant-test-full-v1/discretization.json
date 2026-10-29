@@ -1,0 +1,164 @@
+{
+  "training": {
+    "surface_input": {
+      "used": false
+    },
+    "surface_supervision": {
+      "used": false
+    },
+    "volume_input": {
+      "used": false
+    },
+    "volume_supervision": {
+      "used": false
+    }
+  },
+  "inference": {
+    "geometry_dependency": "native_cfd_mesh",
+    "surface_input": {
+      "used": true,
+      "case_record_id": "native-curve-points",
+      "representation": "native_airfoil_curve_points",
+      "entity_counts": [
+        {
+          "entity": "airfoil_curve_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 858,
+            "median": 1015.0,
+            "maximum": 1165
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native"
+    },
+    "volume_input": {
+      "used": true,
+      "case_record_id": "native-domain-points",
+      "representation": "native_2d_domain_points",
+      "entity_counts": [
+        {
+          "entity": "domain_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 158012,
+            "median": 180346.5,
+            "maximum": 202823
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native"
+    },
+    "direct_outputs": [
+      {
+        "id": "native-domain-velocity-pressure",
+        "domain": "volume",
+        "representation": {
+          "used": true,
+          "case_record_id": "native-domain-points",
+          "representation": "native_2d_domain_points",
+          "entity_counts": [
+            {
+              "entity": "domain_points",
+              "count": {
+                "kind": "per_case",
+                "minimum": 158012,
+                "median": 180346.5,
+                "maximum": 202823
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "not_applicable"
+          },
+          "sampling": {
+            "kind": "none"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "native"
+        },
+        "queries_per_forward_pass": {
+          "kind": "per_case",
+          "minimum": 158012,
+          "median": 180346.5,
+          "maximum": 202823
+        }
+      }
+    ],
+    "mappings": [
+      {
+        "support_id": "two-dimensional-domain-native",
+        "source_output_id": "native-domain-velocity-pressure",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "scripts/derive_airfrans_predicted_fields.py",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "airfoil-curve-native",
+        "source_output_id": "native-domain-velocity-pressure",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "airfrans-surface-subset-reorganize-v1",
+          "rule_version": "1"
+        },
+        "implementation": "scripts/derive_airfrans_predicted_fields.py",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "airfoil-force-coefficients-native",
+        "source_output_id": "native-domain-velocity-pressure",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "airfrans-force-integration-v1",
+          "rule_version": "1"
+        },
+        "implementation": "scripts/derive_airfrans_predicted_fields.py",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      }
+    ]
+  },
+  "$schema": "https://fluidsbench.org/schemas/v3/discretization.schema.json",
+  "schema_version": "1.0",
+  "submission_id": "participant-test-full-v1",
+  "dataset_id": "airfrans",
+  "split_id": "full",
+  "scoring_support_release_id": "airfrans-native-support-v1",
+  "scoring_support_manifest_sha256": "18231e558012d74c39ed4df4083ee2d5a60e7b9c6492ed3c10496a3ca70fd606",
+  "case_manifest": {
+    "format": "jsonl",
+    "file": "discretization/cases.jsonl",
+    "case_count": 200,
+    "sha256": "da302f132b5e0ac661d51bae8b5436ed92b640d50f355ff4a88651ac73ecdc6d"
+  }
+}

@@ -1,0 +1,256 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/submission.schema.json",
+  "schema_version": "3.0",
+  "submission_id": "participant-test-full-v1",
+  "result_revision": {
+    "series_id": "participant-test-full-v1",
+    "version": 1,
+    "supersedes": null,
+    "change_summary": "Disposable participant packaging test."
+  },
+  "model": "Synthetic AirfRANS test",
+  "model_type": "Coordinate network",
+  "model_types": [
+    "Coordinate network"
+  ],
+  "training_regime": "from_scratch",
+  "target_data_used": "official_train",
+  "external_pretraining": false,
+  "pretraining_data": [],
+  "dataset": "AirfRANS",
+  "dataset_id": "airfrans",
+  "dataset_version": "airfrans-native-v1",
+  "split": "Full",
+  "split_id": "full",
+  "case_set_id": "standard",
+  "split_sha256": "b300910d8eb27c11652064ba1c72a669fe4539addd76222f03af072f2f169e9f",
+  "parameter_count_millions": 0.001,
+  "methodology": {
+    "format": "fluidsbench-method-v1",
+    "record_kind": "submitter_reported",
+    "record_note": "Disposable packaging test using retained records; not a new model result.",
+    "architecture": {
+      "description": "A fictional coordinate network with one scalar output head.",
+      "total_parameter_count": 1000,
+      "parameter_count_basis": "exact",
+      "submitter_trainable_parameter_count": 1000,
+      "components": [
+        {
+          "id": "coordinate-network",
+          "family": "Coordinate MLP",
+          "role": "Predict the synthetic scalar field.",
+          "description": "A single fictional coordinate-conditioned predictor used as a format fixture.",
+          "parameter_count": 1000
+        }
+      ],
+      "key_hyperparameters": [
+        {
+          "id": "hidden-width",
+          "component_ids": [
+            "coordinate-network"
+          ],
+          "name": "hidden_width",
+          "value": 16,
+          "description": "Illustrative hidden width for the fictional network."
+        }
+      ],
+      "input_features": [
+        {
+          "id": "coordinates",
+          "component_ids": [
+            "coordinate-network"
+          ],
+          "name": "coordinates",
+          "domain": "mesh",
+          "component_count": 2,
+          "description": "Two-dimensional coordinates from the synthetic support."
+        }
+      ],
+      "predicted_fields": [
+        {
+          "field_id": "two-dimensional-domain-native.U",
+          "domain": "domain",
+          "component_count": 2,
+          "description": "Cartesian velocity on every official two-dimensional flow-domain point.",
+          "component_ids": [
+            "coordinate-network"
+          ],
+          "production": "direct_model_output"
+        },
+        {
+          "field_id": "two-dimensional-domain-native.p",
+          "domain": "domain",
+          "component_count": 1,
+          "description": "Kinematic pressure on every official two-dimensional flow-domain point.",
+          "component_ids": [
+            "coordinate-network"
+          ],
+          "production": "direct_model_output"
+        },
+        {
+          "field_id": "airfoil-curve-native.p",
+          "domain": "curve",
+          "component_count": 1,
+          "description": "Kinematic pressure on the official airfoil boundary curve; this may be derived by selecting the corresponding model output.",
+          "component_ids": [
+            "coordinate-network"
+          ],
+          "production": "direct_model_output"
+        }
+      ]
+    },
+    "data_handling": {
+      "normalization": "Fictional training-set mean and standard deviation.",
+      "preprocessing": "Read the canonical coordinates without remeshing.",
+      "sampling": "Use every synthetic support entity during training and inference."
+    },
+    "training": {
+      "stages": [
+        {
+          "id": "fixture-training",
+          "status": "performed_by_submitter",
+          "component_ids": [
+            "coordinate-network"
+          ],
+          "description": "Fictional end-to-end training stage for the format fixture.",
+          "procedure": {
+            "kind": "gradient_based",
+            "loss": {
+              "description": "Mean-squared error on the synthetic scalar field.",
+              "weighting": "All training entities weighted equally."
+            },
+            "optimizers": [
+              {
+                "name": "Adam",
+                "learning_rate": 0.001,
+                "schedule": "Constant for the fictional run."
+              }
+            ],
+            "batch": {
+              "value": 2,
+              "unit": "cases",
+              "gradient_accumulation_steps": 1
+            },
+            "duration": {
+              "epochs": 10,
+              "optimizer_steps": 10
+            }
+          },
+          "run_count": 1,
+          "stochastic": true,
+          "random_seeds": [
+            42
+          ],
+          "compute": {
+            "hardware": "Fictional single CPU",
+            "max_concurrent_device_count": 1,
+            "campaign_wall_time_hours": 0.01,
+            "aggregate_device_hours": 0.01,
+            "measurement_notes": "Illustrative timing used only by the schema fixture.",
+            "accelerator": {
+              "type": "cpu",
+              "vendor": null,
+              "model": null
+            },
+            "devices_per_job": 1
+          }
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "coordinate-network-checkpoint",
+        "component_ids": [
+          "coordinate-network"
+        ],
+        "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Fictional raw checkpoint bytes for the format fixture.",
+        "role": "Loaded coordinate-network weights.",
+        "selection_rule": "Fictional final training epoch selected before evaluation."
+      }
+    ],
+    "inference_compute": {
+      "status": "measured",
+      "hardware": "Fictional single CPU",
+      "max_concurrent_device_count": 1,
+      "case_count": 200,
+      "campaign_wall_time_seconds": 0.02,
+      "aggregate_device_time_seconds": 0.02,
+      "includes_preprocessing": true,
+      "includes_mapping": true,
+      "measurement_notes": "Illustrative end-to-end timing for both synthetic cases.",
+      "accelerator": {
+        "type": "cpu",
+        "vendor": null,
+        "model": null
+      },
+      "devices_per_job": 1
+    }
+  },
+  "submitter_name": "Test fixture",
+  "institution": "Test fixture",
+  "paper_url": "https://example.org/synthetic-test",
+  "submitted_at": "2026-10-29",
+  "evaluation": {
+    "reference_version": "airfrans-scoring-v2",
+    "command": "python scripts/airfrans.py evaluate-entry <entry> --dataset-root <Dataset> --support-root <support> --output <work/result> --resume; python scripts/airfrans.py package --evaluation-root <work/result>/evaluation --config <entry>/package-config.json --discretization-cases <entry>/discretization-cases.jsonl --output submissions/airfrans/participant-test-full-v1",
+    "evidence_file": "evaluation-evidence.json",
+    "evidence_sha256": "0eb5e570aa9e8aaacc0fa2c4999961d74c18ec30d0c37f6884c052bbd20b8bce"
+  },
+  "reproducibility": {
+    "contract_version": "open-reproducibility-3.0",
+    "access": "public",
+    "public_test_data_use": "evaluation_only",
+    "result_data_license_spdx": "CC-BY-4.0"
+  },
+  "scoring_support": {
+    "status": "official",
+    "release_id": "airfrans-native-support-v1",
+    "manifest_url": "https://github.com/FluidsBench/fluidsbench-submission/releases/download/airfrans-native-support-v1/manifest.json",
+    "manifest_sha256": "18231e558012d74c39ed4df4083ee2d5a60e7b9c6492ed3c10496a3ca70fd606"
+  },
+  "spatial_discretization": {
+    "format": "fluidsbench-discretization-v1",
+    "file": "discretization.json",
+    "sha256": "6aad673bbb50d45d46ce26968a5bcf7c7b283cb74b6df73c6bce104ede6c2602"
+  },
+  "case_metrics": {
+    "format": "fluidsbench-case-metrics-v1",
+    "file": "metrics/cases.json",
+    "sha256": "7103bfc02501df7a34cf7febf9964e2426527d60cea8dd6fb24a75e8f3c2d091",
+    "case_count": 200
+  },
+  "metric_values": {
+    "overall_score": 100.0,
+    "field_score": 100.0,
+    "force_score": 100.0,
+    "diagnostic_score": 100.0,
+    "surface_pressure_rel_l2": 0.0,
+    "surface_pressure_equal_entity_rel_l2": 0.0,
+    "surface_wall_shear_rel_l2": 0.0,
+    "surface_wall_shear_equal_entity_rel_l2": 0.0,
+    "flow_domain_velocity_rel_l2": 0.0,
+    "flow_domain_velocity_physical_rel_l2": 0.0,
+    "flow_domain_pressure_rel_l2": 0.0,
+    "flow_domain_pressure_physical_rel_l2": 0.0,
+    "surface_pressure_rel_l1": 0.0,
+    "surface_wall_shear_rel_l1": 0.0,
+    "flow_domain_velocity_rel_l1": 0.0,
+    "flow_domain_pressure_rel_l1": 0.0,
+    "velocity_profile_r2": 1.0,
+    "cd_r2": 1.0,
+    "cl_r2": 1.0,
+    "c_drag_mae": 0.0,
+    "c_lift_mae": 0.0
+  },
+  "profile_data": {
+    "format": "fluidsbench-profile-chunks-v1",
+    "index_file": "profiles/index.json",
+    "case_count": 200,
+    "case_set_id": "standard",
+    "profile_ground_truth_release_id": "airfrans-native-profile-truth-v1",
+    "profile_ground_truth_manifest_sha256": "a0d752e9d92fc7ad78cbfcf065c939a817d64a068cc8e83cc2a91d02c2aba805"
+  },
+  "note": "AirfRANS dev submission; forces and profiles are derived from the predicted native fields."
+}
