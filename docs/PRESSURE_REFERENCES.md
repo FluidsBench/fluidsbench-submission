@@ -22,7 +22,7 @@ Rotor37 benchmark field RRMSE is sqrt(mean_cases(mean_nodes(error²) / max_nodes
 
 Multiplying truth and prediction by the same nonzero factor leaves within-case relative L1/L2 unchanged. Subtracting a constant changes the denominator. MAE/RMSE retain a unit scale; relative-metric invariance does not validate their units.
 
-This document records scientific definitions and historical audit findings. For current submission availability, use the [dataset index](../benchmark-specs/README.md).
+This document records scientific definitions and supporting evidence. For current submission availability, use the [dataset index](../benchmark-specs/README.md).
 
 ## Dataset inventory
 
