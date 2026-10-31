@@ -1,0 +1,433 @@
+{
+  "schema_version": "1.0",
+  "data_release": {
+    "id": "profile-truth-publication-v1",
+    "status": "official",
+    "generated_at": "2026-10-31T19:45:21Z",
+    "source_repository": "https://github.com/FluidsBench/fluidsbench",
+    "source_ref": "48249836381b65e4c14cfbfa4b25fc92daf46997",
+    "source_commit": "48249836381b65e4c14cfbfa4b25fc92daf46997"
+  },
+  "catalog": {
+    "release_id": "prototype-profile-ground-truth-2026-09-04",
+    "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/48249836381b65e4c14cfbfa4b25fc92daf46997/assets/data/profile-ground-truth/manifest.json",
+    "manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc",
+    "asset_base_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/48249836381b65e4c14cfbfa4b25fc92daf46997/assets/data/profile-ground-truth/"
+  },
+  "datasets": [
+    {
+      "id": "ahmedml",
+      "status": "official",
+      "scoring_support": {
+        "release_id": "ahmedml-native-support-v1",
+        "manifest_sha256": "38d8af2cdbac16ca60ffaa22e54ae9db09e66dd3098ff847a888c59e94d26cdd"
+      },
+      "browser_profile_truth": {
+        "kind": "catalog_dataset",
+        "dataset": {
+          "id": "ahmedml",
+          "name": "AhmedML",
+          "native_profile_truth": {
+            "source_kind": "native_cfd",
+            "analytical_dummy": false,
+            "dataset_revision": "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+            "source_identity_sha256": "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44",
+            "profile_definition_sha256": "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae",
+            "release_id": "ahmedml-native-profile-truth-all316-v1-candidate",
+            "case_count": 316,
+            "case_set_count": 5,
+            "series_per_case": 7,
+            "samples_per_series": 128,
+            "master_index_file": "datasets/ahmedml/native-all316-v1/index.json",
+            "master_index_sha256": "480a1a978d99a7d157ba77e62430286aeecccfbad3435a45b6685e54e714e394"
+          },
+          "splits": [
+            {
+              "id": "full",
+              "label": "Full",
+              "case_set_id": "full-test",
+              "case_count": 50
+            },
+            {
+              "id": "medium",
+              "label": "Medium",
+              "case_set_id": "full-test",
+              "case_count": 50
+            },
+            {
+              "id": "scarce",
+              "label": "Scarce",
+              "case_set_id": "full-test",
+              "case_count": 50
+            },
+            {
+              "id": "super_scarce",
+              "label": "Super scarce",
+              "case_set_id": "full-test",
+              "case_count": 50
+            },
+            {
+              "id": "geometry",
+              "label": "Geometry",
+              "case_set_id": "geometry-test",
+              "case_count": 100
+            },
+            {
+              "id": "high_drag",
+              "label": "High drag",
+              "case_set_id": "high_drag-test",
+              "case_count": 100
+            },
+            {
+              "id": "low_drag",
+              "label": "Low drag",
+              "case_set_id": "low_drag-test",
+              "case_count": 100
+            },
+            {
+              "id": "image_wake",
+              "label": "Image wake",
+              "case_set_id": "image_wake-test",
+              "case_count": 100
+            }
+          ],
+          "case_sets": [
+            {
+              "id": "full-test",
+              "index_file": "datasets/ahmedml/native-all316-v1/full-test/index.json",
+              "index_sha256": "a9319c4c91227ef50a647216568908916019bb7399bb1bbd80c06be8429ac901",
+              "case_count": 50,
+              "case_id_status": "official"
+            },
+            {
+              "id": "geometry-test",
+              "index_file": "datasets/ahmedml/native-all316-v1/geometry-test/index.json",
+              "index_sha256": "890069a823f60f3348a46df9930c2499649abee5fb5ae875f92f170c318b874a",
+              "case_count": 100,
+              "case_id_status": "official"
+            },
+            {
+              "id": "high_drag-test",
+              "index_file": "datasets/ahmedml/native-all316-v1/high_drag-test/index.json",
+              "index_sha256": "ef561934395c2934cfb82152efdaf3de3239c1bd70e0b6725dbb392b44cdf220",
+              "case_count": 100,
+              "case_id_status": "official"
+            },
+            {
+              "id": "low_drag-test",
+              "index_file": "datasets/ahmedml/native-all316-v1/low_drag-test/index.json",
+              "index_sha256": "088b41b6cf9276c41784185eb83f1f4c97e38f8e42774c27131308e0dd0f41ea",
+              "case_count": 100,
+              "case_id_status": "official"
+            },
+            {
+              "id": "image_wake-test",
+              "index_file": "datasets/ahmedml/native-all316-v1/image_wake-test/index.json",
+              "index_sha256": "3b6feda3e55a4fc92782b11633c85c6cab8c39f027ea9c2aa03ed06b87c4e56c",
+              "case_count": 100,
+              "case_id_status": "official"
+            }
+          ],
+          "note": "All seven AhmedML curves per case are exact evaluator-owned native CFD truth sampled on frozen mappings at 128 points per series for all 316 unique official test cases."
+        }
+      },
+      "submission_profile_ground_truth": {
+        "release_id": "prototype-profile-ground-truth-2026-09-04",
+        "manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc",
+        "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/scientific-truth-v1/assets/data/profile-ground-truth/manifest.json"
+      }
+    },
+    {
+      "id": "airfrans",
+      "status": "official",
+      "scoring_support": {
+        "release_id": "airfrans-native-support-v1",
+        "manifest_sha256": "18231e558012d74c39ed4df4083ee2d5a60e7b9c6492ed3c10496a3ca70fd606"
+      },
+      "browser_profile_truth": {
+        "kind": "native_manifest",
+        "source_kind": "native_cfd",
+        "analytical_dummy": false,
+        "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/48249836381b65e4c14cfbfa4b25fc92daf46997/assets/data/airfrans-native-profiles/manifest.json",
+        "manifest_sha256": "a94247aa64c90e4c460e2aac3192519bd0865856bd31624f0a4dca8e33936c94",
+        "source_release": {
+          "status": "prepared_dev_only",
+          "release_id": "airfrans-native-profile-truth-v1",
+          "manifest_sha256": "a0d752e9d92fc7ad78cbfcf065c939a817d64a068cc8e83cc2a91d02c2aba805",
+          "manifest_url": "https://github.com/FluidsBench/fluidsbench-submission/releases/download/airfrans-native-profile-truth-v1/manifest.json"
+        }
+      },
+      "submission_profile_ground_truth": {
+        "release_id": "airfrans-native-profile-truth-v1",
+        "manifest_sha256": "a0d752e9d92fc7ad78cbfcf065c939a817d64a068cc8e83cc2a91d02c2aba805",
+        "manifest_url": "https://github.com/FluidsBench/fluidsbench-submission/releases/download/airfrans-native-profile-truth-v1/manifest.json"
+      }
+    },
+    {
+      "id": "drivaerml",
+      "status": "official",
+      "scoring_support": {
+        "release_id": "drivaerml-native-support-v3",
+        "manifest_sha256": "7d17e28916f48f8391f817a32ef31c3050815af043e6c1b2d58da9becc7a45e9"
+      },
+      "browser_profile_truth": {
+        "kind": "catalog_dataset",
+        "dataset": {
+          "id": "drivaerml",
+          "name": "DrivAerML",
+          "native_profile_truth": {
+            "source_kind": "native_cfd",
+            "analytical_dummy": false,
+            "dataset_revision": "7a5c0948ce27be709b1116a3a190f806e7a8f79f",
+            "native_source_pin_sha256": "4fc9077f8f23f4994c98f4d0e7a17aef7b998de4c996638e3a8a616b6d923fdd",
+            "case_count": 484,
+            "master_index_file": "datasets/drivaerml/native-v3/index.json",
+            "master_index_sha256": "e7cf14f161fc7dbf22794e6f66db4e157329be960d2a4368140e08cf0608a5ae"
+          },
+          "splits": [
+            {
+              "id": "full",
+              "label": "Full",
+              "case_set_id": "standard",
+              "case_count": 50
+            },
+            {
+              "id": "medium",
+              "label": "Medium",
+              "case_set_id": "standard",
+              "case_count": 50
+            },
+            {
+              "id": "scarce",
+              "label": "Scarce",
+              "case_set_id": "standard",
+              "case_count": 50
+            },
+            {
+              "id": "super_scarce",
+              "label": "Super scarce",
+              "case_set_id": "standard",
+              "case_count": 50
+            },
+            {
+              "id": "geometry",
+              "label": "Geometry",
+              "case_set_id": "geometry",
+              "case_count": 97
+            },
+            {
+              "id": "high_drag",
+              "label": "High drag",
+              "case_set_id": "high_drag",
+              "case_count": 97
+            },
+            {
+              "id": "low_drag",
+              "label": "Low drag",
+              "case_set_id": "low_drag",
+              "case_count": 97
+            },
+            {
+              "id": "rear_separation",
+              "label": "Rear separation",
+              "case_set_id": "rear_separation",
+              "case_count": 97
+            }
+          ],
+          "case_sets": [
+            {
+              "id": "standard",
+              "index_file": "datasets/drivaerml/native-v3/splits/full.json",
+              "index_sha256": "7c5ecc3627ba53443ba94fac58d104e1d2df8d89cccfec76eafb4c59ef12eb05",
+              "case_count": 50,
+              "case_id_status": "official"
+            },
+            {
+              "id": "geometry",
+              "index_file": "datasets/drivaerml/native-v3/splits/geometry.json",
+              "index_sha256": "ccd59a28290c89597b2d3e209a6742d818e5b4e15645f2a319988abf953057a3",
+              "case_count": 97,
+              "case_id_status": "official"
+            },
+            {
+              "id": "high_drag",
+              "index_file": "datasets/drivaerml/native-v3/splits/high_drag.json",
+              "index_sha256": "2d75228039f0208d34ccb28ca5e83debc028bb401d86ba6027754267e8bd9eff",
+              "case_count": 97,
+              "case_id_status": "official"
+            },
+            {
+              "id": "low_drag",
+              "index_file": "datasets/drivaerml/native-v3/splits/low_drag.json",
+              "index_sha256": "849bb07534fb0c993f2f0058a6aed885089559ff3b4654d91268a6a9f7d5adc5",
+              "case_count": 97,
+              "case_id_status": "official"
+            },
+            {
+              "id": "rear_separation",
+              "index_file": "datasets/drivaerml/native-v3/splits/rear_separation.json",
+              "index_sha256": "37877106a111963e796d93622466b74f67fedb7a1c25cded013fe8a96eec4559",
+              "case_count": 97,
+              "case_id_status": "official"
+            }
+          ],
+          "note": "All DrivAerML profile curves are exact source-bound native CFD truth from the pinned 484-case public dataset revision. Geometry-relative families remain report-only and do not activate relative scoring."
+        }
+      },
+      "submission_profile_ground_truth": {
+        "release_id": "prototype-profile-ground-truth-2026-09-04",
+        "manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc",
+        "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/scientific-truth-v1/assets/data/profile-ground-truth/manifest.json"
+      }
+    },
+    {
+      "id": "drivaernetplusplus",
+      "status": "official",
+      "scoring_support": {
+        "release_id": "drivaernetplusplus-native-pressure-support-v1",
+        "manifest_sha256": "924e171a3ec016cd246a81e4db58c190b112502f3f1e4f27965c1555a1f37ee3"
+      },
+      "browser_profile_truth": {
+        "kind": "native_manifest",
+        "source_kind": "native_cfd",
+        "analytical_dummy": false,
+        "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/48249836381b65e4c14cfbfa4b25fc92daf46997/assets/data/drivaernetplusplus-native-profiles/manifest.json",
+        "manifest_sha256": "4d784116c5ee434b277320c45419c163f92f8987b628d57837b11eef42bbba7a",
+        "source_release": {
+          "release_id": "drivaernetplusplus-native-pressure-support-v1-candidate",
+          "manifest_sha256": "ea04603f238f9fffa65e1d00e69ec15ca19a5a03e1b8b869e756a511d39d280a",
+          "rules_version": "drivaernetplusplus-native-support-rules-v1"
+        }
+      },
+      "submission_profile_ground_truth": {
+        "release_id": "prototype-profile-ground-truth-2026-09-04",
+        "manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc",
+        "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/scientific-truth-v1/assets/data/profile-ground-truth/manifest.json"
+      }
+    },
+    {
+      "id": "windsorml",
+      "status": "official",
+      "scoring_support": {
+        "release_id": "windsorml-native-support-v1",
+        "manifest_sha256": "b6b89d956d1ef9ba03ed86c20955a01a8d107095a8c510edbda99cc838b18cf2"
+      },
+      "browser_profile_truth": {
+        "kind": "catalog_dataset",
+        "dataset": {
+          "id": "windsorml",
+          "name": "WindsorML",
+          "splits": [
+            {
+              "id": "full",
+              "label": "Full",
+              "case_set_id": "baseline-test",
+              "case_count": 35
+            },
+            {
+              "id": "medium",
+              "label": "Medium",
+              "case_set_id": "baseline-test",
+              "case_count": 35
+            },
+            {
+              "id": "scarce",
+              "label": "Scarce",
+              "case_set_id": "baseline-test",
+              "case_count": 35
+            },
+            {
+              "id": "super_scarce",
+              "label": "Super scarce",
+              "case_set_id": "baseline-test",
+              "case_count": 35
+            },
+            {
+              "id": "geometry",
+              "label": "Geometry OOD",
+              "case_set_id": "geometry-test",
+              "case_count": 71
+            },
+            {
+              "id": "high_drag",
+              "label": "High drag",
+              "case_set_id": "high_drag-test",
+              "case_count": 70
+            },
+            {
+              "id": "low_drag",
+              "label": "Low drag",
+              "case_set_id": "low_drag-test",
+              "case_count": 70
+            },
+            {
+              "id": "image_wake",
+              "label": "Image wake",
+              "case_set_id": "image_wake-test",
+              "case_count": 71
+            }
+          ],
+          "case_sets": [
+            {
+              "id": "baseline-test",
+              "index_file": "datasets/windsorml/baseline-test/index.json",
+              "index_sha256": "44593cef001d842ba62d575a244def6a1ff52905123b64510e3373c94f0f3f0c",
+              "case_count": 35,
+              "case_id_status": "official_intersected_with_published"
+            },
+            {
+              "id": "geometry-test",
+              "index_file": "datasets/windsorml/geometry-test/index.json",
+              "index_sha256": "26fe8e241aaa821eb7a4f47008ce0ebb75170cf2600c74b0e3ada5a1893b2998",
+              "case_count": 71,
+              "case_id_status": "official_intersected_with_published"
+            },
+            {
+              "id": "high_drag-test",
+              "index_file": "datasets/windsorml/high_drag-test/index.json",
+              "index_sha256": "dab08bcfe94ce4207282ec897b6bc224374a075096024189ade811c7d7c23b56",
+              "case_count": 70,
+              "case_id_status": "official_intersected_with_published"
+            },
+            {
+              "id": "low_drag-test",
+              "index_file": "datasets/windsorml/low_drag-test/index.json",
+              "index_sha256": "c77d9f8382b6bcf78e8c35e0b579c43f2cad2435c831120be2e90c5910c28113",
+              "case_count": 70,
+              "case_id_status": "official_intersected_with_published"
+            },
+            {
+              "id": "image_wake-test",
+              "index_file": "datasets/windsorml/image_wake-test/index.json",
+              "index_sha256": "a2489d4ad25d003fa820f40bd58557feea746d077da0e47b30795ef9418d038c",
+              "case_count": 71,
+              "case_id_status": "official_intersected_with_published"
+            }
+          ],
+          "native_profile_truth": {
+            "schema_version": "1.0",
+            "release_id": "windsorml-native-profile-truth-v1-candidate",
+            "dataset_id": "windsorml",
+            "dataset_revision": "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
+            "profile_support_manifest_sha256": "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376",
+            "profile_definition_sha256": "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056",
+            "source_identity_sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+            "source_kind": "native_cfd",
+            "analytical_dummy": false,
+            "status": "candidate_owner_review_required",
+            "usage": "browser_visualization_only_not_metric_recomputation",
+            "series_per_case": 16,
+            "samples_per_series": 128,
+            "case_count": 233,
+            "case_set_count": 5
+          }
+        }
+      },
+      "submission_profile_ground_truth": {
+        "release_id": "prototype-profile-ground-truth-2026-09-04",
+        "manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc",
+        "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/scientific-truth-v1/assets/data/profile-ground-truth/manifest.json"
+      }
+    }
+  ]
+}

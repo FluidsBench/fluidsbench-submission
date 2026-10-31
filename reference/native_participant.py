@@ -1,4 +1,4 @@
-"""Resumable dev submissions using the AhmedML and WindsorML evaluators.
+"""Resumable submissions using the AhmedML and WindsorML evaluators.
 
 This module owns orchestration only: native physics, profile sampling, split
 reduction and package validation remain with each dataset's existing modules.

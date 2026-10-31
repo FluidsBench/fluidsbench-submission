@@ -66,9 +66,9 @@ For one case, using the Hugging Face CLI:
 ```bash
 hf download neashton/windsorml --repo-type dataset \
   --revision 8a6ca32ae22c94f54df2186d1b0ccf9662a294c2 \
-  --include 'run_7/boundary_7.vtu' 'run_7/boundary_dual_area_7.npy' \
-            'run_7/volume_7.vtu' 'run_7/geo_parameters_7.csv' \
-            'run_7/force_mom_7.csv' \
+  'run_7/boundary_7.vtu' 'run_7/boundary_dual_area_7.npy' \
+  'run_7/volume_7.vtu' 'run_7/geo_parameters_7.csv' \
+  'run_7/force_mom_7.csv' \
   --local-dir /path/to/windsorml
 ```
 

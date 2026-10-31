@@ -11,7 +11,7 @@ from reference.native_participant import ParticipantWorkflow
 
 def main(dataset, argv=None):
     parser = argparse.ArgumentParser(
-        description=f"Prepare, evaluate, resume and package {dataset} submissions on dev."
+        description=f"Prepare, evaluate, resume and package {dataset} submissions."
     )
     commands = parser.add_subparsers(dest="command", required=True)
     for name in ("fetch-data", "fetch-support"):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare, evaluate, resume and package DrivAerML submissions on dev."""
+"""Prepare, evaluate, resume and package DrivAerML submissions."""
 
 from __future__ import annotations
 

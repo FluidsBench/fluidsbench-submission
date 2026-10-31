@@ -559,7 +559,7 @@ def assemble(
             "profile_ground_truth_manifest_sha256": profile_truth["manifest_sha256"],
         },
         "note": (
-            "AirfRANS dev submission; forces and profiles are derived from the predicted native fields."
+            "AirfRANS submission; forces and profiles are derived from the predicted native fields."
             if intake else
             "Candidate AirfRANS schema-v3 package. AirfRANS submissions remain "
             "closed (owner_review_required) pending the owner_decisions_required "
@@ -572,7 +572,7 @@ def assemble(
     validate_against_schema("v3/submission.schema.json", submission, "submission.json")
     write_json(output_dir / "submission.json", submission)
 
-    print(f"Assembled {'dev submission' if intake else 'candidate'} package at {output_dir}")
+    print(f"Assembled {'submission' if intake else 'candidate'} package at {output_dir}")
     print(f"  submission_id       = {submission_id}")
     print(f"  case_count          = {metrics_cases['case_count']}")
     print(f"  overall_score       = {metrics_cases['metric_values'].get('overall_score')}")
