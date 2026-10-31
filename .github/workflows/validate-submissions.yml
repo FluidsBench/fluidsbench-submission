@@ -44,7 +44,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           mapfile -t changed_files < <(
-            git diff --no-renames --name-only "$BASE_SHA" "$HEAD_SHA"
+            git diff --no-renames --name-only "$BASE_SHA...$HEAD_SHA"
           )
           mapfile -t changed_submissions < <(
             printf '%s\n' "${changed_files[@]}" |
