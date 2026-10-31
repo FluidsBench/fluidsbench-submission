@@ -83,12 +83,12 @@ def publication_errors(payload: bytes, binding: dict, manifest: dict, *, catalog
     if not isinstance(datasets, list) or any(not isinstance(d, dict) for d in datasets):
         return errors + ["profile truth publication datasets must be objects"]
     expected = {d["slug"]: d for d in manifest.get("datasets", [])
-                if d.get("scoring_support", {}).get("submissions_open") is True}
+                if d.get("scoring_support", {}).get("status") == "official"}
     identifiers = [d.get("id") for d in datasets]
     if any(not isinstance(slug, str) for slug in identifiers):
         return errors + ["profile truth publication dataset IDs must be strings"]
     if len(identifiers) != len(set(identifiers)) or set(identifiers) != set(expected):
-        errors.append("profile truth publication must cover each open dataset exactly once and exclude closed datasets")
+        errors.append("profile truth publication must cover each official dataset exactly once and exclude unapproved datasets")
     for dataset in datasets:
         slug = dataset.get("id")
         if slug not in expected:

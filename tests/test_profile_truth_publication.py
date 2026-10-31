@@ -28,6 +28,9 @@ def test_official_release_preserves_evaluated_reference_fingerprints():
                    asset_base_url="https://example.test/local-official-publication-test/",
                    release_view_url="https://fluidsbench.org/releases/local-official-publication-test/")
     assert manager.release_contract_errors(manifest) == []
+    for dataset in manifest["datasets"]:
+        dataset.get("scoring_support", {})["submissions_open"] = False
+    assert manager.release_contract_errors(manifest) == [], "closing intake must not invalidate an official reference release"
     assert release["profile_ground_truth"]["manifest_sha256"] == "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
     airfrans = next(d for d in publication["datasets"] if d["id"] == "airfrans")
     contract = json.loads((ROOT / "benchmark-specs/airfrans/submission-spec.json").read_text())
