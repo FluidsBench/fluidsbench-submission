@@ -1,0 +1,91 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/discretization-case.schema.json",
+  "schema_version": "1.0",
+  "submission_id": "my-model-full-v1",
+  "dataset_id": "drivaerml",
+  "split_id": "full",
+  "case_id": "run_11",
+  "inference": {
+    "inputs": [
+      {
+        "id": "native-surface-input",
+        "entity_counts": [
+          {
+            "entity": "cells",
+            "count": 7792715
+          }
+        ],
+        "domain": {
+          "kind": "full_dataset_domain"
+        }
+      },
+      {
+        "id": "native-volume-input",
+        "entity_counts": [
+          {
+            "entity": "cells",
+            "count": 134142534
+          }
+        ],
+        "domain": {
+          "kind": "full_dataset_domain"
+        }
+      }
+    ],
+    "direct_outputs": [
+      {
+        "id": "native-surface-output",
+        "entity_counts": [
+          {
+            "entity": "cells",
+            "count": 7792715
+          }
+        ],
+        "domain": {
+          "kind": "full_dataset_domain"
+        }
+      },
+      {
+        "id": "native-volume-output",
+        "entity_counts": [
+          {
+            "entity": "cells",
+            "count": 134142534
+          }
+        ],
+        "domain": {
+          "kind": "full_dataset_domain"
+        }
+      }
+    ],
+    "mappings": [
+      {
+        "support_id": "surface_native_cells",
+        "source_output_id": "native-surface-output",
+        "support_count": 7792715,
+        "scored_count": 7792715,
+        "unmapped_count": 0,
+        "extrapolated_count": 0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "volume_native_cells",
+        "source_output_id": "native-volume-output",
+        "support_count": 134142534,
+        "scored_count": 134142534,
+        "unmapped_count": 0,
+        "extrapolated_count": 0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "drivaerml-force-coefficients-v1",
+        "source_output_id": "native-surface-output",
+        "support_count": 1,
+        "scored_count": 1,
+        "unmapped_count": 0,
+        "extrapolated_count": 0,
+        "final_coverage_fraction": 1.0
+      }
+    ]
+  }
+}

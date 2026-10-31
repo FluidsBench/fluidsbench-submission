@@ -30,7 +30,7 @@ exact test membership from the published split. Custom splits, custom case lists
 and directly predicted force coefficients are rejected. Forces always come from
 integration of the predicted surface pressure and wall shear.
 
-Write the existing [native NPZ prediction format](PARTICIPANT_GUIDE.md#3-use-bounded-native-cell-chunks-correctly)
+Write the existing [native NPZ prediction format and writer](../../docs/NATIVE_PREDICTIONS.md)
 in this layout, for every test case:
 
 ```text
@@ -159,3 +159,7 @@ and reachable. Run all container commands from the same mounted checkout.
 Mount all required input/output locations; mount the dataset writable when using
 `fetch-data`. On a shared machine, pass `--user "$(id -u):$(id -g)"` to Docker so
 new output files belong to you. Use the same image for every resumed run.
+
+Explore the [dataset leaderboard preview](https://fluidsbench.org/leaderboard-preview/?dataset=drivaerml),
+which contains no submitted results. See [review and publication](../../SUBMITTING.md#see-the-leaderboard-and-follow-publication)
+for how an approved result reaches an official release.

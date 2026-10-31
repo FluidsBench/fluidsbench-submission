@@ -166,3 +166,7 @@ leaves no partial final package. Use this command for new submissions.
 
 Open a PR to **`main`** containing only the new submission directory. Do not add
 approval records. Maintainers review and approve the package before publication. A passing contributor check is not approval.
+
+Explore the [dataset leaderboard preview](https://fluidsbench.org/leaderboard-preview/?dataset=airfrans),
+which contains no submitted results. See [review and publication](../../SUBMITTING.md#see-the-leaderboard-and-follow-publication)
+for how an approved result reaches an official release.

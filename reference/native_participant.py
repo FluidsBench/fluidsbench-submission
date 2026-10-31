@@ -747,7 +747,7 @@ class ParticipantWorkflow:
         rows = [
             "<!doctype html><meta charset='utf-8'><title>FluidsBench case report</title>",
             "<style>body{font:16px system-ui;margin:2rem;max-width:1000px}svg{width:100%;max-width:640px;border:1px solid #ccc}td,th{padding:.3rem;text-align:left}</style>",
-            f"<h1>{html.escape(self.dataset)} / {html.escape(case_id)}</h1><p>Development result. Blue: truth. Orange: prediction.</p>",
+            f"<h1>{html.escape(self.dataset)} / {html.escape(case_id)}</h1><p>Local evaluation; publication requires maintainer review and approval. Blue: truth. Orange: prediction.</p>",
             "<h2>Complete-split metrics</h2><table>",
         ]
         for key, value in dataset["metric_values"].items():

@@ -206,7 +206,8 @@ corresponding fields. Across a case, the intervals must exactly partition
 `[0, native_cell_count)` with no gap, overlap, duplicate, omission, remapping,
 or extrapolation.
 
-The local evaluator accepts one manifest per case and support. Each
+Use the [complete manifest writer and spatial-record examples](../../docs/NATIVE_PREDICTIONS.md)
+to export your actual predictions. The local evaluator accepts one manifest per case and support. Each
 manifest identifies its count and SHA-256-bound NPZ chunks. Every NPZ contains
 signed-int64 `raw_cell_id` and exactly these Float32 or Float64 arrays:
 

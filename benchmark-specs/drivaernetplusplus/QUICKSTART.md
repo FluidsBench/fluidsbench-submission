@@ -132,7 +132,9 @@ python scripts/drivaernetplusplus.py report --evaluation-root work/my-result/eva
 
 Three report-only Cp profiles (upper-body and underbody centrelines, rear base)
 are read by the evaluator from your predictions at frozen native points; see
-`profiles/STATION_DEFINITIONS.md`. You do not submit profiles.
+[station definitions](profiles/STATION_DEFINITIONS.md). You do not write or supply
+profiles separately: the evaluator generates them, and `package` includes them
+in the result directory you submit.
 
 <a id="5-package-and-open-a-pull-request-to-dev"></a>
 
@@ -162,7 +164,10 @@ one directory and target `main`.
 
 Maintainers review the package and handle [approval and publication](../../docs/MAINTAINERS.md).
 Your pull request contains only the generated result directory. Merging it does not itself publish a row.
-Approved results are published on the [FluidsBench leaderboard](https://fluidsbench.org/), with scores and three native Cp profile comparisons.
+Explore the [DrivAerNet++ leaderboard preview](https://fluidsbench.org/leaderboard-preview/?dataset=drivaernetplusplus),
+including the three native Cp profile comparisons. The preview contains no submitted results.
+Approved results appear in an official release after the
+[publication process](../../SUBMITTING.md#see-the-leaderboard-and-follow-publication).
 
 ## Container
 

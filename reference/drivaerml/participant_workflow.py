@@ -659,7 +659,7 @@ def report(evaluation_root, case_id, output, truth_root=None):
     rows = [
         "<!doctype html><meta charset='utf-8'><title>DrivAerML case report</title>",
         "<style>body{font:16px system-ui;margin:2rem;max-width:1000px}svg{border:1px solid #ccc;width:100%;max-width:640px}section{break-inside:avoid}td,th{padding:.35rem;text-align:left}</style>",
-        f"<h1>DrivAerML {html.escape(case_id)}</h1><p>Development result. Blue: truth. Orange: prediction. Relative profiles are report-only.</p>",
+        f"<h1>DrivAerML {html.escape(case_id)}</h1><p>Local evaluation; publication requires maintainer review and approval. Blue: truth. Orange: prediction. Relative profiles are report-only.</p>",
         "<h2>Complete-split metrics</h2><table>",
     ]
     for key, value in evidence["metric_values"].items():
