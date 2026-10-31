@@ -54,12 +54,12 @@
         {
           "path": "benchmark-specs/ahmedml/submission-spec.json",
           "sha256": "9086004b34c6c33654a8f9f4b533a30b3727ab3a578dae02c6ab1c1e0f43b21d",
-          "finding": "The audited dev scoring specification; not modified by this documentation audit. Re-audited 2026-10-11: only the closed-reason text now documents AhmedML development intake; pressure fields, units and scoring definitions are unchanged. Re-audited for the 2026 launch: owner-approved intake, support publication bindings, WindsorML published-case status, and DrivAerML zero-weight relative diagnostics changed; pressure fields, units, reference offsets, force conventions and scoring equations are unchanged."
+          "finding": "The published scoring specification defines the native surface and volume pressure fields, units and scoring reductions."
         },
         {
           "path": "reference/ahmedml/evaluator.py",
           "sha256": "d2ca7a36d9e47af3333714ae12066ef347d4087282bd2ea6cf773a221662366c",
-          "finding": "Native pMean enters field accumulators directly; no fitted pressure offset. Re-audited 2026-10-12: only regional weighted summation changed to pairwise float64 sums; pressure units, reference, conversions and whole-field scoring are unchanged."
+          "finding": "Native pMean enters field accumulators directly, with no fitted pressure offset. Regional weighted reductions use pairwise float64 sums."
         },
         {
           "path": "reference/ahmedml/contract.py",
@@ -108,7 +108,7 @@
         {
           "path": "benchmark-specs/airfrans/submission-spec.json",
           "sha256": "a823213825c549bd08ba664a1440bf4093cec222e1bb6a356feac047ea2e00bf",
-          "finding": "The dev scoring specification. Re-audited 2026-09-30 after the scoring-v2 composite-weight update: pressure fields, units, offsets, metric definitions, and extraction remain unchanged. Re-audited 2026-10-07: the added approved-release pointer does not change the active pressure contract. Re-audited 2026-10-07 for dev intake activation: approved native-v1/scoring-v2 pressure fields, units, reference and metric definitions exactly match the archived candidate contract."
+          "finding": "The published scoring specification defines the active native pressure fields, units, reference and metric definitions."
         },
         {
           "path": "reference/airfrans_profiles.py",
@@ -162,7 +162,7 @@
         {
           "path": "benchmark-specs/drivaerml/submission-spec.json",
           "sha256": "e078ebf3e1444c30390c374765098018151224c3617a101716f3c2f09a802008",
-          "finding": "Re-audited 2026-10-12: dev v2 aligns Cp profile integration with AutoCFD5 trapezoidal weights and versions the support release. Native pMeanTrim units, outlet reference, Cp conversion and field/force reductions are unchanged. Re-audited for the 2026 launch: owner-approved intake, support publication bindings, WindsorML published-case status, and DrivAerML zero-weight relative diagnostics changed; pressure fields, units, reference offsets, force conventions and scoring equations are unchanged. Final release activation flags now record completed support binding and the Full-package validation; no scientific definition changed. Re-audited for the production profile-contract name: only the contract filename, metadata and binding changed; the scientific weighting, gap handling, pressure conversions and force definitions are unchanged."
+          "finding": "The published scoring specification binds native pMeanTrim, its outlet reference and Cp conversion. Scored profiles use normalized trapezoidal arc-length weighting without bridging unsupported gaps; relative profiles are report-only."
         },
         {
           "path": "reference/drivaerml/evaluator.py",
@@ -227,12 +227,12 @@
         {
           "path": "benchmark-specs/drivaernetplusplus/submission-spec.json",
           "sha256": "cf0c641061c98670acbb092982f1132847395f8101024de9c47360853de2447a",
-          "finding": "Candidate dev scoring specification. Re-audited 2026-10-18 after the move to candidate_native_support: the p units note and the pressure convention are unchanged. Re-audited for the 2026 launch: owner-approved intake, support publication bindings, WindsorML published-case status, and DrivAerML zero-weight relative diagnostics changed; pressure fields, units, reference offsets, force conventions and scoring equations are unchanged."
+          "finding": "The published scoring specification defines the native p units and pressure convention."
         },
         {
           "path": "benchmark-specs/drivaernetplusplus/OWNER_APPROVAL.md",
           "sha256": "71a7dd7422d264eb59c7aa64d7e1c2d35e9289a6146fde44185ef2bd3c7740cc",
-          "finding": "Existing scientific approval, unchanged; the 2026-10-18 owner confirmations keep every native p scored as stored and do not change the pressure convention. Re-audited for the 2026 launch: owner-approved intake, support publication bindings, WindsorML published-case status, and DrivAerML zero-weight relative diagnostics changed; pressure fields, units, reference offsets, force conventions and scoring equations are unchanged."
+          "finding": "The scientific approval confirms that every native p value is scored as stored, without changing the pressure convention."
         },
         {
           "path": "reference/drivaernetplusplus/evaluator.py",
@@ -356,7 +356,7 @@
         {
           "path": "scripts/validate_submission.py",
           "sha256": "c9fd558a50008de848257e7fd96a36c5c4e49bc622a0df06c4f7fe6a19c3f8f6",
-          "finding": "Validates the dataset-specific pressure, SI export and submitted evidence bindings. The retired HiLiftAeroML trial-registration exception has been removed; numerical pressure conversions, relative-error formulas and current eligibility gates are unchanged."
+          "finding": "Validates the dataset-specific pressure, SI export, submitted evidence bindings and eligibility requirements."
         }
       ]
     },
@@ -418,7 +418,7 @@
         {
           "path": "benchmark-specs/windsorml/submission-spec.json",
           "sha256": "fa986f21f88ceaaf7d96bb4a5111fcb46470285d71d81921fa74af8d64ee357d",
-          "finding": "The audited dev scoring specification; not modified by this documentation audit. Re-audited 2026-10-11: adds schema-v3 candidate support and complete fixed/relative profile coverage; pressure fields, reductions, offsets and weights are unchanged. Re-audited for the 2026 launch: owner-approved intake, support publication bindings, WindsorML published-case status, and DrivAerML zero-weight relative diagnostics changed; pressure fields, units, reference offsets, force conventions and scoring equations are unchanged."
+          "finding": "The published scoring specification defines native surface cpavg and volume pressureavg, their reductions, profile coverage and weights."
         },
         {
           "path": "reference/windsorml/contract.py",
@@ -428,7 +428,7 @@
         {
           "path": "reference/windsorml/evaluator.py",
           "sha256": "01b0e1495bec40c9eb5fc6479350d1103bce7d43d39b6b81d8b9bd18e0e223f9",
-          "finding": "Both scalar arrays enter statistics directly; no volume pressure-reference subtraction. Re-audited 2026-10-11: retains prediction-input hashes after evaluation; native pressure comparisons and force integration are unchanged."
+          "finding": "Both scalar arrays enter statistics directly; no volume pressure-reference subtraction is applied."
         }
       ]
     },
@@ -481,7 +481,7 @@
         {
           "path": "benchmark-specs/rotor37/submission-spec.json",
           "sha256": "edb83b0bfd53a227ed0af73704dd5ec48f4b74f89750d069fa8adb30d4f606c6",
-          "finding": "The audited dev scoring specification; not modified by this documentation audit."
+          "finding": "The benchmark specification defines the pressure field and scoring reductions."
         },
         {
           "path": "benchmark-specs/rotor37/methodology-contract.json",
@@ -541,7 +541,7 @@
         {
           "path": "benchmark-specs/vki-ls59/submission-spec.json",
           "sha256": "7b60689a619a094152b063fb4cdf2a716a0790f288ca140737f3355bbc53ef7e",
-          "finding": "The audited dev scoring specification; not modified by this documentation audit."
+          "finding": "The benchmark specification defines the scored fields and reductions."
         },
         {
           "path": "benchmark-specs/vki-ls59/methodology-contract.json",

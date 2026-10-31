@@ -61,8 +61,8 @@ Use the static-pressure field. total(p)_coeffMean is a different quantity. Absol
 <details>
 <summary>Evaluator and specification trace</summary>
 
-- [benchmark-specs/ahmedml/submission-spec.json](../benchmark-specs/ahmedml/submission-spec.json): The audited dev scoring specification; not modified by this documentation audit. Re-audited 2026-10-11: only the closed-reason text now documents AhmedML development intake; pressure fields, units and scoring definitions are unchanged. Re-audited for the 2026 launch: owner-approved intake, support publication bindings, WindsorML published-case status, and DrivAerML zero-weight relative diagnostics changed; pressure fields, units, reference offsets, force conventions and scoring equations are unchanged.
-- [reference/ahmedml/evaluator.py](../reference/ahmedml/evaluator.py): Native pMean enters field accumulators directly; no fitted pressure offset. Re-audited 2026-10-12: only regional weighted summation changed to pairwise float64 sums; pressure units, reference, conversions and whole-field scoring are unchanged.
+- [benchmark-specs/ahmedml/submission-spec.json](../benchmark-specs/ahmedml/submission-spec.json): The published scoring specification defines the native surface and volume pressure fields, units and scoring reductions.
+- [reference/ahmedml/evaluator.py](../reference/ahmedml/evaluator.py): Native pMean enters field accumulators directly, with no fitted pressure offset. Regional weighted reductions use pairwise float64 sums.
 - [reference/ahmedml/contract.py](../reference/ahmedml/contract.py): Surface and volume both require native CellData pMean.
 
 SHA-256 identities for these files and downloaded sources are recorded in the JSON inventory.
@@ -93,7 +93,7 @@ The paper’s training-set mean/std normalization is a model preprocessing step,
 <details>
 <summary>Evaluator and specification trace</summary>
 
-- [benchmark-specs/airfrans/submission-spec.json](../benchmark-specs/airfrans/submission-spec.json): The dev scoring specification. Re-audited 2026-09-30 after the scoring-v2 composite-weight update: pressure fields, units, offsets, metric definitions, and extraction remain unchanged. Re-audited 2026-10-07: the added approved-release pointer does not change the active pressure contract. Re-audited 2026-10-07 for dev intake activation: approved native-v1/scoring-v2 pressure fields, units, reference and metric definitions exactly match the archived candidate contract.
+- [benchmark-specs/airfrans/submission-spec.json](../benchmark-specs/airfrans/submission-spec.json): The published scoring specification defines the active native pressure fields, units, reference and metric definitions.
 - [reference/airfrans_profiles.py](../reference/airfrans_profiles.py): Velocity-profile helper does not define a new pressure gauge.
 - [reference/evaluate_predictions.py](../reference/evaluate_predictions.py): Field reductions operate on aligned supplied truth and prediction arrays; they do not infer a gauge.
 
@@ -125,7 +125,7 @@ CpMeanTrim is static pressure coefficient; CptMeanTrim is total pressure coeffic
 <details>
 <summary>Evaluator and specification trace</summary>
 
-- [benchmark-specs/drivaerml/submission-spec.json](../benchmark-specs/drivaerml/submission-spec.json): Re-audited 2026-10-12: dev v2 aligns Cp profile integration with AutoCFD5 trapezoidal weights and versions the support release. Native pMeanTrim units, outlet reference, Cp conversion and field/force reductions are unchanged. Re-audited for the 2026 launch: owner-approved intake, support publication bindings, WindsorML published-case status, and DrivAerML zero-weight relative diagnostics changed; pressure fields, units, reference offsets, force conventions and scoring equations are unchanged. Final release activation flags now record completed support binding and the Full-package validation; no scientific definition changed. Re-audited for the production profile-contract name: only the contract filename, metadata and binding changed; the scientific weighting, gap handling, pressure conversions and force definitions are unchanged.
+- [benchmark-specs/drivaerml/submission-spec.json](../benchmark-specs/drivaerml/submission-spec.json): The published scoring specification binds native pMeanTrim, its outlet reference and Cp conversion. Scored profiles use normalized trapezoidal arc-length weighting without bridging unsupported gaps; relative profiles are report-only.
 - [reference/drivaerml/evaluator.py](../reference/drivaerml/evaluator.py): Uses pMeanTrim directly for surface and volume relative-L2 statistics.
 - [reference/drivaerml/accumulators.py](../reference/drivaerml/accumulators.py): Complete-case sums; rejects zero truth norm and non-finite reductions.
 - [benchmark-specs/drivaerml/proposal/SCIENTIFIC_CONTRACT.md](../benchmark-specs/drivaerml/proposal/SCIENTIFIC_CONTRACT.md): Documents the current native associations, pressure/force definitions, weighting and profile rules; authoritative scientific definitions remain in the pinned machine-readable contracts.
@@ -159,8 +159,8 @@ The author README calls the surface modality Cp, but its loader reads p directly
 <details>
 <summary>Evaluator and specification trace</summary>
 
-- [benchmark-specs/drivaernetplusplus/submission-spec.json](../benchmark-specs/drivaernetplusplus/submission-spec.json): Candidate dev scoring specification. Re-audited 2026-10-18 after the move to candidate_native_support: the p units note and the pressure convention are unchanged. Re-audited for the 2026 launch: owner-approved intake, support publication bindings, WindsorML published-case status, and DrivAerML zero-weight relative diagnostics changed; pressure fields, units, reference offsets, force conventions and scoring equations are unchanged.
-- [benchmark-specs/drivaernetplusplus/OWNER_APPROVAL.md](../benchmark-specs/drivaernetplusplus/OWNER_APPROVAL.md): Existing scientific approval, unchanged; the 2026-10-18 owner confirmations keep every native p scored as stored and do not change the pressure convention. Re-audited for the 2026 launch: owner-approved intake, support publication bindings, WindsorML published-case status, and DrivAerML zero-weight relative diagnostics changed; pressure fields, units, reference offsets, force conventions and scoring equations are unchanged.
+- [benchmark-specs/drivaernetplusplus/submission-spec.json](../benchmark-specs/drivaernetplusplus/submission-spec.json): The published scoring specification defines the native p units and pressure convention.
+- [benchmark-specs/drivaernetplusplus/OWNER_APPROVAL.md](../benchmark-specs/drivaernetplusplus/OWNER_APPROVAL.md): The scientific approval confirms that every native p value is scored as stored, without changing the pressure convention.
 - [reference/drivaernetplusplus/evaluator.py](../reference/drivaernetplusplus/evaluator.py): Scores native p exactly as submitted against stored p, with no fitted offset; profile Cp is p / 450.
 
 SHA-256 identities for these files and downloaded sources are recorded in the JSON inventory.
@@ -218,7 +218,7 @@ The catalog source snapshot is bbec30b; the field-support archive identity retai
 - [benchmark-specs/hiliftaeroml/dimensional-export-si-v1.json](../benchmark-specs/hiliftaeroml/dimensional-export-si-v1.json): Versioned eight-metric SI export contract; relative statistics and scoring are unchanged.
 - [reference/hiliftaeroml/dimensional_units.py](../reference/hiliftaeroml/dimensional_units.py): Pins and validates the current native-to-SI export contract and factors; converts only finite nonnegative dimensional field errors.
 - [scripts/assemble_hiliftaeroml_schema_v3_candidate.py](../scripts/assemble_hiliftaeroml_schema_v3_candidate.py): Applies the SI conversion to each completed native case before macro aggregation and records the separate export version.
-- [scripts/validate_submission.py](../scripts/validate_submission.py): Validates the dataset-specific pressure, SI export and submitted evidence bindings. The retired HiLiftAeroML trial-registration exception has been removed; numerical pressure conversions, relative-error formulas and current eligibility gates are unchanged.
+- [scripts/validate_submission.py](../scripts/validate_submission.py): Validates the dataset-specific pressure, SI export, submitted evidence bindings and eligibility requirements.
 
 SHA-256 identities for these files and downloaded sources are recorded in the JSON inventory.
 
@@ -263,9 +263,9 @@ Table 6 calls pressureavg relative kinematic pressure. The pinned run_1 volume X
 <details>
 <summary>Evaluator and specification trace</summary>
 
-- [benchmark-specs/windsorml/submission-spec.json](../benchmark-specs/windsorml/submission-spec.json): The audited dev scoring specification; not modified by this documentation audit. Re-audited 2026-10-11: adds schema-v3 candidate support and complete fixed/relative profile coverage; pressure fields, reductions, offsets and weights are unchanged. Re-audited for the 2026 launch: owner-approved intake, support publication bindings, WindsorML published-case status, and DrivAerML zero-weight relative diagnostics changed; pressure fields, units, reference offsets, force conventions and scoring equations are unchanged.
+- [benchmark-specs/windsorml/submission-spec.json](../benchmark-specs/windsorml/submission-spec.json): The published scoring specification defines native surface cpavg and volume pressureavg, their reductions, profile coverage and weights.
 - [reference/windsorml/contract.py](../reference/windsorml/contract.py): Surface cpavg and volume pressureavg are separate native fields.
-- [reference/windsorml/evaluator.py](../reference/windsorml/evaluator.py): Both scalar arrays enter statistics directly; no volume pressure-reference subtraction. Re-audited 2026-10-11: retains prediction-input hashes after evaluation; native pressure comparisons and force integration are unchanged.
+- [reference/windsorml/evaluator.py](../reference/windsorml/evaluator.py): Both scalar arrays enter statistics directly; no volume pressure-reference subtraction is applied.
 
 SHA-256 identities for these files and downloaded sources are recorded in the JSON inventory.
 
@@ -302,7 +302,7 @@ The papers and dataset card describe compressible blade-surface pressure, densit
 <details>
 <summary>Evaluator and specification trace</summary>
 
-- [benchmark-specs/rotor37/submission-spec.json](../benchmark-specs/rotor37/submission-spec.json): The audited dev scoring specification; not modified by this documentation audit.
+- [benchmark-specs/rotor37/submission-spec.json](../benchmark-specs/rotor37/submission-spec.json): The benchmark specification defines the pressure field and scoring reductions.
 - [benchmark-specs/rotor37/methodology-contract.json](../benchmark-specs/rotor37/methodology-contract.json): Maps Pressure to blade-surface metrics.
 - [reference/evaluate_predictions.py](../reference/evaluate_predictions.py): RRMSE uses per-case maximum absolute truth for normalization; it is not relative L2.
 
@@ -335,7 +335,7 @@ The release also contains conservative flow variables. Defining a future derived
 <details>
 <summary>Evaluator and specification trace</summary>
 
-- [benchmark-specs/vki-ls59/submission-spec.json](../benchmark-specs/vki-ls59/submission-spec.json): The audited dev scoring specification; not modified by this documentation audit.
+- [benchmark-specs/vki-ls59/submission-spec.json](../benchmark-specs/vki-ls59/submission-spec.json): The benchmark specification defines the scored fields and reductions.
 - [benchmark-specs/vki-ls59/methodology-contract.json](../benchmark-specs/vki-ls59/methodology-contract.json): Current scored fields contain no direct pressure field.
 - [reference/evaluate_predictions.py](../reference/evaluate_predictions.py): No pressure reconstruction or pressure-gauge fitting is performed.
 

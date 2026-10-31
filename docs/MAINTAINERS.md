@@ -41,6 +41,9 @@ Use this approval workflow for all five open datasets listed in the [dataset ind
 5. A maintainer can run the **Maintainer approve and regenerate** workflow with the exact submission path, validator/approver
    identities, validation timestamp, and approval date. Select the submission branch; the approval PR targets the dispatched branch.
    The workflow creates the validation record, binds its PR URL and rebuilds the feeds.
+   Wait for the dispatch to finish updating the draft, then review its final diff. Because the workflow uses `GITHUB_TOKEN`,
+   GitHub requires a maintainer to select **Approve workflows to run** on the generated PR. Approve the checks for the latest
+   commit, wait for **validate** and **history-free-source** to pass, mark the PR ready for review, and complete review and merge.
    Approval does not publish a result while the leaderboard release is unreleased. After an official release, check the result ID, scores and profiles on the leaderboard.
 6. Optional prediction checks are descriptive and never change approval or claim eligibility. The separate **Check optional
    prediction artifact metadata** workflow checks declarations only; it cannot award the blue badge. Follow the
