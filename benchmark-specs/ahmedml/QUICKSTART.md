@@ -14,3 +14,7 @@ The regional summation fix retains the existing scoring definitions and validati
 tolerances. Existing exact public data and prepared cache remain reusable.
 See the [data/scoring contract](README.md) and
 [methodology and package guide](../../examples/ahmedml-v3-candidate/README.md).
+
+Explore the [dataset leaderboard preview](https://fluidsbench.org/leaderboard-preview/?dataset=ahmedml),
+which contains no submitted results. See [review and publication](../../SUBMITTING.md#see-the-leaderboard-and-follow-publication)
+for how an approved result reaches an official release.

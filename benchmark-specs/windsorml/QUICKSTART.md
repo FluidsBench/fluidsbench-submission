@@ -15,3 +15,7 @@ evaluation, resume, reports and validated packaging. See [Submitting a result](.
   convention is retained while its physical units/reference remain under audit.
 
 See the [methodology and package guide](../../examples/windsorml-v3-candidate/README.md).
+
+Explore the [dataset leaderboard preview](https://fluidsbench.org/leaderboard-preview/?dataset=windsorml),
+which contains no submitted results. See [review and publication](../../SUBMITTING.md#see-the-leaderboard-and-follow-publication)
+for how an approved result reaches an official release.

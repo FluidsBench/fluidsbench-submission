@@ -40,7 +40,7 @@ Use the exact ordered case list in `benchmark-specs/<dataset>/splits/<split>.jso
 AhmedML Full has 50 cases. WindsorML Full has 35 published cases; do not add a
 replacement for the unavailable `run_354`. All eight prescribed split labels are
 supported for each dataset. Use the dataset's existing prediction format:
-[AhmedML](../examples/ahmedml-v3-candidate/README.md#inputs-and-blockers) or
+[AhmedML](NATIVE_PREDICTIONS.md) or
 [WindsorML](../examples/windsorml-v3-candidate/README.md#2-predict-and-evaluate-every-required-case).
 AhmedML surface IDs index cells; WindsorML surface IDs index points. Each chunk
 may contain at most 1,000,000 native rows. Paths in a manifest are relative to it.

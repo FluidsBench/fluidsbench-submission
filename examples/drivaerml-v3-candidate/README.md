@@ -15,6 +15,10 @@ for each training stage and inference campaign, including GPU model and allocati
 
 ## Participant configuration
 
+Use the [prediction manifest writer](../../docs/NATIVE_PREDICTIONS.md) and the
+[single-case spatial example](discretization-case.example.json) to prepare
+complete native-order inputs and actual representation records.
+
 Copy `package-config.template.json` outside the repository, fill the
 participant fields. Keep the supplied benchmark release values. Check what
 participant information remains before attempting assembly:

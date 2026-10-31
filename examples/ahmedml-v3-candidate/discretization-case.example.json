@@ -1,0 +1,109 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/discretization-case.schema.json",
+  "schema_version": "1.0",
+  "submission_id": "my-model-full-v1",
+  "dataset_id": "ahmedml",
+  "split_id": "full",
+  "case_id": "run_4",
+  "inference": {
+    "inputs": [
+      {
+        "id": "native-surface-input",
+        "entity_counts": [
+          {
+            "entity": "cells",
+            "count": 1235746
+          }
+        ],
+        "domain": {
+          "kind": "full_dataset_domain"
+        }
+      },
+      {
+        "id": "native-volume-input",
+        "entity_counts": [
+          {
+            "entity": "cells",
+            "count": 21518112
+          }
+        ],
+        "domain": {
+          "kind": "full_dataset_domain"
+        }
+      }
+    ],
+    "direct_outputs": [
+      {
+        "id": "native-surface-output",
+        "entity_counts": [
+          {
+            "entity": "cells",
+            "count": 1235746
+          }
+        ],
+        "domain": {
+          "kind": "full_dataset_domain"
+        }
+      },
+      {
+        "id": "native-volume-output",
+        "entity_counts": [
+          {
+            "entity": "cells",
+            "count": 21518112
+          }
+        ],
+        "domain": {
+          "kind": "full_dataset_domain"
+        }
+      }
+    ],
+    "mappings": [
+      {
+        "support_id": "ahmedml-surface-native-cells-v1",
+        "source_output_id": "native-surface-output",
+        "support_count": 1235746,
+        "scored_count": 1235746,
+        "unmapped_count": 0,
+        "extrapolated_count": 0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-volume-native-cells-v1",
+        "source_output_id": "native-volume-output",
+        "support_count": 21518112,
+        "scored_count": 21518112,
+        "unmapped_count": 0,
+        "extrapolated_count": 0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-force-coefficients-v1",
+        "source_output_id": "native-surface-output",
+        "support_count": 1,
+        "scored_count": 1,
+        "unmapped_count": 0,
+        "extrapolated_count": 0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-surface-cp-profiles-v1",
+        "source_output_id": "native-surface-output",
+        "support_count": 384,
+        "scored_count": 384,
+        "unmapped_count": 0,
+        "extrapolated_count": 0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-volume-velocity-profiles-v1",
+        "source_output_id": "native-volume-output",
+        "support_count": 512,
+        "scored_count": 512,
+        "unmapped_count": 0,
+        "extrapolated_count": 0,
+        "final_coverage_fraction": 1.0
+      }
+    ]
+  }
+}

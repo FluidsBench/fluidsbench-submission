@@ -62,6 +62,11 @@ The support download does not download raw CFD or model predictions.
 
 ## Inputs and blockers
 
+Use the [prediction manifest writer](../../docs/NATIVE_PREDICTIONS.md) for exact
+field names, NPZ arrays, chunk paths and hashes. The
+[spatial-record example](discretization-case.example.json) shows one complete
+native-cell case; adapt it to your actual model and every case in your split.
+
 Copy `package-config.template.json` outside the repository and replace every
 `__REPLACE_...__` value with the actual method record. The fixed release
 bindings must continue to equal the published specification; do not invent or

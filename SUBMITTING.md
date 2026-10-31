@@ -3,6 +3,27 @@
 Start with the [dataset index](benchmark-specs/README.md) and your dataset's quickstart.
 The steps below apply to every accepted dataset.
 
+## Set up your submission branch
+
+On GitHub, [fork the submission repository](https://github.com/FluidsBench/fluidsbench-submission/fork)
+into your account. Replace `YOUR_GITHUB_USERNAME` below, then run:
+
+```bash
+github_name=YOUR_GITHUB_USERNAME
+git clone "https://github.com/$github_name/fluidsbench-submission.git"
+cd fluidsbench-submission
+git remote add upstream https://github.com/FluidsBench/fluidsbench-submission.git
+git fetch upstream main
+git switch -c submit-my-model upstream/main
+```
+
+This creates a submission branch from current upstream `main`, with `origin`
+pointing to your writable fork. If you used the website's reference-example
+checkout, keep it for that example and use this fork checkout for your result.
+Run the dataset quickstart from this repository root. Keep the same evaluation
+checkout through evaluation, resume and packaging; the workflow records its code
+identity. The PR must contain only the generated result directory.
+
 ## 1. Choose the dataset and split
 
 Start in the [dataset index](benchmark-specs/README.md). Read its guide and `submission-spec.json`, then pin the exact dataset
@@ -141,6 +162,44 @@ remote predictions, or recompute submitted base metrics.
 4. Retain the evaluation evidence: maintainers review scientific provenance, data use, submitted values, licences, and any
    declared artifacts, and may request calculation evidence.
 
+For example, after creating and validating `submissions/ahmedml/my-model-full-v1/`:
+
+```bash
+git add -- submissions/ahmedml/my-model-full-v1/
+git diff --cached --stat
+git commit -m "Submit AhmedML my-model-full-v1"
+git push -u origin submit-my-model
+```
+
+Replace the dataset and submission ID with your generated directory. Check that
+the staged diff contains only that directory. Open the
+[comparison page](https://github.com/FluidsBench/fluidsbench-submission/compare),
+select **compare across forks**, and choose base repository
+`FluidsBench/fluidsbench-submission`, base branch `main`, your fork as the head
+repository, and `submit-my-model` as the compare branch. Create the PR and complete
+its contributor checklist. Predictions, local support, work directories and
+environments stay outside the PR.
+
 Maintainers review the submitted package and handle approval, registration and publication through the
 [maintainer workflow](docs/MAINTAINERS.md). Leave maintainer records and generated feeds out of your submission.
 The review checks submitted data; optional prediction audits are recorded separately.
+
+## See the leaderboard and follow publication
+
+The [leaderboard preview](https://fluidsbench.org/leaderboard-preview/) shows the
+metrics, methodology and native CFD profile viewer during the submission period.
+Choose your dataset directly:
+[AirfRANS](https://fluidsbench.org/leaderboard-preview/?dataset=airfrans),
+[AhmedML](https://fluidsbench.org/leaderboard-preview/?dataset=ahmedml),
+[WindsorML](https://fluidsbench.org/leaderboard-preview/?dataset=windsorml),
+[DrivAerML](https://fluidsbench.org/leaderboard-preview/?dataset=drivaerml) or
+[DrivAerNet++](https://fluidsbench.org/leaderboard-preview/?dataset=drivaernetplusplus).
+The preview contains no submitted results.
+
+CI validates your PR, maintainers review it, and approval is recorded separately.
+An approved result appears only when included in an official published release;
+merging the contributor PR alone does not add a row. The first-release cutoff
+and leaderboard reveal are **5 December 2026, 23:59:59 Anywhere on Earth
+(UTC−12)**. See the [website's release dates](https://fluidsbench.org/run/#first-release-dates).
+After publication, use the [public leaderboard](https://fluidsbench.org/) and
+the result's immutable release link to view its scores, profiles and claim record.

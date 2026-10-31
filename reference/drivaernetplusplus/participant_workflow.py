@@ -484,7 +484,7 @@ def report(evaluation_root: Path, case_id: str, output: Path) -> dict[str, Any]:
         "<style>body{font:16px system-ui;margin:2rem;max-width:1000px}svg{border:1px solid #ccc;width:100%;max-width:680px}"
         "td,th{padding:.3rem .6rem;text-align:left}</style>",
         f"<h1>{DATASET_NAME} {html.escape(case_id)}</h1>",
-        "<p>Development result, not an official score. Blue: reference Cp. Orange: prediction. Profiles are report-only.</p>",
+        "<p>Local evaluation; publication requires maintainer review and approval. Blue: reference Cp. Orange: prediction. Profiles are report-only.</p>",
         "<h2>Complete-split metrics</h2><table>",
     ]
     rows += [f"<tr><th>{html.escape(k)}</th><td>{v:.6g}</td></tr>" for k, v in dataset["metric_values"].items()]

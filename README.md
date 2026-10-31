@@ -12,6 +12,7 @@ Evaluate your model with the published FluidsBench tools and submit its results 
 2. **Follow the submission process:** [Submitting a result](SUBMITTING.md) explains evaluation, validation and opening a pull request.
 3. **Prepare your result package:** follow the [result format](docs/RESULT_FORMAT.md) and [model and compute reporting guide](METHODOLOGY.md).
 4. **Get help:** ask in [GitHub issues](https://github.com/FluidsBench/fluidsbench-submission/issues) or the [FluidsBench community](https://discord.gg/zVZsXAeVKp).
+5. **Preview the leaderboard:** explore the [metrics and CFD profile viewer](https://fluidsbench.org/leaderboard-preview/). The preview contains no submitted results; [publication follows review and approval](SUBMITTING.md#see-the-leaderboard-and-follow-publication).
 
 ## What you submit
 
