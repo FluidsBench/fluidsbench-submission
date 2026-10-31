@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare, evaluate, resume and package AhmedML submissions on dev."""
+"""Prepare, evaluate, resume and package AhmedML submissions."""
 
 import sys
 from pathlib import Path

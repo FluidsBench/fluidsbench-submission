@@ -166,7 +166,7 @@ def _release_bindings(config: Mapping[str, Any], specification: Mapping[str, Any
     truth = read_json(ROOT / "leaderboard" / "manifest.json")["data_release"]["profile_ground_truth"]
     ground_truth = dict(_mapping(release["profile_ground_truth"], "profile_ground_truth"))
     if ground_truth != {"release_id": truth["release_id"], "manifest_sha256": truth["manifest_sha256"]}:
-        raise PackageAssemblyError("profile_ground_truth differs from the dev release binding")
+        raise PackageAssemblyError("profile_ground_truth differs from the repository reference binding")
     return candidate, ground_truth
 
 

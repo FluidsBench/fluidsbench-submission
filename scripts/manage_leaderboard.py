@@ -17,6 +17,7 @@ from typing import Any
 from urllib.parse import unquote, urlencode, urlsplit, urlunsplit
 
 if __package__:
+    from .profile_truth_publication import binding_errors as publication_binding_errors, publication_errors
     from .display_replacements import apply_display_replacements
     from .validate_submission import (
         load_json,
@@ -35,6 +36,7 @@ if __package__:
         validate_submission_file,
     )
 else:
+    from profile_truth_publication import binding_errors as publication_binding_errors, publication_errors
     from display_replacements import apply_display_replacements
     from validate_submission import (
         load_json,
@@ -210,7 +212,7 @@ def release_contract_errors(manifest: dict[str, Any]) -> list[str]:
         r"[a-f0-9]{64}", profile_ground_truth["manifest_sha256"]
     ):
         errors.append("data_release.profile_ground_truth requires an HTTPS manifest_url and lowercase SHA-256 digest")
-    elif release.get("status") == "official":
+    elif release.get("status") == "official" and not release.get("profile_ground_truth_publication"):
         ground_truth_parts = urlsplit(profile_ground_truth["manifest_url"])
         if (
             not is_release_id(profile_ground_truth["release_id"])
@@ -222,6 +224,23 @@ def release_contract_errors(manifest: dict[str, Any]) -> list[str]:
                 "an official profile-ground-truth manifest_url must use a safe lowercase release ID appearing as "
                 "an exact path segment, with no query or fragment"
             )
+    publication = release.get("profile_ground_truth_publication")
+    if publication is not None:
+        publication_errors_found = publication_binding_errors(publication)
+        if not publication_errors_found:
+            publication_path = ROOT / "benchmark-specs" / f"{publication['release_id']}.json"
+            try:
+                airfrans_spec = ROOT / "benchmark-specs/airfrans/submission-spec.json"
+                truth_bindings = {}
+                if airfrans_spec.is_file():
+                    truth_bindings["airfrans"] = load_json(airfrans_spec)["profile_definition"]["profile_ground_truth"]
+                publication_errors_found = publication_errors(
+                    publication_path.read_bytes(), publication, manifest,
+                    dataset_truth_bindings=truth_bindings,
+                )
+            except (OSError, ValueError, KeyError) as error:
+                publication_errors_found = [f"cannot verify profile truth publication: {error}"]
+        errors.extend(publication_errors_found)
     if archive_url is not None and https_url_parts(archive_url) is None:
         errors.append("data_release.archive_url must be null or an HTTPS URL")
 

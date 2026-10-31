@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare, evaluate, resume and package WindsorML submissions on dev."""
+"""Prepare, evaluate, resume and package WindsorML submissions."""
 
 import sys
 from pathlib import Path

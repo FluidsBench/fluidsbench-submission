@@ -28,6 +28,13 @@ citation eligibility, or promotion eligibility.
 
 ## Review and approve a result
 
+The official reference publication is pinned by `data_release.profile_ground_truth_publication` in
+[`leaderboard/manifest.json`](../leaderboard/manifest.json). It covers the five open datasets and binds their native CFD
+references to an immutable website source commit. `python scripts/manage_leaderboard.py check` verifies its local manifest.
+The evaluator and package reference fingerprints remain exact; AirfRANS uses its dataset-specific truth manifest.
+Website publication verifies the downloaded reference catalog and publication manifest before deployment. Publishing this
+reference metadata does not publish submitted results or activate another dataset.
+
 Use this approval workflow for all five open datasets listed in the [dataset index](../benchmark-specs/README.md).
 
 1. Commit exactly one new submission directory. Do not modify schemas, specifications, validators, workflows, generated feeds, or

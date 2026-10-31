@@ -331,7 +331,7 @@ def _release_bindings(
         "manifest_sha256": global_truth.get("manifest_sha256"),
     }:
         raise PackageAssemblyError(
-            "profile-ground-truth identity differs from the dev release binding"
+            "profile-ground-truth identity differs from the repository reference binding"
         )
     truth_manifest, truth_manifest_sha256 = load_json_with_sha256(
         profile_truth_manifest_path, label="profile-ground-truth manifest"

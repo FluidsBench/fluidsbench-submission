@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare, evaluate, resume and package AirfRANS submissions on dev."""
+"""Prepare, evaluate, resume and package AirfRANS submissions."""
 
 import argparse
 import json
