@@ -1135,6 +1135,22 @@ def expected_outputs(
     dict[str, Any],
 ]:
     updated_manifest = manifest_with_benchmark_contract(manifest)
+    # Shared metric IDs can have different scientific definitions across datasets.
+    # Export each specification verbatim instead of letting the final dataset's
+    # equation overwrite the shared presentation definition.
+    for dataset in updated_manifest["datasets"]:
+        if not dataset.get("slug"):
+            continue
+        spec_path = ROOT / "benchmark-specs" / dataset["slug"] / "submission-spec.json"
+        if spec_path.is_file():
+            specification = load_json(spec_path)
+            dataset["metric_contracts"] = {
+                metric["id"]: {
+                    key: deepcopy(metric[key])
+                    for key in ("equation", "aggregation", "weighting") if key in metric
+                }
+                for metric in specification["metrics"]
+            }
     revision_rows_by_dataset = source_rows_by_dataset(updated_manifest)
     apply_display_replacements(ROOT, updated_manifest, revision_rows_by_dataset)
     rows_by_dataset = latest_rows_by_dataset(revision_rows_by_dataset)

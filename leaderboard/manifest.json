@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-10-29T04:09:46Z",
+  "generated_at": "2026-10-31T00:56:49Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -21,7 +21,7 @@
   "data_release": {
     "id": "fluidsbench-2026-unreleased",
     "status": "unreleased",
-    "generated_at": "2026-10-29T04:09:46Z",
+    "generated_at": "2026-10-31T00:56:49Z",
     "source_repository": "https://github.com/FluidsBench/fluidsbench-submission",
     "source_ref": "main",
     "source_commit": null,
@@ -58,7 +58,7 @@
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "aaeb1b048875a88255c2c5b0bbe660d470bfaceb194423a272e70b151a3604d6",
+      "sha256": "1d2bfa9c08afff9d83e43c031d13ad94f066c948fe878499a61d65a5e7e2dc4d",
       "record_count": 0,
       "series_count": 0
     }
@@ -705,6 +705,158 @@
         "sha256": "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae",
         "sample_count_per_series": 128,
         "prediction_source": "evaluator_derived_from_complete_native_fields"
+      },
+      "metric_contracts": {
+        "overall_score": {
+          "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "field_score": {
+          "equation": "\\frac{\\sum_{j\\in F}\\alpha_j S_j}{\\sum_{j\\in F}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "force_score": {
+          "equation": "\\frac{\\sum_{j\\in C}\\alpha_j S_j}{\\sum_{j\\in C}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "diagnostic_score": {
+          "equation": "\\frac{\\sum_{j\\in D}\\alpha_j S_j}{\\sum_{j\\in D}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "surface_pressure_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "surface_pressure_equal_entity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_entities_equal"
+        },
+        "surface_wall_shear_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "surface_wall_shear_equal_entity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_entities_equal"
+        },
+        "volume_velocity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "volume_velocity_physical_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "cell_volume"
+        },
+        "volume_pressure_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "volume_pressure_physical_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "cell_volume"
+        },
+        "surface_pressure_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "surface_wall_shear_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "volume_velocity_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "volume_pressure_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "velocity_profile_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_required_profile_samples",
+          "weighting": "samples_equal"
+        },
+        "cp_cut_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_required_profile_samples",
+          "weighting": "samples_equal"
+        },
+        "surface_pressure_mae": {
+          "equation": "\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "surface_wall_shear_mae": {
+          "equation": "\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "volume_velocity_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "volume_pressure_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "surface_pressure_rmse": {
+          "equation": "\\sqrt{\\frac{\\sum_i w_i(\\hat{y}_i-y_i)^2}{\\sum_i w_i}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "surface_wall_shear_rmse": {
+          "equation": "\\sqrt{\\frac{\\sum_i w_i(\\hat{y}_i-y_i)^2}{\\sum_i w_i}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "volume_velocity_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "volume_pressure_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "cd_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "cl_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_drag_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_lift_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        }
       }
     },
     {
@@ -1039,7 +1191,114 @@
           "manifest_url": "https://github.com/FluidsBench/fluidsbench-submission/releases/download/airfrans-native-profile-truth-v1/manifest.json"
         }
       },
-      "revision_count": 0
+      "revision_count": 0,
+      "metric_contracts": {
+        "overall_score": {
+          "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "field_score": {
+          "equation": "\\frac{\\sum_{j\\in F}\\alpha_j S_j}{\\sum_{j\\in F}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "force_score": {
+          "equation": "\\frac{\\sum_{j\\in C}\\alpha_j S_j}{\\sum_{j\\in C}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "diagnostic_score": {
+          "equation": "\\frac{\\sum_{j\\in D}\\alpha_j S_j}{\\sum_{j\\in D}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "surface_pressure_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "boundary_point_dual_length"
+        },
+        "surface_pressure_equal_entity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "boundary_nodes_equal"
+        },
+        "surface_wall_shear_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "boundary_point_dual_length"
+        },
+        "surface_wall_shear_equal_entity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "boundary_nodes_equal"
+        },
+        "flow_domain_velocity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "interior_nodes_equal"
+        },
+        "flow_domain_velocity_physical_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "interior_point_dual_area"
+        },
+        "flow_domain_pressure_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "interior_nodes_equal"
+        },
+        "flow_domain_pressure_physical_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "interior_point_dual_area"
+        },
+        "surface_pressure_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "boundary_point_dual_length"
+        },
+        "surface_wall_shear_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "boundary_point_dual_length"
+        },
+        "flow_domain_velocity_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "interior_nodes_equal"
+        },
+        "flow_domain_pressure_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "interior_nodes_equal"
+        },
+        "velocity_profile_r2": {
+          "equation": "\\frac{1}{|S||Q|}\\sum_{s\\in S}\\sum_{q\\in Q}\\operatorname{clip}_{[0,1]}\\left(1-\\frac{\\sum_{c,i}(y_{c,s,q,i}-\\hat{y}_{c,s,q,i})^2}{\\sum_{c,i}(y_{c,s,q,i}-\\bar{y}_{s,q})^2}\\right)",
+          "aggregation": "equal_station_equal_quantity_mean_bounded_r2_across_split",
+          "weighting": "stations_equal_quantities_equal_samples_within_each_station_quantity_group"
+        },
+        "cd_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "cl_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_drag_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_lift_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        }
+      }
     },
     {
       "name": "DrivAerML",
@@ -1976,7 +2235,189 @@
         "status": "frozen_development_candidate",
         "velocity_validity_policy_id": "drivaerml-autocfd5-velocity-validity-v1"
       },
-      "revision_count": 0
+      "revision_count": 0,
+      "metric_contracts": {
+        "overall_score": {
+          "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "field_score": {
+          "equation": "\\frac{\\sum_{j\\in F}\\alpha_j S_j}{\\sum_{j\\in F}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "force_score": {
+          "equation": "\\frac{\\sum_{j\\in C}\\alpha_j S_j}{\\sum_{j\\in C}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "diagnostic_score": {
+          "equation": "\\frac{\\sum_{j\\in D}\\alpha_j S_j}{\\sum_{j\\in D}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "cd_r2": {
+          "equation": "1-\\frac{\\sum_c(C_{D,c}-\\hat{C}_{D,c})^2}{\\sum_c(C_{D,c}-\\bar{C}_D)^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "cl_r2": {
+          "equation": "1-\\frac{\\sum_c(C_{L,c}-\\hat{C}_{L,c})^2}{\\sum_c(C_{L,c}-\\bar{C}_L)^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_pitch_r2": {
+          "equation": "1-\\frac{\\sum_c(C_{M,c}-\\hat{C}_{M,c})^2}{\\sum_c(C_{M,c}-\\bar{C}_M)^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "velocity_profile_r2": {
+          "equation": "1-\\frac{\\sum_{c,l}\\int_{A_{cl}}(\\hat{U}/U_\\infty-U/U_\\infty)^2\\,ds/L_{cl}}{\\sum_{c,l}\\int_{A_{cl}}(U/U_\\infty-\\bar{U}_w)^2\\,ds/L_{cl}}",
+          "aggregation": "equal_case_equal_line_global_weighted_r2",
+          "weighting": "equal_cases_equal_lines_trapezoidal_arc_length_within_line"
+        },
+        "cp_cut_r2": {
+          "equation": "1-\\frac{\\sum_{c,q}\\sum_{s\\in\\Gamma_{cq}}\\tilde{w}_{cqs}(\\hat{C}_{p,s}-C_{p,s})^2}{\\sum_{c,q}\\sum_{s\\in\\Gamma_{cq}}\\tilde{w}_{cqs}(C_{p,s}-\\bar{C}_{p,w})^2}",
+          "aggregation": "equal_case_equal_cut_global_weighted_r2",
+          "weighting": "equal_cases_equal_cuts_normalized_trapezoidal_arc_length"
+        },
+        "surface_pressure_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}}{\\sqrt{\\sum_i w_i\\lVert\\mathbf{y}_i\\rVert_2^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "surface_pressure_equal_entity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}}{\\sqrt{\\sum_i w_i\\lVert\\mathbf{y}_i\\rVert_2^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_entities_equal"
+        },
+        "surface_wall_shear_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}}{\\sqrt{\\sum_i w_i\\lVert\\mathbf{y}_i\\rVert_2^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "surface_wall_shear_equal_entity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}}{\\sqrt{\\sum_i w_i\\lVert\\mathbf{y}_i\\rVert_2^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_entities_equal"
+        },
+        "volume_velocity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}}{\\sqrt{\\sum_i w_i\\lVert\\mathbf{y}_i\\rVert_2^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "volume_pressure_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}}{\\sqrt{\\sum_i w_i\\lVert\\mathbf{y}_i\\rVert_2^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "drivaerml_surface_pressure_area_mae": {
+          "equation": "\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2}{\\sum_i w_i}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "drivaerml_surface_pressure_area_rmse": {
+          "equation": "\\sqrt{\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}{\\sum_i w_i}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "drivaerml_surface_pressure_equal_entity_mae": {
+          "equation": "\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2}{\\sum_i w_i}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_entities_equal"
+        },
+        "drivaerml_surface_pressure_equal_entity_rmse": {
+          "equation": "\\sqrt{\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}{\\sum_i w_i}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_entities_equal"
+        },
+        "drivaerml_surface_wall_shear_area_mae": {
+          "equation": "\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2}{\\sum_i w_i}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "drivaerml_surface_wall_shear_area_rmse": {
+          "equation": "\\sqrt{\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}{\\sum_i w_i}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_face_area"
+        },
+        "drivaerml_surface_wall_shear_equal_entity_mae": {
+          "equation": "\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2}{\\sum_i w_i}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_entities_equal"
+        },
+        "drivaerml_surface_wall_shear_equal_entity_rmse": {
+          "equation": "\\sqrt{\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}{\\sum_i w_i}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_entities_equal"
+        },
+        "drivaerml_volume_velocity_equal_entity_mae": {
+          "equation": "\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2}{\\sum_i w_i}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "drivaerml_volume_velocity_equal_entity_rmse": {
+          "equation": "\\sqrt{\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}{\\sum_i w_i}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "drivaerml_volume_pressure_equal_entity_mae": {
+          "equation": "\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2}{\\sum_i w_i}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "drivaerml_volume_pressure_equal_entity_rmse": {
+          "equation": "\\sqrt{\\frac{\\sum_i w_i\\lVert\\hat{\\mathbf{y}}_i-\\mathbf{y}_i\\rVert_2^2}{\\sum_i w_i}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "field_integrated_cd_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_c(\\hat{y}_c-y_c)^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "field_integrated_cl_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_c(\\hat{y}_c-y_c)^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "field_integrated_cmpitch_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_c(\\hat{y}_c-y_c)^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "field_integrated_clf_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_c(\\hat{y}_c-y_c)^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "field_integrated_clr_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_c(\\hat{y}_c-y_c)^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "field_integrated_lift_closure_max_abs": {
+          "equation": "\\max_c\\lvert\\hat{C}_{L,c}-(\\hat{C}_{Lf,c}+\\hat{C}_{Lr,c})\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "maximum_case_residual"
+        },
+        "velocity_profile_uinf_rmse": {
+          "equation": "\\frac{1}{N}\\sum_c\\frac{1}{16}\\sum_l\\sqrt{\\frac{\\int_{A_{cl}}(\\hat{U}/U_\\infty-U/U_\\infty)^2\\,ds}{\\int_{A_{cl}} ds}}",
+          "aggregation": "equal_case_equal_line_macro_average",
+          "weighting": "trapezoidal_arc_length_within_line"
+        },
+        "velocity_profile_experimental_subset_uinf_rmse": {
+          "equation": "\\frac{1}{N}\\sum_c\\frac{1}{11}\\sum_{l\\in E}\\sqrt{\\frac{\\int_{A_{cl}}(\\hat{U}/U_\\infty-U/U_\\infty)^2\\,ds}{\\int_{A_{cl}} ds}}",
+          "aggregation": "equal_case_equal_experimental_line_macro_average",
+          "weighting": "trapezoidal_arc_length_within_line"
+        },
+        "cp_cut_rmse": {
+          "equation": "\\frac{1}{N}\\sum_c\\frac{1}{4}\\sum_q\\sqrt{\\frac{\\sum_{s\\in\\Gamma_{cq}}\\Delta s_s(\\hat{C}_{p,s}-C_{p,s})^2}{\\sum_{s\\in\\Gamma_{cq}}\\Delta s_s}}",
+          "aggregation": "equal_case_equal_cut_macro_average",
+          "weighting": "trapezoidal_arc_length_within_cut"
+        }
+      }
     },
     {
       "name": "DrivAerNet++",
@@ -2196,7 +2637,34 @@
         ],
         "tolerance": 1e-06
       },
-      "revision_count": 0
+      "revision_count": 0,
+      "metric_contracts": {
+        "overall_score": {
+          "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "surface_pressure_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "surface_pressure_equal_entity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_points_equal"
+        },
+        "surface_pressure_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "surface_pressure_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_aligned_field_values",
+          "weighting": "surface_points_equal"
+        }
+      }
     },
     {
       "name": "HiLiftAeroML",
@@ -2890,6 +3358,153 @@
           "fluidsbench-hiliftaeroml-compact-profile-chunks-v2-candidate"
         ],
         "prior_profile_formats_accepted": false
+      },
+      "metric_contracts": {
+        "overall_score": {
+          "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "field_score": {
+          "equation": "\\frac{\\sum_{j\\in F}\\alpha_j S_j}{\\sum_{j\\in F}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "force_score": {
+          "equation": "\\frac{\\sum_{j\\in C}\\alpha_j S_j}{\\sum_{j\\in C}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "diagnostic_score": {
+          "equation": "\\frac{\\sum_{j\\in D}\\alpha_j S_j}{\\sum_{j\\in D}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "surface_pressure_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "surface_pressure_equal_entity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_entities_equal"
+        },
+        "surface_wall_shear_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "surface_wall_shear_equal_entity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_entities_equal"
+        },
+        "volume_velocity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_points_equal"
+        },
+        "volume_pressure_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_points_equal"
+        },
+        "surface_pressure_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "surface_wall_shear_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "volume_velocity_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_points_equal"
+        },
+        "volume_pressure_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_points_equal"
+        },
+        "velocity_profile_r2": {
+          "equation": "1-\\frac{\\sum_s\\sum_i w_{s,i}(y_{s,i}-\\hat{y}_{s,i})^2}{\\sum_s\\sum_i w_{s,i}(y_{s,i}-\\bar{y}_s)^2}",
+          "aggregation": "per_case_station_centered_then_macro_average",
+          "weighting": "physical_polyline_arc_length"
+        },
+        "cp_cut_r2": {
+          "equation": "1-\\frac{\\sum_g\\sum_i w_{g,i}(y_{g,i}-\\hat{y}_{g,i})^2}{\\sum_g\\sum_i w_{g,i}(y_{g,i}-\\bar{y}_g)^2}",
+          "aggregation": "per_case_connected_graph_centered_then_macro_average",
+          "weighting": "physical_connected_cut_arc_length"
+        },
+        "surface_pressure_mae": {
+          "equation": "\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "surface_wall_shear_mae": {
+          "equation": "\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "volume_velocity_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_points_equal"
+        },
+        "volume_pressure_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_points_equal"
+        },
+        "surface_pressure_rmse": {
+          "equation": "\\sqrt{\\frac{\\sum_i w_i(\\hat{y}_i-y_i)^2}{\\sum_i w_i}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "surface_wall_shear_rmse": {
+          "equation": "\\sqrt{\\frac{\\sum_i w_i(\\hat{y}_i-y_i)^2}{\\sum_i w_i}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "volume_velocity_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_points_equal"
+        },
+        "volume_pressure_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_points_equal"
+        },
+        "cd_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "cl_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_drag_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_lift_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_pitch_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        }
       }
     },
     {
@@ -3503,6 +4118,98 @@
         "id": "windsorml-profile-definition-v2",
         "file": "profile-definition-v2.json",
         "sha256": "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056"
+      },
+      "metric_contracts": {
+        "overall_score": {
+          "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "field_score": {
+          "equation": "\\frac{\\sum_{j\\in F}\\alpha_j S_j}{\\sum_{j\\in F}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "force_score": {
+          "equation": "\\frac{\\sum_{j\\in C}\\alpha_j S_j}{\\sum_{j\\in C}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "surface_pressure_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "surface_pressure_equal_entity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_entities_equal"
+        },
+        "surface_wall_shear_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "surface_wall_shear_equal_entity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_entities_equal"
+        },
+        "volume_velocity_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "volume_pressure_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "volume_cells_equal"
+        },
+        "diagnostic_score": {
+          "equation": "\\frac{\\sum_{j\\in D}\\alpha_j S_j}{\\sum_{j\\in D}\\alpha_j}",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "cd_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "cl_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "velocity_profile_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_required_profile_samples",
+          "weighting": "samples_equal"
+        },
+        "cp_cut_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_required_profile_samples",
+          "weighting": "samples_equal"
+        },
+        "velocity_profile_relative_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_required_profile_samples",
+          "weighting": "samples_equal"
+        },
+        "cp_cut_relative_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_required_profile_samples",
+          "weighting": "samples_equal"
+        },
+        "c_drag_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_lift_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        }
       }
     },
     {
@@ -3865,7 +4572,199 @@
         ],
         "tolerance": 1e-06
       },
-      "revision_count": 0
+      "revision_count": 0,
+      "metric_contracts": {
+        "overall_score": {
+          "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "total_error": {
+          "equation": "\\frac{1}{m}\\sum_{j=1}^{m}\\operatorname{RRMSE}_j",
+          "aggregation": "derived_arithmetic_mean",
+          "weighting": "source_metrics_equal"
+        },
+        "vki_mach_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lVert \\hat{y}_i-y_i\\rVert_2^2/N_i}{\\lVert y_i\\rVert_\\infty^2}}",
+          "aggregation": "benchmark_field_rrmse_across_cases",
+          "weighting": "equation_normalized"
+        },
+        "vki_nut_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lVert \\hat{y}_i-y_i\\rVert_2^2/N_i}{\\lVert y_i\\rVert_\\infty^2}}",
+          "aggregation": "benchmark_field_rrmse_across_cases",
+          "weighting": "equation_normalized"
+        },
+        "vki_mach_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "domain_vertices_equal"
+        },
+        "vki_mach_area_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "interior_point_dual_area"
+        },
+        "vki_nut_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "domain_vertices_equal"
+        },
+        "vki_nut_area_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "interior_point_dual_area"
+        },
+        "vki_m_iso_line_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "boundary_point_dual_length"
+        },
+        "vki_m_iso_equal_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "curve_vertices_equal"
+        },
+        "vki_mach_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "vki_nut_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "vki_mach_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_aligned_field_values",
+          "weighting": "cases_equal"
+        },
+        "vki_nut_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_aligned_field_values",
+          "weighting": "cases_equal"
+        },
+        "vki_q_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+          "aggregation": "benchmark_scalar_rrmse_across_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_power_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+          "aggregation": "benchmark_scalar_rrmse_across_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_pr_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+          "aggregation": "benchmark_scalar_rrmse_across_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_tr_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+          "aggregation": "benchmark_scalar_rrmse_across_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_eth_is_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+          "aggregation": "benchmark_scalar_rrmse_across_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_angle_out_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+          "aggregation": "benchmark_scalar_rrmse_across_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_q_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_power_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_pr_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_tr_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_eth_is_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_angle_out_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_q_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_power_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_pr_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_tr_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_eth_is_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_angle_out_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_q_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_power_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_pr_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_tr_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_eth_is_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "vki_angle_out_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        }
+      }
     },
     {
       "name": "Rotor37",
@@ -4227,7 +5126,214 @@
         ],
         "tolerance": 1e-06
       },
-      "revision_count": 0
+      "revision_count": 0,
+      "metric_contracts": {
+        "overall_score": {
+          "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "total_error": {
+          "equation": "\\frac{1}{m}\\sum_{j=1}^{m}\\operatorname{RRMSE}_j",
+          "aggregation": "derived_arithmetic_mean",
+          "weighting": "source_metrics_equal"
+        },
+        "rotor_density_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lVert \\hat{y}_i-y_i\\rVert_2^2/N_i}{\\lVert y_i\\rVert_\\infty^2}}",
+          "aggregation": "benchmark_field_rrmse_across_cases",
+          "weighting": "equation_normalized"
+        },
+        "rotor_pressure_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lVert \\hat{y}_i-y_i\\rVert_2^2/N_i}{\\lVert y_i\\rVert_\\infty^2}}",
+          "aggregation": "benchmark_field_rrmse_across_cases",
+          "weighting": "equation_normalized"
+        },
+        "rotor_temperature_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lVert \\hat{y}_i-y_i\\rVert_2^2/N_i}{\\lVert y_i\\rVert_\\infty^2}}",
+          "aggregation": "benchmark_field_rrmse_across_cases",
+          "weighting": "equation_normalized"
+        },
+        "rotor_density_area_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "rotor_density_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "blade_surface_vertices_equal"
+        },
+        "rotor_pressure_area_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "rotor_pressure_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "blade_surface_vertices_equal"
+        },
+        "rotor_temperature_area_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "rotor_temperature_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "blade_surface_vertices_equal"
+        },
+        "rotor_density_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "rotor_pressure_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "rotor_temperature_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "rotor_density_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_aligned_field_values",
+          "weighting": "cases_equal"
+        },
+        "rotor_pressure_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_aligned_field_values",
+          "weighting": "cases_equal"
+        },
+        "rotor_temperature_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_aligned_field_values",
+          "weighting": "cases_equal"
+        },
+        "rotor_density_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "rotor_pressure_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "rotor_temperature_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "rotor_density_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "rotor_pressure_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "rotor_temperature_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "rotor_massflow_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+          "aggregation": "benchmark_scalar_rrmse_across_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_compression_ratio_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+          "aggregation": "benchmark_scalar_rrmse_across_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_efficiency_rrmse": {
+          "equation": "\\sqrt{\\frac{1}{n}\\sum_{i=1}^{n}\\frac{\\lvert \\hat{s}_i-s_i\\rvert^2}{\\lvert s_i\\rvert^2}}",
+          "aggregation": "benchmark_scalar_rrmse_across_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_massflow_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_compression_ratio_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_efficiency_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_massflow_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_compression_ratio_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_efficiency_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i w_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i w_i\\lvert y_i\\rvert}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_massflow_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_compression_ratio_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_efficiency_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_massflow_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_compression_ratio_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_efficiency_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_massflow_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_compression_ratio_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "rotor_efficiency_rmse": {
+          "equation": "\\sqrt{\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        }
+      }
     },
     {
       "name": "BlendedNet",
@@ -4521,7 +5627,169 @@
         ],
         "tolerance": 1e-06
       },
-      "revision_count": 0
+      "revision_count": 0,
+      "metric_contracts": {
+        "overall_score": {
+          "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "blended_surface_rel_l2": {
+          "equation": "\\frac{1}{4}(L_{2,A}^{C_p}+L_{2,A}^{C_{fx}}+L_{2,A}^{C_{fy}}+L_{2,A}^{C_{fz}})",
+          "aggregation": "derived_arithmetic_mean",
+          "weighting": "source_area_metrics_equal"
+        },
+        "blended_cp_mse": {
+          "equation": "\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cp_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cfx_mse": {
+          "equation": "\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cfx_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cfz_mse": {
+          "equation": "\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cfz_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cp_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cp_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cp_area_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "blended_cp_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_aligned_field_values",
+          "weighting": "cases_equal"
+        },
+        "blended_cfx_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cfx_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cfx_area_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "blended_cfx_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_aligned_field_values",
+          "weighting": "cases_equal"
+        },
+        "blended_cfy_mse": {
+          "equation": "\\frac{1}{N}\\sum_i(\\hat{y}_i-y_i)^2",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cfy_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cfy_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cfy_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cfy_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_aligned_field_values",
+          "weighting": "cases_equal"
+        },
+        "blended_cfy_area_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "blended_cfz_rel_l1": {
+          "equation": "100\\,\\frac{\\sum_i\\lvert\\hat{y}_i-y_i\\rvert}{\\sum_i\\lvert y_i\\rvert}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cfz_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "points_equal_within_case_cases_equal"
+        },
+        "blended_cfz_area_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_point_dual_area"
+        },
+        "blended_cfz_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_aligned_field_values",
+          "weighting": "cases_equal"
+        },
+        "c_drag_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_lift_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_pitch_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "cd_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "cl_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_pitch_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        }
+      }
     }
   ],
   "metric_definitions": [
@@ -6774,7 +8042,7 @@
     {
       "id": "drivaerml_surface_pressure_area_mae",
       "label": "DrivAerML surface pressure area mae",
-      "description": "DrivAerML candidate contract metric using surface_face_area. Lower is better.",
+      "description": "DrivAerML metric using surface_face_area. Lower is better.",
       "group": "absolute-mae",
       "group_label": "Absolute MAE",
       "column_group": "absolute",
@@ -6790,7 +8058,7 @@
     {
       "id": "drivaerml_surface_pressure_area_rmse",
       "label": "DrivAerML surface pressure area rmse",
-      "description": "DrivAerML candidate contract metric using surface_face_area. Lower is better.",
+      "description": "DrivAerML metric using surface_face_area. Lower is better.",
       "group": "absolute-rmse",
       "group_label": "Absolute RMSE",
       "column_group": "absolute",
@@ -6806,7 +8074,7 @@
     {
       "id": "drivaerml_surface_pressure_equal_entity_mae",
       "label": "DrivAerML surface pressure equal entity mae",
-      "description": "DrivAerML candidate contract metric using surface_entities_equal. Lower is better.",
+      "description": "DrivAerML metric using surface_entities_equal. Lower is better.",
       "group": "absolute-mae",
       "group_label": "Absolute MAE",
       "column_group": "absolute",
@@ -6822,7 +8090,7 @@
     {
       "id": "drivaerml_surface_pressure_equal_entity_rmse",
       "label": "DrivAerML surface pressure equal entity rmse",
-      "description": "DrivAerML candidate contract metric using surface_entities_equal. Lower is better.",
+      "description": "DrivAerML metric using surface_entities_equal. Lower is better.",
       "group": "absolute-rmse",
       "group_label": "Absolute RMSE",
       "column_group": "absolute",
@@ -6838,7 +8106,7 @@
     {
       "id": "drivaerml_surface_wall_shear_area_mae",
       "label": "DrivAerML surface wall shear area mae",
-      "description": "DrivAerML candidate contract metric using surface_face_area. Lower is better.",
+      "description": "DrivAerML metric using surface_face_area. Lower is better.",
       "group": "absolute-mae",
       "group_label": "Absolute MAE",
       "column_group": "absolute",
@@ -6854,7 +8122,7 @@
     {
       "id": "drivaerml_surface_wall_shear_area_rmse",
       "label": "DrivAerML surface wall shear area rmse",
-      "description": "DrivAerML candidate contract metric using surface_face_area. Lower is better.",
+      "description": "DrivAerML metric using surface_face_area. Lower is better.",
       "group": "absolute-rmse",
       "group_label": "Absolute RMSE",
       "column_group": "absolute",
@@ -6870,7 +8138,7 @@
     {
       "id": "drivaerml_surface_wall_shear_equal_entity_mae",
       "label": "DrivAerML surface wall shear equal entity mae",
-      "description": "DrivAerML candidate contract metric using surface_entities_equal. Lower is better.",
+      "description": "DrivAerML metric using surface_entities_equal. Lower is better.",
       "group": "absolute-mae",
       "group_label": "Absolute MAE",
       "column_group": "absolute",
@@ -6886,7 +8154,7 @@
     {
       "id": "drivaerml_surface_wall_shear_equal_entity_rmse",
       "label": "DrivAerML surface wall shear equal entity rmse",
-      "description": "DrivAerML candidate contract metric using surface_entities_equal. Lower is better.",
+      "description": "DrivAerML metric using surface_entities_equal. Lower is better.",
       "group": "absolute-rmse",
       "group_label": "Absolute RMSE",
       "column_group": "absolute",
@@ -6902,7 +8170,7 @@
     {
       "id": "drivaerml_volume_velocity_equal_entity_mae",
       "label": "DrivAerML volume velocity equal entity mae",
-      "description": "DrivAerML candidate contract metric using volume_cells_equal. Lower is better.",
+      "description": "DrivAerML metric using volume_cells_equal. Lower is better.",
       "group": "absolute-mae",
       "group_label": "Absolute MAE",
       "column_group": "absolute",
@@ -6918,7 +8186,7 @@
     {
       "id": "drivaerml_volume_velocity_equal_entity_rmse",
       "label": "DrivAerML volume velocity equal entity rmse",
-      "description": "DrivAerML candidate contract metric using volume_cells_equal. Lower is better.",
+      "description": "DrivAerML metric using volume_cells_equal. Lower is better.",
       "group": "absolute-rmse",
       "group_label": "Absolute RMSE",
       "column_group": "absolute",
@@ -6934,7 +8202,7 @@
     {
       "id": "drivaerml_volume_pressure_equal_entity_mae",
       "label": "DrivAerML volume pressure equal entity mae",
-      "description": "DrivAerML candidate contract metric using volume_cells_equal. Lower is better.",
+      "description": "DrivAerML metric using volume_cells_equal. Lower is better.",
       "group": "absolute-mae",
       "group_label": "Absolute MAE",
       "column_group": "absolute",
@@ -6950,7 +8218,7 @@
     {
       "id": "drivaerml_volume_pressure_equal_entity_rmse",
       "label": "DrivAerML volume pressure equal entity rmse",
-      "description": "DrivAerML candidate contract metric using volume_cells_equal. Lower is better.",
+      "description": "DrivAerML metric using volume_cells_equal. Lower is better.",
       "group": "absolute-rmse",
       "group_label": "Absolute RMSE",
       "column_group": "absolute",
@@ -6966,7 +8234,7 @@
     {
       "id": "field_integrated_cd_rmse",
       "label": "Field-integrated C_D RMSE",
-      "description": "DrivAerML candidate contract metric using cases_equal. Lower is better.",
+      "description": "DrivAerML metric using cases_equal. Lower is better.",
       "group": "force-errors",
       "group_label": "Integral force / moment errors",
       "column_group": "integral",
@@ -6982,7 +8250,7 @@
     {
       "id": "field_integrated_cl_rmse",
       "label": "Field-integrated C_L RMSE",
-      "description": "DrivAerML candidate contract metric using cases_equal. Lower is better.",
+      "description": "DrivAerML metric using cases_equal. Lower is better.",
       "group": "force-errors",
       "group_label": "Integral force / moment errors",
       "column_group": "integral",
@@ -6998,7 +8266,7 @@
     {
       "id": "field_integrated_cmpitch_rmse",
       "label": "Field-integrated C_M,pitch RMSE",
-      "description": "DrivAerML candidate contract metric using cases_equal. Lower is better.",
+      "description": "DrivAerML metric using cases_equal. Lower is better.",
       "group": "force-errors",
       "group_label": "Integral force / moment errors",
       "column_group": "integral",
@@ -7014,7 +8282,7 @@
     {
       "id": "field_integrated_clf_rmse",
       "label": "Field-integrated C_Lf RMSE",
-      "description": "DrivAerML candidate contract metric using cases_equal. Lower is better.",
+      "description": "DrivAerML metric using cases_equal. Lower is better.",
       "group": "force-errors",
       "group_label": "Integral force / moment errors",
       "column_group": "integral",
@@ -7030,7 +8298,7 @@
     {
       "id": "field_integrated_clr_rmse",
       "label": "Field-integrated C_Lr RMSE",
-      "description": "DrivAerML candidate contract metric using cases_equal. Lower is better.",
+      "description": "DrivAerML metric using cases_equal. Lower is better.",
       "group": "force-errors",
       "group_label": "Integral force / moment errors",
       "column_group": "integral",
@@ -7046,7 +8314,7 @@
     {
       "id": "field_integrated_lift_closure_max_abs",
       "label": "Lift closure max. error",
-      "description": "DrivAerML candidate contract metric using maximum_case_residual. Lower is better.",
+      "description": "DrivAerML metric using maximum_case_residual. Lower is better.",
       "group": "force-errors",
       "group_label": "Integral force / moment errors",
       "column_group": "integral",
@@ -7062,7 +8330,7 @@
     {
       "id": "velocity_profile_uinf_rmse",
       "label": "AutoCFD5 velocity-profile RMSE",
-      "description": "DrivAerML candidate contract metric using trapezoidal_arc_length_within_line. Lower is better.",
+      "description": "DrivAerML metric using trapezoidal_arc_length_within_line. Lower is better.",
       "group": "profile-errors",
       "group_label": "Profile errors",
       "column_group": "diagnostics",
@@ -7078,7 +8346,7 @@
     {
       "id": "velocity_profile_experimental_subset_uinf_rmse",
       "label": "Experimental-line velocity RMSE",
-      "description": "DrivAerML candidate contract metric using trapezoidal_arc_length_within_line. Lower is better.",
+      "description": "DrivAerML metric using trapezoidal_arc_length_within_line. Lower is better.",
       "group": "profile-errors",
       "group_label": "Profile errors",
       "column_group": "diagnostics",
@@ -7094,7 +8362,7 @@
     {
       "id": "cp_cut_rmse",
       "label": "Continuous native-surface Cp-cut RMSE",
-      "description": "DrivAerML candidate contract metric using trapezoidal_arc_length_within_cut. Lower is better.",
+      "description": "DrivAerML metric using trapezoidal_arc_length_within_cut. Lower is better.",
       "group": "profile-errors",
       "group_label": "Profile errors",
       "column_group": "diagnostics",
