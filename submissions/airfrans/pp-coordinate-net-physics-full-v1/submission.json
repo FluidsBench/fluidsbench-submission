@@ -1,0 +1,365 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/submission.schema.json",
+  "schema_version": "3.0",
+  "submission_id": "pp-coordinate-net-physics-full-v1",
+  "result_revision": {
+    "series_id": "pp-coordinate-net-physics-full",
+    "version": 1,
+    "supersedes": null,
+    "change_summary": "Initial published result."
+  },
+  "model": "PINNeAPPle coordinate network",
+  "model_type": "Coordinate network (point-wise MLP)",
+  "model_types": [
+    "Coordinate network (point-wise MLP)"
+  ],
+  "training_regime": "from_scratch",
+  "target_data_used": "official_train",
+  "external_pretraining": false,
+  "pretraining_data": [],
+  "dataset": "AirfRANS",
+  "dataset_id": "airfrans",
+  "dataset_version": "airfrans-native-v1",
+  "split": "Full",
+  "split_id": "full",
+  "case_set_id": "standard",
+  "split_sha256": "b300910d8eb27c11652064ba1c72a669fe4539addd76222f03af072f2f169e9f",
+  "parameter_count_millions": 0.201219,
+  "methodology": {
+    "format": "fluidsbench-method-v1",
+    "record_kind": "submitter_reported",
+    "record_note": "Coordinate network trained only on the public AirfRANS training split. Predictions are made at the native internal points of every official test case, so the mapping to the domain support is the identity and no interpolation of the benchmark side occurs. The training loss adds two physics terms with weight 0.05: no penetration on the wall (the wall-normal velocity component must vanish) and Bernoulli's relation in the outer domain, where the flow is essentially freestream (p = 1/2 (1 - q^2) in the scaled units).",
+    "architecture": {
+      "description": "Point-wise multilayer perceptron: 4 hidden layers of width 256 with SiLU activations, 201219 trainable parameters, three outputs per point (u/U_inf, v/U_inf, p/U_inf^2).",
+      "total_parameter_count": 201219,
+      "parameter_count_basis": "exact",
+      "submitter_trainable_parameter_count": 201219,
+      "components": [
+        {
+          "id": "coordinate-mlp",
+          "family": "point-wise multilayer perceptron",
+          "role": "maps point features to the three flow quantities",
+          "description": "11 input channels, hidden width and depth as declared, 3 outputs",
+          "parameter_count": 201219
+        }
+      ],
+      "key_hyperparameters": [
+        {
+          "id": "width",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "hidden width",
+          "value": "256",
+          "description": "units per hidden layer"
+        },
+        {
+          "id": "depth",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "hidden layers",
+          "value": "4",
+          "description": "SiLU blocks before the output layer"
+        },
+        {
+          "id": "batch",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "batch size",
+          "value": "8192",
+          "description": "sampled points per optimiser step"
+        },
+        {
+          "id": "lr",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "learning rate",
+          "value": "0.002",
+          "description": "AdamW peak, cosine decay"
+        },
+        {
+          "id": "epochs",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "epochs",
+          "value": "30",
+          "description": "passes over the sampled training point set"
+        },
+        {
+          "id": "wall-fraction",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "wall sampling share",
+          "value": "0.25",
+          "description": "share of each case's sample taken from the wall and the boundary-layer band"
+        },
+        {
+          "id": "physics-weight",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "physics loss weight",
+          "value": "0.05",
+          "description": "weight of the wall no-penetration and outer-domain Bernoulli residuals, added to the data term"
+        }
+      ],
+      "input_features": [
+        {
+          "id": "position",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "point position",
+          "domain": "volume",
+          "component_count": 2,
+          "description": "x and y in metres, divided by the chord."
+        },
+        {
+          "id": "sdf",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "distance to the airfoil",
+          "domain": "volume",
+          "component_count": 2,
+          "description": "the AirfRANS signed distance per point, divided by the chord, and its signed logarithm."
+        },
+        {
+          "id": "normals",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "wall normals",
+          "domain": "volume",
+          "component_count": 2,
+          "description": "the airfoil normal at the nearest wall point, zero away from the wall."
+        },
+        {
+          "id": "surface",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "wall mask",
+          "domain": "volume",
+          "component_count": 1,
+          "description": "1 on an airfoil node, 0 elsewhere (the AirfRANS surface flag)."
+        },
+        {
+          "id": "freestream",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "freestream direction",
+          "domain": "global",
+          "component_count": 2,
+          "description": "unit inlet velocity, i.e. the case's angle of attack."
+        },
+        {
+          "id": "inlet-scale",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "name": "inlet velocity",
+          "domain": "global",
+          "component_count": 1,
+          "description": "log of the inlet velocity magnitude (the case's Reynolds-like scale)."
+        }
+      ],
+      "predicted_fields": [
+        {
+          "field_id": "two-dimensional-domain-native.U",
+          "domain": "domain",
+          "component_count": 2,
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "production": "direct_model_output",
+          "description": "Cartesian velocity on every native 2D flow-domain point."
+        },
+        {
+          "field_id": "two-dimensional-domain-native.p",
+          "domain": "domain",
+          "component_count": 1,
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "production": "direct_model_output",
+          "description": "Kinematic pressure on every native 2D flow-domain point."
+        },
+        {
+          "field_id": "airfoil-curve-native.p",
+          "domain": "curve",
+          "component_count": 1,
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "production": "derived_from_model_output",
+          "description": "Curve pressure selected from the domain prediction at the wall, as the methodology contract allows."
+        }
+      ]
+    },
+    "data_handling": {
+      "normalization": "per-point scaling by the chord and the inlet velocity: positions and distances divide by the chord, velocity by U_inf, pressure by U_inf^2. No dataset-wide statistics are used, so the same weights transfer across cases.",
+      "preprocessing": "the public AirfRANS preprocessing (cropped domain, airfoil curve, signed distance, wall normals) read through the AirfRANS 0.1.5.1 library; the native point order is preserved end to end.",
+      "sampling": "4096 points per training case, a quarter of them from the wall and the boundary-layer band, resampled every epoch over 640 training cases; every native point of every official test case is predicted for inference, in memory-safe chunks."
+    },
+    "training": {
+      "stages": [
+        {
+          "id": "surrogate",
+          "status": "performed_by_submitter",
+          "component_ids": [
+            "coordinate-mlp"
+          ],
+          "description": "supervised regression on the official training split of the public AirfRANS release; no test data and no external pretraining.",
+          "procedure": {
+            "kind": "gradient_based",
+            "loss": {
+              "description": "mean squared error over the three scaled outputs (u/U_inf, v/U_inf, p/U_inf^2) of the sampled points, plus 0.05 times the mean squared wall no-penetration residual on the wall nodes and the mean squared Bernoulli residual (p - 1/2(1 - q^2)) on the points more than one chord from the airfoil",
+              "weighting": "uniform mean over every component and sampled point, physics terms weighted as declared above"
+            },
+            "optimizers": [
+              {
+                "name": "AdamW",
+                "learning_rate": 0.002,
+                "schedule": "cosine decay to lr/50, weight decay 1e-5"
+              }
+            ],
+            "batch": {
+              "value": 8192,
+              "unit": "sampled points",
+              "gradient_accumulation_steps": 1
+            },
+            "duration": {
+              "epochs": 30,
+              "optimizer_steps": 9510
+            }
+          },
+          "run_count": 1,
+          "stochastic": true,
+          "random_seeds": [
+            0
+          ],
+          "compute": {
+            "hardware": "Apple M-series integrated GPU (Metal/MPS), one device, one process",
+            "max_concurrent_device_count": 1,
+            "devices_per_job": 1,
+            "campaign_wall_time_hours": 0.1462,
+            "aggregate_device_hours": 0.1462,
+            "measurement_basis": "measured",
+            "cost_scope": "final_training",
+            "accelerator": {
+              "type": "gpu",
+              "vendor": "Apple",
+              "model": "M-series integrated GPU"
+            },
+            "hardware_identity_basis": "machine_recorded",
+            "measurement_notes": "one process on one device; wall-clock of the training script, 526.5 s measured end to end."
+          }
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "weights",
+        "component_ids": [
+          "coordinate-mlp"
+        ],
+        "sha256": "f0ca8989f0f731f497cbd285e2cf1ab7fab5c84db7f9facff492f5edf70237d1",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "808613 bytes, torch state dict of the trained network",
+        "role": "the trained weights loaded for every prediction",
+        "selection_rule": "the final epoch of the single run; no checkpoint selection was performed"
+      }
+    ],
+    "inference_compute": {
+      "status": "measured",
+      "hardware": "Apple M-series GPU (Metal)",
+      "max_concurrent_device_count": 1,
+      "devices_per_job": 1,
+      "accelerator": {
+        "type": "gpu",
+        "vendor": "Apple",
+        "model": "M-series integrated GPU"
+      },
+      "hardware_identity_basis": "machine_recorded",
+      "case_count": 200,
+      "campaign_wall_time_seconds": 377.1,
+      "aggregate_device_time_seconds": 377.1,
+      "includes_preprocessing": true,
+      "includes_mapping": true,
+      "timing_protocol": "legacy_reported",
+      "measurement_notes": "wall time of the prediction campaign over the complete official split: feature construction, chunked forward passes and packing of every case's native-order arrays. Model load and framework import are excluded."
+    }
+  },
+  "submitter_name": "Yan Barros",
+  "institution": "PINNeAPPle Labs",
+  "paper_url": "",
+  "submitted_at": "2026-11-12",
+  "evaluation": {
+    "reference_version": "airfrans-scoring-v2",
+    "command": "python scripts/airfrans.py evaluate-entry <entry> --dataset-root <Dataset> --support-root <support> --output <work/result> --resume; python scripts/airfrans.py package --evaluation-root <work/result>/evaluation --config <entry>/package-config.json --discretization-cases <entry>/discretization-cases.jsonl --output submissions/airfrans/pp-coordinate-net-physics-full-v1",
+    "evidence_file": "evaluation-evidence.json",
+    "evidence_sha256": "90ead58491b87f38377615b45e2ad9d020636457e109f6785b0a671376979578"
+  },
+  "reproducibility": {
+    "contract_version": "open-reproducibility-3.0",
+    "access": "public",
+    "public_test_data_use": "evaluation_only",
+    "result_data_license_spdx": "CC-BY-4.0"
+  },
+  "scoring_support": {
+    "status": "official",
+    "release_id": "airfrans-native-support-v1",
+    "manifest_url": "https://github.com/FluidsBench/fluidsbench-submission/releases/download/airfrans-native-support-v1/manifest.json",
+    "manifest_sha256": "18231e558012d74c39ed4df4083ee2d5a60e7b9c6492ed3c10496a3ca70fd606"
+  },
+  "spatial_discretization": {
+    "format": "fluidsbench-discretization-v1",
+    "file": "discretization.json",
+    "sha256": "26292664b4edbbab348bddbe43cc53302de38f8174d9744a640f45b18ea7a36c"
+  },
+  "case_metrics": {
+    "format": "fluidsbench-case-metrics-v1",
+    "file": "metrics/cases.json",
+    "sha256": "6ec3ec752fbd9524b06aca37c56fb9494249fde17fe616708fe490fc2994ca85",
+    "case_count": 200
+  },
+  "metric_values": {
+    "flow_domain_velocity_rel_l2": 15.104215664998305,
+    "flow_domain_velocity_physical_rel_l2": 3.4798337635399066,
+    "flow_domain_velocity_rel_l1": 11.100859916874365,
+    "flow_domain_pressure_rel_l2": 36.82105133685339,
+    "flow_domain_pressure_physical_rel_l2": 39.66847726015922,
+    "flow_domain_pressure_rel_l1": 27.261127818534934,
+    "surface_pressure_rel_l2": 16.177402730349876,
+    "surface_pressure_equal_entity_rel_l2": 34.88907128164033,
+    "surface_pressure_rel_l1": 12.647048637261342,
+    "surface_wall_shear_rel_l2": 1271.457786791426,
+    "surface_wall_shear_equal_entity_rel_l2": 1312.217108417734,
+    "surface_wall_shear_rel_l1": 1325.1101557130687,
+    "cd_r2": -347.13037172486753,
+    "cl_r2": 0.9826848865402827,
+    "c_drag_mae": 0.08311157812258965,
+    "c_lift_mae": 0.05638988986571869,
+    "velocity_profile_r2": 0.7487752148624842,
+    "overall_score": 28.546229236964933,
+    "field_score": 0.0,
+    "force_score": 39.307395461611314,
+    "diagnostic_score": 74.87752148624843
+  },
+  "profile_data": {
+    "format": "fluidsbench-profile-chunks-v1",
+    "index_file": "profiles/index.json",
+    "case_count": 200,
+    "case_set_id": "standard",
+    "profile_ground_truth_release_id": "airfrans-native-profile-truth-v1",
+    "profile_ground_truth_manifest_sha256": "a0d752e9d92fc7ad78cbfcf065c939a817d64a068cc8e83cc2a91d02c2aba805"
+  },
+  "note": "AirfRANS submission; forces and profiles are derived from the predicted native fields."
+}
