@@ -1,0 +1,281 @@
+{
+  "training": {
+    "surface_input": {
+      "used": true,
+      "representation": "airfoil curve point cloud, with the AirfRANS signed distance and wall normals",
+      "entity_counts": [
+        {
+          "entity": "sampled_training_points",
+          "count": {
+            "kind": "fixed",
+            "value": 4096
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "method": "uniform random subset per case, resampled every epoch, with a quarter of the points taken from the wall and the boundary-layer band",
+        "seed": 0
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "surface_supervision": {
+      "used": true,
+      "representation": "targets at the wall nodes of the sampled point sets",
+      "entity_counts": [
+        {
+          "entity": "sampled_training_points",
+          "count": {
+            "kind": "fixed",
+            "value": 4096
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "method": "the wall nodes inside each sampled subset",
+        "seed": 0
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "volume_input": {
+      "used": true,
+      "representation": "native internal point cloud",
+      "entity_counts": [
+        {
+          "entity": "sampled_training_points",
+          "count": {
+            "kind": "fixed",
+            "value": 4096
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "method": "uniform random subset per case, resampled every epoch",
+        "seed": 0
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "volume_supervision": {
+      "used": true,
+      "representation": "native velocity and pressure at the sampled points",
+      "entity_counts": [
+        {
+          "entity": "sampled_training_points",
+          "count": {
+            "kind": "fixed",
+            "value": 4096
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "method": "uniform random subset per case, resampled every epoch",
+        "seed": 0
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    }
+  },
+  "inference": {
+    "geometry_dependency": "surface_geometry",
+    "surface_input": {
+      "used": true,
+      "case_record_id": "surface-geometry-input",
+      "representation": "airfoil curve point cloud of the case",
+      "entity_counts": [
+        {
+          "entity": "airfoil_curve_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 858,
+            "median": 1019.0,
+            "maximum": 1143
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "fixed",
+        "method": "every native airfoil point of the case"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "volume_input": {
+      "used": true,
+      "case_record_id": "flow-domain-input",
+      "representation": "native internal point cloud of the case",
+      "entity_counts": [
+        {
+          "entity": "flow_domain_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 158012,
+            "median": 180870.5,
+            "maximum": 199531
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "fixed",
+        "method": "every native internal point of the case"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "direct_outputs": [
+      {
+        "id": "coordinate-query-output",
+        "domain": "volume",
+        "representation": {
+          "used": true,
+          "representation": "per-point queries at the native internal points, in memory-safe chunks",
+          "entity_counts": [
+            {
+              "entity": "flow_domain_points",
+              "count": {
+                "kind": "per_case",
+                "minimum": 158012,
+                "median": 180870.5,
+                "maximum": 199531
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "not_applicable"
+          },
+          "sampling": {
+            "kind": "fixed",
+            "method": "every native internal point"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "none"
+        },
+        "queries_per_forward_pass": {
+          "kind": "per_case",
+          "minimum": 158012,
+          "median": 180870.5,
+          "maximum": 199531
+        }
+      },
+      {
+        "id": "field-integrated-forces",
+        "domain": "scalar_case",
+        "representation": {
+          "used": true,
+          "representation": "the case's force coefficients, integrated from the submitted pressure and velocity field by the official evaluator",
+          "entity_counts": [
+            {
+              "entity": "force_coefficients",
+              "count": {
+                "kind": "fixed",
+                "value": 1
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "not_applicable"
+          },
+          "sampling": {
+            "kind": "none"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "none"
+        },
+        "queries_per_forward_pass": {
+          "kind": "fixed",
+          "value": 1
+        }
+      }
+    ],
+    "mappings": [
+      {
+        "support_id": "two-dimensional-domain-native",
+        "source_output_id": "coordinate-query-output",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "scripts/airfrans.py evaluate-entry",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "airfoil-curve-native",
+        "source_output_id": "coordinate-query-output",
+        "method": {
+          "kind": "nearest"
+        },
+        "implementation": "scripts/airfrans.py evaluate-entry",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "airfoil-force-coefficients-native",
+        "source_output_id": "field-integrated-forces",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "scripts/airfrans.py evaluate-entry (forces integrated from the submitted wall pressure and velocity field, force_prediction_source=field_integrated)",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      }
+    ]
+  },
+  "$schema": "https://fluidsbench.org/schemas/v3/discretization.schema.json",
+  "schema_version": "1.0",
+  "submission_id": "pp-coordinate-net-aoa-train-v1",
+  "dataset_id": "airfrans",
+  "split_id": "aoa_extrapolation",
+  "scoring_support_release_id": "airfrans-native-support-v1",
+  "scoring_support_manifest_sha256": "18231e558012d74c39ed4df4083ee2d5a60e7b9c6492ed3c10496a3ca70fd606",
+  "case_manifest": {
+    "format": "jsonl",
+    "file": "discretization/cases.jsonl",
+    "case_count": 196,
+    "sha256": "c0d61a1bd1723447303fd6f897d06df2ac2b4f526503065f41b06929e3092bf0"
+  }
+}
