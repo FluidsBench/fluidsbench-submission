@@ -1,0 +1,264 @@
+{
+  "training": {
+    "surface_input": {
+      "used": true,
+      "representation": "native aerofoil curve nodes and line segments (.vtp)",
+      "entity_counts": [
+        {
+          "entity": "airfoil_curve_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 843,
+            "median": 1016.0,
+            "maximum": 1217
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native",
+      "notes": "Used through the panel-method prior (panels are the native line segments, every curve node a vertex) and the wall normals; computed once per case on all curve nodes."
+    },
+    "surface_supervision": {
+      "used": true,
+      "representation": "native wall nodes of the 2D domain mesh (coincide with the curve nodes)",
+      "entity_counts": [
+        {
+          "entity": "wall_nodes",
+          "count": {
+            "kind": "per_case",
+            "minimum": 843,
+            "median": 1016.0,
+            "maximum": 1217
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "seed": null,
+        "method": "10% of every optimizer step's batch, uniform with replacement over wall nodes"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none",
+      "notes": "Supervises p/U_inf^2 and log1p(nut/nu) at wall nodes; velocity is zero there by construction and not supervised. Sampling seed 0 or 1 per member."
+    },
+    "volume_input": {
+      "used": true,
+      "representation": "native 2D domain mesh nodes (pointwise features)",
+      "entity_counts": [
+        {
+          "entity": "domain_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 155727,
+            "median": 180525.5,
+            "maximum": 210412
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "seed": null,
+        "method": "65,536 nodes per optimizer step, uniform with replacement (90% all nodes, 10% wall nodes)"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none",
+      "notes": "Pointwise MLP: every node is processed independently; mesh connectivity is not used by the model. Sampling seed 0 or 1 per member; 804 aoa_train cases."
+    },
+    "volume_supervision": {
+      "used": true,
+      "representation": "native 2D domain mesh nodes",
+      "entity_counts": [
+        {
+          "entity": "domain_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 155727,
+            "median": 180525.5,
+            "maximum": 210412
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "seed": null,
+        "method": "65,536 nodes per optimizer step, uniform with replacement (90% all nodes, 10% wall nodes)"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none",
+      "notes": "Targets at the sampled nodes: N = (U/U_inf)/h(d) (off-wall nodes only), p/U_inf^2 and log1p(nut/nu)."
+    }
+  },
+  "inference": {
+    "geometry_dependency": "native_cfd_mesh",
+    "surface_input": {
+      "case_record_id": "native-curve-points",
+      "used": true,
+      "representation": "native aerofoil curve nodes and line segments (.vtp)",
+      "entity_counts": [
+        {
+          "entity": "airfoil_curve_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 858,
+            "median": 1019.0,
+            "maximum": 1143
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native",
+      "notes": "Used through the panel-method prior (panels are the native line segments, every curve node a vertex) and the wall normals; computed once per case on all curve nodes."
+    },
+    "volume_input": {
+      "case_record_id": "native-domain-points",
+      "used": true,
+      "representation": "native 2D domain mesh nodes (pointwise features)",
+      "entity_counts": [
+        {
+          "entity": "domain_points",
+          "count": {
+            "kind": "per_case",
+            "minimum": 158012,
+            "median": 180870.5,
+            "maximum": 199531
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none",
+      "notes": "Pointwise MLP: every node is processed independently; mesh connectivity is not used by the model."
+    },
+    "direct_outputs": [
+      {
+        "id": "native-domain-velocity-pressure",
+        "domain": "volume",
+        "representation": {
+          "used": true,
+          "representation": "native 2D domain mesh nodes, native order",
+          "entity_counts": [
+            {
+              "entity": "domain_points",
+              "count": {
+                "kind": "per_case",
+                "minimum": 158012,
+                "median": 180870.5,
+                "maximum": 199531
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "not_applicable"
+          },
+          "sampling": {
+            "kind": "none"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "native",
+          "notes": "Velocity (2) and kinematic pressure (1) at every native internal node: equal-weight mean of four members, each evaluated on all nodes of the case in one forward pass."
+        },
+        "queries_per_forward_pass": {
+          "kind": "per_case",
+          "minimum": 158012,
+          "median": 180870.5,
+          "maximum": 199531
+        }
+      }
+    ],
+    "mappings": [
+      {
+        "support_id": "two-dimensional-domain-native",
+        "source_output_id": "native-domain-velocity-pressure",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "scripts/derive_airfrans_predicted_fields.py",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "airfoil-curve-native",
+        "source_output_id": "native-domain-velocity-pressure",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "airfrans-surface-subset-reorganize-v1",
+          "rule_version": "1"
+        },
+        "implementation": "scripts/derive_airfrans_predicted_fields.py",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "airfoil-force-coefficients-native",
+        "source_output_id": "native-domain-velocity-pressure",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "airfrans-force-integration-v1",
+          "rule_version": "1"
+        },
+        "implementation": "scripts/derive_airfrans_predicted_fields.py",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      }
+    ]
+  },
+  "$schema": "https://fluidsbench.org/schemas/v3/discretization.schema.json",
+  "schema_version": "1.0",
+  "submission_id": "panel-mtl-ens4-aoa-v1",
+  "dataset_id": "airfrans",
+  "split_id": "aoa_extrapolation",
+  "scoring_support_release_id": "airfrans-native-support-v1",
+  "scoring_support_manifest_sha256": "18231e558012d74c39ed4df4083ee2d5a60e7b9c6492ed3c10496a3ca70fd606",
+  "case_manifest": {
+    "format": "jsonl",
+    "file": "discretization/cases.jsonl",
+    "case_count": 196,
+    "sha256": "4f0c5c0b0532a93610c3531924c17ee19d87571b5e3caf5630acadd81b25a878"
+  }
+}

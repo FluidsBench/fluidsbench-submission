@@ -1,0 +1,692 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/submission.schema.json",
+  "schema_version": "3.0",
+  "submission_id": "panel-mtl-ens4-aoa-v1",
+  "result_revision": {
+    "series_id": "panel-mtl-ens4-aoa",
+    "version": 1,
+    "supersedes": null,
+    "change_summary": "Initial submission."
+  },
+  "model": "Panel-prior FiLM multi-task MLP ensemble (4 members)",
+  "model_type": "Coordinate network",
+  "model_types": [
+    "Coordinate network",
+    "MLP",
+    "Ensemble",
+    "Physics-guided"
+  ],
+  "training_regime": "from_scratch",
+  "target_data_used": "official_train",
+  "external_pretraining": false,
+  "pretraining_data": [],
+  "dataset": "AirfRANS",
+  "dataset_id": "airfrans",
+  "dataset_version": "airfrans-native-v1",
+  "split": "AoA extrapolation",
+  "split_id": "aoa_extrapolation",
+  "case_set_id": "aoa_extrapolation",
+  "split_sha256": "58621bbd012d3d14f45f49783696ddb4f03766bd2db144624c2d77711b17961b",
+  "parameter_count_millions": 3.742992,
+  "methodology": {
+    "record_kind": "submitter_reported",
+    "record_note": "Submitter-reported record for an equal-weight mean of four independently trained FiLM-conditioned pointwise multi-task MLPs (residual trunk seeds 0 and 1, plain trunk seeds 0 and 1) with a potential-flow (panel-method) prior as input. Parameter counts are exact sums of numel() over each member's model.parameters(). Each checkpoint also stores three Kendall uncertainty log-variances (12 scalars over the four files); they weight the training loss only, are not part of the network, are not loaded into it and are not used at inference, so they are excluded from total_parameter_count and submitter_trainable_parameter_count. All model selection used only the 645 AirfRANS cases that are in no official test set (dev_train 545 / dev_val 100; dev_aoa_train 426 / dev_aoa_val 219); no official test case influenced the configuration, which was frozen before any official test evaluation; the four final members were trained once on the 804 aoa_train cases with the frozen configuration. The dev pool contains no aoa_test case and lies entirely inside aoa_train; see the hyperparameter-search stage.",
+    "architecture": {
+      "description": "Equal-weight ensemble of four FiLM-conditioned pointwise multi-task MLPs. Each member is evaluated independently at every native internal node of a case's 2D mesh, in native order; no mesh connectivity, graph, attention, interpolation or remeshing is used. Trunk: Linear(9->256)+ReLU, then 4 blocks; block b computes z = Linear_b2(ReLU((1+gamma_b)*Linear_b1(h) + beta_b)) and then h = LayerNorm(h + z) (residual members) or h = ReLU(z) (plain members). gamma_b, beta_b for all blocks come from a FiLM MLP on the 8 standardised case inputs: Linear(8->128)-ReLU-Linear(128->128)-ReLU-Linear(128->2*256*4), last layer zero-initialised. Three heads 256->128->64->out with ReLU: the nut head (1 output, auxiliary log1p(nut/nu), never submitted) runs first; the U head (2 outputs) and p head (1 output) read [trunk features, predicted nut] (auxiliary-conditioned heads). Outputs are de-standardised; velocity uses a hard no-slip ansatz U/U_inf = h(d)*N with h(d) = d/(d+delta), delta = 1e-4 chord and d the distance to the aerofoil, so U is exactly 0 at wall nodes; pressure is predicted as p/U_inf^2 and multiplied by U_inf^2 (kinematic pressure, m^2/s^2). The four members' velocity and pressure are averaged per node with equal weights. Aerofoil-curve pressure is the domain pressure at the wall nodes. Exact parameter counts: residual member 936,772 (including 2,048 LayerNorm parameters), plain member 934,724; total 3,742,992, all trained by the submitter.",
+      "total_parameter_count": 3742992,
+      "parameter_count_basis": "exact",
+      "submitter_trainable_parameter_count": 3742992,
+      "components": [
+        {
+          "id": "member-res-s0",
+          "family": "FiLM-conditioned pointwise MLP, residual trunk",
+          "role": "Ensemble member 1 of 4 (weight 1/4): velocity and pressure at every native internal node; auxiliary nut head.",
+          "description": "Residual trunk (LayerNorm(h + block(h))), width 256, 4 FiLM blocks; FiLM MLP 8->128->128->2048; nut, U and p heads 256(+1)->128->64->out with U and p heads conditioned on predicted nut. Training seed 0.",
+          "parameter_count": 936772
+        },
+        {
+          "id": "member-res-s1",
+          "family": "FiLM-conditioned pointwise MLP, residual trunk",
+          "role": "Ensemble member 2 of 4 (weight 1/4): velocity and pressure at every native internal node; auxiliary nut head.",
+          "description": "Same architecture and configuration as member-res-s0; training seed 1.",
+          "parameter_count": 936772
+        },
+        {
+          "id": "member-plain-s0",
+          "family": "FiLM-conditioned pointwise MLP, plain trunk",
+          "role": "Ensemble member 3 of 4 (weight 1/4): velocity and pressure at every native internal node; auxiliary nut head.",
+          "description": "Plain trunk (ReLU(block(h)), no skip connection, no normalisation), width 256, 4 FiLM blocks; FiLM MLP 8->128->128->2048; nut, U and p heads 256(+1)->128->64->out with U and p heads conditioned on predicted nut. Training seed 0.",
+          "parameter_count": 934724
+        },
+        {
+          "id": "member-plain-s1",
+          "family": "FiLM-conditioned pointwise MLP, plain trunk",
+          "role": "Ensemble member 4 of 4 (weight 1/4): velocity and pressure at every native internal node; auxiliary nut head.",
+          "description": "Same architecture and configuration as member-plain-s0; training seed 1.",
+          "parameter_count": 934724
+        }
+      ],
+      "key_hyperparameters": [
+        {
+          "id": "ensemble-aggregation",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Ensemble aggregation",
+          "value": "equal-weight mean of 4 members",
+          "description": "Velocity and pressure averaged per node over the four members."
+        },
+        {
+          "id": "trunk-width",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Trunk width",
+          "value": 256,
+          "description": "Hidden width of every trunk layer."
+        },
+        {
+          "id": "trunk-blocks",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Trunk blocks",
+          "value": 4,
+          "description": "Number of Linear-FiLM-ReLU-Linear blocks."
+        },
+        {
+          "id": "trunk-residual",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Block combination (residual members)",
+          "value": "LayerNorm(h + block(h))",
+          "description": "Residual connection followed by LayerNorm after every block."
+        },
+        {
+          "id": "trunk-plain",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Block combination (plain members)",
+          "value": "ReLU(block(h))",
+          "description": "No skip connection and no normalisation."
+        },
+        {
+          "id": "film-conditioning",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "FiLM network",
+          "value": "8->128->128->2048, zero-initialised output",
+          "description": "Per-case scale (1+gamma) and shift (beta) for the first linear layer of every block; starts at the identity modulation."
+        },
+        {
+          "id": "heads",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Output heads",
+          "value": "nut first; U and p conditioned on predicted nut",
+          "description": "Three 256->128->64->out ReLU heads; the U and p heads take [trunk features, predicted nut] (257 inputs) without gradient detach."
+        },
+        {
+          "id": "no-slip-delta",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "No-slip length scale delta (chords)",
+          "value": 0.0001,
+          "description": "U/U_inf = d/(d+delta) * N; velocity is exactly zero on the wall."
+        },
+        {
+          "id": "task-weighting",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Multi-task loss weighting",
+          "value": "Kendall uncertainty weighting over (U, p, nut)",
+          "description": "Three learned log-variances; training only."
+        },
+        {
+          "id": "optimizer-steps",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Optimizer steps",
+          "value": 50000,
+          "description": "Fixed schedule; last step kept."
+        },
+        {
+          "id": "batch-nodes",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Batch size (mesh nodes)",
+          "value": 65536,
+          "description": "Nodes per optimizer step, sampled across all training cases."
+        },
+        {
+          "id": "wall-fraction",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Wall-node batch fraction",
+          "value": 0.1,
+          "description": "Fraction of every batch drawn from wall nodes."
+        },
+        {
+          "id": "learning-rate",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Peak learning rate",
+          "value": 0.001,
+          "description": "AdamW with OneCycle schedule."
+        },
+        {
+          "id": "weight-decay",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "AdamW weight decay",
+          "value": 0.01,
+          "description": "On network parameters; 0 on the loss log-variances."
+        }
+      ],
+      "input_features": [
+        {
+          "id": "node-coordinates",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "x, y",
+          "domain": "domain",
+          "component_count": 2,
+          "description": "Coordinates of the native internal node (m; chord 1 m), standardised."
+        },
+        {
+          "id": "wall-distance",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Distance to the aerofoil d",
+          "domain": "domain",
+          "component_count": 1,
+          "description": "d = -implicit_distance from the native .vtu (0 on wall nodes), standardised."
+        },
+        {
+          "id": "log-wall-distance",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "log10(d + 1e-7)",
+          "domain": "domain",
+          "component_count": 1,
+          "description": "Log distance to resolve the near-wall layer (first off-wall node about 1.6e-6 chord), standardised."
+        },
+        {
+          "id": "wall-normal",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Wall normal nx, ny",
+          "domain": "domain",
+          "component_count": 2,
+          "description": "Aerofoil normal from the native .vtp Normals array, matched to wall nodes by exact position; 0 at off-wall nodes; not standardised."
+        },
+        {
+          "id": "panel-velocity",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Inviscid velocity u/U_inf, v/U_inf",
+          "domain": "domain",
+          "component_count": 2,
+          "description": "Potential-flow velocity at the node from the Hess-Smith panel method on the native aerofoil boundary (geometry and AoA only; see preprocessing), standardised."
+        },
+        {
+          "id": "panel-pressure",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Inviscid pressure (1 - |V|^2/U_inf^2)/2",
+          "domain": "domain",
+          "component_count": 1,
+          "description": "Bernoulli pressure of the same panel solution at the node, standardised."
+        },
+        {
+          "id": "freestream-speed",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "U_inf",
+          "domain": "case",
+          "component_count": 1,
+          "description": "Freestream speed (m/s) parsed from the case name; equivalent to the Reynolds number Re = U_inf c / nu. FiLM input, standardised over training cases."
+        },
+        {
+          "id": "angle-of-attack",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Angle of attack (deg)",
+          "domain": "case",
+          "component_count": 1,
+          "description": "Parsed from the case name. FiLM input, standardised over training cases."
+        },
+        {
+          "id": "naca-series-flag",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "NACA 4-digit flag",
+          "domain": "case",
+          "component_count": 1,
+          "description": "1 for a NACA 4-digit, 0 for a 5-digit aerofoil, from the case name. FiLM input, standardised over training cases."
+        },
+        {
+          "id": "naca-parameters",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "NACA camber, camber position, reflex, thickness",
+          "domain": "case",
+          "component_count": 4,
+          "description": "Shape parameters from the case name (reflex 0 for 4-digit aerofoils). FiLM input, standardised over training cases."
+        },
+        {
+          "id": "panel-lift-coefficient",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Inviscid lift coefficient",
+          "domain": "case",
+          "component_count": 1,
+          "description": "Lift coefficient of the panel-method solution. FiLM input, standardised over training cases."
+        }
+      ],
+      "predicted_fields": [
+        {
+          "field_id": "two-dimensional-domain-native.U",
+          "domain": "domain",
+          "component_count": 2,
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "production": "direct_model_output",
+          "description": "Cartesian velocity (Ux, Uy) on every native 2D flow-domain point: each member's U head output N, de-standardised and multiplied by h(d)*U_inf (hard no-slip), averaged over the four members."
+        },
+        {
+          "field_id": "two-dimensional-domain-native.p",
+          "domain": "domain",
+          "component_count": 1,
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "production": "direct_model_output",
+          "description": "Kinematic pressure on every native 2D flow-domain point: each member's p head output (p/U_inf^2), de-standardised and multiplied by U_inf^2, averaged over the four members."
+        },
+        {
+          "field_id": "airfoil-curve-native.p",
+          "domain": "curve",
+          "component_count": 1,
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "production": "derived_from_model_output",
+          "description": "Airfoil-curve pressure, selected from the domain pressure prediction at the native surface points and reorganized onto the airfoil's native point order (methodology-contract.json explicitly allows this: 'may be derived by selecting the corresponding output')."
+        }
+      ]
+    },
+    "data_handling": {
+      "normalization": "Targets are first made non-dimensional: N = (U/U_inf)/h(d) with h(d) = d/(d+1e-4), p/U_inf^2 (no mean subtracted) and log1p(nut/nu), nu from the AirfRANS formula at 298.15 K. Point inputs and targets are then standardised with mean and standard deviation over all nodes of the 804 aoa_train cases (wall normals left unscaled; N statistics over off-wall nodes only). Case inputs are standardised over the 804 training cases (a standard deviation below 1e-6 is set to 1). The statistics are computed from training data only and stored in each checkpoint. At inference each member's outputs are de-standardised and averaged per node; U = h(d)*N*U_inf and p = (p/U_inf^2)*U_inf^2 (both linear, so averaging before or after this step is identical).",
+      "preprocessing": "Two deterministic CPU steps run once per case (training and test alike) and are cached to disk. (1) Mesh features (airfrans_mtl/preprocess.py): reads <case>_internal.vtu and <case>_aerofoil.vtp; node coordinates, d = -implicit_distance, wall mask implicit_distance == 0, wall normals from the .vtp Normals matched by exact position, and the .vtp point order (the evaluator's airfoil_points). The same pass copies U, p and nut, which are read only as targets for training cases; inference reads only the geometric arrays. (2) Potential-flow prior (airfrans_mtl/panel.py): Hess-Smith panel method with a constant source strength per panel, one constant vortex strength and the Kutta condition, solved on the closed polygon formed by the native .vtp line segments (every curve node is a panel vertex), unit freestream at the case angle of attack. It gives inviscid u/U_inf, v/U_inf and (1-|V|^2/U_inf^2)/2 at every internal node (wall nodes take the mean of the two adjacent panels' surface velocity) and the inviscid lift coefficient. It uses geometry and angle of attack only. Case conditions (U_inf, angle of attack, NACA parameters) are parsed from the case name. There is no mapping, interpolation or remeshing: features and predictions are on the native internal nodes in native order.",
+      "sampling": "Training: every optimizer step draws 65,536 nodes uniformly with replacement, 58,983 from all 144,520,139 nodes of the 804 aoa_train cases and 6,553 (10%) from their 812,507 wall nodes; resampled every step with the member's seed. The velocity loss uses off-wall nodes only (N is undefined on the wall, where U is zero by construction); the pressure and nut losses use all sampled nodes. Inference: no sampling; each member is evaluated on all native internal nodes of a case in one forward pass."
+    },
+    "training": {
+      "stages": [
+        {
+          "id": "final-training",
+          "status": "performed_by_submitter",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "description": "From-scratch training of each ensemble member on all 804 official aoa_train cases (the official AoA-extrapolation training set, angle of attack -2.48 to 12.45 deg; all 196 aoa_test cases lie outside this range): one run per member (residual trunk seeds 0 and 1, plain trunk seeds 0 and 1) with the frozen configuration and code snapshot airfrans_mtl/snapshots/mtl_v4_final.py. No validation set, monitoring or early stopping; each checkpoint is the last step. Slurm jobs 2590968 (res seed 0), 2590969 (res seed 1), 2590970 (plain seed 0), 2590971 (plain seed 1).",
+          "procedure": {
+            "kind": "gradient_based",
+            "loss": {
+              "description": "Three standardised mean-squared-error terms: L_U over both components of N = (U/U_inf)/h(d) at off-wall batch nodes; L_p over p/U_inf^2 at all batch nodes; L_nut over log1p(nut/nu) at all batch nodes (auxiliary task, never submitted).",
+              "weighting": "Kendall et al. (2018) homoscedastic uncertainty weighting: loss = sum_i [0.5*exp(-s_i)*L_i + 0.5*s_i] over (U, p, nut), with three learned log-variances s_i initialised at 0 and trained jointly without weight decay; no hand-set task weights."
+            },
+            "optimizers": [
+              {
+                "name": "AdamW",
+                "learning_rate": 0.001,
+                "schedule": "PyTorch OneCycleLR, max_lr 1e-3 over 50,000 steps with defaults (30% cosine warm-up from 4e-5, cosine annealing to 4e-9, beta1 cycled between 0.95 and 0.85); weight decay 0.01 on network parameters and 0 on the three log-variances."
+              }
+            ],
+            "batch": {
+              "value": 65536,
+              "unit": "mesh nodes per optimizer step (10% wall nodes), across all training cases",
+              "gradient_accumulation_steps": 1
+            },
+            "duration": {
+              "optimizer_steps": 50000,
+              "description": "Fixed 50,000 steps per member (3.28e9 sampled nodes, about 22.7 passes over the 144.5M training nodes); last step kept."
+            }
+          },
+          "run_count": 4,
+          "stochastic": true,
+          "random_seeds": [
+            0,
+            1,
+            0,
+            1
+          ],
+          "compute": {
+            "hardware": "NVIDIA A100-SXM4-40GB partitioned with MIG; one 1g.10gb slice (1/7 of an A100, 9.75 GB) per job on the JASMIN ORCHID gpumig partition (gpuhost002), with 4 CPU cores and 64 GB host RAM per job.",
+            "max_concurrent_device_count": 2,
+            "campaign_wall_time_hours": 2.6022,
+            "aggregate_device_hours": 5.0122,
+            "measurement_notes": "Device unit: one MIG 1g.10gb slice (1/7 of an A100-SXM4-40GB). Four single-slice jobs, at most two concurrent (gpumig per-user limit). aggregate_device_hours is the sum of Slurm sacct ElapsedRaw over jobs 2590968, 2590969, 2590970 and 2590971 (allocated time, including data loading and the per-member prediction of aoa_test written by the training script, which is not used for the submission and was not scored). campaign_wall_time_hours is the union of the four jobs' run intervals, excluding queue time. GPU identity from nvidia-smi in each job log and the sacct gres record.",
+            "accelerator": {
+              "type": "gpu",
+              "vendor": "NVIDIA",
+              "model": "A100-SXM4-40GB MIG 1g.10gb"
+            },
+            "devices_per_job": 1,
+            "measurement_basis": "measured",
+            "cost_scope": "final_training",
+            "hardware_identity_basis": "machine_recorded",
+            "execution": {
+              "precision": "tf32",
+              "batch_size": 65536,
+              "batch_unit": "mesh nodes per optimizer step",
+              "warmup_cases": null,
+              "software": "Python 3.12.11 (conda-forge, JASMIN jaspy), PyTorch 2.8.0+cu128, NumPy 2.2.6",
+              "notes": "TF32 matmul enabled (torch.backends.cuda.matmul.allow_tf32); float32 tensors. Training nodes are held in host RAM and each batch is gathered on the CPU and copied to the GPU."
+            }
+          }
+        },
+        {
+          "id": "hyperparameter-search",
+          "status": "performed_by_submitter",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1",
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "description": "Model selection and ablations that fixed the final configuration, using only the 645 AirfRANS cases in no official test set (dev_train 545 / dev_val 100; dev_aoa_train 426 / dev_aoa_val 219), scored locally with the official evaluator code on dev_val or dev_aoa_val. No official test case was used for training, monitoring or selection. 15 single-slice GPU runs (Slurm job IDs): 2245930 (MLP baseline, failed after 63 s with CUDA out-of-memory), 2250887 (MLP baseline); 2306422-2306425 (residual/plain trunk x conditioned/independent heads, 100k steps); 2350854, 2350855 (plain, 50k steps, seeds 0 and 1, no prior); 2355456, 2355457 (panel prior, plain and residual); 2375180 (panel prior, plain, seed 1); 2375181, 2375323 (angle-of-attack extrapolation check on dev_aoa with and without the prior); 2522863 (panel prior, residual, seed 1); 2522864 (delta = 1e-5 ablation). Jobs cancelled before starting (2235612, 2350856, 2350857) used no compute. Ensemble combinations were averaged and scored on CPU only. AoA-specific: the 645-case dev pool contains no aoa_test case, and all 645 dev-pool cases are aoa_train cases, so selection used labels from the AoA training set only. Of the 196 aoa_test cases, 155 are full_train cases and 41 are full_test cases, so the Full entry's training and its single full_test evaluation touched them; both happened after the configuration was frozen, and no Full model, checkpoint, prediction or score is used by this entry.",
+          "procedure": {
+            "kind": "other",
+            "description": "Gradient-based runs of the same recipe family as final-training (AdamW, OneCycle with peak learning rate 1e-3, 65,536 nodes per step, last-step checkpoints) trained on dev_train or dev_aoa_train and scored on dev_val or dev_aoa_val: a 7->256x4->4 ReLU MLP baseline (200,452 parameters, 200,000 steps); then the FiLM multi-task model at 100,000 or 50,000 steps, varying residual vs plain trunk, nut-conditioned vs independent heads, with or without the panel prior, seed 0 or 1, and delta 1e-4 vs 1e-5. The frozen configuration (panel prior, conditioned heads, uncertainty weighting, 50,000 steps, delta 1e-4, equal-weight ensemble of residual and plain trunks with seeds 0 and 1) was chosen from these dev_val scores and CPU-scored ensemble combinations. An inner angle-of-attack extrapolation check inside the dev pool (train dev_aoa_train: 426 cases with angle of attack 0 to 10 deg; score dev_aoa_val: 219 cases, 121 between -2.48 and 0 deg and 98 between 10 and 12.45 deg) gave an overall score of 79.15 with the panel prior (job 2375181) and 46.55 without it (job 2375323); this informed keeping the panel prior. The configuration was frozen before any official test evaluation: the Full entry (panel-mtl-ens4-full-v1, the same configuration trained on full_train) was evaluated exactly once on full_test, and that evaluation finished before the training jobs for this entry were submitted; nothing was changed after it. The same 15 runs are reported in the Full, Scarce and AoA entries (panel-mtl-ens4-{full,scarce,aoa}-v1).",
+            "duration": {
+              "description": "15 runs: 200,000 steps (MLP baseline), 100,000 steps (four FiLM runs), 50,000 steps (nine FiLM runs), and one run that failed at start-up."
+            }
+          },
+          "run_count": 15,
+          "stochastic": true,
+          "random_seeds": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            1,
+            0
+          ],
+          "compute": {
+            "hardware": "NVIDIA A100-SXM4-40GB partitioned with MIG; one 1g.10gb slice (1/7 of an A100, 9.75 GB) per job on the JASMIN ORCHID gpumig partition (gpuhost002), with 4 or 8 CPU cores and 64 GB host RAM per job.",
+            "max_concurrent_device_count": 2,
+            "campaign_wall_time_hours": 11.4242,
+            "aggregate_device_hours": 21.2394,
+            "measurement_notes": "Device unit: one MIG 1g.10gb slice (1/7 of an A100-SXM4-40GB). Random seeds are listed in the job order of the stage description. aggregate_device_hours is the sum of Slurm sacct ElapsedRaw over the 15 jobs (76,462 s; allocated time including data loading, the in-job dev-set prediction and CPU scoring); campaign_wall_time_hours is the union of their run intervals (41,127 s, queue gaps excluded; calendar envelope 2026-11-16 15:38 to 2026-11-17 13:50). At most two jobs ran concurrently. Excluded: a 12 s environment check on a full A100 (job 2025705, no model) and CPU-only jobs (preprocessing, panel prior, local truth build, ensemble scoring).",
+            "accelerator": {
+              "type": "gpu",
+              "vendor": "NVIDIA",
+              "model": "A100-SXM4-40GB MIG 1g.10gb"
+            },
+            "devices_per_job": 1,
+            "measurement_basis": "measured",
+            "cost_scope": "hyperparameter_search",
+            "hardware_identity_basis": "machine_recorded"
+          }
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "ckpt-res-s0",
+        "component_ids": [
+          "member-res-s0"
+        ],
+        "sha256": "3af596c09cdad1de2c2b4f2e667717873a594e422533e8ef78a8d96c248ca285",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw bytes of model.pt from training job 2590968 as read by infer.py (torch.load): a torch.save dictionary with the network state_dict, the training-set standardisation statistics (x, y and case-input means and standard deviations), the training arguments, n_params, and the training-only Kendall log-variances (not used at inference).",
+        "role": "Weights and normalisation statistics of ensemble member res seed 0.",
+        "selection_rule": "Last training step (step 50,000) of the fixed schedule; no early stopping or validation-based selection; fixed before evaluation."
+      },
+      {
+        "id": "ckpt-res-s1",
+        "component_ids": [
+          "member-res-s1"
+        ],
+        "sha256": "a11e1b5efe873bc29be45d2152a30dbb5828b4c092d583d2cb4a4180467f1ea8",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw bytes of model.pt from training job 2590969 as read by infer.py (torch.load): a torch.save dictionary with the network state_dict, the training-set standardisation statistics (x, y and case-input means and standard deviations), the training arguments, n_params, and the training-only Kendall log-variances (not used at inference).",
+        "role": "Weights and normalisation statistics of ensemble member res seed 1.",
+        "selection_rule": "Last training step (step 50,000) of the fixed schedule; no early stopping or validation-based selection; fixed before evaluation."
+      },
+      {
+        "id": "ckpt-plain-s0",
+        "component_ids": [
+          "member-plain-s0"
+        ],
+        "sha256": "b8ebca630dd9b26aefbfd18e40477e9e47f7c65a2a12986c2e24ed693a67fc15",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw bytes of model.pt from training job 2590970 as read by infer.py (torch.load): a torch.save dictionary with the network state_dict, the training-set standardisation statistics (x, y and case-input means and standard deviations), the training arguments, n_params, and the training-only Kendall log-variances (not used at inference).",
+        "role": "Weights and normalisation statistics of ensemble member plain seed 0.",
+        "selection_rule": "Last training step (step 50,000) of the fixed schedule; no early stopping or validation-based selection; fixed before evaluation."
+      },
+      {
+        "id": "ckpt-plain-s1",
+        "component_ids": [
+          "member-plain-s1"
+        ],
+        "sha256": "8f7dcad12ca7e957af44de72c1b8e291cd00693863e235f6b3f4205047317332",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw bytes of model.pt from training job 2590971 as read by infer.py (torch.load): a torch.save dictionary with the network state_dict, the training-set standardisation statistics (x, y and case-input means and standard deviations), the training arguments, n_params, and the training-only Kendall log-variances (not used at inference).",
+        "role": "Weights and normalisation statistics of ensemble member plain seed 1.",
+        "selection_rule": "Last training step (step 50,000) of the fixed schedule; no early stopping or validation-based selection; fixed before evaluation."
+      }
+    ],
+    "inference_compute": {
+      "status": "measured",
+      "hardware": "One NVIDIA A100-SXM4-40GB MIG 1g.10gb slice (1/7 of an A100, 9.75 GB) on the JASMIN ORCHID gpumig partition, with 4 CPU cores and 32 GB host RAM (Slurm job 2590990).",
+      "max_concurrent_device_count": 1,
+      "case_count": 196,
+      "campaign_wall_time_seconds": 62.7,
+      "aggregate_device_time_seconds": 62.7,
+      "includes_preprocessing": false,
+      "includes_mapping": true,
+      "measurement_notes": "One run of airfrans_mtl/infer.py over all 196 aoa_test cases on one MIG slice; aggregate device time = wall time x 1 slice. The timer starts after the four checkpoints are loaded onto the GPU (setup excluded, not separately timed) and stops after the last case is written. Per case it includes reading the cached mesh features and panel prior (.npz), host-to-device transfer, standardisation, the four member forward passes, de-standardisation, the no-slip ansatz, averaging, the device-to-host copy and writing the prediction .npz. No warm-up: the first case includes CUDA/cuBLAS initialisation. Excluded (includes_preprocessing=false): the CPU preprocessing run once per case beforehand. Measured: panel prior 3,669 s on one CPU core for the 196 aoa_test cases (mean 18.7 s, median 18 s, max 59 s per case; per-case timestamps in the logs of LOTUS job 2352191, which took 18,381 s for all 1,000 cases), and mesh-feature extraction 372 s on one core for all 1,000 cases (job 2208417; about 0.37 s per case, about 73 s pro rata for 196 cases, a pass that also extracts training targets). Mapping: outputs are produced directly at the native nodes in native order (identity), so there is no participant mapping cost; curve-pressure selection and force integration are evaluator reference rules outside this timing. Not fluidsbench-complete-case-v1, because preprocessing is excluded and file I/O is included.",
+      "accelerator": {
+        "type": "gpu",
+        "vendor": "NVIDIA",
+        "model": "A100-SXM4-40GB MIG 1g.10gb"
+      },
+      "hardware_identity_basis": "machine_recorded",
+      "devices_per_job": 1,
+      "max_concurrent_jobs": 1,
+      "timing_protocol": "legacy_reported",
+      "setup_wall_time_seconds": null,
+      "execution": {
+        "precision": "tf32",
+        "batch_size": 1,
+        "batch_unit": "case: all native internal nodes of one case in a single forward pass per member (four member passes per case)",
+        "warmup_cases": 0,
+        "software": "Python 3.12.11 (conda-forge, JASMIN jaspy), PyTorch 2.8.0+cu128, NumPy 2.2.6",
+        "notes": "TF32 matmul enabled as in training; float32 forward passes; the four member outputs are cast to float64 and averaged on the GPU, then copied to the host, where the no-slip factor and U_inf scaling are applied in float64."
+      }
+    },
+    "format": "fluidsbench-method-v1"
+  },
+  "submitter_name": "Sambit",
+  "institution": "University of Reading",
+  "paper_url": "",
+  "submitted_at": "2026-11-18",
+  "evaluation": {
+    "reference_version": "airfrans-scoring-v2",
+    "command": "python scripts/airfrans.py evaluate-entry <entry> --dataset-root <Dataset> --support-root <support> --output <work/result> --resume; python scripts/airfrans.py package --evaluation-root <work/result>/evaluation --config <entry>/package-config.json --discretization-cases <entry>/discretization-cases.jsonl --output submissions/airfrans/panel-mtl-ens4-aoa-v1",
+    "evidence_file": "evaluation-evidence.json",
+    "evidence_sha256": "2fb1a59e1fda37edecfbc693bbb02da3f3eeccdfd9a97706270ef03ad7682290"
+  },
+  "reproducibility": {
+    "contract_version": "open-reproducibility-3.0",
+    "access": "public",
+    "public_test_data_use": "evaluation_only",
+    "result_data_license_spdx": "CC-BY-4.0"
+  },
+  "scoring_support": {
+    "status": "official",
+    "release_id": "airfrans-native-support-v1",
+    "manifest_url": "https://github.com/FluidsBench/fluidsbench-submission/releases/download/airfrans-native-support-v1/manifest.json",
+    "manifest_sha256": "18231e558012d74c39ed4df4083ee2d5a60e7b9c6492ed3c10496a3ca70fd606"
+  },
+  "spatial_discretization": {
+    "format": "fluidsbench-discretization-v1",
+    "file": "discretization.json",
+    "sha256": "e02cfbde8c0b9a1878b2e641bcc6e6252ce2b63e4027a483e68463bfa0b31f0a"
+  },
+  "case_metrics": {
+    "format": "fluidsbench-case-metrics-v1",
+    "file": "metrics/cases.json",
+    "sha256": "8488f3011fb10f7794f4205338d4ec4b68341ea5d5bdd9f4421286fc76f41b76",
+    "case_count": 196
+  },
+  "metric_values": {
+    "flow_domain_velocity_rel_l2": 2.629541845413724,
+    "flow_domain_velocity_physical_rel_l2": 0.7015956493352387,
+    "flow_domain_velocity_rel_l1": 1.8213652945792376,
+    "flow_domain_pressure_rel_l2": 4.681753164728859,
+    "flow_domain_pressure_physical_rel_l2": 4.7566527275391985,
+    "flow_domain_pressure_rel_l1": 3.4908882303801367,
+    "surface_pressure_rel_l2": 3.0216939564646412,
+    "surface_pressure_equal_entity_rel_l2": 5.812518546990128,
+    "surface_pressure_rel_l1": 2.2512391171392934,
+    "surface_wall_shear_rel_l2": 4.942894068434632,
+    "surface_wall_shear_equal_entity_rel_l2": 5.6982027824402115,
+    "surface_wall_shear_rel_l1": 4.053470233402034,
+    "cd_r2": 0.8323392936438508,
+    "cl_r2": 0.9998599447301159,
+    "c_drag_mae": 0.0013968160385777557,
+    "c_lift_mae": 0.006572086220591571,
+    "velocity_profile_r2": 0.9909038358879356,
+    "overall_score": 85.3550476752223,
+    "field_score": 76.19752585212997,
+    "force_score": 89.9347554078357,
+    "diagnostic_score": 99.09038358879356
+  },
+  "profile_data": {
+    "format": "fluidsbench-profile-chunks-v1",
+    "index_file": "profiles/index.json",
+    "case_count": 196,
+    "case_set_id": "aoa_extrapolation",
+    "profile_ground_truth_release_id": "airfrans-native-profile-truth-v1",
+    "profile_ground_truth_manifest_sha256": "a0d752e9d92fc7ad78cbfcf065c939a817d64a068cc8e83cc2a91d02c2aba805"
+  },
+  "note": "AirfRANS submission; forces and profiles are derived from the predicted native fields."
+}
