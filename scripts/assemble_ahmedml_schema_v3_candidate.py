@@ -250,6 +250,7 @@ def _release_bindings(
     specification: Mapping[str, Any],
     specification_path: Path,
     profile_truth_manifest_path: Path,
+    leaderboard_manifest: Mapping[str, Any],
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     release = _mapping(config.get("release_bindings"), "release_bindings")
     expected_keys = {
@@ -321,9 +322,7 @@ def _release_bindings(
         raise PackageAssemblyError("active profile definition bytes differ")
 
     global_truth = _mapping(
-        load_json(ROOT / "leaderboard" / "manifest.json", label="leaderboard manifest")
-        .get("data_release", {})
-        .get("profile_ground_truth"),
+        leaderboard_manifest.get("data_release", {}).get("profile_ground_truth"),
         "global profile-ground-truth binding",
     )
     if ground_truth != {
@@ -588,14 +587,28 @@ def assemble_package(
     split_id = config.get("split_id")
     if not isinstance(split_id, str):
         raise PackageAssemblyError("config.split_id must be a string")
-    split_declaration, split, case_ids, split_sha = _find_split(
+    _, split, case_ids, split_sha = _find_split(
         specification, specification_path, split_id
     )
+    leaderboard_manifest = load_json(
+        ROOT / "leaderboard" / "manifest.json", label="leaderboard manifest"
+    )
+    split_names = [
+        row.get("name")
+        for dataset in leaderboard_manifest.get("datasets", [])
+        if dataset.get("slug") == "ahmedml"
+        for row in dataset.get("splits", [])
+        if row.get("id") == split_id
+    ]
+    if len(split_names) != 1 or not isinstance(split_names[0], str) or not split_names[0]:
+        raise PackageAssemblyError(f"split_id {split_id!r} needs one leaderboard name")
+    split_name = split_names[0]
     candidate, ground_truth = _release_bindings(
         config,
         specification,
         specification_path,
         profile_truth_manifest_path,
+        leaderboard_manifest,
     )
     support_manifest_path = _safe_child(
         specification_path.parent,
@@ -923,7 +936,7 @@ def assemble_package(
             "dataset": specification["dataset_name"],
             "dataset_id": "ahmedml",
             "dataset_version": DATASET_VERSION,
-            "split": split_declaration["label"],
+            "split": split_name,
             "split_id": split_id,
             "case_set_id": split["case_set_id"],
             "split_sha256": split_sha,

@@ -27,7 +27,9 @@ import os
 import re
 import stat
 import struct
+import zlib
 from dataclasses import dataclass, field
+from itertools import chain
 from pathlib import Path, PurePosixPath
 from types import MappingProxyType
 from typing import BinaryIO, Callable, Iterator, Mapping, Sequence
@@ -1539,6 +1541,46 @@ def _expected_tuple_count(
     return None
 
 
+def _decoded_zlib_blocks(
+    read_exact: Callable[[int, str], bytes],
+    header_struct: struct.Struct,
+    block_count: int,
+    block_size: int,
+    last_block_size: int,
+) -> Iterator[bytes]:
+    # Keep only the compression size table and a batch of decoded blocks in
+    # memory. The published WindsorML files use 32 KiB uncompressed blocks.
+    buffer_limit = 16 * 1024 * 1024
+    table_size = block_count * header_struct.size
+    if table_size > buffer_limit or block_size > buffer_limit:
+        raise InlineBinaryDecodeError("VTK zlib compression header exceeds buffer limits")
+    sizes = read_exact(table_size, "VTK zlib block size table")
+    batch = bytearray()
+    for i, (compressed_size,) in enumerate(header_struct.iter_unpack(sizes)):
+        if not 0 < compressed_size <= buffer_limit:
+            raise InlineBinaryDecodeError("invalid VTK zlib compressed block size")
+        expected_size = last_block_size if i == block_count - 1 else block_size
+        compressed = read_exact(compressed_size, "VTK zlib block")
+        decoder = zlib.decompressobj()
+        try:
+            decoded = decoder.decompress(compressed, expected_size + 1)
+        except zlib.error as exc:
+            raise InlineBinaryDecodeError(f"invalid VTK zlib block {i}: {exc}") from exc
+        if (
+            len(decoded) != expected_size
+            or not decoder.eof
+            or decoder.unused_data
+            or decoder.unconsumed_tail
+        ):
+            raise InlineBinaryDecodeError(f"VTK zlib block {i} disagrees with its header")
+        batch.extend(decoded)
+        if len(batch) >= DEFAULT_IO_CHUNK_BYTES:
+            yield bytes(batch)
+            batch.clear()
+    if batch:
+        yield bytes(batch)
+
+
 def stream_inline_binary_payload(
     stream: BinaryIO,
     vtk_index: VTKXMLIndex,
@@ -1546,27 +1588,40 @@ def stream_inline_binary_payload(
     sink: BinaryIO | Callable[[bytes], object] | None = None,
     *,
     encoded_chunk_size: int = DEFAULT_IO_CHUNK_BYTES,
+    require_uint64_header: bool = True,
+    allow_zlib: bool = False,
 ) -> InlineBinaryPayloadSummary:
-    """Decode one UInt64-header inline payload with bounded memory.
+    """Decode one inline VTK payload with bounded memory.
 
     Decoded payload chunks are passed to ``sink`` (a ``write`` object or
     callable).  A ``None`` sink validates and hashes without retaining data.
     The function accepts both a jointly encoded ``header + payload`` and the
     independently padded base64 members emitted by some VTK writers.
+    UInt32 headers and VTK zlib blocks require explicit opt-in.
     """
 
-    if vtk_index.compressor:
+    if vtk_index.compressor and not (
+        allow_zlib and vtk_index.compressor == "vtkZLibDataCompressor"
+    ):
         raise InlineBinaryDecodeError(
             f"compressed inline payloads are unsupported: {vtk_index.compressor!r}"
         )
-    if vtk_index.header_type != "UInt64":
+    if vtk_index.header_type == "UInt64":
+        header_format = "Q"
+    elif not require_uint64_header and vtk_index.header_type == "UInt32":
+        header_format = "I"
+    elif require_uint64_header:
         raise InlineBinaryDecodeError(
             f"expected UInt64 VTK binary header, found {vtk_index.header_type!r}"
         )
+    else:
+        raise InlineBinaryDecodeError(
+            f"unsupported VTK binary header {vtk_index.header_type!r}"
+        )
     if vtk_index.byte_order == "LittleEndian":
-        header_struct = struct.Struct("<Q")
+        header_struct = struct.Struct("<" + header_format)
     elif vtk_index.byte_order == "BigEndian":
-        header_struct = struct.Struct(">Q")
+        header_struct = struct.Struct(">" + header_format)
     else:
         raise InlineBinaryDecodeError(
             f"unsupported VTK byte order {vtk_index.byte_order!r}"
@@ -1587,35 +1642,64 @@ def stream_inline_binary_payload(
             raise TypeError("sink must be None, callable, or a binary write object")
         emit = writer
 
-    header = bytearray()
-    declared_bytes: int | None = None
-    decoded_bytes = 0
-    digest = hashlib.sha256()
-    for decoded in _decoded_base64_blocks(
+    decoded_blocks = _decoded_base64_blocks(
         stream,
         start=array.encoded_start,
         end=array.encoded_end,
         encoded_chunk_size=encoded_chunk_size,
-    ):
-        cursor = 0
-        if declared_bytes is None:
-            needed = header_struct.size - len(header)
-            take = min(needed, len(decoded))
-            header.extend(decoded[:take])
-            cursor = take
-            if len(header) == header_struct.size:
-                declared_bytes = header_struct.unpack(header)[0]
-        if cursor == len(decoded):
+    )
+    pending = memoryview(b"")
+
+    def read_exact(size: int, label: str) -> bytes:
+        nonlocal pending
+        data = bytearray()
+        while len(data) < size:
+            if not pending:
+                block = next(decoded_blocks, None)
+                if block is None:
+                    raise InlineBinaryDecodeError(
+                        f"DataArray {array.array_index} has an incomplete {label}"
+                    )
+                pending = memoryview(block)
+            take = min(len(pending), size - len(data))
+            data.extend(pending[:take])
+            pending = pending[take:]
+        return bytes(data)
+
+    word_size = header_struct.size
+    if vtk_index.compressor:
+        header = read_exact(3 * word_size, "VTK zlib header")
+        block_count, block_size, partial_size = (
+            word for (word,) in header_struct.iter_unpack(header)
+        )
+        if (block_count and not block_size) or partial_size > block_size or (
+            not block_count and partial_size
+        ):
+            raise InlineBinaryDecodeError("invalid VTK zlib block counts or sizes")
+        last_block_size = partial_size or block_size
+        declared_bytes = (
+            (block_count - 1) * block_size + last_block_size if block_count else 0
+        )
+        payloads = _decoded_zlib_blocks(
+            read_exact, header_struct, block_count, block_size, last_block_size
+        )
+    else:
+        declared_bytes = header_struct.unpack(
+            read_exact(word_size, f"{vtk_index.header_type} header")
+        )[0]
+        payloads = chain((bytes(pending),), decoded_blocks)
+
+    decoded_bytes = 0
+    digest = hashlib.sha256()
+    for payload in payloads:
+        if not payload:
             continue
-        if declared_bytes is None:
-            raise InlineBinaryDecodeError("internal error while decoding VTK header")
-        payload = decoded[cursor:]
-        if decoded_bytes + len(payload) > declared_bytes:
+        decoded_bytes += len(payload)
+        if decoded_bytes > declared_bytes:
             raise InlineBinaryDecodeError(
                 f"DataArray {array.array_index} contains more than its declared "
                 f"{declared_bytes} payload bytes"
             )
-        decoded_bytes += len(payload)
         digest.update(payload)
         if emit is not None:
             result = emit(payload)
@@ -1623,11 +1707,8 @@ def stream_inline_binary_payload(
                 raise InlineBinaryDecodeError(
                     f"sink accepted {result} of {len(payload)} decoded bytes"
                 )
-
-    if declared_bytes is None:
-        raise InlineBinaryDecodeError(
-            f"DataArray {array.array_index} does not contain a complete UInt64 header"
-        )
+    if vtk_index.compressor and (pending or next(decoded_blocks, None) is not None):
+        raise InlineBinaryDecodeError("unexpected bytes after VTK zlib blocks")
     if decoded_bytes != declared_bytes:
         raise InlineBinaryDecodeError(
             f"DataArray {array.array_index} declares {declared_bytes} payload bytes, "

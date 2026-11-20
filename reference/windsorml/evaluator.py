@@ -175,7 +175,7 @@ def _index_source(
     """
 
     try:
-        index = index_inline_binary_vtk_xml(source)
+        index = index_inline_binary_vtk_xml(source, require_uint64_header=False)
     except VTKXMLIndexError as error:
         raise WindsorMLCandidateEvaluatorError(str(error)) from error
     if index.dataset_type != "UnstructuredGrid" or len(index.pieces) != 1:
@@ -449,6 +449,8 @@ def _evaluate_scalar(
             array,
             sink,
             encoded_chunk_size=encoded_chunk_bytes,
+            require_uint64_header=False,
+            allow_zlib=True,
         )
         statistics = sink.finish()
     except (
@@ -503,6 +505,8 @@ def _read_inline_array(
             array,
             _Collector(),
             encoded_chunk_size=encoded_chunk_bytes,
+            require_uint64_header=False,
+            allow_zlib=True,
         )
     except InlineBinaryDecodeError as error:
         raise WindsorMLCandidateEvaluatorError(str(error)) from error
