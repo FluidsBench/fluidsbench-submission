@@ -23,7 +23,7 @@ from scripts.validate_scoring_supports import validate_candidate_manifest_releas
 RELEASES = {
     "ahmedml": "ahmedml-native-support-v1",
     "drivaerml": "drivaerml-native-support-v3",
-    "windsorml": "windsorml-native-support-v1",
+    "windsorml": "windsorml-native-support-v2",
     "drivaernetplusplus": "drivaernetplusplus-native-pressure-support-v1",
 }
 

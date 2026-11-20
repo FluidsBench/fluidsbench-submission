@@ -13,6 +13,14 @@ import re
 from urllib.parse import unquote, urlsplit
 
 
+def evaluated_truth_binding(manifest: dict, dataset: str | None = None) -> dict:
+    """Return the evaluator's reference for this dataset, with a catalog fallback."""
+    release = manifest.get("data_release", {})
+    return release.get("profile_ground_truth_overrides", {}).get(
+        dataset, release.get("profile_ground_truth", {})
+    )
+
+
 def identity(binding: object) -> dict:
     value = binding if isinstance(binding, dict) else {}
     return {key: value.get(key) for key in ("release_id", "manifest_sha256")}
@@ -101,7 +109,7 @@ def publication_errors(payload: bytes, binding: dict, manifest: dict, *, catalog
         if not isinstance(browser, dict) or not isinstance(submitted, dict):
             errors.append(f"{slug}: profile truth publication bindings must be objects")
             continue
-        target = (dataset_truth_bindings or {}).get(slug, expected_catalog)
+        target = (dataset_truth_bindings or {}).get(slug, evaluated_truth_binding(manifest, slug))
         if slug == "airfrans" and slug not in (dataset_truth_bindings or {}):
             target = browser.get("source_release", {})
         if not submitted.get("release_id") or not re.fullmatch(r"[a-f0-9]{64}", str(submitted.get("manifest_sha256", ""))) or identity(submitted) != identity(target):

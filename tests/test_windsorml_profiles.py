@@ -27,9 +27,9 @@ class WindsorMLProfileSupportTests(unittest.TestCase):
         self.support_path = profiles.PROFILE_MANIFEST_PATH.parent / "run_0.json"
         self.support = json.loads(self.support_path.read_text())
 
-    def test_all_233_frozen_case_supports_load(self):
+    def test_all_230_frozen_case_supports_load(self):
         manifest = json.loads(profiles.PROFILE_MANIFEST_PATH.read_text())
-        self.assertEqual(len(manifest["cases"]), 233)
+        self.assertEqual(len(manifest["cases"]), 230)
         for entry in manifest["cases"]:
             with self.subTest(case_id=entry["case_id"]):
                 support = profiles.load_profile_support(case_id=entry["case_id"])

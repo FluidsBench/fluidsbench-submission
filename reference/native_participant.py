@@ -246,9 +246,9 @@ class ParticipantWorkflow:
         )
 
     def profile_manifest(self, destination=None, *, offline=False):
-        binding = load_json(ROOT / "leaderboard/manifest.json")["data_release"][
-            "profile_ground_truth"
-        ]
+        from scripts.profile_truth_publication import evaluated_truth_binding
+
+        binding = evaluated_truth_binding(load_json(ROOT / "leaderboard/manifest.json"), self.dataset)
         path = (
             self.support_root(destination)
             / "profile-ground-truth"
@@ -267,7 +267,7 @@ class ParticipantWorkflow:
         else:
             from scripts.fetch_profile_ground_truth import fetch_manifest
 
-            fetch_manifest(path)
+            fetch_manifest(path, dataset=self.dataset)
         return path
 
     def fetch_support(self, split_id, destination=None, *, offline=False):
@@ -626,9 +626,9 @@ class ParticipantWorkflow:
             cid: actual[f"case-evidence/{cid}.json"] for cid in cases
         }:
             raise WorkflowError("evaluation case bindings differ")
-        binding = load_json(ROOT / "leaderboard/manifest.json")["data_release"][
-            "profile_ground_truth"
-        ]
+        from scripts.profile_truth_publication import evaluated_truth_binding
+
+        binding = evaluated_truth_binding(load_json(ROOT / "leaderboard/manifest.json"), self.dataset)
         if actual["profile-ground-truth.json"] != binding["manifest_sha256"]:
             raise WorkflowError("evaluation profile manifest differs from this release")
         return receipt

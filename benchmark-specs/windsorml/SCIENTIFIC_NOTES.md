@@ -84,30 +84,11 @@ coefficients; the relative term keeps large ones honest.
 
 ## Splits and the scored case set
 
-The dataset ships its own authoritative split manifest at `splits/manifest.json`:
-eight families over 355 design variants. But `run_350`–`run_354` have no per-run
-payload in the public release, and two of them land in test sets.
-
-FluidsBench therefore scores the **intersection of the official manifest with the
-350 published runs**. The official manifest is neither modified nor regenerated;
-each split file records the official counts and the excluded IDs.
-
-| family | official test | scored | excluded |
-|---|---:|---:|---|
-| full / medium / scarce / super_scarce | 36 | 35 | `run_354` |
-| geometry | 71 | 71 | — |
-| high_drag | 71 | 70 | `run_352` |
-| low_drag | 71 | 70 | `run_354` |
-| image_wake | 71 | 71 | — |
-
-**235 → 233 unique scored test cases.** WindsorML numbers are therefore not
-comparable to any future run against the full official manifest; the spec says so.
-
-The splits README already documents the 355/350 asset gap and imputes geometry and
-wake scores for the five, so the *assignment* is deliberate. What it does not
-address — and what this reduction fixes — is that a scoring contract needs ground
-truth for every test case it scores.
-
+The [WindsorML v2 split manifest](https://huggingface.co/datasets/neashton/windsorml/blob/ba7e66955650b2ff0482517f256d84c1eda815e7/splits/v2/manifest.json) retains the original
+assignments for 344 eligible runs. It excludes six duplicate-geometry records
+and five aggregate-only IDs. The [erratum](https://huggingface.co/datasets/neashton/windsorml/blob/ba7e66955650b2ff0482517f256d84c1eda815e7/splits/v2/README.md) gives the reasons
+and reproducibility instructions. The five distinct test sets have 230 unique
+cases. Every test case has native CFD fields and published profile support.
 
 ## Profile diagnostics: two placement families
 

@@ -28,7 +28,7 @@ from reference.windsorml.dataset_scorer import (
     score_candidate_dataset,
     PROFILE_FAMILY_METRICS,
 )
-from scripts.publish_windsorml_candidate_support import publish
+from scripts.build_windsorml_v2_support import build as build_support
 from tests.test_windsorml_dataset_scorer import case_evidence
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -255,7 +255,13 @@ def repository(tmp_path, completed, monkeypatch):
     _, package = completed
     (tmp_path / "benchmark-specs").mkdir()
     shutil.copytree(SPEC.parent, tmp_path / "benchmark-specs/windsorml")
-    shutil.copy2(ROOT / "tests/fixtures/candidate-contracts/windsorml.json", tmp_path / "benchmark-specs/windsorml/submission-spec.json")
+    spec = load(SPEC)
+    spec["status"] = "candidate_native_support"
+    support = spec["scoring_support"]
+    for key in ("release_id", "manifest_file", "manifest_url", "manifest_sha256", "owner_approval", "publication_validation"):
+        support.pop(key)
+    support.update(status="owner_review_required", submissions_open=False)
+    write(tmp_path / "benchmark-specs/windsorml/submission-spec.json", spec)
     (tmp_path / "leaderboard").mkdir()
     shutil.copy2(
         ROOT / "leaderboard/manifest.json", tmp_path / "leaderboard/manifest.json"
@@ -263,6 +269,7 @@ def repository(tmp_path, completed, monkeypatch):
     manifest_path = tmp_path / "leaderboard/manifest.json"
     candidate_manifest = load(manifest_path)
     candidate_manifest["data_release"].update(status="prototype_dummy_data", source_ref="dev")
+    candidate_manifest["data_release"].pop("profile_ground_truth_publication", None)
     write(manifest_path, candidate_manifest)
     output = tmp_path / "submissions/windsorml/windsorml-workflow-test-v1"
     shutil.copytree(package, output)
@@ -401,10 +408,10 @@ def test_assembly_rejects_incomplete_or_conflicting_inputs(
 
 
 def test_support_publication_is_reproducible(tmp_path):
-    manifest = publish(tmp_path / "support")
+    manifest = build_support(tmp_path / "support", candidate=True)
     assert (
         manifest.read_bytes()
-        == (SPEC.parent / "scoring-support-candidate/manifest.json").read_bytes()
+        == (SPEC.parent / load(SPEC)["scoring_support"]["candidate_manifest"]["manifest_file"]).read_bytes()
     )
     from reference.scoring_support import load_support_release
 

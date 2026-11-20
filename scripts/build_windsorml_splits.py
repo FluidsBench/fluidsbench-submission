@@ -1,17 +1,5 @@
 #!/usr/bin/env python3
-"""Derive FluidsBench WindsorML split bindings from the official manifest.
-
-The dataset ships its own authoritative split manifest at
-``splits/manifest.json`` in the public release. That manifest enumerates all 355
-design variants, but ``run_350``..``run_354`` have no per-run payload, so two
-test identifiers (``run_352`` in ``high_drag``, ``run_354`` in the shared
-full/medium/scarce/super_scarce test set and in ``low_drag``) cannot be scored.
-
-This writes the scored case sets as the intersection of the official manifest
-with the published runs, and records the official counts and the excluded IDs in
-each file so the reduction stays visible and auditable. The official manifest is
-never modified or regenerated.
-"""
+"""Bind the pinned WindsorML v2 partitions to the FluidsBench evaluator."""
 
 from __future__ import annotations
 
@@ -21,13 +9,11 @@ import json
 from pathlib import Path
 
 
-DATASET_ROOT = Path(
-    "/lustre/fs1/portfolios/coreai/projects/coreai_modulus_cae/users/nashton/windsorml/data"
-)
 DATASET_ID = "windsorml"
-DATASET_VERSION = "windsorml-native-v1-candidate"
+DATASET_VERSION = "windsorml-native-v2"
 SCHEMA_VERSION = "1.1"
-PUBLISHED_RUN_IDS = range(350)
+SOURCE_REVISION = "ba7e66955650b2ff0482517f256d84c1eda815e7"
+SPEC_ROOT = Path(__file__).resolve().parents[1] / "benchmark-specs" / DATASET_ID
 
 FAMILIES: tuple[tuple[str, str], ...] = (
     ("full", "Full"),
@@ -50,52 +36,36 @@ def case_sort_key(case_id: str) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--manifest",
-        type=Path,
-        default=DATASET_ROOT / "splits" / "manifest.json",
-    )
-    parser.add_argument(
-        "--out-dir",
-        type=Path,
-        default=Path(__file__).resolve().parent.parent
-        / "benchmark-specs"
-        / DATASET_ID
-        / "splits",
-    )
+    parser.add_argument("--manifest", type=Path, default=SPEC_ROOT / "splits/v2/manifest.json")
+    parser.add_argument("--release-record", type=Path, default=SPEC_ROOT / "splits/v2/release.json")
+    parser.add_argument("--out-dir", type=Path, default=SPEC_ROOT / "splits")
     args = parser.parse_args()
 
-    manifest = json.loads(args.manifest.read_text())
-    published = {f"run_{run_id}" for run_id in PUBLISHED_RUN_IDS}
+    raw = args.manifest.read_bytes()
+    digest = hashlib.sha256(raw).hexdigest()
+    release = json.loads(args.release_record.read_text())
+    if release.get("version") != 2 or digest != release.get("manifest_sha256"):
+        raise SystemExit("Input does not match the WindsorML v2 manifest checksum.")
+    manifest = json.loads(raw)
+    eligible = set(release["eligible_run_ids"])
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
-    # The reduced-data families are defined to reuse the baseline test set;
-    # assert that rather than trusting it.
-    shared = {
-        family: tuple(manifest[f"{family}_test"]) for family in SHARED_TEST_FAMILIES
-    }
-    if len(set(shared.values())) != 1:
-        raise SystemExit(
-            "full/medium/scarce/super_scarce no longer share one test set: "
-            + ", ".join(f"{k}={len(v)}" for k, v in shared.items())
-        )
+    for part in ("val", "test"):
+        if len({tuple(manifest[f"{family}_{part}"]) for family in SHARED_TEST_FAMILIES}) != 1:
+            raise SystemExit(f"Baseline splits must share the same {part} cases.")
 
     summary = []
     for family, label in FAMILIES:
-        official_test = list(manifest[f"{family}_test"])
-        scored = sorted((c for c in official_test if c in published), key=case_sort_key)
-        excluded = sorted(
-            (c for c in official_test if c not in published), key=case_sort_key
-        )
-        official_train = list(manifest[f"{family}_train"])
-        official_val = list(manifest[f"{family}_val"])
-        scored_train = sorted(
-            (c for c in official_train if c in published), key=case_sort_key
-        )
-        scored_val = sorted(
-            (c for c in official_val if c in published), key=case_sort_key
-        )
-
+        assignment = {
+            part: sorted(manifest[f"{family}_{part}"], key=case_sort_key)
+            for part in ("train", "val", "test")
+        }
+        all_ids = [case for part in assignment.values() for case in part]
+        if len(all_ids) != len(set(all_ids)) or not set(all_ids) <= eligible:
+            raise SystemExit(f"{family}: overlapping partitions or ineligible cases.")
+        counts = {part: len(ids) for part, ids in assignment.items()}
+        if counts != release["split_counts"][family]:
+            raise SystemExit(f"{family}: counts differ from the published release record.")
         case_set_id = "baseline-test" if family in SHARED_TEST_FAMILIES else f"{family}-test"
         document = {
             "schema_version": SCHEMA_VERSION,
@@ -106,56 +76,37 @@ def main() -> int:
             "split_label": label,
             "case_id_status": "official_intersected_with_published",
             "source": {
-                "description": (
-                    "Official WindsorML split manifest shipped in the public release."
-                ),
-                "path": "splits/manifest.json",
+                "description": "Canonical WindsorML v2 benchmark split assignments.",
+                "path": "splits/v2/manifest.json",
                 "repository_id": "neashton/windsorml",
-            },
-            "official_train_count": len(official_train),
-            "official_validation_count": len(official_val),
-            "official_case_count": len(official_test),
-            "train_count": len(scored_train),
-            "validation_count": len(scored_val),
-            "case_count": len(scored),
-            "excluded_case_ids": excluded,
-            "excluded_reason": (
-                "Identifier is assigned by the official manifest but has no per-run "
-                "payload in the public release, so it cannot be scored."
-            )
-            if excluded
-            else None,
-            "case_ids": scored,
-        }
-        path = args.out_dir / f"{family}.json"
-        payload = json.dumps(document, indent=2) + "\n"
-        path.write_text(payload)
-        digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
-        summary.append(
-            {
-                "id": family,
-                "label": label,
-                "index_file": f"splits/{family}.json",
-                "case_count": len(scored),
-                "case_set_id": case_set_id,
-                "case_id_status": "official_intersected_with_published",
+                "revision": SOURCE_REVISION,
                 "sha256": digest,
-            }
-        )
-        flag = f"  excluded {excluded}" if excluded else ""
-        print(
-            f"  {family:14s} train {len(official_train):3d}->{len(scored_train):3d}  "
-            f"val {len(official_val):3d}->{len(scored_val):3d}  "
-            f"test {len(official_test):3d}->{len(scored):3d}{flag}"
-        )
-
-    index = args.out_dir / "splits-index.json"
-    index.write_text(json.dumps(summary, indent=2) + "\n")
-    scored_union = set()
-    for entry in summary:
-        scored_union |= set(json.loads((args.out_dir / f"{entry['id']}.json").read_text())["case_ids"])
-    print(f"\nunique scored test cases: {len(scored_union)}")
-    print(f"wrote {len(summary)} split files + {index.name}")
+            },
+            "official_train_count": counts["train"],
+            "official_validation_count": counts["val"],
+            "official_case_count": counts["test"],
+            "train_count": counts["train"],
+            "validation_count": counts["val"],
+            "case_count": counts["test"],
+            "excluded_case_ids": [],
+            "excluded_reason": None,
+            "train_case_ids": assignment["train"],
+            "validation_case_ids": assignment["val"],
+            "case_ids": assignment["test"],
+        }
+        payload = (json.dumps(document, indent=2) + "\n").encode()
+        (args.out_dir / f"{family}.json").write_bytes(payload)
+        summary.append({
+            "id": family,
+            "label": label,
+            "index_file": f"splits/{family}.json",
+            "case_count": counts["test"],
+            "case_set_id": case_set_id,
+            "case_id_status": document["case_id_status"],
+            "sha256": hashlib.sha256(payload).hexdigest(),
+        })
+        print(f"{family}: {counts['train']} train / {counts['val']} validation / {counts['test']} test")
+    (args.out_dir / "splits-index.json").write_text(json.dumps(summary, indent=2) + "\n")
     return 0
 
 

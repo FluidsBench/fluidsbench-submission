@@ -9,4 +9,4 @@ for file, digest in PINS.items():
 sys.path.insert(0, str(ROOT))
 from scripts.validate_native_support_publication import validate
 if __name__ == "__main__":
-    print(validate('windsorml', 'windsorml-native-support-v1'))
+    print(validate('windsorml', 'windsorml-native-support-v2'))

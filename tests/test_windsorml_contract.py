@@ -64,39 +64,30 @@ class WindsorMLSplitBindingTests(unittest.TestCase):
                 unpublished, [], f"{family} scores unpublished cases {unpublished}"
             )
 
-    def test_unscoreable_test_cases_are_excluded_and_recorded(self) -> None:
-        """run_354 and run_352 have no per-run payload in the public release."""
-
-        expected = {
-            "full": ["run_354"],
-            "medium": ["run_354"],
-            "scarce": ["run_354"],
-            "super_scarce": ["run_354"],
-            "geometry": [],
-            "high_drag": ["run_352"],
-            "low_drag": ["run_354"],
-            "image_wake": [],
+    def test_all_partitions_match_the_v2_manifest(self) -> None:
+        release = load(SPLIT_DIR / "v2/release.json")
+        manifest = load(SPLIT_DIR / "v2/manifest.json")
+        eligible = set(release["eligible_run_ids"])
+        excluded = set(release["unavailable_run_ids"]) | {
+            pair["excluded"] for pair in release["duplicate_geometry_pairs"]
         }
-        for family, excluded in expected.items():
-            document = load(SPLIT_DIR / f"{family}.json")
-            self.assertEqual(document["excluded_case_ids"], excluded, family)
-            self.assertEqual(
-                document["case_count"],
-                document["official_case_count"] - len(excluded),
-                family,
-            )
-
-    def test_excluded_ids_are_declared_unpublished_by_the_contract(self) -> None:
+        self.assertEqual(len(eligible), 344)
+        self.assertFalse(eligible & excluded)
         for family in FAMILIES:
-            document = load(SPLIT_DIR / f"{family}.json")
-            for case_id in document["excluded_case_ids"]:
-                self.assertIn(case_id, UNPUBLISHED_CASE_IDS, case_id)
+            binding = load(SPLIT_DIR / f"{family}.json")
+            parties = [binding[key] for key in ("train_case_ids", "validation_case_ids", "case_ids")]
+            seen: set[str] = set()
+            for part, ids in zip(("train", "val", "test"), parties):
+                self.assertEqual(set(ids), set(manifest[f"{family}_{part}"]))
+                self.assertFalse(seen.intersection(ids))
+                self.assertLessEqual(set(ids), eligible)
+                seen.update(ids)
 
-    def test_unique_scored_test_case_count_is_233(self) -> None:
+    def test_unique_scored_test_case_count_is_230(self) -> None:
         union: set[str] = set()
         for family in FAMILIES:
             union |= set(load(SPLIT_DIR / f"{family}.json")["case_ids"])
-        self.assertEqual(len(union), 233)
+        self.assertEqual(len(union), 230)
 
     def test_case_ids_are_unique_and_sorted_within_each_split(self) -> None:
         for family in FAMILIES:
@@ -366,9 +357,9 @@ class WindsorMLScoredCaseSetApprovalTests(unittest.TestCase):
         spec = load(SPEC_DIR / "submission-spec.json")
         record = spec["scoring_support"]["scored_case_set"]
         self.assertEqual(record["status"], "owner_approved")
-        self.assertEqual(record["official_unique_test_cases"], 235)
-        self.assertEqual(record["scored_unique_test_cases"], 233)
-        self.assertEqual(sorted(record["excluded_case_ids"]), ["run_352", "run_354"])
+        self.assertEqual(record["official_unique_test_cases"], 230)
+        self.assertEqual(record["scored_unique_test_cases"], 230)
+        self.assertEqual(record["excluded_case_ids"], ["run_31", "run_134", "run_271"])
         self.assertNotIn(
             "approve_scored_case_set_reduction_from_235_to_233_test_cases",
             spec["scoring_support"].get("owner_decisions_required", []),
@@ -412,7 +403,7 @@ class WindsorMLScoredCaseSetApprovalTests(unittest.TestCase):
 
         manifest = load(manifest_path)
         self.assertEqual(manifest["case_count"], support["case_count"])
-        self.assertEqual(len(manifest["cases"]), 233)
+        self.assertEqual(len(manifest["cases"]), 230)
         self.assertEqual(
             manifest["profile_definition_sha256"],
             hashlib.sha256((SPEC_DIR / "profile-definition-v2.json").read_bytes()).hexdigest(),
@@ -445,10 +436,12 @@ class WindsorMLScoredCaseSetApprovalTests(unittest.TestCase):
         ):
             self.assertNotIn(settled, decisions)
 
-    def test_excluded_ids_are_contract_unpublished_cases(self) -> None:
+    def test_excluded_test_ids_are_duplicate_geometry_runs(self) -> None:
+        release = load(SPLIT_DIR / "v2/release.json")
+        duplicates = {pair["excluded"] for pair in release["duplicate_geometry_pairs"]}
         spec = load(SPEC_DIR / "submission-spec.json")
-        for case_id in spec["scoring_support"]["scored_case_set"]["excluded_case_ids"]:
-            self.assertIn(case_id, UNPUBLISHED_CASE_IDS)
+        excluded = set(spec["scoring_support"]["scored_case_set"]["excluded_case_ids"])
+        self.assertLessEqual(excluded, duplicates)
 
 
 class WindsorMLMethodologyContractTests(unittest.TestCase):

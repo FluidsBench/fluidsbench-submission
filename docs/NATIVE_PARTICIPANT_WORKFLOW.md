@@ -37,8 +37,8 @@ my-entry/
 ```
 
 Use the exact ordered case list in `benchmark-specs/<dataset>/splits/<split>.json`.
-AhmedML Full has 50 cases. WindsorML Full has 35 published cases; do not add a
-replacement for the unavailable `run_354`. All eight prescribed split labels are
+AhmedML Full has 50 cases. WindsorML v2 Full has 35 test cases.
+Use the [v2 split manifest](../benchmark-specs/windsorml/splits/v2/manifest.json) for training and validation. All eight prescribed split labels are
 supported for each dataset. Use the dataset's existing prediction format:
 [AhmedML](NATIVE_PREDICTIONS.md) or
 [WindsorML](../examples/windsorml-v3-candidate/README.md#2-predict-and-evaluate-every-required-case).

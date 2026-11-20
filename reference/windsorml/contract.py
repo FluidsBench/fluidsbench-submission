@@ -42,7 +42,8 @@ from typing import Any, Mapping
 
 SOURCE_SCHEMA = "windsorml-public-native-source-identity-v1"
 DATASET_ID = "windsorml"
-DATASET_VERSION = "windsorml-native-v1-candidate"
+DATASET_VERSION = "windsorml-native-v2"
+SOURCE_DATASET_VERSION = "windsorml-native-v1-candidate"
 REPOSITORY_ID = "neashton/windsorml"
 REPOSITORY_REVISION = "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2"
 
@@ -391,7 +392,7 @@ def load_source_identity(
     if (
         document.get("schema") != SOURCE_SCHEMA
         or document.get("dataset_id") != DATASET_ID
-        or document.get("dataset_version") != DATASET_VERSION
+        or document.get("dataset_version") != SOURCE_DATASET_VERSION
         or document.get("surface_association") != SURFACE_ASSOCIATION
         or document.get("volume_association") != VOLUME_ASSOCIATION
     ):

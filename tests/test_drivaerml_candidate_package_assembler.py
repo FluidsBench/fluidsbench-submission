@@ -226,9 +226,9 @@ class DrivAerMLCandidatePackageAssemblerTests(unittest.TestCase):
         write_json(profile_path, {"id": "drivaerml-diagnostics-v10-candidate"})
         profile_sha256 = assembler.sha256_file(profile_path)
         evaluator_revision = "b" * 40
-        global_truth = load_json(ROOT / "leaderboard" / "manifest.json")[
-            "data_release"
-        ]["profile_ground_truth"]
+        from scripts.profile_truth_publication import evaluated_truth_binding
+
+        global_truth = evaluated_truth_binding(load_json(ROOT / "leaderboard" / "manifest.json"), "drivaerml")
         candidate = {
             "status": "candidate",
             "release_id": "drivaerml-candidate-support-v1",
@@ -562,9 +562,7 @@ class DrivAerMLCandidatePackageAssemblerTests(unittest.TestCase):
                 manifest_path,
                 {
                     "data_release": {
-                        "profile_ground_truth": load_json(
-                            ROOT / "leaderboard" / "manifest.json"
-                        )["data_release"]["profile_ground_truth"]
+                        "profile_ground_truth": load_json(paths["config"])["release_bindings"]["profile_ground_truth"]
                     },
                     "datasets": [
                         {

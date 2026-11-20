@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from scripts import manage_leaderboard as manager
-from scripts.profile_truth_publication import publication_errors
+from scripts.profile_truth_publication import evaluated_truth_binding, publication_errors
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -31,7 +31,11 @@ def test_official_release_preserves_evaluated_reference_fingerprints():
     for dataset in manifest["datasets"]:
         dataset.get("scoring_support", {})["submissions_open"] = False
     assert manager.release_contract_errors(manifest) == [], "closing intake must not invalidate an official reference release"
-    assert release["profile_ground_truth"]["manifest_sha256"] == "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
+    legacy_digest = "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
+    for slug in ("ahmedml", "drivaerml", "drivaernetplusplus"):
+        assert evaluated_truth_binding(manifest, slug)["manifest_sha256"] == legacy_digest
+    assert evaluated_truth_binding(manifest, "windsorml") == release["profile_ground_truth"]
+    assert evaluated_truth_binding(manifest, "windsorml")["manifest_sha256"] != legacy_digest
     airfrans = next(d for d in publication["datasets"] if d["id"] == "airfrans")
     contract = json.loads((ROOT / "benchmark-specs/airfrans/submission-spec.json").read_text())
     assert airfrans["submission_profile_ground_truth"]["manifest_sha256"] == contract["profile_definition"]["profile_ground_truth"]["manifest_sha256"]

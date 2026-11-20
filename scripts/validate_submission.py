@@ -6071,9 +6071,9 @@ def validate_open_reproducibility(
         ground_truth = dataset_spec.get("profile_definition", {}).get("profile_ground_truth", {})
         ground_truth_source = "the AirfRANS dataset contract"
     else:
-        ground_truth = manifest.get("data_release", {}).get(
-            "profile_ground_truth", {}
-        )
+        from scripts.profile_truth_publication import evaluated_truth_binding
+
+        ground_truth = evaluated_truth_binding(manifest, submission.get("dataset_id"))
     submitted_profile_ground_truth = submission.get("profile_data", {})
     if submitted_profile_ground_truth.get("profile_ground_truth_release_id") != ground_truth.get("release_id"):
         add(

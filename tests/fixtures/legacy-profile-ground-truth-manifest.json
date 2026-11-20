@@ -1,0 +1,735 @@
+{
+  "schema_version": "1.0",
+  "data_release": {
+    "id": "prototype-profile-ground-truth-2026-09-04",
+    "status": "prototype_dummy_data",
+    "generated_at": "2026-09-16T20:48:24Z",
+    "source_repository": "https://github.com/neilashton/fluidsbench",
+    "source_ref": "dev",
+    "source_commit": null
+  },
+  "status": "prototype_dummy_data",
+  "datasets": [
+    {
+      "id": "ahmedml",
+      "name": "AhmedML",
+      "native_profile_truth": {
+        "source_kind": "native_cfd",
+        "analytical_dummy": false,
+        "dataset_revision": "02688c727cdb8dc8678e28abc6bbbb7e93c5fa15",
+        "source_identity_sha256": "56a620a5b335cef6cb0587e186df321eb907bbe46e8b81aa4de302b8fe73cf44",
+        "profile_definition_sha256": "1048a0380f70de778e3e51db07d6910579f720d6f2dd1d9ad7179dbfe88d1cae",
+        "release_id": "ahmedml-native-profile-truth-all316-v1-candidate",
+        "case_count": 316,
+        "case_set_count": 5,
+        "series_per_case": 7,
+        "samples_per_series": 128,
+        "master_index_file": "datasets/ahmedml/native-all316-v1/index.json",
+        "master_index_sha256": "480a1a978d99a7d157ba77e62430286aeecccfbad3435a45b6685e54e714e394"
+      },
+      "splits": [
+        {
+          "id": "full",
+          "label": "Full",
+          "case_set_id": "full-test",
+          "case_count": 50
+        },
+        {
+          "id": "medium",
+          "label": "Medium",
+          "case_set_id": "full-test",
+          "case_count": 50
+        },
+        {
+          "id": "scarce",
+          "label": "Scarce",
+          "case_set_id": "full-test",
+          "case_count": 50
+        },
+        {
+          "id": "super_scarce",
+          "label": "Super scarce",
+          "case_set_id": "full-test",
+          "case_count": 50
+        },
+        {
+          "id": "geometry",
+          "label": "Geometry",
+          "case_set_id": "geometry-test",
+          "case_count": 100
+        },
+        {
+          "id": "high_drag",
+          "label": "High drag",
+          "case_set_id": "high_drag-test",
+          "case_count": 100
+        },
+        {
+          "id": "low_drag",
+          "label": "Low drag",
+          "case_set_id": "low_drag-test",
+          "case_count": 100
+        },
+        {
+          "id": "image_wake",
+          "label": "Image wake",
+          "case_set_id": "image_wake-test",
+          "case_count": 100
+        }
+      ],
+      "case_sets": [
+        {
+          "id": "full-test",
+          "index_file": "datasets/ahmedml/native-all316-v1/full-test/index.json",
+          "index_sha256": "a9319c4c91227ef50a647216568908916019bb7399bb1bbd80c06be8429ac901",
+          "case_count": 50,
+          "case_id_status": "official"
+        },
+        {
+          "id": "geometry-test",
+          "index_file": "datasets/ahmedml/native-all316-v1/geometry-test/index.json",
+          "index_sha256": "890069a823f60f3348a46df9930c2499649abee5fb5ae875f92f170c318b874a",
+          "case_count": 100,
+          "case_id_status": "official"
+        },
+        {
+          "id": "high_drag-test",
+          "index_file": "datasets/ahmedml/native-all316-v1/high_drag-test/index.json",
+          "index_sha256": "ef561934395c2934cfb82152efdaf3de3239c1bd70e0b6725dbb392b44cdf220",
+          "case_count": 100,
+          "case_id_status": "official"
+        },
+        {
+          "id": "low_drag-test",
+          "index_file": "datasets/ahmedml/native-all316-v1/low_drag-test/index.json",
+          "index_sha256": "088b41b6cf9276c41784185eb83f1f4c97e38f8e42774c27131308e0dd0f41ea",
+          "case_count": 100,
+          "case_id_status": "official"
+        },
+        {
+          "id": "image_wake-test",
+          "index_file": "datasets/ahmedml/native-all316-v1/image_wake-test/index.json",
+          "index_sha256": "3b6feda3e55a4fc92782b11633c85c6cab8c39f027ea9c2aa03ed06b87c4e56c",
+          "case_count": 100,
+          "case_id_status": "official"
+        }
+      ],
+      "note": "All seven AhmedML curves per case are exact evaluator-owned native CFD truth sampled on frozen mappings at 128 points per series for all 316 unique official test cases."
+    },
+    {
+      "id": "airfrans",
+      "name": "AirfRANS",
+      "splits": [
+        {
+          "id": "full",
+          "label": "Full",
+          "case_set_id": "standard",
+          "case_count": 1,
+          "coverage": "representative_subset"
+        },
+        {
+          "id": "scarce",
+          "label": "Scarce",
+          "case_set_id": "standard",
+          "case_count": 1,
+          "coverage": "representative_subset"
+        },
+        {
+          "id": "reynolds_extrapolation",
+          "label": "Reynolds extrapolation",
+          "case_set_id": "reynolds_extrapolation",
+          "case_count": 1,
+          "coverage": "representative_subset"
+        },
+        {
+          "id": "aoa_extrapolation",
+          "label": "AoA extrapolation",
+          "case_set_id": "aoa_extrapolation",
+          "case_count": 1,
+          "coverage": "representative_subset"
+        }
+      ],
+      "case_sets": [
+        {
+          "id": "standard",
+          "index_file": "datasets/airfrans/standard/index.json",
+          "index_sha256": "0a8aceadba8c84493d8005546dfb67c7fe03a8cfa89fe34e9b70789275283ec4",
+          "case_count": 1,
+          "case_id_status": "official_split_member_fixture",
+          "coverage": "representative_subset"
+        },
+        {
+          "id": "reynolds_extrapolation",
+          "index_file": "datasets/airfrans/reynolds_extrapolation/index.json",
+          "index_sha256": "0648faad2ff9b5fec9f17127c25844ffb2cf83215e0b1cd53499717b8fc0f451",
+          "case_count": 1,
+          "case_id_status": "official_split_member_fixture",
+          "coverage": "representative_subset"
+        },
+        {
+          "id": "aoa_extrapolation",
+          "index_file": "datasets/airfrans/aoa_extrapolation/index.json",
+          "index_sha256": "24d1339d7d847ce67fe6deb3eff2f1f8843ec9a21c64f8ef2b07f0eda3baf67f",
+          "case_count": 1,
+          "case_id_status": "official_split_member_fixture",
+          "coverage": "representative_subset"
+        }
+      ],
+      "note": "AirfRANS review curves are checksum-verified official-dataset reference fixtures generated by the pinned outward-normal extractor; they are representative subsets, not complete split releases."
+    },
+    {
+      "id": "drivaerml",
+      "name": "DrivAerML",
+      "native_profile_truth": {
+        "source_kind": "native_cfd",
+        "analytical_dummy": false,
+        "dataset_revision": "7a5c0948ce27be709b1116a3a190f806e7a8f79f",
+        "native_source_pin_sha256": "4fc9077f8f23f4994c98f4d0e7a17aef7b998de4c996638e3a8a616b6d923fdd",
+        "case_count": 484,
+        "master_index_file": "datasets/drivaerml/native-v3/index.json",
+        "master_index_sha256": "e7cf14f161fc7dbf22794e6f66db4e157329be960d2a4368140e08cf0608a5ae"
+      },
+      "splits": [
+        {
+          "id": "full",
+          "label": "Full",
+          "case_set_id": "standard",
+          "case_count": 50
+        },
+        {
+          "id": "medium",
+          "label": "Medium",
+          "case_set_id": "standard",
+          "case_count": 50
+        },
+        {
+          "id": "scarce",
+          "label": "Scarce",
+          "case_set_id": "standard",
+          "case_count": 50
+        },
+        {
+          "id": "super_scarce",
+          "label": "Super scarce",
+          "case_set_id": "standard",
+          "case_count": 50
+        },
+        {
+          "id": "geometry",
+          "label": "Geometry",
+          "case_set_id": "geometry",
+          "case_count": 97
+        },
+        {
+          "id": "high_drag",
+          "label": "High drag",
+          "case_set_id": "high_drag",
+          "case_count": 97
+        },
+        {
+          "id": "low_drag",
+          "label": "Low drag",
+          "case_set_id": "low_drag",
+          "case_count": 97
+        },
+        {
+          "id": "rear_separation",
+          "label": "Rear separation",
+          "case_set_id": "rear_separation",
+          "case_count": 97
+        }
+      ],
+      "case_sets": [
+        {
+          "id": "standard",
+          "index_file": "datasets/drivaerml/native-v3/splits/full.json",
+          "index_sha256": "7c5ecc3627ba53443ba94fac58d104e1d2df8d89cccfec76eafb4c59ef12eb05",
+          "case_count": 50,
+          "case_id_status": "official"
+        },
+        {
+          "id": "geometry",
+          "index_file": "datasets/drivaerml/native-v3/splits/geometry.json",
+          "index_sha256": "ccd59a28290c89597b2d3e209a6742d818e5b4e15645f2a319988abf953057a3",
+          "case_count": 97,
+          "case_id_status": "official"
+        },
+        {
+          "id": "high_drag",
+          "index_file": "datasets/drivaerml/native-v3/splits/high_drag.json",
+          "index_sha256": "2d75228039f0208d34ccb28ca5e83debc028bb401d86ba6027754267e8bd9eff",
+          "case_count": 97,
+          "case_id_status": "official"
+        },
+        {
+          "id": "low_drag",
+          "index_file": "datasets/drivaerml/native-v3/splits/low_drag.json",
+          "index_sha256": "849bb07534fb0c993f2f0058a6aed885089559ff3b4654d91268a6a9f7d5adc5",
+          "case_count": 97,
+          "case_id_status": "official"
+        },
+        {
+          "id": "rear_separation",
+          "index_file": "datasets/drivaerml/native-v3/splits/rear_separation.json",
+          "index_sha256": "37877106a111963e796d93622466b74f67fedb7a1c25cded013fe8a96eec4559",
+          "case_count": 97,
+          "case_id_status": "official"
+        }
+      ],
+      "note": "All DrivAerML profile curves are exact source-bound native CFD truth from the pinned 484-case public dataset revision. Geometry-relative families remain report-only and do not activate relative scoring."
+    },
+    {
+      "id": "drivaernetplusplus",
+      "name": "DrivAerNet++",
+      "splits": [
+        {
+          "id": "default",
+          "label": "Default",
+          "case_set_id": "default",
+          "case_count": 1
+        }
+      ],
+      "case_sets": [
+        {
+          "id": "default",
+          "index_file": "datasets/drivaernetplusplus/default/index.json",
+          "index_sha256": "9f32deb0418a245190db5ce16b6b8d06935cec2e3fafa6a1f79aab96dbf2a74b",
+          "case_count": 1,
+          "case_id_status": "prototype_generated"
+        }
+      ]
+    },
+    {
+      "id": "hiliftaeroml",
+      "name": "HiLiftAeroML",
+      "compact_profile_truth": {
+        "source_kind": "native_cfd",
+        "analytical_dummy": false,
+        "plot_only": true,
+        "release_id": "hiliftaeroml-compact-profile-truth-all1355-v1",
+        "format": "fluidsbench-hiliftaeroml-compact-profile-truth-v1",
+        "profile_contract_id": "hiliftaeroml-compact-profile-predictions-v2-candidate",
+        "profile_contract_sha256": "b1fd29b2cb6c1c84c694ddffc5d85f6cd68fd175b79c3695a443aa78bf962c2f",
+        "case_count": 1355,
+        "case_set_count": 8,
+        "master_index_file": "datasets/hiliftaeroml/compact-all1355-v1/index.json",
+        "master_index_sha256": "5473aca0d923b8801ddd6e4788fe3597c748370b20668b780fe5dea749ea57a2"
+      },
+      "splits": [
+        {
+          "id": "full",
+          "label": "Full",
+          "case_set_id": "caseset-ac791749e527",
+          "case_count": 360
+        },
+        {
+          "id": "medium",
+          "label": "Medium",
+          "case_set_id": "caseset-ac791749e527",
+          "case_count": 360
+        },
+        {
+          "id": "scarce",
+          "label": "Scarce",
+          "case_set_id": "caseset-ac791749e527",
+          "case_count": 360
+        },
+        {
+          "id": "super_scarce",
+          "label": "Super scarce",
+          "case_set_id": "caseset-ac791749e527",
+          "case_count": 360
+        },
+        {
+          "id": "geometry",
+          "label": "Geometry",
+          "case_set_id": "caseset-53990ea68fa6",
+          "case_count": 360
+        },
+        {
+          "id": "geometry_medium",
+          "label": "Geometry medium",
+          "case_set_id": "caseset-53990ea68fa6",
+          "case_count": 360
+        },
+        {
+          "id": "geometry_scarce",
+          "label": "Geometry scarce",
+          "case_set_id": "caseset-53990ea68fa6",
+          "case_count": 360
+        },
+        {
+          "id": "geometry_super_scarce",
+          "label": "Geometry super scarce",
+          "case_set_id": "caseset-53990ea68fa6",
+          "case_count": 360
+        },
+        {
+          "id": "single_aoa_4",
+          "label": "AoA 4",
+          "case_set_id": "caseset-7a743a20b3bd",
+          "case_count": 36
+        },
+        {
+          "id": "single_aoa_12",
+          "label": "AoA 12",
+          "case_set_id": "caseset-02fc12ff3494",
+          "case_count": 36
+        },
+        {
+          "id": "single_aoa_22",
+          "label": "AoA 22",
+          "case_set_id": "caseset-85ecccd9ccda",
+          "case_count": 36
+        },
+        {
+          "id": "aoa",
+          "label": "AoA extrapolation",
+          "case_set_id": "caseset-29693354ed8a",
+          "case_count": 900
+        },
+        {
+          "id": "deflection",
+          "label": "Deflection",
+          "case_set_id": "caseset-c0ecb14de138",
+          "case_count": 360
+        },
+        {
+          "id": "stall",
+          "label": "Stall",
+          "case_set_id": "caseset-804491c8956e",
+          "case_count": 723
+        }
+      ],
+      "case_sets": [
+        {
+          "id": "caseset-ac791749e527",
+          "index_file": "datasets/hiliftaeroml/compact-all1355-v1/case-set-caseset-ac791749e527.json",
+          "index_sha256": "4cc4934d426618fe1370088ab45d67a6325145094e5e2a8099ff76219396ac33",
+          "case_count": 360,
+          "case_id_status": "official",
+          "coverage": "complete_split",
+          "truth_role": "native_cfd_plot_only_not_scoring_source"
+        },
+        {
+          "id": "caseset-53990ea68fa6",
+          "index_file": "datasets/hiliftaeroml/compact-all1355-v1/case-set-caseset-53990ea68fa6.json",
+          "index_sha256": "1462a9e2d10bfe3c1a36ab292def7c8d24a7070647da4d71a970d8cac212779f",
+          "case_count": 360,
+          "case_id_status": "official",
+          "coverage": "complete_split",
+          "truth_role": "native_cfd_plot_only_not_scoring_source"
+        },
+        {
+          "id": "caseset-7a743a20b3bd",
+          "index_file": "datasets/hiliftaeroml/compact-all1355-v1/case-set-caseset-7a743a20b3bd.json",
+          "index_sha256": "115a7a29cfd3e8833ccf2f212bc0a1fe45245efc23055620fde7f216844d1e80",
+          "case_count": 36,
+          "case_id_status": "official",
+          "coverage": "complete_split",
+          "truth_role": "native_cfd_plot_only_not_scoring_source"
+        },
+        {
+          "id": "caseset-02fc12ff3494",
+          "index_file": "datasets/hiliftaeroml/compact-all1355-v1/case-set-caseset-02fc12ff3494.json",
+          "index_sha256": "62d22b8c62a9888e501994bb9c8df89a38919972a8ce09789c71850000c284ec",
+          "case_count": 36,
+          "case_id_status": "official",
+          "coverage": "complete_split",
+          "truth_role": "native_cfd_plot_only_not_scoring_source"
+        },
+        {
+          "id": "caseset-85ecccd9ccda",
+          "index_file": "datasets/hiliftaeroml/compact-all1355-v1/case-set-caseset-85ecccd9ccda.json",
+          "index_sha256": "123351e2037d7c0053ffdac445b368c3943d9a3ca0348ac81964f488bbf71f56",
+          "case_count": 36,
+          "case_id_status": "official",
+          "coverage": "complete_split",
+          "truth_role": "native_cfd_plot_only_not_scoring_source"
+        },
+        {
+          "id": "caseset-29693354ed8a",
+          "index_file": "datasets/hiliftaeroml/compact-all1355-v1/case-set-caseset-29693354ed8a.json",
+          "index_sha256": "ca7ab1872c12ebbd32b96cc70ab87f727b2bca2aea94f01376140435bba559ec",
+          "case_count": 900,
+          "case_id_status": "official",
+          "coverage": "complete_split",
+          "truth_role": "native_cfd_plot_only_not_scoring_source"
+        },
+        {
+          "id": "caseset-c0ecb14de138",
+          "index_file": "datasets/hiliftaeroml/compact-all1355-v1/case-set-caseset-c0ecb14de138.json",
+          "index_sha256": "c1c0d2e4d14fade4c9b087515438a21f247a180aae180f9146a6aba89af865bd",
+          "case_count": 360,
+          "case_id_status": "official",
+          "coverage": "complete_split",
+          "truth_role": "native_cfd_plot_only_not_scoring_source"
+        },
+        {
+          "id": "caseset-804491c8956e",
+          "index_file": "datasets/hiliftaeroml/compact-all1355-v1/case-set-caseset-804491c8956e.json",
+          "index_sha256": "c77496fe076ccdf996d736bde3e05f6fef037d7ce0d568252456234ab7e72270",
+          "case_count": 723,
+          "case_id_status": "official",
+          "coverage": "complete_split",
+          "truth_role": "native_cfd_plot_only_not_scoring_source"
+        }
+      ]
+    },
+    {
+      "id": "windsorml",
+      "name": "WindsorML",
+      "splits": [
+        {
+          "id": "full",
+          "label": "Full",
+          "case_set_id": "baseline-test",
+          "case_count": 35
+        },
+        {
+          "id": "medium",
+          "label": "Medium",
+          "case_set_id": "baseline-test",
+          "case_count": 35
+        },
+        {
+          "id": "scarce",
+          "label": "Scarce",
+          "case_set_id": "baseline-test",
+          "case_count": 35
+        },
+        {
+          "id": "super_scarce",
+          "label": "Super scarce",
+          "case_set_id": "baseline-test",
+          "case_count": 35
+        },
+        {
+          "id": "geometry",
+          "label": "Geometry OOD",
+          "case_set_id": "geometry-test",
+          "case_count": 71
+        },
+        {
+          "id": "high_drag",
+          "label": "High drag",
+          "case_set_id": "high_drag-test",
+          "case_count": 70
+        },
+        {
+          "id": "low_drag",
+          "label": "Low drag",
+          "case_set_id": "low_drag-test",
+          "case_count": 70
+        },
+        {
+          "id": "image_wake",
+          "label": "Image wake",
+          "case_set_id": "image_wake-test",
+          "case_count": 71
+        }
+      ],
+      "case_sets": [
+        {
+          "id": "baseline-test",
+          "index_file": "datasets/windsorml/baseline-test/index.json",
+          "index_sha256": "44593cef001d842ba62d575a244def6a1ff52905123b64510e3373c94f0f3f0c",
+          "case_count": 35,
+          "case_id_status": "official_intersected_with_published"
+        },
+        {
+          "id": "geometry-test",
+          "index_file": "datasets/windsorml/geometry-test/index.json",
+          "index_sha256": "26fe8e241aaa821eb7a4f47008ce0ebb75170cf2600c74b0e3ada5a1893b2998",
+          "case_count": 71,
+          "case_id_status": "official_intersected_with_published"
+        },
+        {
+          "id": "high_drag-test",
+          "index_file": "datasets/windsorml/high_drag-test/index.json",
+          "index_sha256": "dab08bcfe94ce4207282ec897b6bc224374a075096024189ade811c7d7c23b56",
+          "case_count": 70,
+          "case_id_status": "official_intersected_with_published"
+        },
+        {
+          "id": "low_drag-test",
+          "index_file": "datasets/windsorml/low_drag-test/index.json",
+          "index_sha256": "c77d9f8382b6bcf78e8c35e0b579c43f2cad2435c831120be2e90c5910c28113",
+          "case_count": 70,
+          "case_id_status": "official_intersected_with_published"
+        },
+        {
+          "id": "image_wake-test",
+          "index_file": "datasets/windsorml/image_wake-test/index.json",
+          "index_sha256": "a2489d4ad25d003fa820f40bd58557feea746d077da0e47b30795ef9418d038c",
+          "case_count": 71,
+          "case_id_status": "official_intersected_with_published"
+        }
+      ],
+      "native_profile_truth": {
+        "schema_version": "1.0",
+        "release_id": "windsorml-native-profile-truth-v1-candidate",
+        "dataset_id": "windsorml",
+        "dataset_revision": "8a6ca32ae22c94f54df2186d1b0ccf9662a294c2",
+        "profile_support_manifest_sha256": "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376",
+        "profile_definition_sha256": "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056",
+        "source_identity_sha256": "e9bc888931e26220a9c7bddc202a66ab96a043343bf9d70066d8de4ad8ba2cff",
+        "source_kind": "native_cfd",
+        "analytical_dummy": false,
+        "status": "candidate_owner_review_required",
+        "usage": "browser_visualization_only_not_metric_recomputation",
+        "series_per_case": 16,
+        "samples_per_series": 128,
+        "case_count": 233,
+        "case_set_count": 5
+      }
+    },
+    {
+      "id": "vki-ls59",
+      "name": "VKI-LS59",
+      "splits": [
+        {
+          "id": "train",
+          "label": "train",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 168
+        },
+        {
+          "id": "train_500",
+          "label": "train_500",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 168
+        },
+        {
+          "id": "train_250",
+          "label": "train_250",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 168
+        },
+        {
+          "id": "train_125",
+          "label": "train_125",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 168
+        },
+        {
+          "id": "train_64",
+          "label": "train_64",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 168
+        },
+        {
+          "id": "train_32",
+          "label": "train_32",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 168
+        },
+        {
+          "id": "train_16",
+          "label": "train_16",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 168
+        },
+        {
+          "id": "train_8",
+          "label": "train_8",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 168
+        }
+      ],
+      "case_sets": [
+        {
+          "id": "source_evaluation_prototype",
+          "index_file": "datasets/vki-ls59/source_evaluation_prototype/index.json",
+          "index_sha256": "8a22289438556867311a4e8cb1655dac24ad6e57b7e69282545fe424572eb946",
+          "case_count": 168,
+          "case_id_status": "prototype_generated"
+        }
+      ]
+    },
+    {
+      "id": "rotor37",
+      "name": "Rotor37",
+      "splits": [
+        {
+          "id": "train_1000",
+          "label": "train_1000",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 200
+        },
+        {
+          "id": "train_500",
+          "label": "train_500",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 200
+        },
+        {
+          "id": "train_250",
+          "label": "train_250",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 200
+        },
+        {
+          "id": "train_125",
+          "label": "train_125",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 200
+        },
+        {
+          "id": "train_64",
+          "label": "train_64",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 200
+        },
+        {
+          "id": "train_32",
+          "label": "train_32",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 200
+        },
+        {
+          "id": "train_16",
+          "label": "train_16",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 200
+        },
+        {
+          "id": "train_8",
+          "label": "train_8",
+          "case_set_id": "source_evaluation_prototype",
+          "case_count": 200
+        }
+      ],
+      "case_sets": [
+        {
+          "id": "source_evaluation_prototype",
+          "index_file": "datasets/rotor37/source_evaluation_prototype/index.json",
+          "index_sha256": "ed743661737a7ef8377676da812b9cc6f26791e13741fb95c11804cf8b62e8e7",
+          "case_count": 200,
+          "case_id_status": "prototype_generated"
+        }
+      ]
+    },
+    {
+      "id": "blendednet",
+      "name": "BlendedNet",
+      "splits": [
+        {
+          "id": "geometry_holdout",
+          "label": "geometry_holdout",
+          "case_set_id": "geometry_holdout",
+          "case_count": 870
+        }
+      ],
+      "case_sets": [
+        {
+          "id": "geometry_holdout",
+          "index_file": "datasets/blendednet/geometry_holdout/index.json",
+          "index_sha256": "917ddbb017e69b28cf27c45cec048b8fe0b9506f2439d7e8be0349d062377fa4",
+          "case_count": 870,
+          "case_id_status": "prototype_generated"
+        }
+      ]
+    }
+  ]
+}

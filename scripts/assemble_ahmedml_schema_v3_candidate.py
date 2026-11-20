@@ -72,6 +72,7 @@ from scripts.validate_scoring_supports import (  # noqa: E402
     validate_candidate_manifest_release,
 )
 from scripts.fetch_profile_ground_truth import fetch_manifest  # noqa: E402
+from scripts.profile_truth_publication import evaluated_truth_binding  # noqa: E402
 
 
 DEFAULT_SPECIFICATION = ROOT / "benchmark-specs" / "ahmedml" / "submission-spec.json"
@@ -322,7 +323,7 @@ def _release_bindings(
         raise PackageAssemblyError("active profile definition bytes differ")
 
     global_truth = _mapping(
-        leaderboard_manifest.get("data_release", {}).get("profile_ground_truth"),
+        evaluated_truth_binding(leaderboard_manifest, "ahmedml"),
         "global profile-ground-truth binding",
     )
     if ground_truth != {
@@ -1094,7 +1095,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             truth_path = (
                 args.profile_ground_truth_manifest.expanduser().resolve()
                 if args.profile_ground_truth_manifest is not None
-                else fetch_manifest(Path(temporary) / "manifest.json")
+                else fetch_manifest(Path(temporary) / "manifest.json", dataset="ahmedml")
             )
             result = assemble_package(
                 config_path=args.config.expanduser().resolve(),
