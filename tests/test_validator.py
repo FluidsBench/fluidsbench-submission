@@ -61,7 +61,9 @@ def make_real_package(destination: Path, *, approved: bool = False) -> Path:
     # This helper models a historical v2 contribution, predating the optional
     # structured method record carried by today's prototype fixtures.
     submission.pop("methodology", None)
-    ground_truth = load_json(ROOT / "leaderboard" / "manifest.json")["data_release"]["profile_ground_truth"]
+    from scripts.profile_truth_publication import evaluated_truth_binding
+
+    ground_truth = evaluated_truth_binding(load_json(ROOT / "leaderboard" / "manifest.json"), submission["dataset_id"])
     submission["profile_data"]["profile_ground_truth_release_id"] = ground_truth["release_id"]
     submission["profile_data"]["profile_ground_truth_manifest_sha256"] = ground_truth["manifest_sha256"]
     submission["code_url"] = "https://example.org/open-model-code"

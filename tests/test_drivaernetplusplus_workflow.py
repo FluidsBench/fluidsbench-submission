@@ -79,7 +79,9 @@ class CommittedReleaseChain(unittest.TestCase):
             ROOT / "examples" / "drivaernetplusplus-v3-candidate" / "package-config.template.json"
         )
         owner = self.spec["scoring_support"]["candidate_manifest"]
-        truth = contract.read_json(ROOT / "leaderboard" / "manifest.json")["data_release"]["profile_ground_truth"]
+        from scripts.profile_truth_publication import evaluated_truth_binding
+
+        truth = evaluated_truth_binding(contract.read_json(ROOT / "leaderboard" / "manifest.json"), "drivaernetplusplus")
         self.assertEqual(
             template["release_bindings"],
             {
