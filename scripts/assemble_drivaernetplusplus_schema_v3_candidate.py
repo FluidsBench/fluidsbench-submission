@@ -163,7 +163,9 @@ def _release_bindings(config: Mapping[str, Any], specification: Mapping[str, Any
         raise PackageAssemblyError("candidate_manifest does not match the repository binding; refresh package-config.json")
     if dict(release["evaluator"]) != {"reference_version": specification.get("evaluation_reference_version")}:
         raise PackageAssemblyError("evaluator identity differs from the specification")
-    truth = read_json(ROOT / "leaderboard" / "manifest.json")["data_release"]["profile_ground_truth"]
+    from scripts.profile_truth_publication import evaluated_truth_binding
+
+    truth = evaluated_truth_binding(read_json(ROOT / "leaderboard" / "manifest.json"), "drivaernetplusplus")
     ground_truth = dict(_mapping(release["profile_ground_truth"], "profile_ground_truth"))
     if ground_truth != {"release_id": truth["release_id"], "manifest_sha256": truth["manifest_sha256"]}:
         raise PackageAssemblyError("profile_ground_truth differs from the repository reference binding")

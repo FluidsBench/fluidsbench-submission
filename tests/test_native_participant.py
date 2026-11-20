@@ -12,6 +12,7 @@ from reference import native_participant as n
 from reference.native_participant_cli import main
 
 TRUTH = n.ROOT / "tests/fixtures/windsorml/profile-ground-truth-manifest.json"
+AHMED_TRUTH = n.ROOT / "tests/fixtures/legacy-profile-ground-truth-manifest.json"
 
 
 def entry(w, path, **updates):
@@ -98,10 +99,11 @@ def test_profile_manifest_offline_reuse_and_corruption(workflow, tmp_path, monke
     )
     with pytest.raises(ValueError, match="missing offline"):
         workflow.profile_manifest(tmp_path, offline=True)
-    digest = n.sha256_file(TRUTH)
+    truth = AHMED_TRUTH if workflow.dataset == "ahmedml" else TRUTH
+    digest = n.sha256_file(truth)
     target = tmp_path / "profile-ground-truth" / digest / "manifest.json"
     target.parent.mkdir(parents=True)
-    shutil.copyfile(TRUTH, target)
+    shutil.copyfile(truth, target)
     assert workflow.profile_manifest(tmp_path, offline=True) == target
     target.write_text("{}")
     with pytest.raises(ValueError, match="SHA-256"):
@@ -180,7 +182,7 @@ def campaign(workflow, tmp_path, monkeypatch):
         "fetch_support",
         lambda *a, **k: {
             "root": str(tmp_path),
-            "profile_ground_truth_manifest": str(TRUTH),
+            "profile_ground_truth_manifest": str(AHMED_TRUTH if w.dataset == "ahmedml" else TRUTH),
         },
     )
     calls, reductions = [], []

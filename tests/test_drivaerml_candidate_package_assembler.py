@@ -564,7 +564,7 @@ class DrivAerMLCandidatePackageAssemblerTests(unittest.TestCase):
                     "data_release": {
                         "profile_ground_truth": load_json(
                             ROOT / "leaderboard" / "manifest.json"
-                        )["data_release"]["profile_ground_truth"]
+                        )["data_release"]["profile_ground_truth_overrides"]["drivaerml"]
                     },
                     "datasets": [
                         {

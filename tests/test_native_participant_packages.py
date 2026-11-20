@@ -19,6 +19,7 @@ from scripts.assemble_ahmedml_schema_v3_dev_fixture import (
     _mapping_summary,
 )
 from tests.test_windsorml_candidate_workflow import inputs as windsor_inputs, TRUTH
+from tests.test_native_participant import AHMED_TRUTH
 from tests.test_ahmedml_dataset_scorer import _case_evidence
 from tests.test_ahmedml_regional_aggregate import _case as regional_case, _metrics
 
@@ -220,7 +221,7 @@ def test_complete_campaign_package_and_real_validator(
             "entry": entry,
             "support": {
                 "root": str(tmp_path),
-                "profile_ground_truth_manifest": str(TRUTH),
+                "profile_ground_truth_manifest": str(AHMED_TRUTH if dataset == "ahmedml" else TRUTH),
             },
         },
     )

@@ -417,9 +417,9 @@ def _release_binding(
     owner_truth = support.get("profile_definition", {}).get("profile_ground_truth")
     if not isinstance(owner_truth, dict):
         raise PackageAssemblyError("repository profile-ground-truth release is not published")
-    global_truth = load_json(ROOT / "leaderboard" / "manifest.json").get(
-        "data_release", {}
-    ).get("profile_ground_truth")
+    from scripts.profile_truth_publication import evaluated_truth_binding
+
+    global_truth = evaluated_truth_binding(load_json(ROOT / "leaderboard" / "manifest.json"), "drivaerml")
     if not isinstance(global_truth, dict):
         raise PackageAssemblyError("leaderboard manifest has no profile-ground-truth binding")
     for key, expected in ground_truth.items():

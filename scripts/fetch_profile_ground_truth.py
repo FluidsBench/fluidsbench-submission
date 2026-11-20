@@ -14,12 +14,17 @@ from urllib.request import urlopen
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+if __package__:
+    from .profile_truth_publication import evaluated_truth_binding
+else:
+    from profile_truth_publication import evaluated_truth_binding
 MAX_MANIFEST_BYTES = 16 * 1024 * 1024
 
 
-def fetch_manifest(output: Path, *, release_manifest: Path | None = None) -> Path:
+def fetch_manifest(output: Path, *, release_manifest: Path | None = None, dataset: str | None = None) -> Path:
     release_manifest = release_manifest or ROOT / "leaderboard" / "manifest.json"
-    binding = json.loads(release_manifest.read_text())["data_release"]["profile_ground_truth"]
+    binding = evaluated_truth_binding(json.loads(release_manifest.read_text()), dataset)
     url = binding["manifest_url"]
     if urlsplit(url).scheme != "https":
         raise ValueError("profile-ground-truth manifest URL must use HTTPS")
@@ -50,9 +55,10 @@ def fetch_manifest(output: Path, *, release_manifest: Path | None = None) -> Pat
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--dataset", help="Choose a dataset-specific evaluator binding when defined.")
     args = parser.parse_args()
     try:
-        output = fetch_manifest(args.output)
+        output = fetch_manifest(args.output, dataset=args.dataset)
     except (OSError, ValueError, KeyError) as error:
         parser.exit(1, f"Profile-ground-truth download failed: {error}\n")
     print(f"Verified profile-ground-truth manifest: {output}")

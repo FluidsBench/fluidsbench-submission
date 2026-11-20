@@ -55,7 +55,8 @@ class ProfileGroundTruthDownloadTests(unittest.TestCase):
     def test_assembler_downloads_when_local_manifest_is_omitted(self):
         config = self.root / "config.json"
         config.write_text("{}")
-        def fetch(path):
+        def fetch(path, *, dataset):
+            self.assertEqual(dataset, "ahmedml")
             path.write_bytes(self.payload)
             return path
         def assemble(**kwargs):
