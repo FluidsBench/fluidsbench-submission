@@ -176,7 +176,7 @@ class WindsorMLDatasetScorerTests(unittest.TestCase):
         self.assertLess(values["cd_r2"], 1.0)
         self.assertAlmostEqual(values["surface_pressure_rel_l2"], 5.0, places=9)
 
-    def test_split_binding_records_the_excluded_case(self) -> None:
+    def test_split_binding_records_the_official_v2_test_population(self) -> None:
         write_evidence(self.root, field_error=0.0, force_error=0.0)
         result = score_candidate_dataset(
             submission_specification=SPEC,
@@ -184,8 +184,8 @@ class WindsorMLDatasetScorerTests(unittest.TestCase):
             case_evidence_directory=self.root,
         ).to_json()
         self.assertEqual(result["case_count"], 35)
-        self.assertEqual(result["official_case_count"], 36)
-        self.assertEqual(result["excluded_case_ids"], ["run_354"])
+        self.assertEqual(result["official_case_count"], 35)
+        self.assertEqual(result["excluded_case_ids"], [])
 
     def test_relative_families_are_reported_but_never_weighted(self) -> None:
         """A degraded relative family must not move overall_score."""

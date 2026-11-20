@@ -2007,11 +2007,9 @@ def validate_profile_ground_truth_binding(binding: dict[str, Any]) -> None:
     ):
         raise ValueError("profile-ground-truth binding is incomplete or invalid")
     leaderboard = load_json(MANIFEST_PATH)
-    global_profile_truth = (
-        leaderboard.get("data_release", {}).get("profile_ground_truth")
-        if isinstance(leaderboard, dict)
-        else None
-    )
+    from scripts.profile_truth_publication import evaluated_truth_binding
+
+    global_profile_truth = evaluated_truth_binding(leaderboard, "drivaerml") if isinstance(leaderboard, dict) else None
     if not isinstance(global_profile_truth, dict):
         raise ValueError("leaderboard manifest has no global profile-ground-truth binding")
     for key in ("release_id", "manifest_sha256"):
