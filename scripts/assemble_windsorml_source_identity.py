@@ -27,7 +27,7 @@ from reference.windsorml.contract import (  # noqa: E402
     AXIS_CONVENTION,
     CASE_COUNT,
     DATASET_ID,
-    DATASET_VERSION,
+    SOURCE_DATASET_VERSION,
     FORCE_REFERENCE_AREA_M2,
     FORCE_REPLAY_ABSOLUTE_TOLERANCE,
     FORCE_REPLAY_RELATIVE_TOLERANCE,
@@ -186,7 +186,7 @@ def main() -> int:
     document = {
         "schema": SOURCE_SCHEMA,
         "dataset_id": DATASET_ID,
-        "dataset_version": DATASET_VERSION,
+        "dataset_version": SOURCE_DATASET_VERSION,
         "repository": {
             "id": REPOSITORY_ID,
             "revision": REPOSITORY_REVISION,

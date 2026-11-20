@@ -5,11 +5,11 @@
   "scope": "Source-backed documentation of pressure definitions and the separately versioned HiLiftAeroML SI export correction. This file is not evaluator configuration, owner approval, or a scoring-support release.",
   "common": {
     "reference_rule": "Apply the dataset-prescribed reference to truth and prediction in the same units. Undo training normalization first. Do not fit an offset to test truth or independently mean-center the two fields.",
-    "relative_l2": "For each complete case: 100 \u00d7 sqrt(\u03a3 w\u1d62 (\u0177\u1d62 \u2212 y\u1d62)\u00b2 / \u03a3 w\u1d62 y\u1d62\u00b2), where y is the dataset-specific evaluation quantity below.",
-    "relative_l1": "Where required: 100 \u00d7 \u03a3 w\u1d62 |\u0177\u1d62 \u2212 y\u1d62| / \u03a3 w\u1d62 |y\u1d62|. Preserve the metric\u2019s specified spatial weights.",
-    "aggregation": "For case-macro relative L1/L2, combine additive chunk sums over the whole case, then average complete-case percentages equally. Keep each metric\u2019s frozen support and weights.",
+    "relative_l2": "For each complete case: 100 × sqrt(Σ wᵢ (ŷᵢ − yᵢ)² / Σ wᵢ yᵢ²), where y is the dataset-specific evaluation quantity below.",
+    "relative_l1": "Where required: 100 × Σ wᵢ |ŷᵢ − yᵢ| / Σ wᵢ |yᵢ|. Preserve the metric’s specified spatial weights.",
+    "aggregation": "For case-macro relative L1/L2, combine additive chunk sums over the whole case, then average complete-case percentages equally. Keep each metric’s frozen support and weights.",
     "denominators": "A zero truth norm is undefined and must fail evaluation, including when prediction is also zero. The audited reductions do not add an epsilon or floor a small positive norm; tiny finite denominators remain sensitive. Non-finite inputs/results are invalid. Do not skip, impute or pool a failing case.",
-    "rotor_rrmse": "Rotor37 benchmark field RRMSE is sqrt(mean_cases(mean_nodes(error\u00b2) / max_nodes(|truth|)\u00b2)); it is a ratio, not a percentage and not the L2 norm ratio. A zero per-case infinity norm is invalid.",
+    "rotor_rrmse": "Rotor37 benchmark field RRMSE is sqrt(mean_cases(mean_nodes(error²) / max_nodes(|truth|)²)); it is a ratio, not a percentage and not the L2 norm ratio. A zero per-case infinity norm is invalid.",
     "scaling_note": "Multiplying truth and prediction by the same nonzero factor leaves within-case relative L1/L2 unchanged. Subtracting a constant changes the denominator. MAE/RMSE retain a unit scale; relative-metric invariance does not validate their units.",
     "availability": "This document records scientific definitions and supporting evidence. For current submission availability, use the [dataset index](../benchmark-specs/README.md)."
   },
@@ -24,10 +24,10 @@
           "domain": "Surface and volume",
           "raw_field": "pMean",
           "association": "CellData",
-          "units": "m\u00b2/s\u00b2",
+          "units": "m²/s²",
           "reference": "Outlet fixedValue = 0; inlet velocity = 1 m/s.",
           "evaluation": "Score the released pMean values without another offset.",
-          "conversion": "Cp = pMean / (0.5 \u00d7 1\u00b2) = 2 \u00d7 pMean. This scaling leaves relative L1/L2 unchanged."
+          "conversion": "Cp = pMean / (0.5 × 1²) = 2 × pMean. This scaling leaves relative L1/L2 unchanged."
         }
       ],
       "notes": [
@@ -38,7 +38,7 @@
         {
           "label": "AhmedML paper",
           "url": "https://arxiv.org/pdf/2407.20801v1",
-          "locator": "\u00a7B.7, Eq. 36; Table 6 (PDF pp. 24, 26)",
+          "locator": "§B.7, Eq. 36; Table 6 (PDF pp. 24, 26)",
           "finding": "Defines zero reference, density 1, speed 1 m/s, and relative kinematic pMean.",
           "sha256": "28586b44def69eee8d82f8fab95c74905616c2f59326cc7dec68c751657cf70f"
         },
@@ -78,14 +78,14 @@
           "domain": "Airfoil surface and 2D flow domain",
           "raw_field": "p",
           "association": "PointData",
-          "units": "m\u00b2/s\u00b2",
+          "units": "m²/s²",
           "reference": "Incompressible freestream pressure = 0. The compressible validation case in the paper uses a different convention.",
           "evaluation": "Use native p after undoing training standardization; no extra mean subtraction.",
-          "conversion": "Cp = p / (0.5 \u00d7 U\u221e\u00b2), using each case\u2019s inlet speed. Density is already divided out of p."
+          "conversion": "Cp = p / (0.5 × U∞²), using each case’s inlet speed. Density is already divided out of p."
         }
       ],
       "notes": [
-        "The paper\u2019s training-set mean/std normalization is a model preprocessing step, not the pressure reference used for field evaluation."
+        "The paper’s training-set mean/std normalization is a model preprocessing step, not the pressure reference used for field evaluation."
       ],
       "follow_up": [],
       "sources": [
@@ -99,8 +99,8 @@
         {
           "label": "Official airfrans library",
           "url": "https://github.com/Extrality/airfrans_lib/blob/d35d4035d8ba6fa98c1a6662be925c2fc777610b/src/airfrans/simulation.py",
-          "locator": "Simulation.__init__; boundary_layer, lines 65\u201366 and 399\u2013403",
-          "finding": "Loads native p; the incompressible coefficient divides by 0.5 U\u221e\u00b2 without density or another pressure offset.",
+          "locator": "Simulation.__init__; boundary_layer, lines 65–66 and 399–403",
+          "finding": "Loads native p; the incompressible coefficient divides by 0.5 U∞² without density or another pressure offset.",
           "sha256": "77a74740ad482fa99adf8829ebdc4c4fe38b85de24d30d30a0c07806b1306c17"
         }
       ],
@@ -132,10 +132,10 @@
           "domain": "Surface and volume",
           "raw_field": "pMeanTrim",
           "association": "CellData",
-          "units": "m\u00b2/s\u00b2",
+          "units": "m²/s²",
           "reference": "p_ref = 0 at (80, 10, 10) m on the outlet.",
           "evaluation": "Use native pMeanTrim; preserve the outlet reference rather than substituting an upstream or experimental reference.",
-          "conversion": "Cp = pMeanTrim / (0.5 \u00d7 38.889\u00b2); \u03c1\u221e = 1 kg/m\u00b3 in this setup."
+          "conversion": "Cp = pMeanTrim / (0.5 × 38.889²); ρ∞ = 1 kg/m³ in this setup."
         }
       ],
       "notes": [
@@ -146,7 +146,7 @@
         {
           "label": "DrivAerML paper",
           "url": "https://arxiv.org/pdf/2408.11969v2",
-          "locator": "\u00a7B.2, Eq. 34; \u00a7B.3; Tables 3\u20134",
+          "locator": "§B.2, Eq. 34; §B.3; Tables 3–4",
           "finding": "Specifies the outlet reference and warns that moving it changes the pressure values.",
           "sha256": "86b8b7803a3d9975acfe0261eaa93fc14c83e2648c6f9f9a32f8ec2972148fe9"
         },
@@ -191,10 +191,10 @@
           "domain": "Surface only",
           "raw_field": "p",
           "association": "PointData",
-          "units": "m\u00b2/s\u00b2",
+          "units": "m²/s²",
           "reference": "Zero freestream gauge, recorded in the dataset-owner approval.",
           "evaluation": "Use native p on every required surface point; undo any training mean/std scaling.",
-          "conversion": "Cp = p / 450 at U\u221e = 30 m/s. Gauge pressure in Pa = 1.184 \u00d7 p."
+          "conversion": "Cp = p / 450 at U∞ = 30 m/s. Gauge pressure in Pa = 1.184 × p."
         }
       ],
       "notes": [
@@ -205,14 +205,14 @@
         {
           "label": "DrivAerNet++ paper",
           "url": "https://proceedings.neurips.cc/paper_files/paper/2024/file/013cf29a9e68e4411d0593040a8a1eb3-Paper-Datasets_and_Benchmarks_Track.pdf",
-          "locator": "Appendix B; Table 6 (PDF pp. 18\u201320)",
-          "finding": "Documents simpleFoam and the 30 m/s, 1.184 kg/m\u00b3 flow conditions. It does not alone establish the exact archived p gauge.",
+          "locator": "Appendix B; Table 6 (PDF pp. 18–20)",
+          "finding": "Documents simpleFoam and the 30 m/s, 1.184 kg/m³ flow conditions. It does not alone establish the exact archived p gauge.",
           "sha256": "6c8895e40f5c5903cd6327dbfae45b60d7e3badcd8b012367921e2a780e1c8d6"
         },
         {
           "label": "Author surface-pressure loader",
           "url": "https://github.com/Mohamedelrefaie/DrivAerNet/blob/8b8c053053aa0f27c30f73af00be070a20205858/RegDGCNN_SurfaceFields/data_loader.py",
-          "locator": "sample_point_cloud_with_pressure, lines 66\u201387",
+          "locator": "sample_point_cloud_with_pressure, lines 66–87",
           "finding": "Reads PointData p without coefficient conversion. Its sampled training loader does not define FluidsBench scoring support.",
           "sha256": "6a96d888dfd45397da29e4d0749511c8a3c309ec535ad18795d5158a8d1a3edc"
         },
@@ -245,32 +245,32 @@
       "name": "HiLiftAeroML",
       "status": "confirmed",
       "status_label": "Confirmed; SI dimensional export corrected",
-      "summary": "Relative surface and volume pressure errors use Cp = (P \u2212 p\u221e) / q\u221e. Raw pressure is in the solver\u2019s slug\u2013inch\u2013second units.",
+      "summary": "Relative surface and volume pressure errors use Cp = (P − p∞) / q∞. Raw pressure is in the solver’s slug–inch–second units.",
       "fields": [
         {
           "domain": "Surface",
           "raw_field": "PROJ(AVG(P))",
           "association": "PointData",
-          "units": "Native slug/(in\u00b7s\u00b2); Cp is dimensionless",
-          "reference": "Use the same per-case p\u221e and q\u221e = 0.5 \u03c1\u221e |U\u221e|\u00b2 as the frozen evaluator.",
+          "units": "Native slug/(in·s²); Cp is dimensionless",
+          "reference": "Use the same per-case p∞ and q∞ = 0.5 ρ∞ |U∞|² as the frozen evaluator.",
           "evaluation": "Relative L1/L2 use Cp after undoing model standardization.",
-          "conversion": "Subtract p\u221e and divide by q\u221e in one consistent unit system."
+          "conversion": "Subtract p∞ and divide by q∞ in one consistent unit system."
         },
         {
           "domain": "Volume",
           "raw_field": "avg(P)",
           "association": "PointData",
-          "units": "Native slug/(in\u00b7s\u00b2); Cp is dimensionless",
+          "units": "Native slug/(in·s²); Cp is dimensionless",
           "reference": "Same per-case freestream reference as the surface.",
           "evaluation": "Apply the published raw Float32 avg(P) != 0 validity mask before normalization; relative L1/L2 use Cp.",
-          "conversion": "The package export converts native pressure and surface wall-shear MAE/RMSE by \u00d7 574.5631077637795 into Pa, and native velocity MAE/RMSE by \u00d7 0.0254 into m/s. Each case keeps its original inverse normalization before equal-case averaging. Apply this SI export exactly once."
+          "conversion": "The package export converts native pressure and surface wall-shear MAE/RMSE by × 574.5631077637795 into Pa, and native velocity MAE/RMSE by × 0.0254 into m/s. Each case keeps its original inverse normalization before equal-case averaging. Apply this SI export exactly once."
         }
       ],
       "notes": [
-        "The native profile materializer computes Cp from raw pressure and per-case freestream metadata. The per-case ref_values CSV supplies qRef for load normalization; do not substitute it for the field evaluator\u2019s training q\u221e.",
+        "The native profile materializer computes Cp from raw pressure and per-case freestream metadata. The per-case ref_values CSV supplies qRef for load normalization; do not substitute it for the field evaluator’s training q∞.",
         "The assembler converts native field MAE/RMSE to Pa and m/s using hiliftaeroml-dimensional-export-si-v1. Evaluation evidence records this stage exactly once.",
         "Synthetic regression tests check conversion factors, equal-case aggregation and unchanged relative sufficient statistics. The tests do not execute a submitted model.",
-        "Relative errors, R\u00b2, coefficients, profiles and composite scores retain their specified definitions. The pressure reference, weights and validity masks are unchanged.",
+        "Relative errors, R², coefficients, profiles and composite scores retain their specified definitions. The pressure reference, weights and validity masks are unchanged.",
         "The catalog source snapshot is bbec30b; the field-support archive identity retains 1c266d3. The SI export contract does not repin support or open submissions."
       ],
       "follow_up": [],
@@ -278,7 +278,7 @@
         {
           "label": "HiLiftAeroML paper",
           "url": "https://arxiv.org/pdf/2605.19565v1",
-          "locator": "Appendix B.1, Eqs. 9\u201318; Table 11",
+          "locator": "Appendix B.1, Eqs. 9–18; Table 11",
           "finding": "Defines English solver units and the freestream reference; distinguishes surface PROJ(AVG(P)) and volume avg(P).",
           "sha256": "bd87638212505fadd5a95b7a9d8e838ebd3621f5a3a51921b0392ca92b8cd590"
         },
@@ -292,7 +292,7 @@
         {
           "label": "Author PhysicsNeMo recipe",
           "url": "https://github.com/NVIDIA/physicsnemo/blob/426f7552da4b4fa675e404e8a4f437e27681b668/examples/cfd/external_aerodynamics/unified_external_aero_recipe/datasets/highlift_volume.yaml",
-          "locator": "Dataset header, lines 17\u201325",
+          "locator": "Dataset header, lines 17–25",
           "finding": "States that per-case freestream metadata uses slug-inch-second-Rankine. This is corroborating author code, not a replacement for the frozen evaluator.",
           "sha256": "7284b46835dd55e17e5b8a40ab1019fa0a0657cf712a4a5492ecb56114fd05c8"
         },
@@ -300,7 +300,7 @@
           "label": "NIST SI conversion factors",
           "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b8",
           "locator": "Entries for slug and inch",
-          "finding": "1 slug \u2248 14.59390 kg and 1 in = 0.0254 m. Their ratio gives \u2248 574.563 Pa per slug/(in\u00b7s\u00b2); this dimensional conversion is derived here, not evidence of its implementation in the evaluator."
+          "finding": "1 slug ≈ 14.59390 kg and 1 in = 0.0254 m. Their ratio gives ≈ 574.563 Pa per slug/(in·s²); this dimensional conversion is derived here, not evidence of its implementation in the evaluator."
         },
         {
           "label": "Current ICLR manuscript and reproducible unit audit (author project; access required)",
@@ -312,7 +312,7 @@
         {
           "label": "Original FluidsBench result export",
           "url": "https://github.com/neilashton/fluidsbench-submission/blob/cb64dacb296e467bc706de19093142c66b4056da/leaderboard/all.json",
-          "locator": "23 HiLiftAeroML rows and their linked case-metric files; compared with the paper\u2019s frozen e19809a archive",
+          "locator": "23 HiLiftAeroML rows and their linked case-metric files; compared with the paper’s frozen e19809a archive",
           "finding": "Before correction, all HiLiftAeroML metric values matched the archived export and all 23 case-file hashes matched. Recovered dimensional scales of about 4.93823 for pressure/shear and 2679.505 for velocity confirmed native units despite SI labels.",
           "sha256": "7702b02f01408b26e16d0d687ade3cebce4c4267a395dd803fa3f0d645dea572"
         }
@@ -320,13 +320,13 @@
       "code_evidence": [
         {
           "path": "benchmark-specs/hiliftaeroml/submission-spec.json",
-          "sha256": "864c80b632c9b6c4ba21ffa92b0da64b09a30987a5b6eb1e8f75ea72768bbfee",
+          "sha256": "c35e3daec6859c4c094bd61836a04bb474ed3301e7f3646ef163ecef2515ceaa",
           "finding": "Keeps Cp for relative pressure errors and now states the explicit native-to-SI dimensional export factors."
         },
         {
           "path": "reference/hiliftaeroml/native_profile_truth_materializer.py",
           "sha256": "4034ac7c615dd8c17536dbc70021ecf68ca155e6ba229006c8fb774fd8071e5d",
-          "finding": "Computes q\u221e from per-case metadata and Cp from raw pressure."
+          "finding": "Computes q∞ from per-case metadata and Cp from raw pressure."
         },
         {
           "path": "benchmark-specs/hiliftaeroml/evaluator-implementation-manifest.candidate.json",
@@ -371,32 +371,32 @@
           "raw_field": "cpavg",
           "association": "PointData",
           "units": "Dimensionless",
-          "reference": "Published nominal reference: p_ref = 37330.4 Pa, \u03c1_ref = 1.31 kg/m\u00b3, U_ref = 40 m/s.",
+          "reference": "Published nominal reference: p_ref = 37330.4 Pa, ρ_ref = 1.31 kg/m³, U_ref = 40 m/s.",
           "evaluation": "Score released cpavg directly. The reference has already been applied.",
-          "conversion": "Cp = (P \u2212 37330.4) / 1048 for dimensional P in Pa under the published nominal convention."
+          "conversion": "Cp = (P − 37330.4) / 1048 for dimensional P in Pa under the published nominal convention."
         },
         {
           "domain": "Volume",
           "raw_field": "pressureavg",
           "association": "CellData",
-          "units": "Unresolved: paper labels m\u00b2/s\u00b2; sampled export needs reconciliation",
+          "units": "Unresolved: paper labels m²/s²; sampled export needs reconciliation",
           "reference": "No additional reference subtraction is implemented by the current evaluator. The tunnel exit is not a fixed-pressure boundary.",
           "evaluation": "The current evaluator compares raw pressureavg values. Preserve that fact without treating it as a confirmed physical convention.",
           "conversion": "Do not apply the surface Cp conversion to pressureavg until the export units and offset are confirmed."
         }
       ],
       "notes": [
-        "For the dataset, the paper uses nominal inlet conditions; the numerical probe at (\u22122, 1.3, 0) m is used for the separate experimental validation.",
+        "For the dataset, the paper uses nominal inlet conditions; the numerical probe at (−2, 1.3, 0) m is used for the separate experimental validation.",
         "Table 6 calls pressureavg relative kinematic pressure. The pinned run_1 volume XML reports a range of 33105.16015625 to 38447.64453125. Those magnitudes suggest an absolute dimensional export, but a range alone cannot establish units or gauge. The solver/export implementation is not published with this release."
       ],
       "follow_up": [
-        "Dataset owner/Volcano: confirm the exact pressureavg export expression (P, P/\u03c1, (P\u2212p_ref)/\u03c1, or another quantity), density convention, units and reference. Reconcile it with surface cpavg on a small paired sample. If scoring should use a different offset, replay affected metrics and issue a new evaluator/result release."
+        "Dataset owner/Volcano: confirm the exact pressureavg export expression (P, P/ρ, (P−p_ref)/ρ, or another quantity), density convention, units and reference. Reconcile it with surface cpavg on a small paired sample. If scoring should use a different offset, replay affected metrics and issue a new evaluator/result release."
       ],
       "sources": [
         {
           "label": "WindsorML paper",
           "url": "https://arxiv.org/pdf/2407.19320v4",
-          "locator": "\u00a7B.6.4\u2013B.6.5; Tables 5\u20136 (PDF pp. 19\u201320)",
+          "locator": "§B.6.4–B.6.5; Tables 5–6 (PDF pp. 19–20)",
           "finding": "Defines surface Cp and nominal references, distinguishes the validation probe, and labels volume pressureavg relative kinematic pressure.",
           "sha256": "6c2c5b3118718f1f129b78cad2a4f351e66bdfab39004fc15cd322c897dbac64"
         },
@@ -417,17 +417,17 @@
       "code_evidence": [
         {
           "path": "benchmark-specs/windsorml/submission-spec.json",
-          "sha256": "fa986f21f88ceaaf7d96bb4a5111fcb46470285d71d81921fa74af8d64ee357d",
+          "sha256": "7a0bd05eb677bb42e5f4513fab10620ac58c4b9dfd938a74f21ae4354925d95f",
           "finding": "The published scoring specification defines native surface cpavg and volume pressureavg, their reductions, profile coverage and weights."
         },
         {
           "path": "reference/windsorml/contract.py",
-          "sha256": "c57e37acfa3bff13b6302bc57b6c20c0dab3b0f9a38b643fe91747183366bb3c",
+          "sha256": "5fe290b4fd3aa0778ddabd5e0694a220094e753cfaeea9c78cd050048c7341c6",
           "finding": "Surface cpavg and volume pressureavg are separate native fields."
         },
         {
           "path": "reference/windsorml/evaluator.py",
-          "sha256": "b7acd5b946153071418127e7517fa883e0edeaee0bbe4d73b934178332b13056",
+          "sha256": "6498581caf28af9a829002393f663eb3cfcec7645a97babc8d7e8e42da67fd42",
           "finding": "Both scalar arrays enter statistics directly; no volume pressure-reference subtraction is applied."
         }
       ]
@@ -443,13 +443,13 @@
           "raw_field": "Pressure",
           "association": "CGNS GridLocation Vertex",
           "units": "Pa, supported by sampled equation-of-state consistency; explicit owner declaration pending",
-          "reference": "Absolute thermodynamic pressure is supported by P/(\u03c1T) \u2248 287 across one public sample.",
+          "reference": "Absolute thermodynamic pressure is supported by P/(ρT) ≈ 287 across one public sample.",
           "evaluation": "Use native Pressure for relative L1/L2 and the separately defined benchmark RRMSE. Do not turn it into a gauge coefficient.",
           "conversion": "No pressure offset or Cp conversion. The scalar input P is not an instruction to subtract that value from the output field."
         }
       ],
       "notes": [
-        "Inspected public row 100: 29,773 vertices; P ranges from 9889.54 to 238060.26, and P/(Density \u00d7 Temperature) is 287 within floating-point precision. The inspected CGNS tree has no explicit units declaration.",
+        "Inspected public row 100: 29,773 vertices; P ranges from 9889.54 to 238060.26, and P/(Density × Temperature) is 287 within floating-point precision. The inspected CGNS tree has no explicit units declaration.",
         "The papers and dataset card describe compressible blade-surface pressure, density and temperature. They do not fully specify the pressure boundary input or its dimensional convention. One sample is supporting evidence, not a release-wide verification."
       ],
       "follow_up": [
@@ -459,14 +459,14 @@
         {
           "label": "MMGP paper",
           "url": "https://arxiv.org/pdf/2305.12871v2",
-          "locator": "\u00a74.1 and Appendix A.1",
+          "locator": "§4.1 and Appendix A.1",
           "finding": "Introduces the Rotor37 blade-surface pressure task; no explicit pressure unit/reference definition was found.",
           "sha256": "749e668446c6f122340cec192de142845c333bfba2dc89cfe2ed819c07409dfb"
         },
         {
           "label": "PLAID datasets paper",
           "url": "https://arxiv.org/pdf/2505.02974v3",
-          "locator": "\u00a74.3.1",
+          "locator": "§4.3.1",
           "finding": "Describes compressible elsA calculations and output Density, Pressure and Temperature.",
           "sha256": "4e9e708b42ab0b73250762accf4a6ce90e13a3cee99a03f68c8f03b0b3e2625c"
         },
@@ -474,7 +474,7 @@
           "label": "Pinned Rotor37 release",
           "url": "https://huggingface.co/datasets/PLAID-datasets/Rotor37/blob/bac06c0caa7254120eecc6711a5fb85c58dfbdbc/data/all_samples-00000-of-00011.parquet",
           "locator": "Public row 100, native Vertex arrays",
-          "finding": "Static inspection of serialized numeric buffers gave P = 287 \u03c1T. The record does not add a pressure offset."
+          "finding": "Static inspection of serialized numeric buffers gave P = 287 ρT. The record does not add a pressure offset."
         }
       ],
       "code_evidence": [
@@ -512,14 +512,14 @@
         }
       ],
       "notes": [
-        "The release also contains conservative flow variables. Defining a future derived pressure field would require the owner\u2019s gas model, nondimensionalization, reference state and M_iso/Pr extraction conventions."
+        "The release also contains conservative flow variables. Defining a future derived pressure field would require the owner’s gas model, nondimensionalization, reference state and M_iso/Pr extraction conventions."
       ],
       "follow_up": [],
       "sources": [
         {
           "label": "PLAID datasets paper",
           "url": "https://arxiv.org/pdf/2505.02974v3",
-          "locator": "\u00a74.3.3 and Appendix C.2",
+          "locator": "§4.3.3 and Appendix C.2",
           "finding": "Describes compressible BROADCAST data and the separate flow-domain/blade-curve supports.",
           "sha256": "4e9e708b42ab0b73250762accf4a6ce90e13a3cee99a03f68c8f03b0b3e2625c"
         },

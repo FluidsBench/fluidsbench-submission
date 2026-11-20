@@ -15,23 +15,25 @@ pins every source file's path, size, SHA-256 and native entity counts.
 The public payload contains **350 runs, `run_0` through `run_349`**.
 Runs 350–354 appear in aggregate metadata but have no published per-run fields.
 
-Use the exact ordered `case_ids` in `splits/<split-id>.json`. These preserve the
-official assignments intersected with published runs; do not replace missing
-cases. Scores on these reduced sets are not comparable to results using the
-unreduced official sets.
+Use the [WindsorML v2 train, validation and test manifest](https://huggingface.co/datasets/neashton/windsorml/blob/ba7e66955650b2ff0482517f256d84c1eda815e7/splits/v2/manifest.json).
+It contains 344 eligible runs. Six duplicate-geometry runs and five runs
+without per-run downloads are excluded. All remaining assignments are preserved.
+The [erratum](https://huggingface.co/datasets/neashton/windsorml/blob/ba7e66955650b2ff0482517f256d84c1eda815e7/splits/v2/README.md) lists exclusions and migration steps.
+For evaluation, use each ordered `case_ids` list in `splits/<split-id>.json`.
 
-| Split | Available test cases | Official test cases | Excluded test IDs |
-| --- | ---: | ---: | --- |
-| full, medium, scarce, super_scarce | 35 | 36 | run_354 |
-| geometry | 71 | 71 | None |
-| high_drag | 70 | 71 | run_352 |
-| low_drag | 70 | 71 | run_354 |
-| image_wake | 71 | 71 | None |
+| Split | Train | Validation | Test |
+| --- | ---: | ---: | ---: |
+| `full` | 276 | 33 | 35 |
+| `medium` | 90 | 33 | 35 |
+| `scarce` | 45 | 33 | 35 |
+| `super_scarce` | 7 | 33 | 35 |
+| `geometry` | 239 | 34 | 71 |
+| `high_drag` | 239 | 35 | 70 |
+| `low_drag` | 242 | 35 | 67 |
+| `image_wake` | 239 | 34 | 71 |
 
-The eight labels share five test sets, covering 233 distinct cases. Training
-must still follow the selected label's source assignment and the available
-published runs. The four baseline labels share evaluation cases, not training
-sets.
+The eight splits share five test sets covering 230 distinct cases. The four
+baseline splits share validation and test cases and have nested training sets.
 
 | Domain | Native association | Required model predictions | Scoring weights |
 | --- | --- | --- | --- |
@@ -56,7 +58,7 @@ The evaluator derives all **16 profiles × 128 samples per case** from those
 same complete fields. Fixed placement supplies five velocity and three Cp
 series used in the diagnostic score. The corresponding eight relative series
 are reported with zero score weight. Native IDs, coordinates, and truth are
-already frozen for all 233 cases in `profile-support/`. Submitters do not write
+already frozen for all 230 cases in `profile-support/`. Submitters do not write
 profile values separately or regenerate the support.
 
 ## Download only the required data
@@ -80,14 +82,14 @@ time. Do not attempt a full VTK mesh load merely to package the result.
 
 ## Maintainer support metadata
 
-The official `windsorml-native-support-v1` manifest is bound in `submission-spec.json`.
+The official `windsorml-native-support-v2` manifest is bound in `submission-spec.json`.
 The publisher below is a maintainer preparation tool; a new official
 release still requires review and publication.
 Its compact case metadata is reproducible from the checked-in source identity
 and profile support; it does not regenerate quadrature or resample profiles:
 
 ```bash
-python scripts/publish_windsorml_candidate_support.py --output /tmp/windsor-support
+python scripts/build_windsorml_v2_support.py --output /tmp/windsor-support
 ```
 
 The metadata covers every scored native point/cell, derived force support and

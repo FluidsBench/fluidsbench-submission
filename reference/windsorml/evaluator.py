@@ -9,7 +9,7 @@ Three structural differences from :mod:`reference.ahmedml.evaluator`:
 
 * **Profile support is hash-pinned.** Surface weights ship with the dataset,
   volume metrics are equal-cell weighted, and generated profile mappings are
-  verified against the immutable 233-case manifest before they are consumed.
+  verified against the immutable v2 profile-support manifest before they are consumed.
 
 * **Vector metrics are assembled from separately streamed scalar components.**
   WindsorML stores ``cfxavg``/``cfyavg``/``cfzavg`` and

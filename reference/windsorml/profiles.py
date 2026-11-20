@@ -22,10 +22,10 @@ from .contract import SOURCE_IDENTITY_SHA256
 SPEC_DIRECTORY = Path(__file__).resolve().parents[2] / "benchmark-specs" / "windsorml"
 PROFILE_DEFINITION_PATH = SPEC_DIRECTORY / "profile-definition-v2.json"
 PROFILE_MANIFEST_PATH = (
-    SPEC_DIRECTORY / "profile-support" / "windsorml-profile-support-v3-manifest.json"
+    SPEC_DIRECTORY / "profile-support" / "windsorml-profile-support-v3-windsorml-v2-manifest.json"
 )
 PROFILE_MANIFEST_SHA256 = (
-    "e660311ef82ec19347e91eeb1753c1f0af4c1bd65ba01491fb47ac960da51376"
+    "d619e886981780b2a29fa55d617b2640299ada6907855e5abb1f170d95e693a1"
 )
 PROFILE_DEFINITION_SHA256 = (
     "d58014ae66d92ea5ffce3c4f3b8e206447873d563d8bc3ffb4cbeee81539e056"
