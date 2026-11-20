@@ -153,7 +153,7 @@ def _write_surface(path: Path, *, keep_information_keys: bool = False) -> None:
         strip_vtk_information_keys(path)
 
 
-def write_volume(path: Path) -> None:
+def write_volume(path: Path, *, compressed: bool = False) -> None:
     points = vtk.vtkPoints()
     cells = vtk.vtkCellArray()
     for cell_index in range(3):
@@ -190,8 +190,13 @@ def write_volume(path: Path) -> None:
     writer.SetFileName(str(path))
     writer.SetInputData(data)
     writer.SetDataModeToBinary()
-    writer.SetCompressorTypeToNone()
-    writer.SetHeaderTypeToUInt64()
+    if compressed:
+        writer.SetCompressorTypeToZLib()
+        writer.SetHeaderTypeToUInt32()
+        writer.SetBlockSize(8)  # Exercise multiple blocks and a partial last block.
+    else:
+        writer.SetCompressorTypeToNone()
+        writer.SetHeaderTypeToUInt64()
     assert writer.Write() == 1
     strip_vtk_information_keys(path)
 
@@ -265,6 +270,7 @@ def build_case(
     *,
     published: WindsorMLForceTruth | None = None,
     keep_information_keys: bool = False,
+    compressed_volume: bool = False,
 ):
     dataset = root / "dataset"
     (dataset / CASE_ID).mkdir(parents=True, exist_ok=True)
@@ -272,7 +278,7 @@ def build_case(
     volume = dataset / CASE_ID / f"volume_{CASE_ID.removeprefix('run_')}.vtu"
     dual = dataset / CASE_ID / f"boundary_dual_area_{CASE_ID.removeprefix('run_')}.npy"
     write_surface(boundary, keep_information_keys=keep_information_keys)
-    write_volume(volume)
+    write_volume(volume, compressed=compressed_volume)
     np.save(dual, np.asarray(SURFACE_DUAL_AREA, dtype=np.float32), allow_pickle=False)
 
     geo = dataset / CASE_ID / "geo_parameters_0.csv"
@@ -476,7 +482,7 @@ class WindsorMLEvaluatorTests(unittest.TestCase):
     def test_profiles_are_derived_from_the_same_submitted_fields(self) -> None:
         from reference.windsorml.evaluator import evaluate_candidate_case
 
-        case, dataset = build_case(self.root)
+        case, dataset = build_case(self.root, compressed_volume=True)
         surface = prediction_manifest(
             self.root / "surface-profiles",
             support_id=WINDSORML_SURFACE_SUPPORT_ID,
@@ -497,7 +503,9 @@ class WindsorMLEvaluatorTests(unittest.TestCase):
                 surface_manifest=surface,
                 volume_manifest=volume,
                 profile_support=support_path,
+                encoded_chunk_bytes=13,
             ).to_json()
+            self.assertTrue(all(value == 0.0 for value in evidence["volume"]["metrics"].values()))
             expected_hash = sha256(support_path)
             from reference.windsorml.profiles import validate_profile_evidence
 

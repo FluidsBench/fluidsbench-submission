@@ -23,12 +23,12 @@ from tests.test_ahmedml_dataset_scorer import _case_evidence
 from tests.test_ahmedml_regional_aggregate import _case as regional_case, _metrics
 
 
-def ahmed_inputs(root):
+def ahmed_inputs(root, split_id):
     w = n.ParticipantWorkflow("ahmedml")
     config = n.load_json(
         n.ROOT / "examples/ahmedml-v3-candidate/package-config.template.json"
     )
-    config["split_id"] = "full"
+    config["split_id"] = split_id
     original = n.load_json(n.ROOT / "examples/v3-template/submission.json")
     config["participant"] = {
         k: original[k] for k in config["participant"] if k in original
@@ -52,7 +52,7 @@ def ahmed_inputs(root):
         }
         for field in fields
     ]
-    ids = w.official_split("full")["case_ids"]
+    ids = w.official_split(split_id)["case_ids"]
     methodology["inference_compute"]["case_count"] = len(ids)
     checkpoint = root / "test-checkpoint.bin"
     checkpoint.write_bytes(b"synthetic test only; not trained weights")
@@ -186,16 +186,29 @@ def ahmed_inputs(root):
     return config, checkpoint
 
 
-@pytest.mark.parametrize("dataset", ["ahmedml", "windsorml"])
-def test_complete_campaign_package_and_real_validator(tmp_path, monkeypatch, dataset):
-    config, checkpoint = (ahmed_inputs if dataset == "ahmedml" else windsor_inputs)(
-        tmp_path
-    )
+@pytest.mark.parametrize(
+    ("dataset", "split_id"),
+    [
+        ("ahmedml", "full"),
+        ("ahmedml", "geometry"),
+        ("ahmedml", "high_drag"),
+        ("ahmedml", "low_drag"),
+        ("ahmedml", "image_wake"),
+        ("windsorml", "full"),
+    ],
+)
+def test_complete_campaign_package_and_real_validator(
+    tmp_path, monkeypatch, dataset, split_id
+):
+    if dataset == "ahmedml":
+        config, checkpoint = ahmed_inputs(tmp_path, split_id)
+    else:
+        config, checkpoint = windsor_inputs(tmp_path)
     w = n.ParticipantWorkflow(dataset)
     entry = {
         "schema": f"fluidsbench-{dataset}-entry-v1",
         "submission_id": config["participant"]["submission_id"],
-        "split_id": "full",
+        "split_id": split_id,
         "prediction_scope": n.SCOPE,
         "force_prediction_source": "field_integrated",
     }
@@ -240,7 +253,7 @@ def test_complete_campaign_package_and_real_validator(tmp_path, monkeypatch, dat
     assert outcome["status"] == "validated_official_package"
     assert w.verify_package(package)["status"] == "valid_official_package"
     report = w.report(
-        root, w.official_split("full")["case_ids"][0], tmp_path / "report.html"
+        root, w.official_split(split_id)["case_ids"][0], tmp_path / "report.html"
     )
     assert report["profile_count"] == (7 if dataset == "ahmedml" else 16)
     submission = n.load_json(package / "submission.json")
