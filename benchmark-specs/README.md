@@ -16,6 +16,7 @@ For validation commands and the pull-request target, see [Submitting a result](.
 | BlendedNet | Coming soon | Proposed geometry-holdout split | [Specification](blendednet/submission-spec.json) |
 | Rotor37 | Coming soon | Evaluation support is being prepared | [Specification](rotor37/submission-spec.json) |
 | VKI-LS59 | Coming soon | Evaluation support is being prepared | [Specification](vki-ls59/submission-spec.json) |
+| Ground-Wing | Coming soon | Proposed stratified, drag-outlier and interpolated-profile splits | [Specification](ground-wing/submission-spec.json) |
 
 Accepted packages are reviewed before publication on the leaderboard.
 The quickstarts link to the package examples and exact scoring specifications; use those definitions for your evaluation.

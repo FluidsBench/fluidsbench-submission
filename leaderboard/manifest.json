@@ -32,9 +32,9 @@
     "asset_base_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench-submission/main/",
     "reproducibility_contract_version": "open-reproducibility-3.0",
     "profile_ground_truth": {
-      "release_id": "fluidsbench-profile-ground-truth-windsorml-v2",
-      "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/96fb5f6a68798f42374082ac595ce4c9bc743b6f/assets/data/profile-ground-truth/manifest.json",
-      "manifest_sha256": "2cd44e175f8bcbc1adc19f967140cf341b30c250a613ac68d0ab33a2eae3b204"
+      "release_id": "fluidsbench-profile-ground-truth-ground-wing-v1",
+      "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/9a65b9148dcf367fb2537da9c7de756156f69fd2/assets/data/profile-ground-truth/manifest.json",
+      "manifest_sha256": "792b9f7ddf8a0174a90355cce2ad116cd54856433bca1eac5e0bad1f9d7b9fa0"
     },
     "license": {
       "spdx_id": "Apache-2.0",
@@ -63,9 +63,9 @@
       "series_count": 0
     },
     "profile_ground_truth_publication": {
-      "release_id": "profile-truth-publication-v2",
-      "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/profile-truth-publication-v2/assets/data/profile-ground-truth/profile-truth-publication-v2/manifest.json",
-      "manifest_sha256": "d21831636cd23c3748060bed9e485a6a48102429f47d71b86349eaa7e37c4aff"
+      "release_id": "profile-truth-publication-v3",
+      "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/profile-truth-publication-v3/assets/data/profile-ground-truth/profile-truth-publication-v3/manifest.json",
+      "manifest_sha256": "8517acb8de8331803f0a26973172876894f6667a8d6db39998b08d610320f45f"
     },
     "profile_ground_truth_overrides": {
       "ahmedml": {
@@ -82,6 +82,11 @@
         "release_id": "prototype-profile-ground-truth-2026-09-04",
         "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/scientific-truth-v1/assets/data/profile-ground-truth/manifest.json",
         "manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
+      },
+      "windsorml": {
+        "release_id": "fluidsbench-profile-ground-truth-windsorml-v2",
+        "manifest_url": "https://raw.githubusercontent.com/FluidsBench/fluidsbench/96fb5f6a68798f42374082ac595ce4c9bc743b6f/assets/data/profile-ground-truth/manifest.json",
+        "manifest_sha256": "2cd44e175f8bcbc1adc19f967140cf341b30c250a613ac68d0ab33a2eae3b204"
       }
     }
   },
@@ -3360,7 +3365,7 @@
           "usage": "browser_visualization_only_not_metric_recomputation",
           "activation_effect": "none",
           "binding_file": "public-compact-profile-truth-binding-v1.json",
-          "binding_sha256": "db2c33297a339474835e8e2737ab2d20808a81b10efb05bd657e96cd210e53a1"
+          "binding_sha256": "93b91ee9430ecf33d0e2b63e2761dd86b68a02690c3b6d1ba0f17f2f7723f7db"
         },
         "activation_rule": "Compact-v2 is the sole selected participant representation. Its immutable contract and wire identifiers retain the historical candidate suffix; this submission specification governs current representation selection. Intake remains closed until immutable evaluator support is published for every enabled case set and independent scoring-support and owner-approval gates are complete.",
         "profile_ground_truth": {
@@ -5815,6 +5820,312 @@
           "weighting": "cases_equal"
         },
         "c_pitch_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        }
+      }
+    },
+    {
+      "name": "Ground-Wing",
+      "slug": "ground-wing",
+      "file": "leaderboard/datasets/ground-wing.json",
+      "description": "Steady RANS aerodynamics of parametrized single-element motorsport front wings with endplates running in ground effect over a moving belt.",
+      "source_url": "https://huggingface.co/datasets/andreacenzato/Ground-Wing",
+      "submission_format": "metric_values",
+      "splits": [
+        {
+          "id": "stratified",
+          "name": "stratified",
+          "train_count": 547,
+          "test_count": 71,
+          "description": "Primary benchmark: iterative stratification over the 174 base-profile geometries (80/10/10 by geometry); every ride height of a geometry stays in the same subset."
+        },
+        {
+          "id": "drag_outlier",
+          "name": "drag_outlier",
+          "train_count": 558,
+          "test_count": 64,
+          "description": "Drag-outlier probe: half of the validation and test geometries are the highest- and lowest-drag designs; models are retrained on this split's own training set."
+        },
+        {
+          "id": "interpolated",
+          "name": "interpolated",
+          "train_count": 547,
+          "test_count": 80,
+          "description": "Unseen-profile probe: the stratified training set with a test set of the 20 geometries built from the 15 interpolated airfoil profiles."
+        }
+      ],
+      "inputs": [
+        "surface coordinates",
+        "surface normals",
+        "airfoil profile",
+        "centerline angle of attack",
+        "tip twist",
+        "centerline chord",
+        "tip chord",
+        "sweep angle",
+        "ride height"
+      ],
+      "outputs": {
+        "fields": [
+          "Cp",
+          "WallShearStress"
+        ],
+        "scalars": [
+          "CL",
+          "CD"
+        ]
+      },
+      "metric_ids": [
+        "overall_score",
+        "groundwing_surface_rel_l2",
+        "groundwing_cp_area_rel_l2",
+        "groundwing_cp_rel_l2",
+        "groundwing_cp_mae",
+        "groundwing_cp_r2",
+        "groundwing_wss_area_rel_l2",
+        "groundwing_wss_rel_l2",
+        "groundwing_wss_mae",
+        "groundwing_wss_r2",
+        "groundwing_cl_rel_error",
+        "groundwing_cd_rel_error",
+        "c_lift_mae",
+        "c_drag_mae",
+        "cl_r2",
+        "cd_r2"
+      ],
+      "ranking": {
+        "metric_id": "overall_score",
+        "direction": "higher",
+        "decimal_places": 1,
+        "rounding": "decimal_half_up",
+        "method": "competition"
+      },
+      "diagnostic_panels": [
+        {
+          "id": "surface_pressure",
+          "title": "Surface pressure-coefficient sections",
+          "description": "Illustrative benchmark traces of pressure coefficient along selected spanwise wing sections.",
+          "data_key": "cp_cuts",
+          "x_keys": [
+            "x_over_c",
+            "x"
+          ],
+          "quantities": [
+            {
+              "id": "cp",
+              "label": "Cp",
+              "y_label": "Pressure coefficient, Cp",
+              "y_keys": [
+                "cp",
+                "Cp"
+              ],
+              "unit": ""
+            }
+          ],
+          "stations": [
+            {
+              "id": "prototype_centerline",
+              "label": "Centreline",
+              "x_label": "Chordwise position, x/c",
+              "description": "Illustrative FluidsBench centreline section; the canonical evaluator extraction tolerance is TODO.",
+              "basis": "fluidsbench_benchmark_trace",
+              "source_url": "https://huggingface.co/datasets/andreacenzato/Ground-Wing"
+            },
+            {
+              "id": "prototype_midspan",
+              "label": "Mid-semispan",
+              "x_label": "Chordwise position, x/c",
+              "description": "Illustrative FluidsBench section near 50% semispan; the canonical evaluator extraction tolerance is TODO.",
+              "basis": "fluidsbench_benchmark_trace",
+              "source_url": "https://huggingface.co/datasets/andreacenzato/Ground-Wing"
+            },
+            {
+              "id": "prototype_tip",
+              "label": "Near tip",
+              "x_label": "Chordwise position, x/c",
+              "description": "Illustrative FluidsBench section near the endplate; the canonical evaluator extraction tolerance is TODO.",
+              "basis": "fluidsbench_benchmark_trace",
+              "source_url": "https://huggingface.co/datasets/andreacenzato/Ground-Wing"
+            }
+          ],
+          "required": true,
+          "required_series_fields": [
+            "case_id",
+            "station_id",
+            "quantity_id"
+          ],
+          "reverse_y": true
+        }
+      ],
+      "submission_count": 0,
+      "updated_at": null,
+      "metric_aggregate": {
+        "metric_id": "groundwing_surface_rel_l2",
+        "source_metric_ids": [
+          "groundwing_cp_area_rel_l2",
+          "groundwing_wss_area_rel_l2"
+        ],
+        "tolerance": 1e-06
+      },
+      "scoring_support": {
+        "status": "owner_review_required",
+        "submissions_open": false,
+        "closed_reason": "Submissions are currently closed.",
+        "coverage_contract": {
+          "dimensionality": "3D wing surface and 3D flow domain",
+          "rule": "complete_original_public_release_entities",
+          "inference_may_be_chunked": true,
+          "chunk_metrics_must_use_additive_sufficient_statistics": true,
+          "complete_case_and_entity_coverage_required": true,
+          "full_prediction_artifact_required": false,
+          "case_aggregation": "calculate_each_case_then_macro_average_cases_equally",
+          "public_ground_truth": "Ground-truth surface and volume fields are in the public Hugging Face release."
+        },
+        "public_supports": [
+          {
+            "id": "surface-native",
+            "public_file": "the per-case surface VTP file in Hugging Face dataset andreacenzato/Ground-Wing",
+            "format": "VTK XML PolyData",
+            "domain": "three_dimensional_wing_and_endplate_surface",
+            "association": "CellData",
+            "entities": "all_original_surface_cells",
+            "arrays": [
+              "Cp",
+              "CpT",
+              "WallShearStress"
+            ],
+            "physical_weight": "native_surface_cell_area",
+            "verification": "documented_in_source_paper"
+          }
+        ],
+        "relative_l2_policy": {
+          "surface_or_curve_primary": "physical_measure_weighted",
+          "surface_or_curve_secondary": "equal_native_entity",
+          "flow_domain_primary": "equal_native_entity",
+          "flow_domain_secondary": "physical_measure_weighted",
+          "point_or_vertex_physical_weights": "deterministic_mass_lumped_dual_measure_from_the_exact_public_mesh",
+          "vector_rule": "one_entity_weight_multiplies_the_squared_vector_magnitude",
+          "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
+        },
+        "owner_decisions_required": [
+          "pin_exact_public_release_files_revisions_and_hashes",
+          "confirm_array_names_entity_associations_masks_and_order",
+          "publish_authoritative_physical_weights_and_stable_entity_ids",
+          "approve_public_ground_truth_case_set_and_split_bindings",
+          "approve_loader_evaluator_and_immutable_scoring_support_manifest"
+        ]
+      },
+      "overall_score_composite": {
+        "metric_id": "overall_score",
+        "operation": "weighted_component_scores",
+        "components": [
+          {
+            "metric_id": "groundwing_cp_area_rel_l2",
+            "weight": 0.25,
+            "transform": "bounded_error",
+            "cap": 100.0
+          },
+          {
+            "metric_id": "groundwing_wss_area_rel_l2",
+            "weight": 0.25,
+            "transform": "bounded_error",
+            "cap": 100.0
+          },
+          {
+            "metric_id": "groundwing_cl_rel_error",
+            "weight": 0.25,
+            "transform": "bounded_error",
+            "cap": 100.0
+          },
+          {
+            "metric_id": "groundwing_cd_rel_error",
+            "weight": 0.25,
+            "transform": "bounded_error",
+            "cap": 100.0
+          }
+        ],
+        "tolerance": 1e-06
+      },
+      "revision_count": 0,
+      "metric_contracts": {
+        "overall_score": {
+          "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+          "aggregation": "derived_score_equation",
+          "weighting": "dataset_declared_component_weights"
+        },
+        "groundwing_surface_rel_l2": {
+          "equation": "\\frac{1}{2}(L_{2,A}^{C_p}+L_{2,A}^{\\tau_w})",
+          "aggregation": "derived_arithmetic_mean",
+          "weighting": "source_area_metrics_equal"
+        },
+        "groundwing_cp_area_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_cell_area"
+        },
+        "groundwing_cp_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "cells_equal_within_case_cases_equal"
+        },
+        "groundwing_cp_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "cells_equal_within_case_cases_equal"
+        },
+        "groundwing_cp_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_aligned_field_values",
+          "weighting": "cases_equal"
+        },
+        "groundwing_wss_area_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "surface_cell_area"
+        },
+        "groundwing_wss_rel_l2": {
+          "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "cells_equal_within_case_cases_equal"
+        },
+        "groundwing_wss_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "per_geometry_then_macro_average",
+          "weighting": "cells_equal_within_case_cases_equal"
+        },
+        "groundwing_wss_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "flatten_all_aligned_field_values",
+          "weighting": "cases_equal"
+        },
+        "groundwing_cl_rel_error": {
+          "equation": "100\\,\\frac{1}{N}\\sum_i\\frac{\\lvert\\hat{C}_i-C_i\\rvert}{\\lvert C_i\\rvert}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "groundwing_cd_rel_error": {
+          "equation": "100\\,\\frac{1}{N}\\sum_i\\frac{\\lvert\\hat{C}_i-C_i\\rvert}{\\lvert C_i\\rvert}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_lift_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "c_drag_mae": {
+          "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "cl_r2": {
+          "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+          "aggregation": "all_test_cases",
+          "weighting": "cases_equal"
+        },
+        "cd_r2": {
           "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
           "aggregation": "all_test_cases",
           "weighting": "cases_equal"
@@ -8436,6 +8747,184 @@
       "comparison_group": "r2",
       "comparison_group_label": "R2",
       "column_group_label": "Relative"
+    },
+    {
+      "id": "groundwing_surface_rel_l2",
+      "label": "Surface mean rel. L2",
+      "description": "Arithmetic mean of the primary area-weighted relative L2 errors for Cp and wall shear stress. Lower is better.",
+      "group": "scores",
+      "group_label": "Scores",
+      "column_group": "scores",
+      "unit": "%",
+      "digits": 2,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{2}(L_{2,A}^{C_p}+L_{2,A}^{\\tau_w})",
+      "comparison_group": "summary",
+      "comparison_group_label": "Summary",
+      "column_group_label": "Scores"
+    },
+    {
+      "id": "groundwing_cp_area_rel_l2",
+      "label": "Ground-Wing Cp rel. L2 (area-weighted)",
+      "description": "Area-weighted relative L2 error for the cell-centred surface pressure coefficient; each surface cell is weighted by its area. Lower is better.",
+      "group": "relative-l2",
+      "group_label": "Relative L2",
+      "column_group": "relative",
+      "unit": "%",
+      "digits": 2,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "comparison_group": "relative-l2",
+      "comparison_group_label": "Relative L2",
+      "column_group_label": "Relative"
+    },
+    {
+      "id": "groundwing_cp_rel_l2",
+      "label": "Cp rel. L2",
+      "description": "Relative L2 error for the surface pressure coefficient with every surface cell weighted equally. Lower is better.",
+      "group": "relative-l2",
+      "group_label": "Relative L2",
+      "column_group": "relative",
+      "unit": "%",
+      "digits": 2,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "comparison_group": "relative-l2",
+      "comparison_group_label": "Relative L2",
+      "column_group_label": "Relative"
+    },
+    {
+      "id": "groundwing_cp_mae",
+      "label": "Cp MAE",
+      "description": "Mean absolute error for the surface pressure coefficient. Lower is better.",
+      "group": "absolute-mae",
+      "group_label": "Absolute MAE",
+      "column_group": "absolute",
+      "unit": "",
+      "digits": 5,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+      "comparison_group": "absolute-mae",
+      "comparison_group_label": "Absolute MAE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "groundwing_cp_r2",
+      "label": "Cp R2",
+      "description": "Coefficient of determination for the surface pressure coefficient. Higher is better.",
+      "group": "r2-metrics",
+      "group_label": "R2",
+      "column_group": "relative",
+      "unit": "",
+      "digits": 3,
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "comparison_group": "r2",
+      "comparison_group_label": "R2",
+      "column_group_label": "Relative"
+    },
+    {
+      "id": "groundwing_wss_area_rel_l2",
+      "label": "Ground-Wing Wall shear rel. L2 (area-weighted)",
+      "description": "Area-weighted relative L2 error for the cell-centred wall-shear-stress vector; each surface cell is weighted by its area. Lower is better.",
+      "group": "relative-l2",
+      "group_label": "Relative L2",
+      "column_group": "relative",
+      "unit": "%",
+      "digits": 2,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "comparison_group": "relative-l2",
+      "comparison_group_label": "Relative L2",
+      "column_group_label": "Relative"
+    },
+    {
+      "id": "groundwing_wss_rel_l2",
+      "label": "Wall shear rel. L2",
+      "description": "Relative L2 error for the wall-shear-stress vector with every surface cell weighted equally. Lower is better.",
+      "group": "relative-l2",
+      "group_label": "Relative L2",
+      "column_group": "relative",
+      "unit": "%",
+      "digits": 2,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "comparison_group": "relative-l2",
+      "comparison_group_label": "Relative L2",
+      "column_group_label": "Relative"
+    },
+    {
+      "id": "groundwing_wss_mae",
+      "label": "Wall shear MAE",
+      "description": "Mean absolute error for the wall-shear-stress vector. Lower is better.",
+      "group": "absolute-mae",
+      "group_label": "Absolute MAE",
+      "column_group": "absolute",
+      "unit": "",
+      "digits": 5,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+      "comparison_group": "absolute-mae",
+      "comparison_group_label": "Absolute MAE",
+      "column_group_label": "Absolute"
+    },
+    {
+      "id": "groundwing_wss_r2",
+      "label": "Wall shear R2",
+      "description": "Coefficient of determination for the wall-shear-stress vector. Higher is better.",
+      "group": "r2-metrics",
+      "group_label": "R2",
+      "column_group": "relative",
+      "unit": "",
+      "digits": 3,
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "comparison_group": "r2",
+      "comparison_group_label": "R2",
+      "column_group_label": "Relative"
+    },
+    {
+      "id": "groundwing_cl_rel_error",
+      "label": "C_L rel. error",
+      "description": "Mean relative absolute error of the integrated lift coefficient, in percent. Lower is better.",
+      "group": "relative-l1",
+      "group_label": "Relative L1",
+      "column_group": "integral",
+      "unit": "%",
+      "digits": 2,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{1}{N}\\sum_i\\frac{\\lvert\\hat{C}_i-C_i\\rvert}{\\lvert C_i\\rvert}",
+      "comparison_group": "relative-l1",
+      "comparison_group_label": "Relative L1",
+      "column_group_label": "Integral forces / moments",
+      "plain_label": "Lift coefficient relative error"
+    },
+    {
+      "id": "groundwing_cd_rel_error",
+      "label": "C_D rel. error",
+      "description": "Mean relative absolute error of the integrated drag coefficient, in percent. Lower is better.",
+      "group": "relative-l1",
+      "group_label": "Relative L1",
+      "column_group": "integral",
+      "unit": "%",
+      "digits": 2,
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{1}{N}\\sum_i\\frac{\\lvert\\hat{C}_i-C_i\\rvert}{\\lvert C_i\\rvert}",
+      "comparison_group": "relative-l1",
+      "comparison_group_label": "Relative L1",
+      "column_group_label": "Integral forces / moments",
+      "plain_label": "Drag coefficient relative error"
     }
   ],
   "submission_schema_version": "3.0"
