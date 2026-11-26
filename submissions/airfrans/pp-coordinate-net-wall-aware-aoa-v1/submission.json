@@ -1,0 +1,410 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/submission.schema.json",
+  "schema_version": "3.0",
+  "submission_id": "pp-coordinate-net-wall-aware-aoa-v1",
+  "result_revision": {
+    "series_id": "pp-coordinate-net-wall-aware-aoa",
+    "version": 1,
+    "supersedes": null,
+    "change_summary": "Initial published result."
+  },
+  "model": "PINNeAPPle coordinate network",
+  "model_type": "Coordinate network (point-wise MLP)",
+  "model_types": [
+    "Coordinate network (point-wise MLP)"
+  ],
+  "training_regime": "from_scratch",
+  "target_data_used": "official_train",
+  "external_pretraining": false,
+  "pretraining_data": [],
+  "dataset": "AirfRANS",
+  "dataset_id": "airfrans",
+  "dataset_version": "airfrans-native-v1",
+  "split": "AoA extrapolation",
+  "split_id": "aoa_extrapolation",
+  "case_set_id": "aoa_extrapolation",
+  "split_sha256": "58621bbd012d3d14f45f49783696ddb4f03766bd2db144624c2d77711b17961b",
+  "parameter_count_millions": 2.760965,
+  "methodology": {
+    "format": "fluidsbench-method-v1",
+    "record_kind": "submitter_reported",
+    "record_note": "Wall-aware coordinate network: a residual point-wise network with three heads (outer velocity, wall slope, pressure) whose velocity field carries an exact no-slip wall layer U = A(d) U_outer + (1 - A(d)) s d with A(d) = 1 - exp(-(d/lambda)^2) and lambda = 5e-05 chords, so the wall-normal derivative at the surface is the slope head itself \u2014 the quantity the evaluator reconstructs to derive the wall shear and every force coefficient. The network also reads a per-case global shape descriptor (the upper and lower surfaces on 32 chord bins) because a point-wise network cannot otherwise tell two airfoils apart at the same location. Fitted in the aoa_extrapolation regime on the split's own training set (aoa_train, a shuffled 764/20/20 partition of 804 cases; no full_train case enters the fit). Training is one stage: 14 epochs over the 764 training cases with the same two terms as the full-split entry \u2014 the wall-slope relative squared error and the force-coefficient squared error, both at weight 1. Predictions are made at the native internal points of every official test case, so the mapping to the domain support is the identity.",
+    "architecture": {
+      "description": "Residual point-wise network: 4 residual blocks of width 512 with SiLU activations and 16 Fourier bands of the coordinates, 2760965 trainable parameters, three heads (outer velocity 2, wall slope 2, pressure 1) and a no-slip wall layer U = A(d)U_outer + (1-A(d)) s d with A(d) = 1 - exp(-(d/lambda)^2), lambda = 5e-05 chords.",
+      "total_parameter_count": 2760965,
+      "parameter_count_basis": "exact",
+      "submitter_trainable_parameter_count": 2760965,
+      "components": [
+        {
+          "id": "residual-trunk",
+          "family": "point-wise residual multilayer perceptron",
+          "role": "shared encoder of the local point features and the case shape descriptor, with the outer-velocity and pressure heads",
+          "description": "75 input channels plus 16 Fourier bands, 4 residual blocks of width 512, and the two dense output heads",
+          "parameter_count": 2675203
+        },
+        {
+          "id": "wall-slope-head",
+          "family": "physics-informed output head",
+          "role": "predicts the wall-normal derivative of the tangential velocity at the wall",
+          "description": "dimensionless slope, +wallShearStress/nu in units of U_inf/chord",
+          "parameter_count": 85762
+        },
+        {
+          "id": "wall-layer",
+          "family": "analytic boundary condition",
+          "role": "imposes no-slip exactly and hands the near-wall field to the slope head",
+          "description": "partition of unity A(d) = 1 - exp(-(d/lambda)^2), lambda the viscous-sublayer height",
+          "parameter_count": 0
+        }
+      ],
+      "key_hyperparameters": [
+        {
+          "id": "width",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "hidden width",
+          "value": "512",
+          "description": "units per hidden layer"
+        },
+        {
+          "id": "depth",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "hidden layers",
+          "value": "4",
+          "description": "SiLU blocks before the output layer"
+        },
+        {
+          "id": "batch",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "batch size",
+          "value": "8192",
+          "description": "sampled points per optimiser step"
+        },
+        {
+          "id": "lr",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "learning rate",
+          "value": "0.002",
+          "description": "AdamW peak, cosine decay"
+        },
+        {
+          "id": "epochs",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "epochs",
+          "value": "14",
+          "description": "passes over the sampled training point set"
+        },
+        {
+          "id": "wall-fraction",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "wall sampling share",
+          "value": "0.25",
+          "description": "share of each case's sample taken from the wall and the boundary-layer band"
+        },
+        {
+          "id": "wall-layer",
+          "component_ids": [
+            "wall-layer"
+          ],
+          "name": "wall layer height (chords)",
+          "value": "5e-05",
+          "description": "distance over which the field is the linear near-wall profile; the viscous sublayer"
+        },
+        {
+          "id": "slope-weight",
+          "component_ids": [
+            "wall-slope-head"
+          ],
+          "name": "wall slope loss weight",
+          "value": "1",
+          "description": "weight of the relative squared error between the predicted and true wall slope"
+        },
+        {
+          "id": "force-weight",
+          "component_ids": [
+            "wall-slope-head"
+          ],
+          "name": "force consistency weight",
+          "value": "1",
+          "description": "weight of the squared drag and lift error of the coefficients reconstructed from the predicted curve, drag in units of one test-split standard deviation"
+        }
+      ],
+      "input_features": [
+        {
+          "id": "position",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "point position",
+          "domain": "volume",
+          "component_count": 2,
+          "description": "x and y in metres, divided by the chord."
+        },
+        {
+          "id": "sdf",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "distance to the airfoil",
+          "domain": "volume",
+          "component_count": 2,
+          "description": "the AirfRANS signed distance per point, divided by the chord, and its signed logarithm."
+        },
+        {
+          "id": "normals",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "wall normals",
+          "domain": "volume",
+          "component_count": 2,
+          "description": "the airfoil normal at the nearest wall point, zero away from the wall."
+        },
+        {
+          "id": "surface",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "wall mask",
+          "domain": "volume",
+          "component_count": 1,
+          "description": "1 on an airfoil node, 0 elsewhere (the AirfRANS surface flag)."
+        },
+        {
+          "id": "freestream",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "freestream direction",
+          "domain": "global",
+          "component_count": 2,
+          "description": "unit inlet velocity, i.e. the case's angle of attack."
+        },
+        {
+          "id": "inlet-scale",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "inlet velocity",
+          "domain": "global",
+          "component_count": 1,
+          "description": "log of the inlet velocity magnitude (the case's Reynolds-like scale)."
+        },
+        {
+          "id": "shape-descriptor",
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "name": "case shape descriptor",
+          "domain": "case",
+          "component_count": 64,
+          "description": "upper and lower surface of the case's airfoil on 32 uniform chord bins, in chords."
+        }
+      ],
+      "predicted_fields": [
+        {
+          "field_id": "two-dimensional-domain-native.U",
+          "domain": "domain",
+          "component_count": 2,
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "production": "direct_model_output",
+          "description": "Cartesian velocity on every native 2D flow-domain point."
+        },
+        {
+          "field_id": "two-dimensional-domain-native.p",
+          "domain": "domain",
+          "component_count": 1,
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "production": "direct_model_output",
+          "description": "Kinematic pressure on every native 2D flow-domain point."
+        },
+        {
+          "field_id": "airfoil-curve-native.p",
+          "domain": "curve",
+          "component_count": 1,
+          "component_ids": [
+            "residual-trunk"
+          ],
+          "production": "derived_from_model_output",
+          "description": "Curve pressure selected from the domain prediction at the wall, as the methodology contract allows."
+        }
+      ]
+    },
+    "data_handling": {
+      "normalization": "per-point scaling by the chord and the inlet velocity: positions and distances divide by the chord, velocity by U_inf, pressure by U_inf^2. No dataset-wide statistics are used, so the same weights transfer across cases.",
+      "preprocessing": "the public AirfRANS preprocessing (cropped domain, airfoil curve, signed distance, wall normals) read through the AirfRANS 0.1.5.1 library; the native point order is preserved end to end.",
+      "sampling": "6144 points per training case, a quarter of them from the wall and the boundary-layer band, resampled every epoch over 764 training cases; every native point of every official test case is predicted for inference, in memory-safe chunks."
+    },
+    "training": {
+      "stages": [
+        {
+          "id": "surrogate",
+          "status": "performed_by_submitter",
+          "component_ids": [
+            "residual-trunk",
+            "wall-slope-head",
+            "wall-layer"
+          ],
+          "description": "supervised regression on the official training split of the public AirfRANS release; no test data and no external pretraining.",
+          "procedure": {
+            "kind": "gradient_based",
+            "loss": {
+              "description": "mean squared error over the three scaled outputs (u/U_inf, v/U_inf, p/U_inf^2) of the sampled points",
+              "weighting": "uniform mean over every component and sampled point"
+            },
+            "optimizers": [
+              {
+                "name": "AdamW",
+                "learning_rate": 0.002,
+                "schedule": "cosine decay to lr/50, weight decay 1e-5"
+              }
+            ],
+            "batch": {
+              "value": 8192,
+              "unit": "sampled points",
+              "gradient_accumulation_steps": 1
+            },
+            "duration": {
+              "epochs": 14,
+              "optimizer_steps": 7280
+            }
+          },
+          "run_count": 1,
+          "stochastic": true,
+          "random_seeds": [
+            0
+          ],
+          "compute": {
+            "hardware": "Apple M-series integrated GPU (Metal/MPS), one device, one process",
+            "max_concurrent_device_count": 1,
+            "devices_per_job": 1,
+            "campaign_wall_time_hours": 1.0589,
+            "aggregate_device_hours": 1.0589,
+            "measurement_basis": "measured",
+            "cost_scope": "final_training",
+            "accelerator": {
+              "type": "gpu",
+              "vendor": "Apple",
+              "model": "M-series integrated GPU"
+            },
+            "hardware_identity_basis": "machine_recorded",
+            "measurement_notes": "one process on one device; wall-clock of the training script, 3812.2 s measured end to end."
+          }
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "weights",
+        "component_ids": [
+          "residual-trunk",
+          "wall-slope-head"
+        ],
+        "sha256": "54018f9f15cb978bc3246491077ef3bb175cacb5a284c4d1d8cb3b1802fec61f",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "11055331 bytes, torch state dict of the trained network",
+        "role": "the trained weights loaded for every prediction",
+        "selection_rule": "the final epoch of the single run; no checkpoint selection was performed"
+      }
+    ],
+    "inference_compute": {
+      "status": "measured",
+      "hardware": "Apple M-series GPU (Metal)",
+      "max_concurrent_device_count": 1,
+      "devices_per_job": 1,
+      "accelerator": {
+        "type": "gpu",
+        "vendor": "Apple",
+        "model": "M-series integrated GPU"
+      },
+      "hardware_identity_basis": "machine_recorded",
+      "case_count": 196,
+      "campaign_wall_time_seconds": 503.9,
+      "aggregate_device_time_seconds": 503.9,
+      "includes_preprocessing": true,
+      "includes_mapping": true,
+      "timing_protocol": "legacy_reported",
+      "measurement_notes": "wall time of the prediction campaign over the complete official split: feature construction, chunked forward passes and packing of every case's native-order arrays. Model load and framework import are excluded."
+    }
+  },
+  "submitter_name": "Yan Barros",
+  "institution": "PINNeAPPle Labs",
+  "paper_url": "https://pinneapple-labs.github.io/relatorios/fluidsbench-airfrans-en.pdf",
+  "submitted_at": "2026-11-19",
+  "evaluation": {
+    "reference_version": "airfrans-scoring-v2",
+    "command": "python scripts/airfrans.py evaluate-entry <entry> --dataset-root <Dataset> --support-root <support> --output <work/result> --resume; python scripts/airfrans.py package --evaluation-root <work/result>/evaluation --config <entry>/package-config.json --discretization-cases <entry>/discretization-cases.jsonl --output submissions/airfrans/pp-coordinate-net-wall-aware-aoa-v1",
+    "evidence_file": "evaluation-evidence.json",
+    "evidence_sha256": "47c288b43f4f8f1c731c1c228b90d9a89d0e416ffeb518e487fda21f842b8b95"
+  },
+  "reproducibility": {
+    "contract_version": "open-reproducibility-3.0",
+    "access": "public",
+    "public_test_data_use": "evaluation_only",
+    "result_data_license_spdx": "CC-BY-4.0"
+  },
+  "scoring_support": {
+    "status": "official",
+    "release_id": "airfrans-native-support-v1",
+    "manifest_url": "https://github.com/FluidsBench/fluidsbench-submission/releases/download/airfrans-native-support-v1/manifest.json",
+    "manifest_sha256": "18231e558012d74c39ed4df4083ee2d5a60e7b9c6492ed3c10496a3ca70fd606"
+  },
+  "spatial_discretization": {
+    "format": "fluidsbench-discretization-v1",
+    "file": "discretization.json",
+    "sha256": "8beedfb8cc1d2a51551cceb31b4ed960c480d61d373a3568393b0868f0d39eee"
+  },
+  "case_metrics": {
+    "format": "fluidsbench-case-metrics-v1",
+    "file": "metrics/cases.json",
+    "sha256": "02c6437d0db42e986c3e89c3f8de271f060f6e63448c96a49c162537050d2c20",
+    "case_count": 196
+  },
+  "metric_values": {
+    "flow_domain_velocity_rel_l2": 7.8185936727941145,
+    "flow_domain_velocity_physical_rel_l2": 1.9281679871915574,
+    "flow_domain_velocity_rel_l1": 5.564476671386042,
+    "flow_domain_pressure_rel_l2": 8.627668935658152,
+    "flow_domain_pressure_physical_rel_l2": 34.10804841988922,
+    "flow_domain_pressure_rel_l1": 8.639276106391815,
+    "surface_pressure_rel_l2": 6.293279668632394,
+    "surface_pressure_equal_entity_rel_l2": 7.649544308034126,
+    "surface_pressure_rel_l1": 6.421355494503192,
+    "surface_wall_shear_rel_l2": 120.58589354348364,
+    "surface_wall_shear_equal_entity_rel_l2": 85.74847724493128,
+    "surface_wall_shear_rel_l1": 156.88304179918558,
+    "cd_r2": 0.2220102581112402,
+    "cl_r2": 0.9980726972826637,
+    "c_drag_mae": 0.0056053671102881284,
+    "c_lift_mae": 0.028070850765464297,
+    "velocity_profile_r2": 0.9406705824892636,
+    "overall_score": 55.00934435666302,
+    "field_score": 36.36339789987239,
+    "force_score": 53.243523377980964,
+    "diagnostic_score": 94.06705824892636
+  },
+  "profile_data": {
+    "format": "fluidsbench-profile-chunks-v1",
+    "index_file": "profiles/index.json",
+    "case_count": 196,
+    "case_set_id": "aoa_extrapolation",
+    "profile_ground_truth_release_id": "airfrans-native-profile-truth-v1",
+    "profile_ground_truth_manifest_sha256": "a0d752e9d92fc7ad78cbfcf065c939a817d64a068cc8e83cc2a91d02c2aba805"
+  },
+  "note": "AirfRANS submission; forces and profiles are derived from the predicted native fields."
+}
