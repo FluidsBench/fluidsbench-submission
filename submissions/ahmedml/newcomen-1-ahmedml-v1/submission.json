@@ -1,0 +1,429 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/submission.schema.json",
+  "schema_version": "3.0",
+  "submission_id": "newcomen-1-ahmedml-v1",
+  "result_revision": {
+    "series_id": "newcomen-1-ahmedml",
+    "version": 1,
+    "supersedes": null,
+    "change_summary": "Initial submitted result."
+  },
+  "model": "Newcomen-1",
+  "model_type": "two-tower-mixture-of-transformers",
+  "model_types": [
+    "two-tower-mixture-of-transformers"
+  ],
+  "training_regime": "pretrained_official_train",
+  "target_data_used": "official_train",
+  "external_pretraining": true,
+  "pretraining_data": [
+    "qwen3.5-4b pretraining data (upstream, not ours)"
+  ],
+  "methodology": {
+    "format": "fluidsbench-method-v1",
+    "record_kind": "submitter_reported",
+    "record_note": "Results-only submission: no code, weights, environment or prediction file is published. Predictions come from the checkpoint files listed with their sha256. The public test split was used for evaluation only.",
+    "architecture": {
+      "description": "Two-tower mixture-of-transformers. A trained physical tower reads supernode tokens of anchor cells and answers value queries at any cell through joint attention with a frozen pretrained decoder (qwen3.5-4b); case text: case.",
+      "total_parameter_count": 4290239161,
+      "parameter_count_basis": "exact",
+      "submitter_trainable_parameter_count": 84487865,
+      "components": [
+        {
+          "id": "reasoner-frozen",
+          "family": "Pretrained decoder language model",
+          "role": "Frozen text reasoner that shares attention with the physical tower",
+          "description": "Pretrained decoder language model: frozen text reasoner that shares attention with the physical tower.",
+          "parameter_count": 4205751296
+        },
+        {
+          "id": "reasoner-lora",
+          "family": "Low-rank adapters",
+          "role": "Trained adapters inside the reasoner",
+          "description": "Low-rank adapters: trained adapters inside the reasoner.",
+          "parameter_count": 30474240
+        },
+        {
+          "id": "physical-tower",
+          "family": "Mixture-of-transformers physical tower",
+          "role": "Trained tower that reads the anchor tokens and answers the queries",
+          "description": "Mixture-of-transformers physical tower: trained tower that reads the anchor tokens and answers the queries.",
+          "parameter_count": 45630896
+        },
+        {
+          "id": "field-inputs",
+          "family": "Supernode field encoder",
+          "role": "Maps anchor coordinates and surface attributes to tower tokens",
+          "description": "Supernode field encoder: maps anchor coordinates and surface attributes to tower tokens.",
+          "parameter_count": 196608
+        },
+        {
+          "id": "field-heads",
+          "family": "Linear output heads",
+          "role": "One head per branch (surface, volume) that gives the value rows",
+          "description": "Linear output heads: one head per branch (surface, volume) that gives the value rows.",
+          "parameter_count": 3080
+        },
+        {
+          "id": "other-parameters",
+          "family": "Other trained parameters",
+          "role": "Remaining trained parameters of the system",
+          "description": "Other trained parameters: remaining trained parameters of the system.",
+          "parameter_count": 8183041
+        }
+      ],
+      "key_hyperparameters": [
+        {
+          "id": "tower-width",
+          "component_ids": [
+            "physical-tower"
+          ],
+          "name": "width",
+          "value": 384,
+          "description": "Hidden width of the physical tower"
+        },
+        {
+          "id": "tower-loops",
+          "component_ids": [
+            "physical-tower"
+          ],
+          "name": "tower_loops",
+          "value": 3,
+          "description": "Passes through the tower stack"
+        },
+        {
+          "id": "supernodes",
+          "component_ids": [
+            "field-inputs"
+          ],
+          "name": "supernodes",
+          "value": 2048,
+          "description": "Anchor tokens per case"
+        },
+        {
+          "id": "neighbours",
+          "component_ids": [
+            "field-inputs"
+          ],
+          "name": "neighbours",
+          "value": 8,
+          "description": "Cells pooled into one anchor token"
+        },
+        {
+          "id": "field-anchors",
+          "component_ids": [
+            "field-inputs"
+          ],
+          "name": "field_anchors",
+          "value": 32768,
+          "description": "Anchor cells drawn per case"
+        }
+      ],
+      "input_features": [
+        {
+          "id": "surface-anchors",
+          "component_ids": [
+            "physical-tower",
+            "field-heads"
+          ],
+          "name": "surface-anchors",
+          "domain": "surface",
+          "component_count": 7,
+          "description": "Centre, normal and area of surface anchors"
+        },
+        {
+          "id": "volume-anchors",
+          "component_ids": [
+            "physical-tower",
+            "field-heads"
+          ],
+          "name": "volume-anchors",
+          "domain": "volume",
+          "component_count": 3,
+          "description": "Centre of volume anchor cells"
+        },
+        {
+          "id": "query-cells",
+          "component_ids": [
+            "physical-tower",
+            "field-heads"
+          ],
+          "name": "query-cells",
+          "domain": "case",
+          "component_count": 3,
+          "description": "Centre of each cell whose value is asked"
+        }
+      ],
+      "predicted_fields": [
+        {
+          "field_id": "surface-native.pMean",
+          "domain": "surface",
+          "component_count": 1,
+          "description": "Dataset-native mean surface pressure used by the AhmedML surface-pressure metrics.",
+          "component_ids": [
+            "physical-tower",
+            "field-heads"
+          ],
+          "production": "direct_model_output"
+        },
+        {
+          "field_id": "surface-native.wallShearStressMean",
+          "domain": "surface",
+          "component_count": 3,
+          "description": "Dataset-native mean wall-shear-stress vector used by the AhmedML surface wall-shear metrics.",
+          "component_ids": [
+            "physical-tower",
+            "field-heads"
+          ],
+          "production": "direct_model_output"
+        },
+        {
+          "field_id": "flow-domain-native.UMean",
+          "domain": "volume",
+          "component_count": 3,
+          "description": "Dataset-native mean velocity vector used by the AhmedML flow-domain metrics.",
+          "component_ids": [
+            "physical-tower",
+            "field-heads"
+          ],
+          "production": "direct_model_output"
+        },
+        {
+          "field_id": "flow-domain-native.pMean",
+          "domain": "volume",
+          "component_count": 1,
+          "description": "Dataset-native mean pressure used by the AhmedML flow-domain metrics.",
+          "component_ids": [
+            "physical-tower",
+            "field-heads"
+          ],
+          "production": "direct_model_output"
+        }
+      ]
+    },
+    "data_handling": {
+      "normalization": "Per-branch value mean and standard deviation and coordinate scaling, fitted on the training cases of run ahmed-full-main-v2; no validation or test case enters them.",
+      "preprocessing": "Raw native files are read as they are. The model works on non-dimensional rows (pressure coefficient with shear or velocity per free-stream speed); fixed dataset constants convert them to the official field units at the output.",
+      "sampling": "Training: 32768 anchor and 8192 query cells per case and step, drawn at random from 65536 cells kept per case. Inference: every native entity is a query; 32768 anchor cells per case are drawn from the case geometry with seed 0. The anchors pool into 8192 supernodes at inference (2048 in training). Test-time mirror averaging: each case is also predicted mirrored in y (coordinates and normals), the y vector component of that prediction is negated, and the two predictions are averaged; the measured inference compute includes both passes. Float32 matrix products use the TF32 tensor cores at inference. The physical tower runs under bfloat16 autocast at inference (off in training)."
+    },
+    "training": {
+      "stages": [
+        {
+          "id": "reasoner-pretraining",
+          "status": "performed_upstream",
+          "component_ids": [
+            "reasoner-frozen"
+          ],
+          "description": "The decoder language model was pretrained by its authors. Its weights load frozen and receive no gradient.",
+          "upstream_reference": "qwen3.5-4b (revision 851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a) as published by its authors; its pretraining data is not ours"
+        },
+        {
+          "id": "train-ahmed-full-main-v2",
+          "status": "performed_by_submitter",
+          "component_ids": [
+            "reasoner-lora",
+            "physical-tower",
+            "field-inputs",
+            "field-heads",
+            "other-parameters"
+          ],
+          "description": "Run ahmed-full-main-v2 on ahmedml: started from random tower weights; 100000 optimizer steps; weights of the best validation step 97500.",
+          "procedure": {
+            "kind": "gradient_based",
+            "loss": {
+              "description": "mse loss on the scaled value rows of 8192 query cells per step",
+              "weighting": "field loss with weight 1"
+            },
+            "optimizers": [
+              {
+                "name": "lion; weight decay 0.05; EMA decay 0.9999",
+                "learning_rate": 5e-05,
+                "schedule": "linear warmup over 5000 steps, then cosine decay to 1e-06"
+              }
+            ],
+            "batch": {
+              "value": 1,
+              "unit": "cases per optimizer step",
+              "gradient_accumulation_steps": 1
+            },
+            "duration": {
+              "optimizer_steps": 100000,
+              "epochs": 250.627
+            }
+          },
+          "run_count": 1,
+          "stochastic": true,
+          "random_seeds": [
+            0
+          ],
+          "compute": {
+            "hardware": "1 x NVIDIA L40S",
+            "max_concurrent_device_count": 1,
+            "campaign_wall_time_hours": 51.11438888888888,
+            "aggregate_device_hours": 51.11438888888888,
+            "measurement_notes": "seconds of the training process from meta.json; one process; devices are GPUs",
+            "measurement_basis": "measured",
+            "cost_scope": "final_training",
+            "accelerator": {
+              "type": "gpu",
+              "vendor": "NVIDIA",
+              "model": "L40S"
+            },
+            "devices_per_job": 1,
+            "hardware_identity_basis": "submitter_reported"
+          }
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "newcomen-run-weights",
+        "component_ids": [
+          "reasoner-lora",
+          "physical-tower",
+          "field-inputs",
+          "field-heads",
+          "other-parameters"
+        ],
+        "sha256": "b706874505efdb0c250b85bae35e59d648d58025243b74e7c6ed622343b54646",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "weights.pt of run ahmed-full-main-v2, 338159923 bytes",
+        "role": "Trained weights: tower, field encoder, heads and any reasoner adapters",
+        "selection_rule": "Weights of the training step with the best validation score (step 97500); validation split only"
+      },
+      {
+        "id": "reasoner-file-01",
+        "component_ids": [
+          "reasoner-frozen"
+        ],
+        "sha256": "26a93f066e1916adb13453dae5a0c707c0fbc71299ed98779571a907b8e74c61",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "model.safetensors-00001-of-00002.safetensors, 5329398688 bytes, as loaded",
+        "role": "Frozen pretrained reasoner weights",
+        "selection_rule": "Fixed pretrained weights at the stated revision; no evaluation chose them"
+      },
+      {
+        "id": "reasoner-file-02",
+        "component_ids": [
+          "reasoner-frozen"
+        ],
+        "sha256": "cb544bd9bfae93dc59b0f22b292f5933573854a7f9b97835c67060d7d910e188",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "model.safetensors-00002-of-00002.safetensors, 3990429408 bytes, as loaded",
+        "role": "Frozen pretrained reasoner weights",
+        "selection_rule": "Fixed pretrained weights at the stated revision; no evaluation chose them"
+      }
+    ],
+    "inference_compute": {
+      "status": "measured",
+      "hardware": "1 x NVIDIA L40S",
+      "max_concurrent_device_count": 1,
+      "case_count": 50,
+      "campaign_wall_time_seconds": 195330.67,
+      "aggregate_device_time_seconds": 195330.67,
+      "includes_preprocessing": true,
+      "includes_mapping": false,
+      "measurement_notes": "Seconds inside the model calls (input scaling, anchor encoding, tower passes, rows returned to host), summed over 50 cases on one device; dtype bfloat16, query chunk 65536, torch 2.11.0+cu130. Outside the timer: reading raw files and the volume download, the anchor draw, unit conversion and writing the chunks; the cases took 201320 s in all. Cases with more than one finished pass: 0; stopped passes are not counted.",
+      "accelerator": {
+        "type": "gpu",
+        "vendor": "NVIDIA",
+        "model": "L40S"
+      },
+      "devices_per_job": 1,
+      "hardware_identity_basis": "machine_recorded"
+    }
+  },
+  "submitter_name": "1779 Lab",
+  "institution": "Celesnity 1779 Lab",
+  "paper_url": "",
+  "submitted_at": "2026-11-26",
+  "reproducibility": {
+    "contract_version": "open-reproducibility-3.0",
+    "access": "public",
+    "public_test_data_use": "evaluation_only",
+    "result_data_license_spdx": "CC-BY-4.0"
+  },
+  "dataset_id": "ahmedml",
+  "prediction_scope": "surface_and_volume",
+  "parameter_count_millions": 4290.239161,
+  "dataset": "AhmedML",
+  "dataset_version": "ahmedml-native-v1-candidate",
+  "split": "Full",
+  "split_id": "full",
+  "case_set_id": "full-test",
+  "split_sha256": "a565e78b41f8b793220985e6b1bcf535ced54d454e3325fb5de51c8b553eb920",
+  "evaluation": {
+    "reference_version": "ahmedml-evaluator-v0.1-candidate",
+    "command": "cd fluidsbench && .venv-native/bin/python scripts/ahmedml.py evaluate-entry <entry> --dataset-root <ahmedml data> --output <eval> --resume; .venv-native/bin/python scripts/ahmedml.py package --evaluation-root <eval> --config <entry>/package-config.json --discretization-cases <entry>/discretization-cases.jsonl <checkpoint args> --output <package>",
+    "evidence_file": "evaluation-evidence.json",
+    "evidence_sha256": "f8b9b96960e7fc3e56b78f1e44fd05c220df32d4c3693121204b7743f664f9a1"
+  },
+  "scoring_support": {
+    "status": "official",
+    "release_id": "ahmedml-native-support-v1",
+    "manifest_url": "https://github.com/FluidsBench/fluidsbench-submission/releases/download/ahmedml-native-support-v1/manifest.json",
+    "manifest_sha256": "38d8af2cdbac16ca60ffaa22e54ae9db09e66dd3098ff847a888c59e94d26cdd"
+  },
+  "spatial_discretization": {
+    "format": "fluidsbench-discretization-v1",
+    "file": "discretization.json",
+    "sha256": "b3b30013257221dbbb30118fa16af51109922746e93d41794978580ac5e9b0a0"
+  },
+  "case_metrics": {
+    "format": "fluidsbench-case-metrics-v1",
+    "file": "metrics/cases.json",
+    "sha256": "004a383727c57b68cc3ee26c7a3add3a43254ffe4b13e601a78cbcd4b0beddf4",
+    "case_count": 50
+  },
+  "metric_values": {
+    "overall_score": 86.13169800748385,
+    "field_score": 76.54929943366899,
+    "force_score": 93.3741734284954,
+    "diagnostic_score": 98.05401973410201,
+    "surface_pressure_rel_l2": 3.5353496178221953,
+    "surface_pressure_equal_entity_rel_l2": 3.4771840677134764,
+    "surface_wall_shear_rel_l2": 5.2705316894831835,
+    "surface_wall_shear_equal_entity_rel_l2": 5.277696181281732,
+    "volume_velocity_rel_l2": 2.4453827482330506,
+    "volume_velocity_physical_rel_l2": 0.5078962309280611,
+    "volume_pressure_rel_l2": 3.7470095779656067,
+    "volume_pressure_physical_rel_l2": 5.0375853926583,
+    "surface_pressure_rel_l1": 1.765336491642651,
+    "surface_wall_shear_rel_l1": 2.765557721925388,
+    "volume_velocity_rel_l1": 1.0400273097046457,
+    "volume_pressure_rel_l1": 2.448051597074246,
+    "velocity_profile_r2": 0.9828823447037687,
+    "cp_cut_r2": 0.9770269762968974,
+    "surface_pressure_mae": 0.0026976699265582778,
+    "surface_wall_shear_mae": 5.122399543563625e-05,
+    "volume_velocity_mae": 0.009381701643410848,
+    "volume_pressure_mae": 0.001960848886506188,
+    "surface_pressure_rmse": 0.007412240816349537,
+    "surface_wall_shear_rmse": 0.00011638531602169397,
+    "volume_velocity_rmse": 0.0230019278089297,
+    "volume_pressure_rmse": 0.004821993380430269,
+    "cd_r2": 0.9341004968296618,
+    "cl_r2": 0.9332035904678921,
+    "c_drag_mae": 0.008710540074653375,
+    "c_lift_mae": 0.025516978796868685
+  },
+  "profile_data": {
+    "format": "fluidsbench-profile-chunks-v1",
+    "index_file": "profiles/index.json",
+    "case_count": 50,
+    "case_set_id": "full-test",
+    "profile_ground_truth_release_id": "prototype-profile-ground-truth-2026-09-04",
+    "profile_ground_truth_manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
+  },
+  "regional_diagnostics": {
+    "format": "ahmedml-regional-diagnostics-aggregate-v2",
+    "file": "regional-diagnostics.json",
+    "sha256": "8177340fb1d19c5d24ec957bf1335c9ef1f78341752fe5a3d48e44e37ffde41b",
+    "contract_sha256": "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
+    "definition_id": "ahmedml-native-regions-v2-candidate",
+    "case_count": 50,
+    "role": "report_only",
+    "weight": 0.0,
+    "official_score_changed": false
+  }
+}
