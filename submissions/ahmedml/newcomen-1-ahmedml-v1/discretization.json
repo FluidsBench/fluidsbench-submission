@@ -1,0 +1,356 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/discretization.schema.json",
+  "schema_version": "1.0",
+  "submission_id": "newcomen-1-ahmedml-v1",
+  "dataset_id": "ahmedml",
+  "split_id": "full",
+  "scoring_support_release_id": "ahmedml-native-support-v1",
+  "scoring_support_manifest_sha256": "38d8af2cdbac16ca60ffaa22e54ae9db09e66dd3098ff847a888c59e94d26cdd",
+  "training": {
+    "surface_input": {
+      "used": true,
+      "representation": "surface anchor cells with normal and area",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "fixed",
+            "value": 16384
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "unknown_with_explanation",
+        "explanation": "The anchor count is fixed; the native entity count differs per case, so the share of the native mesh differs per case."
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "method": "random draw each step from the cells kept per case",
+        "seed": 0
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "surface_supervision": {
+      "used": true,
+      "representation": "surface query cells with field values",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "fixed",
+            "value": 4096
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "unknown_with_explanation",
+        "explanation": "The anchor count is fixed; the native entity count differs per case, so the share of the native mesh differs per case."
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "method": "random draw each step from the cells kept per case",
+        "seed": 0
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "volume_input": {
+      "used": true,
+      "representation": "volume anchor cells",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "fixed",
+            "value": 16384
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "unknown_with_explanation",
+        "explanation": "The anchor count is fixed; the native entity count differs per case, so the share of the native mesh differs per case."
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "method": "random draw each step from the cells kept per case",
+        "seed": 0
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "volume_supervision": {
+      "used": true,
+      "representation": "volume query cells with field values",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "fixed",
+            "value": 4096
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "unknown_with_explanation",
+        "explanation": "The anchor count is fixed; the native entity count differs per case, so the share of the native mesh differs per case."
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "method": "random draw each step from the cells kept per case",
+        "seed": 0
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    }
+  },
+  "inference": {
+    "geometry_dependency": "native_cfd_mesh",
+    "geometry_dependency_explanation": "Anchors and queries are cell centres of the native CFD mesh files (surface polygons or points, and volume cells); no field value is an input.",
+    "surface_input": {
+      "case_record_id": "surface-input",
+      "used": true,
+      "representation": "surface anchor cells with normal and area",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "fixed",
+            "value": 16384
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "unknown_with_explanation",
+        "explanation": "The anchor count is fixed; the native entity count differs per case, so the share of the native mesh differs per case."
+      },
+      "sampling": {
+        "kind": "fixed",
+        "method": "seeded random draw of anchor cells from the case geometry",
+        "seed": 0
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "volume_input": {
+      "case_record_id": "volume-input",
+      "used": true,
+      "representation": "volume anchor cells",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "fixed",
+            "value": 16384
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "unknown_with_explanation",
+        "explanation": "The anchor count is fixed; the native entity count differs per case, so the share of the native mesh differs per case."
+      },
+      "sampling": {
+        "kind": "fixed",
+        "method": "seeded random draw of anchor cells from the case geometry",
+        "seed": 0
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none"
+    },
+    "direct_outputs": [
+      {
+        "id": "surface-output",
+        "domain": "surface",
+        "representation": {
+          "used": true,
+          "representation": "native surface cells",
+          "entity_counts": [
+            {
+              "entity": "cells",
+              "count": {
+                "kind": "per_case",
+                "minimum": 721602,
+                "median": 1094776.0,
+                "maximum": 1404826
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "reported",
+            "native_entity_counts": [
+              {
+                "entity": "cells",
+                "count": {
+                  "kind": "per_case",
+                  "minimum": 721602,
+                  "median": 1094776.0,
+                  "maximum": 1404826
+                }
+              }
+            ],
+            "fractions": [
+              {
+                "entity": "cells",
+                "fraction": {
+                  "kind": "fixed",
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "sampling": {
+            "kind": "none"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "native"
+        },
+        "queries_per_forward_pass": {
+          "kind": "fixed",
+          "value": 65536
+        }
+      },
+      {
+        "id": "volume-output",
+        "domain": "volume",
+        "representation": {
+          "used": true,
+          "representation": "native volume cells",
+          "entity_counts": [
+            {
+              "entity": "cells",
+              "count": {
+                "kind": "per_case",
+                "minimum": 19461878,
+                "median": 21252206.5,
+                "maximum": 22773261
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "reported",
+            "native_entity_counts": [
+              {
+                "entity": "cells",
+                "count": {
+                  "kind": "per_case",
+                  "minimum": 19461878,
+                  "median": 21252206.5,
+                  "maximum": 22773261
+                }
+              }
+            ],
+            "fractions": [
+              {
+                "entity": "cells",
+                "fraction": {
+                  "kind": "fixed",
+                  "value": 1.0
+                }
+              }
+            ]
+          },
+          "sampling": {
+            "kind": "none"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "native"
+        },
+        "queries_per_forward_pass": {
+          "kind": "fixed",
+          "value": 65536
+        }
+      }
+    ],
+    "mappings": [
+      {
+        "support_id": "ahmedml-surface-native-cells-v1",
+        "source_output_id": "surface-output",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "Predictions keep the native entity order; every entity has one prediction.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-volume-native-cells-v1",
+        "source_output_id": "volume-output",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "Predictions keep the native entity order; every entity has one prediction.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-force-coefficients-v1",
+        "source_output_id": "surface-output",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "ahmedml-evaluator-derived-support-v1",
+          "rule_version": "v1"
+        },
+        "implementation": "The dataset evaluator derives forces or profiles from the complete native fields.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-surface-cp-profiles-v1",
+        "source_output_id": "surface-output",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "ahmedml-evaluator-derived-support-v1",
+          "rule_version": "v1"
+        },
+        "implementation": "The dataset evaluator derives forces or profiles from the complete native fields.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-volume-velocity-profiles-v1",
+        "source_output_id": "volume-output",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "ahmedml-evaluator-derived-support-v1",
+          "rule_version": "v1"
+        },
+        "implementation": "The dataset evaluator derives forces or profiles from the complete native fields.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      }
+    ]
+  },
+  "case_manifest": {
+    "format": "jsonl",
+    "file": "discretization/cases.jsonl",
+    "sha256": "90faf91087d51f6eb112e6f0260ab4f5c834fbc94ec77efbdda43e09cf736991",
+    "case_count": 50
+  },
+  "notes": "Training counts follow the saved run arguments; inference counts follow the export facts. Every native entity of each case has one direct prediction."
+}
