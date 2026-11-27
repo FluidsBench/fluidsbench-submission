@@ -1,0 +1,32 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/methodology-contract-v1.schema.json",
+  "format": "fluidsbench-methodology-contract-v1",
+  "dataset_id": "ground-wing",
+  "allow_additional_predicted_fields": true,
+  "required_predicted_fields": [
+    {
+      "field_id": "surface-native.Cp",
+      "domain": "surface",
+      "component_count": 1,
+      "description": "Pressure coefficient on every official Ground-Wing surface cell."
+    },
+    {
+      "field_id": "surface-native.WallShearStress",
+      "domain": "surface",
+      "component_count": 3,
+      "description": "Wall-shear-stress vector on every official Ground-Wing surface cell."
+    },
+    {
+      "field_id": "case.c_lift",
+      "domain": "case",
+      "component_count": 1,
+      "description": "Per-case lift coefficient, whether predicted directly or integrated from the submitted surface fields."
+    },
+    {
+      "field_id": "case.c_drag",
+      "domain": "case",
+      "component_count": 1,
+      "description": "Per-case drag coefficient, whether predicted directly or integrated from the submitted surface fields."
+    }
+  ]
+}

@@ -34,7 +34,8 @@ def test_official_release_preserves_evaluated_reference_fingerprints():
     legacy_digest = "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
     for slug in ("ahmedml", "drivaerml", "drivaernetplusplus"):
         assert evaluated_truth_binding(manifest, slug)["manifest_sha256"] == legacy_digest
-    assert evaluated_truth_binding(manifest, "windsorml") == release["profile_ground_truth"]
+    windsorml = next(d for d in publication["datasets"] if d["id"] == "windsorml")
+    assert evaluated_truth_binding(manifest, "windsorml") == windsorml["submission_profile_ground_truth"]
     assert evaluated_truth_binding(manifest, "windsorml")["manifest_sha256"] != legacy_digest
     airfrans = next(d for d in publication["datasets"] if d["id"] == "airfrans")
     contract = json.loads((ROOT / "benchmark-specs/airfrans/submission-spec.json").read_text())

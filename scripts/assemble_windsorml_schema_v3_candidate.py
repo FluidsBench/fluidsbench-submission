@@ -65,6 +65,7 @@ from scripts.validate_scoring_supports import (  # noqa: E402
     validate_candidate_manifest_release,
 )
 from scripts.fetch_profile_ground_truth import fetch_manifest  # noqa: E402
+from scripts.profile_truth_publication import evaluated_truth_binding  # noqa: E402
 
 DEFAULT_SPECIFICATION = ROOT / "benchmark-specs" / "windsorml" / "submission-spec.json"
 CONFIG_SCHEMA = "windsorml-fluidsbench-schema-v3-package-config-v1"
@@ -308,9 +309,10 @@ def _release_bindings(
         raise PackageAssemblyError("active profile definition bytes differ")
 
     global_truth = _mapping(
-        load_json(ROOT / "leaderboard" / "manifest.json", label="leaderboard manifest")
-        .get("data_release", {})
-        .get("profile_ground_truth"),
+        evaluated_truth_binding(
+            load_json(ROOT / "leaderboard" / "manifest.json", label="leaderboard manifest"),
+            "windsorml",
+        ),
         "global profile-ground-truth binding",
     )
     if ground_truth != {

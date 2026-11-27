@@ -177,7 +177,7 @@ class ScoringSupportSpecGateTests(unittest.TestCase):
 
     def test_every_dataset_has_a_valid_independent_publication_gate(self) -> None:
         specifications = self.specifications()
-        self.assertEqual(len(specifications), 9)
+        self.assertEqual(len(specifications), 10)
         for specification in specifications:
             dataset_id = specification["dataset_id"]
             with self.subTest(dataset_id=dataset_id):
@@ -202,7 +202,7 @@ class ScoringSupportSpecGateTests(unittest.TestCase):
             text=True,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("for 9 datasets", result.stdout)
+        self.assertIn("for 10 datasets", result.stdout)
 
     def test_one_dataset_can_become_official_independently(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:

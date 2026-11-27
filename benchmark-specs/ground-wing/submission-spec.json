@@ -1,0 +1,287 @@
+{
+  "schema_version": "1.1",
+  "dataset_id": "ground-wing",
+  "dataset_name": "Ground-Wing",
+  "dataset_version": "prototype-1",
+  "status": "prototype_dummy_data",
+  "scoring_support": {
+    "status": "owner_review_required",
+    "submissions_open": false,
+    "closed_reason": "Submissions are currently closed.",
+    "coverage_contract": {
+      "dimensionality": "3D wing surface and 3D flow domain",
+      "rule": "complete_original_public_release_entities",
+      "inference_may_be_chunked": true,
+      "chunk_metrics_must_use_additive_sufficient_statistics": true,
+      "complete_case_and_entity_coverage_required": true,
+      "full_prediction_artifact_required": false,
+      "case_aggregation": "calculate_each_case_then_macro_average_cases_equally",
+      "public_ground_truth": "Ground-truth surface and volume fields are in the public Hugging Face release."
+    },
+    "public_supports": [
+      {
+        "id": "surface-native",
+        "public_file": "the per-case surface VTP file in Hugging Face dataset andreacenzato/Ground-Wing",
+        "format": "VTK XML PolyData",
+        "domain": "three_dimensional_wing_and_endplate_surface",
+        "association": "CellData",
+        "entities": "all_original_surface_cells",
+        "arrays": [
+          "Cp",
+          "CpT",
+          "WallShearStress"
+        ],
+        "physical_weight": "native_surface_cell_area",
+        "verification": "documented_in_source_paper"
+      }
+    ],
+    "relative_l2_policy": {
+      "surface_or_curve_primary": "physical_measure_weighted",
+      "surface_or_curve_secondary": "equal_native_entity",
+      "flow_domain_primary": "equal_native_entity",
+      "flow_domain_secondary": "physical_measure_weighted",
+      "point_or_vertex_physical_weights": "deterministic_mass_lumped_dual_measure_from_the_exact_public_mesh",
+      "vector_rule": "one_entity_weight_multiplies_the_squared_vector_magnitude",
+      "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
+    },
+    "owner_decisions_required": [
+      "pin_exact_public_release_files_revisions_and_hashes",
+      "confirm_array_names_entity_associations_masks_and_order",
+      "publish_authoritative_physical_weights_and_stable_entity_ids",
+      "approve_public_ground_truth_case_set_and_split_bindings",
+      "approve_loader_evaluator_and_immutable_scoring_support_manifest"
+    ]
+  },
+  "evaluation_reference_version": "prototype-1",
+  "default_field_reduction": "per_geometry_then_macro_average",
+  "ranking": {
+    "metric_id": "overall_score",
+    "direction": "higher",
+    "decimal_places": 1,
+    "rounding": "decimal_half_up",
+    "method": "competition"
+  },
+  "overall_score_composite": {
+    "metric_id": "overall_score",
+    "operation": "weighted_component_scores",
+    "components": [
+      {
+        "metric_id": "groundwing_cp_area_rel_l2",
+        "weight": 0.25,
+        "transform": "bounded_error",
+        "cap": 100.0
+      },
+      {
+        "metric_id": "groundwing_wss_area_rel_l2",
+        "weight": 0.25,
+        "transform": "bounded_error",
+        "cap": 100.0
+      },
+      {
+        "metric_id": "groundwing_cl_rel_error",
+        "weight": 0.25,
+        "transform": "bounded_error",
+        "cap": 100.0
+      },
+      {
+        "metric_id": "groundwing_cd_rel_error",
+        "weight": 0.25,
+        "transform": "bounded_error",
+        "cap": 100.0
+      }
+    ],
+    "tolerance": 1e-06
+  },
+  "metrics": [
+    {
+      "id": "overall_score",
+      "unit": "",
+      "direction": "higher",
+      "kind": "score",
+      "equation": "\\sum_k \\alpha_k S_k,\\quad \\sum_k \\alpha_k=1",
+      "aggregation": "derived_score_equation",
+      "weighting": "dataset_declared_component_weights"
+    },
+    {
+      "id": "groundwing_surface_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{2}(L_{2,A}^{C_p}+L_{2,A}^{\\tau_w})",
+      "aggregation": "derived_arithmetic_mean",
+      "weighting": "source_area_metrics_equal"
+    },
+    {
+      "id": "groundwing_cp_area_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "surface_cell_area"
+    },
+    {
+      "id": "groundwing_cp_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "cells_equal_within_case_cases_equal"
+    },
+    {
+      "id": "groundwing_cp_mae",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "cells_equal_within_case_cases_equal"
+    },
+    {
+      "id": "groundwing_cp_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "flatten_all_aligned_field_values",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "groundwing_wss_area_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i w_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i w_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "surface_cell_area"
+    },
+    {
+      "id": "groundwing_wss_rel_l2",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{\\sqrt{\\sum_i(\\hat{y}_i-y_i)^2}}{\\sqrt{\\sum_i y_i^2}}",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "cells_equal_within_case_cases_equal"
+    },
+    {
+      "id": "groundwing_wss_mae",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+      "aggregation": "per_geometry_then_macro_average",
+      "weighting": "cells_equal_within_case_cases_equal"
+    },
+    {
+      "id": "groundwing_wss_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "flatten_all_aligned_field_values",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "groundwing_cl_rel_error",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{1}{N}\\sum_i\\frac{\\lvert\\hat{C}_i-C_i\\rvert}{\\lvert C_i\\rvert}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "groundwing_cd_rel_error",
+      "unit": "%",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "100\\,\\frac{1}{N}\\sum_i\\frac{\\lvert\\hat{C}_i-C_i\\rvert}{\\lvert C_i\\rvert}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "c_lift_mae",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "c_drag_mae",
+      "unit": "",
+      "direction": "lower",
+      "kind": "error",
+      "equation": "\\frac{1}{N}\\sum_i\\lvert\\hat{y}_i-y_i\\rvert",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "cl_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    },
+    {
+      "id": "cd_r2",
+      "unit": "",
+      "direction": "higher",
+      "kind": "r2",
+      "equation": "1-\\frac{\\sum_i(y_i-\\hat{y}_i)^2}{\\sum_i(y_i-\\bar{y})^2}",
+      "aggregation": "all_test_cases",
+      "weighting": "cases_equal"
+    }
+  ],
+  "profile_panels": [
+    {
+      "id": "surface_pressure",
+      "required": true,
+      "allow_unlisted_stations": false,
+      "minimum_points": 2,
+      "coordinate_order": "strictly_increasing",
+      "station_ids": [
+        "prototype_centerline",
+        "prototype_midspan",
+        "prototype_tip"
+      ],
+      "quantity_ids": [
+        "cp"
+      ]
+    }
+  ],
+  "splits": [
+    {
+      "id": "stratified",
+      "label": "stratified",
+      "index_file": "splits/stratified.json",
+      "case_count": 71,
+      "case_set_id": "stratified",
+      "case_id_status": "prototype_generated",
+      "sha256": "8e4c23fe00a13a6802ccd5d5e851262799b0383d458db379273e899abfcbc423"
+    },
+    {
+      "id": "drag_outlier",
+      "label": "drag_outlier",
+      "index_file": "splits/drag_outlier.json",
+      "case_count": 64,
+      "case_set_id": "drag_outlier",
+      "case_id_status": "prototype_generated",
+      "sha256": "37bbb55ece39b16d948d96cb60af9d55575a34cd11e5ea2410bf253a7ee3834f"
+    },
+    {
+      "id": "interpolated",
+      "label": "interpolated",
+      "index_file": "splits/interpolated.json",
+      "case_count": 80,
+      "case_set_id": "interpolated",
+      "case_id_status": "prototype_generated",
+      "sha256": "54802ca6d62f1d9519eeda9ed7b0b2befc5f28f5a9232bb3cfc3777669497248"
+    }
+  ]
+}
