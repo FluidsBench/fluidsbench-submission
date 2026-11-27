@@ -1,0 +1,325 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/discretization.schema.json",
+  "schema_version": "1.0",
+  "submission_id": "ahmedml-panel-mtl-ens4-full-v1",
+  "dataset_id": "ahmedml",
+  "split_id": "full",
+  "scoring_support_release_id": "ahmedml-native-support-v1",
+  "scoring_support_manifest_sha256": "38d8af2cdbac16ca60ffaa22e54ae9db09e66dd3098ff847a888c59e94d26cdd",
+  "training": {
+    "surface_input": {
+      "used": true,
+      "representation": "native surface cell centres and normals (boundary_N.vtp)",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "per_case",
+            "minimum": 724668,
+            "median": 1060580.5,
+            "maximum": 1482543
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "fixed",
+        "seed": null,
+        "method": "300,000 surface cells per case (random subset, per-case seed); also the decimated surface for the panel prior"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native",
+      "notes": "Every surface cell's centre, area vector and normal is computed; training uses the cached subset. The panel prior uses a decimated copy (about 6,000 triangles) of the native boundary."
+    },
+    "surface_supervision": {
+      "used": true,
+      "representation": "native surface cells",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "per_case",
+            "minimum": 724668,
+            "median": 1060580.5,
+            "maximum": 1482543
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "seed": null,
+        "method": "16,384 rows per optimizer step, uniform with replacement over the cached 300,000-cell subsets"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none",
+      "notes": "Supervises surface p and wall shear. Sampling seed 0 or 1 per member."
+    },
+    "volume_input": {
+      "used": true,
+      "representation": "native volume cell centres (pointwise features)",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "per_case",
+            "minimum": 19485088,
+            "median": 21170322.0,
+            "maximum": 25315950
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "fixed",
+        "seed": null,
+        "method": "400,000 uniform + 100,000 near-wall (d < 0.01 m) cells per case (random subset, per-case seed)"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none",
+      "notes": "Pointwise MLP: every cell is processed independently; 400 full_train cases."
+    },
+    "volume_supervision": {
+      "used": true,
+      "representation": "native volume cells",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "per_case",
+            "minimum": 19485088,
+            "median": 21170322.0,
+            "maximum": 25315950
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "resampled_each_epoch",
+        "seed": null,
+        "method": "65,536 rows per optimizer step, uniform with replacement over the cached subsets"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none",
+      "notes": "Targets at the sampled cells: N = U/h(d), p, log1p(nut/1e-6)."
+    }
+  },
+  "inference": {
+    "geometry_dependency": "native_cfd_mesh",
+    "surface_input": {
+      "used": true,
+      "case_record_id": "native-surface-input",
+      "representation": "native surface cell centres and normals (boundary_N.vtp)",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "per_case",
+            "minimum": 721602,
+            "median": 1094776.0,
+            "maximum": 1404826
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "native",
+      "notes": "All native surface cells; the panel prior also uses a decimated copy of the boundary."
+    },
+    "volume_input": {
+      "used": true,
+      "case_record_id": "native-volume-input",
+      "representation": "native volume cell centres (pointwise features)",
+      "entity_counts": [
+        {
+          "entity": "cells",
+          "count": {
+            "kind": "per_case",
+            "minimum": 19461878,
+            "median": 21252206.5,
+            "maximum": 22773261
+          }
+        }
+      ],
+      "native_comparison": {
+        "status": "not_applicable"
+      },
+      "sampling": {
+        "kind": "none"
+      },
+      "domain": {
+        "kind": "full_dataset_domain"
+      },
+      "connectivity": "none",
+      "notes": "Pointwise MLP: every cell is processed independently; mesh connectivity is not used by the model."
+    },
+    "direct_outputs": [
+      {
+        "id": "native-surface-output",
+        "domain": "surface",
+        "representation": {
+          "used": true,
+          "representation": "native surface cells, native order",
+          "entity_counts": [
+            {
+              "entity": "cells",
+              "count": {
+                "kind": "per_case",
+                "minimum": 721602,
+                "median": 1094776.0,
+                "maximum": 1404826
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "not_applicable"
+          },
+          "sampling": {
+            "kind": "none"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "native",
+          "notes": "Surface p and wall shear at every native surface cell: equal-weight mean of four members."
+        },
+        "queries_per_forward_pass": {
+          "kind": "fixed",
+          "value": 1000000
+        }
+      },
+      {
+        "id": "native-volume-output",
+        "domain": "volume",
+        "representation": {
+          "used": true,
+          "representation": "native volume cells, native order",
+          "entity_counts": [
+            {
+              "entity": "cells",
+              "count": {
+                "kind": "per_case",
+                "minimum": 19461878,
+                "median": 21252206.5,
+                "maximum": 22773261
+              }
+            }
+          ],
+          "native_comparison": {
+            "status": "not_applicable"
+          },
+          "sampling": {
+            "kind": "none"
+          },
+          "domain": {
+            "kind": "full_dataset_domain"
+          },
+          "connectivity": "native",
+          "notes": "Velocity and pressure at every native volume cell: equal-weight mean of four members, in 1,000,000-row chunks."
+        },
+        "queries_per_forward_pass": {
+          "kind": "fixed",
+          "value": 1000000
+        }
+      }
+    ],
+    "mappings": [
+      {
+        "support_id": "ahmedml-surface-native-cells-v1",
+        "source_output_id": "native-surface-output",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "Predictions are written in native cell order by infer_native.py (predwriter).",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-volume-native-cells-v1",
+        "source_output_id": "native-volume-output",
+        "method": {
+          "kind": "identity"
+        },
+        "implementation": "Predictions are written in native cell order by infer_native.py (predwriter).",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-force-coefficients-v1",
+        "source_output_id": "native-surface-output",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "ahmedml-evaluator-derived-support-v1",
+          "rule_version": "candidate-v1"
+        },
+        "implementation": "Dataset evaluator derives force or profile values from the same complete native prediction fields.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-surface-cp-profiles-v1",
+        "source_output_id": "native-surface-output",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "ahmedml-evaluator-derived-support-v1",
+          "rule_version": "candidate-v1"
+        },
+        "implementation": "Dataset evaluator derives force or profile values from the same complete native prediction fields.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      },
+      {
+        "support_id": "ahmedml-volume-velocity-profiles-v1",
+        "source_output_id": "native-volume-output",
+        "method": {
+          "kind": "reference_rule",
+          "rule_id": "ahmedml-evaluator-derived-support-v1",
+          "rule_version": "candidate-v1"
+        },
+        "implementation": "Dataset evaluator derives force or profile values from the same complete native prediction fields.",
+        "extrapolation_policy": "forbidden",
+        "unmapped_fraction": 0.0,
+        "extrapolated_fraction": 0.0,
+        "final_coverage_fraction": 1.0
+      }
+    ]
+  },
+  "case_manifest": {
+    "format": "jsonl",
+    "file": "discretization/cases.jsonl",
+    "sha256": "100439715924e9115959dfbbe8f19036c3a8382e8bf01c0dd966d8537f1a669f",
+    "case_count": 50
+  },
+  "notes": "Pointwise model on native cell centres. Training reads a fixed per-case random subset of cells; inference predicts every native cell. Forces, Cp cuts and wake profiles are derived by the evaluator from the submitted native fields."
+}

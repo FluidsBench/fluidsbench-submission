@@ -1,0 +1,622 @@
+{
+  "$schema": "https://fluidsbench.org/schemas/v3/submission.schema.json",
+  "schema_version": "3.0",
+  "submission_id": "ahmedml-panel-mtl-ens4-full-v1",
+  "result_revision": {
+    "series_id": "ahmedml-panel-mtl-ens4-full",
+    "version": 1,
+    "supersedes": null,
+    "change_summary": "Initial submitted result."
+  },
+  "model": "Panel-prior FiLM multi-task MLP ensemble (4 members)",
+  "model_type": "Coordinate network",
+  "model_types": [
+    "Coordinate network",
+    "MLP",
+    "Ensemble",
+    "Physics-guided"
+  ],
+  "training_regime": "from_scratch",
+  "target_data_used": "official_train",
+  "external_pretraining": false,
+  "pretraining_data": [],
+  "methodology": {
+    "format": "fluidsbench-method-v1",
+    "record_kind": "submitter_reported",
+    "record_note": "Submitter-reported record for an equal-weight mean of four independently trained FiLM-conditioned pointwise multi-task MLPs (plain trunk seeds 0 and 1, residual trunk seeds 0 and 1) with a 3D potential-flow (source-panel) prior as input. Parameter counts are exact sums of numel() over each member's model.parameters(). Each checkpoint also stores five Kendall uncertainty log-variances (20 scalars over the four files); they weight the training loss only, are not part of the network and are not used at inference, so they are excluded from the parameter counts. All model selection and ablations used only AhmedML cases that are in no official test set of any split (184-case dev pool: dev_train 150 / dev_val 34); no official test case influenced the configuration. The four final members were trained once each on the 400 full_train cases with the frozen configuration, and the entry was evaluated once.",
+    "architecture": {
+      "description": "Equal-weight ensemble of four FiLM-conditioned pointwise multi-task MLPs. Each member is evaluated independently at every native volume cell centre and every native surface cell centre of a case, in native order; no mesh connectivity, graph, attention, interpolation or remeshing is used. Trunk: Linear(12->256)+ReLU, then 4 blocks; block b computes z = Linear_b2(ReLU((1+gamma_b)*Linear_b1(h) + beta_b)), then h = LayerNorm(h + z) (residual members) or h = ReLU(z) (plain members). gamma_b, beta_b come from a FiLM MLP on the 8 standardised geometry parameters (Linear(8->128)-ReLU-Linear(128->128)-ReLU-Linear(128->2*256*4), last layer zero-initialised). Four heads 256->128->64->out with ReLU: the nut head (1 output, auxiliary log1p(nut/1e-6), never submitted) runs first; the U head (3), p head (1) and wall-shear head (3) read [trunk features, predicted nut]. Volume cells and surface cells share the trunk; surface pressure is the SAME p head evaluated at the surface cell (d = 0), and surface wall shear is the wall-shear head. Velocity uses a hard no-slip ansatz U = h(d)*N with h(d) = d/(d+delta), delta = 1e-4 m and d the distance to the body. Outputs are de-standardised and averaged per cell with equal weights. Exact parameter counts: plain member 977,032, residual member 979,080; total 3,912,224, all trained by the submitter.",
+      "total_parameter_count": 3912224,
+      "parameter_count_basis": "exact",
+      "submitter_trainable_parameter_count": 3912224,
+      "components": [
+        {
+          "id": "member-plain-s0",
+          "family": "FiLM-conditioned pointwise MLP, plain trunk",
+          "role": "Ensemble member 1 of 4 (weight 1/4): surface pressure and wall shear at every native surface cell, velocity and pressure at every native volume cell; auxiliary nut head.",
+          "description": "Plain trunk (ReLU(block(h)), no skip connection, no normalisation), width 256, 4 FiLM blocks; FiLM MLP 8->128->128->2048; heads 256(+1)->128->64->out for nut, U, p and wall shear, with the U, p and wall-shear heads reading [trunk, predicted nut]. Training seed 0.",
+          "parameter_count": 977032
+        },
+        {
+          "id": "member-plain-s1",
+          "family": "FiLM-conditioned pointwise MLP, plain trunk",
+          "role": "Ensemble member 2 of 4 (weight 1/4): surface pressure and wall shear at every native surface cell, velocity and pressure at every native volume cell; auxiliary nut head.",
+          "description": "Same architecture and configuration as member-plain-s0; training seed 1.",
+          "parameter_count": 977032
+        },
+        {
+          "id": "member-res-s0",
+          "family": "FiLM-conditioned pointwise MLP, residual trunk",
+          "role": "Ensemble member 3 of 4 (weight 1/4): surface pressure and wall shear at every native surface cell, velocity and pressure at every native volume cell; auxiliary nut head.",
+          "description": "Residual trunk (LayerNorm(h + block(h))), otherwise identical to member-plain-s0 (2,048 extra LayerNorm parameters). Training seed 0.",
+          "parameter_count": 979080
+        },
+        {
+          "id": "member-res-s1",
+          "family": "FiLM-conditioned pointwise MLP, residual trunk",
+          "role": "Ensemble member 4 of 4 (weight 1/4): surface pressure and wall shear at every native surface cell, velocity and pressure at every native volume cell; auxiliary nut head.",
+          "description": "Same architecture and configuration as member-res-s0; training seed 1.",
+          "parameter_count": 979080
+        }
+      ],
+      "key_hyperparameters": [
+        {
+          "id": "ensemble-aggregation",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Ensemble aggregation",
+          "value": "equal-weight mean of 4 members",
+          "description": "Surface pressure, wall shear, velocity and pressure averaged per native cell over the four members."
+        },
+        {
+          "id": "trunk-width",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Trunk width",
+          "value": 256,
+          "description": "Hidden width of every trunk layer."
+        },
+        {
+          "id": "trunk-blocks",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Trunk blocks",
+          "value": 4,
+          "description": "Number of Linear-FiLM-ReLU-Linear blocks."
+        },
+        {
+          "id": "trunk-residual",
+          "component_ids": [
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Block combination (residual members)",
+          "value": "LayerNorm(h + block(h))",
+          "description": "Residual connection followed by LayerNorm after every block."
+        },
+        {
+          "id": "trunk-plain",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1"
+          ],
+          "name": "Block combination (plain members)",
+          "value": "ReLU(block(h))",
+          "description": "No skip connection and no normalisation."
+        },
+        {
+          "id": "film-conditioning",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "FiLM network",
+          "value": "8->128->128->2048, zero-initialised output",
+          "description": "Per-case scale (1+gamma) and shift (beta) for the first linear layer of every block; starts at the identity modulation."
+        },
+        {
+          "id": "heads",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Output heads",
+          "value": "nut first; U, p and wall shear conditioned on predicted nut",
+          "description": "Four 256->128->64->out ReLU heads; the U, p and wall-shear heads take [trunk features, predicted nut] (257 inputs) without gradient detach. Surface pressure uses the volume p head."
+        },
+        {
+          "id": "no-slip-delta",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "No-slip length scale delta (m)",
+          "value": 0.0001,
+          "description": "U = d/(d+delta) * N; velocity is exactly zero on the wall. The first cell centre is about 4e-4 m off the wall."
+        },
+        {
+          "id": "task-weighting",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Multi-task loss weighting",
+          "value": "Kendall uncertainty weighting over (U, p, nut, surface p, wall shear)",
+          "description": "Five learned log-variances; training only."
+        },
+        {
+          "id": "optimizer-steps",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Optimizer steps",
+          "value": 50000,
+          "description": "Fixed schedule; last step kept."
+        },
+        {
+          "id": "batch-volume",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Volume batch (cells)",
+          "value": 65536,
+          "description": "Volume cells per optimizer step."
+        },
+        {
+          "id": "batch-surface",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Surface batch (cells)",
+          "value": 16384,
+          "description": "Surface cells per optimizer step."
+        },
+        {
+          "id": "learning-rate",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Peak learning rate",
+          "value": 0.001,
+          "description": "AdamW with OneCycle schedule."
+        },
+        {
+          "id": "weight-decay",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "AdamW weight decay",
+          "value": 0.01,
+          "description": "On network parameters; 0 on the loss log-variances."
+        },
+        {
+          "id": "panel-count",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Prior source panels",
+          "value": 6000,
+          "description": "Triangles of the decimated body surface used by the potential-flow prior."
+        }
+      ],
+      "input_features": [
+        {
+          "id": "cell-coordinates",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "x, y, z",
+          "domain": "volume",
+          "component_count": 3,
+          "description": "Cell-centre coordinates (m) in the dataset frame, standardised; the same features at surface cell centres."
+        },
+        {
+          "id": "wall-distance",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Distance to the body d",
+          "domain": "volume",
+          "component_count": 1,
+          "description": "Distance from the cell centre to the body surface (exact vtkImplicitPolyDataDistance on the triangulated native boundary where the KD-tree distance to surface cell centres is below 2 cm, that KD-tree distance elsewhere); 0 at surface cells; standardised."
+        },
+        {
+          "id": "log-wall-distance",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "log10(d + 1e-6)",
+          "domain": "volume",
+          "component_count": 1,
+          "description": "Log distance to resolve the near-wall layer, standardised."
+        },
+        {
+          "id": "wall-normal",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Nearest-wall normal",
+          "domain": "volume",
+          "component_count": 3,
+          "description": "Unit normal (into the fluid, from polygon winding: -A_outward/|A|) of the nearest native surface cell; at surface cells their own normal; not standardised."
+        },
+        {
+          "id": "panel-velocity",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Inviscid velocity u_inv/U_inf",
+          "domain": "volume",
+          "component_count": 3,
+          "description": "Potential-flow velocity at the point from the 3D source-panel solution of the body with its ground image (geometry only; see preprocessing), bounded to |u_inv| <= 1.8; standardised."
+        },
+        {
+          "id": "panel-pressure",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Inviscid pressure coefficient 1 - |u_inv|^2",
+          "domain": "volume",
+          "component_count": 1,
+          "description": "Bernoulli pressure of the same panel solution, bounded below at -2; standardised."
+        },
+        {
+          "id": "surface-cell-features",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "Surface cell point features",
+          "domain": "surface",
+          "component_count": 12,
+          "description": "The same 12 point features evaluated at each native surface cell centre: x, y, z, d = 0, log10(1e-6), the cell's own unit normal, and the panel-prior velocity and pressure."
+        },
+        {
+          "id": "geometry-parameters",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "name": "AhmedML geometry parameters",
+          "domain": "case",
+          "component_count": 8,
+          "description": "The 8 values of geo_parameters_N.csv (body length, height, width, front-arc diameter, slant length, slant height, slant surface length, slant angle). FiLM input, standardised over the training cases."
+        }
+      ],
+      "predicted_fields": [
+        {
+          "field_id": "surface-native.pMean",
+          "domain": "surface",
+          "component_count": 1,
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "production": "direct_model_output",
+          "description": "Pressure at every native surface cell centre: each member's p head at the surface cell (d = 0), de-standardised, averaged over the four members."
+        },
+        {
+          "field_id": "surface-native.wallShearStressMean",
+          "domain": "surface",
+          "component_count": 3,
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "production": "direct_model_output",
+          "description": "Wall shear stress (3 Cartesian components) at every native surface cell centre: each member's wall-shear head, de-standardised, averaged over the four members."
+        },
+        {
+          "field_id": "flow-domain-native.UMean",
+          "domain": "volume",
+          "component_count": 3,
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "production": "direct_model_output",
+          "description": "Cartesian velocity at every native volume cell centre: each member's U head output N, de-standardised and multiplied by h(d) (hard no-slip), averaged over the four members."
+        },
+        {
+          "field_id": "flow-domain-native.pMean",
+          "domain": "volume",
+          "component_count": 1,
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "production": "direct_model_output",
+          "description": "Pressure at every native volume cell centre: each member's p head, de-standardised, averaged over the four members."
+        }
+      ]
+    },
+    "data_handling": {
+      "normalization": "Targets: N = U/h(d) with h(d) = d/(d+1e-4 m), p as stored (dataset units, no reference subtracted), log1p(nut/1e-6), surface p and wall shear as stored. Point inputs and targets are standardised with the mean and standard deviation over the training rows of the 400 full_train cases (normals unscaled; surface p uses the volume-p statistics because one p head serves both). Geometry parameters are standardised over the training cases (a standard deviation below 1e-6 is set to 1). Statistics come from training data only and are stored in each checkpoint. At inference each member's outputs are de-standardised, U = h(d)*N, and the four members are averaged per cell.",
+      "preprocessing": "Two deterministic geometry-only steps run once per case (training and test alike) and are cached. (1) Mesh features (prep_case.py): reads boundary_N.vtp and volume_N.vtu (geometry arrays only for test cases: no field array is loaded), cell centres, Newell area vectors and unit normals of surface cells, distance to the body and the nearest surface cell's normal for every volume cell; geometry parameters from geo_parameters_N.csv. For training cases the same read also stores the fields at the sampled rows. (2) Potential-flow prior (panel3d.py): the native boundary is decimated (vtkQuadricClustering then vtkQuadricDecimation) to about 6,000 triangles; a constant-strength source panel method with a mirror image in the ground plane z = 0 and unit freestream (1, 0, 0) is solved for the source strengths. Features (inviscid velocity and 1 - |u|^2, bounded) are evaluated from those strengths at every point on the GPU inside training and inference; points closer than h0 = sqrt(mean panel area) to the wall are first lifted along the nearest-wall normal to height h0. No mapping, interpolation or remeshing: predictions are made at the native cell centres in native order.",
+      "sampling": "Training: a fixed random subset per training case is cached (400,000 uniformly sampled volume cells, 100,000 near-wall volume cells with d < 0.01 m, 300,000 surface cells; the case caches were shuffled once with a per-case seed). Every optimizer step draws 65,536 volume rows and 16,384 surface rows uniformly with replacement from the 400-case pool (200,000,000 volume and 120,000,000 surface rows), resampled every step with the member's seed. Inference: no sampling; every native cell is predicted."
+    },
+    "training": {
+      "stages": [
+        {
+          "id": "final-training",
+          "status": "performed_by_submitter",
+          "component_ids": [
+            "member-plain-s0",
+            "member-plain-s1",
+            "member-res-s0",
+            "member-res-s1"
+          ],
+          "description": "From-scratch training of each member on all 400 official full_train cases: one run per member (plain seeds 0 and 1, residual seeds 0 and 1) with the frozen configuration (mtl_ahmed.py). No validation set, monitoring or early stopping; each checkpoint is the last step. Slurm jobs 587027 (member-plain-s0), 587028 (member-plain-s1), 587029 (member-res-s0), 587055 (member-res-s1).",
+          "procedure": {
+            "kind": "gradient_based",
+            "loss": {
+              "description": "Five standardised mean-squared-error terms over the batch: L_U over the 3 components of N at volume rows; L_p over volume p; L_nut over log1p(nut/1e-6) (auxiliary task, never submitted); L_ps over surface p; L_tau over the 3 wall-shear components at surface rows.",
+              "weighting": "Kendall et al. (2018) homoscedastic uncertainty weighting: loss = sum_i [0.5*exp(-s_i)*L_i + 0.5*s_i] over the five terms, with learned log-variances s_i initialised at 0 and trained jointly without weight decay; no hand-set task weights."
+            },
+            "optimizers": [
+              {
+                "name": "AdamW",
+                "learning_rate": 0.001,
+                "schedule": "PyTorch OneCycleLR, max_lr 1e-3 over 50,000 steps with defaults (30% cosine warm-up, cosine annealing); weight decay 0.01 on network parameters and 0 on the five log-variances."
+              }
+            ],
+            "batch": {
+              "value": 81920,
+              "unit": "cells per optimizer step (65,536 volume + 16,384 surface), across all training cases",
+              "gradient_accumulation_steps": 1
+            },
+            "duration": {
+              "optimizer_steps": 50000,
+              "description": "Fixed 50,000 steps per member; last step kept."
+            }
+          },
+          "run_count": 4,
+          "stochastic": true,
+          "random_seeds": [
+            0,
+            1,
+            0,
+            1
+          ],
+          "compute": {
+            "hardware": "One NVIDIA H100 NVL (94 GB) per job on the University of Reading RACC2 gpuscavenger partition (racc2-gpu-0), 8 CPU cores and 200 GB host RAM per job.",
+            "max_concurrent_device_count": 1,
+            "campaign_wall_time_hours": 1.1986,
+            "aggregate_device_hours": 1.1986,
+            "measurement_notes": "aggregate_device_hours is the sum of Slurm sacct ElapsedRaw over the four training jobs (allocated time, including loading the cached training rows and evaluating the prior features at them); campaign wall time runs from the first job start to the last job end. Jobs ran one at a time (per-user partition limit).",
+            "accelerator": {
+              "type": "gpu",
+              "vendor": "NVIDIA",
+              "model": "H100 NVL"
+            },
+            "devices_per_job": 1
+          }
+        }
+      ]
+    },
+    "checkpoints": [
+      {
+        "id": "ckpt-plain-s0",
+        "component_ids": [
+          "member-plain-s0"
+        ],
+        "sha256": "f69b63c8519a6f76b539abd01fac0278ac8a1d8495865732b70361ced621e286",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw bytes of model.pt from training job 587027 as read by infer_native.py (torch.load): a torch.save dictionary with the network state_dict, the training-set standardisation statistics, the training arguments, n_params, and the training-only Kendall log-variances (not used at inference).",
+        "role": "Weights and normalisation statistics of ensemble member plain-s0.",
+        "selection_rule": "Last training step (step 50,000) of the fixed schedule; no early stopping or validation-based selection; fixed before evaluation."
+      },
+      {
+        "id": "ckpt-plain-s1",
+        "component_ids": [
+          "member-plain-s1"
+        ],
+        "sha256": "79fcb247e7e24d0163ee4ca0af7b5a34e6122c94fec5959c004ef28971a9b4c1",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw bytes of model.pt from training job 587028 as read by infer_native.py (torch.load): a torch.save dictionary with the network state_dict, the training-set standardisation statistics, the training arguments, n_params, and the training-only Kendall log-variances (not used at inference).",
+        "role": "Weights and normalisation statistics of ensemble member plain-s1.",
+        "selection_rule": "Last training step (step 50,000) of the fixed schedule; no early stopping or validation-based selection; fixed before evaluation."
+      },
+      {
+        "id": "ckpt-res-s0",
+        "component_ids": [
+          "member-res-s0"
+        ],
+        "sha256": "c0441cb7fa2be963f6bfc318625170ea14c9d285160dc3cac36f7601bf53268a",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw bytes of model.pt from training job 587029 as read by infer_native.py (torch.load): a torch.save dictionary with the network state_dict, the training-set standardisation statistics, the training arguments, n_params, and the training-only Kendall log-variances (not used at inference).",
+        "role": "Weights and normalisation statistics of ensemble member res-s0.",
+        "selection_rule": "Last training step (step 50,000) of the fixed schedule; no early stopping or validation-based selection; fixed before evaluation."
+      },
+      {
+        "id": "ckpt-res-s1",
+        "component_ids": [
+          "member-res-s1"
+        ],
+        "sha256": "987943eda1d3ccc082b539fb3e6cddea27ab6713e6fec3ef81f5e92b48eaf26a",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw bytes of model.pt from training job 587055 as read by infer_native.py (torch.load): a torch.save dictionary with the network state_dict, the training-set standardisation statistics, the training arguments, n_params, and the training-only Kendall log-variances (not used at inference).",
+        "role": "Weights and normalisation statistics of ensemble member res-s1.",
+        "selection_rule": "Last training step (step 50,000) of the fixed schedule; no early stopping or validation-based selection; fixed before evaluation."
+      }
+    ],
+    "inference_compute": {
+      "status": "measured",
+      "hardware": "One NVIDIA H100 NVL (94 GB) on the RACC2 gpuscavenger partition (racc2-gpu-0), 8 CPU cores and 128 GB host RAM (Slurm job 587140).",
+      "max_concurrent_device_count": 1,
+      "case_count": 50,
+      "campaign_wall_time_seconds": 2287.0,
+      "aggregate_device_time_seconds": 2278.0,
+      "includes_preprocessing": false,
+      "includes_mapping": true,
+      "measurement_notes": "One run of infer_native.py over all 50 full_test cases on one GPU. aggregate_device_time_seconds is the sum of the per-case timers (whole seconds, printed by infer_native.py); each starts after the four checkpoints are loaded and covers reading the cached geometry features (.npz), evaluating the panel-prior features on the GPU, the four member forward passes in 1M-row chunks, de-standardisation, the no-slip ansatz, averaging and writing the prediction manifests and NPZ chunks. campaign_wall_time_seconds is the Slurm allocation time of the job (adds Python start-up and checkpoint loading). Excluded (includes_preprocessing=false), measured from the logs: infer caches 23,634 s for 50 of the 50 test cases (median 467 s per case, one 8-core CPU job each, NAS-read bound); panel solves 1,033 s for 50 of the 50 test cases (median 20 s per case on CPU). Mapping: outputs are produced directly at the native cells in native order (identity).",
+      "accelerator": {
+        "type": "gpu",
+        "vendor": "NVIDIA",
+        "model": "H100 NVL"
+      },
+      "devices_per_job": 1
+    }
+  },
+  "submitter_name": "Sambit Kumar Panda",
+  "institution": "University of Reading",
+  "paper_url": "",
+  "submitted_at": "2026-11-22",
+  "reproducibility": {
+    "contract_version": "open-reproducibility-3.0",
+    "access": "public",
+    "public_test_data_use": "evaluation_only",
+    "result_data_license_spdx": "CC-BY-4.0"
+  },
+  "dataset_id": "ahmedml",
+  "prediction_scope": "surface_and_volume",
+  "parameter_count_millions": 3.912224,
+  "dataset": "AhmedML",
+  "dataset_version": "ahmedml-native-v1-candidate",
+  "split": "Full",
+  "split_id": "full",
+  "case_set_id": "full-test",
+  "split_sha256": "a565e78b41f8b793220985e6b1bcf535ced54d454e3325fb5de51c8b553eb920",
+  "evaluation": {
+    "reference_version": "ahmedml-evaluator-v0.1-candidate",
+    "command": "python scripts/ahmedml.py validate-entry <entry> --dataset-root <AhmedML> --support-root <support> --offline; python scripts/ahmedml.py evaluate-entry <entry> --dataset-root <AhmedML> --support-root <support> --offline --output <work/result> --resume; python scripts/ahmedml.py package --evaluation-root <work/result>/evaluation --config <package-config.json> --discretization-cases <discretization-cases.jsonl> --checkpoint ... --output submissions/ahmedml/ahmedml-panel-mtl-ens4-full-v1",
+    "evidence_file": "evaluation-evidence.json",
+    "evidence_sha256": "3c6a658e5e64bfe849125bb4bf89909a7c41477bd17111c163b415ddba363a56"
+  },
+  "scoring_support": {
+    "status": "official",
+    "release_id": "ahmedml-native-support-v1",
+    "manifest_url": "https://github.com/FluidsBench/fluidsbench-submission/releases/download/ahmedml-native-support-v1/manifest.json",
+    "manifest_sha256": "38d8af2cdbac16ca60ffaa22e54ae9db09e66dd3098ff847a888c59e94d26cdd"
+  },
+  "spatial_discretization": {
+    "format": "fluidsbench-discretization-v1",
+    "file": "discretization.json",
+    "sha256": "16f7b4b7315d33eee306040115a8d78b73957c1000d04f92bb087f0b211e0aac"
+  },
+  "case_metrics": {
+    "format": "fluidsbench-case-metrics-v1",
+    "file": "metrics/cases.json",
+    "sha256": "f4f25494af3b9593c94dc9f3232e54e19edf7d2d9cec988dacab9607dba77029",
+    "case_count": 50
+  },
+  "metric_values": {
+    "overall_score": 80.37899681844496,
+    "field_score": 68.96660003265585,
+    "force_score": 86.20726267338193,
+    "diagnostic_score": 97.3755245350862,
+    "surface_pressure_rel_l2": 5.24955697220279,
+    "surface_pressure_equal_entity_rel_l2": 5.051147169348276,
+    "surface_wall_shear_rel_l2": 6.1278425329486,
+    "surface_wall_shear_equal_entity_rel_l2": 6.11449675547189,
+    "volume_velocity_rel_l2": 2.9658188246246344,
+    "volume_velocity_physical_rel_l2": 0.7337943278175258,
+    "volume_pressure_rel_l2": 5.2439223213212856,
+    "volume_pressure_physical_rel_l2": 6.450925770858832,
+    "surface_pressure_rel_l1": 2.918615323872956,
+    "surface_wall_shear_rel_l1": 3.423463863176212,
+    "volume_velocity_rel_l1": 1.3140644614586252,
+    "volume_pressure_rel_l1": 3.465255130348803,
+    "velocity_profile_r2": 0.9730745604863149,
+    "cp_cut_r2": 0.9747762726476826,
+    "surface_pressure_mae": 0.004393362514171989,
+    "surface_wall_shear_mae": 6.297253272248695e-05,
+    "volume_velocity_mae": 0.011848403166868646,
+    "volume_pressure_mae": 0.0027615908213914973,
+    "surface_pressure_rmse": 0.010946731333168987,
+    "surface_wall_shear_rmse": 0.00013469556747939884,
+    "volume_velocity_rmse": 0.02786914162163658,
+    "volume_pressure_rmse": 0.006755282919731282,
+    "cd_r2": 0.8507691720974582,
+    "cl_r2": 0.8790278086883612,
+    "c_drag_mae": 0.012377732615618505,
+    "c_lift_mae": 0.039611970177133006
+  },
+  "profile_data": {
+    "format": "fluidsbench-profile-chunks-v1",
+    "index_file": "profiles/index.json",
+    "case_count": 50,
+    "case_set_id": "full-test",
+    "profile_ground_truth_release_id": "prototype-profile-ground-truth-2026-09-04",
+    "profile_ground_truth_manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
+  },
+  "regional_diagnostics": {
+    "format": "ahmedml-regional-diagnostics-aggregate-v2",
+    "file": "regional-diagnostics.json",
+    "sha256": "1f2d99a8df634416b370f8f3034c35a556bf9a3b8f1528caf20a61c99ce2950d",
+    "contract_sha256": "467cf92356aa7bca0f6b1745f0ae756b1e3dacdb02d29ce61bc25da653e5b4b6",
+    "definition_id": "ahmedml-native-regions-v2-candidate",
+    "case_count": 50,
+    "role": "report_only",
+    "weight": 0.0,
+    "official_score_changed": false
+  }
+}
